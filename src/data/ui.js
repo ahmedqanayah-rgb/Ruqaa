@@ -1,0 +1,65 @@
+// Site-chrome strings (navigation, buttons, labels). Section/book content
+// lives in its own data modules. Everything is {ar, en}.
+
+export const ui = {
+  siteTitle: { ar: 'رُقعة', en: 'Ruqʿa' },
+  siteTagline: { ar: 'نادي القراءة', en: 'Reading Club' },
+
+  nav: {
+    home: { ar: 'الرئيسية', en: 'Home' },
+    books: { ar: 'الكتب', en: 'Books' },
+    assessment: { ar: 'تقييم النوم', en: 'Sleep Assessment' },
+    about: { ar: 'عن النادي', en: 'About the Club' },
+    book: { ar: 'كتاب: لماذا ننام', en: 'Book: Why We Sleep' },
+  },
+
+  actions: {
+    switchLang: { ar: 'English', en: 'العربية' },
+    switchLangAria: { ar: 'التبديل إلى الإنجليزية', en: 'Switch to Arabic' },
+    lightMode: { ar: 'الوضع الفاتح', en: 'Light mode' },
+    darkMode: { ar: 'الوضع الداكن', en: 'Dark mode' },
+    openMenu: { ar: 'فتح القائمة', en: 'Open menu' },
+    closeMenu: { ar: 'إغلاق القائمة', en: 'Close menu' },
+    openBook: { ar: 'افتح الكتاب', en: 'Open the book' },
+    back: { ar: 'رجوع', en: 'Back' },
+    reset: { ar: 'إعادة الضبط', en: 'Reset' },
+    resetNormal: { ar: 'إعادة إلى القيم الطبيعية', en: 'Reset to normal values' },
+    submit: { ar: 'احسب نتيجتي', en: 'Get my score' },
+    retake: { ar: 'إعادة التقييم', en: 'Retake' },
+    showAnswer: { ar: 'اكشف النتيجة', en: 'Reveal result' },
+    next: { ar: 'التالي', en: 'Next' },
+    prev: { ar: 'السابق', en: 'Previous' },
+  },
+
+  labels: {
+    figure: { ar: 'شكل', en: 'Figure' },
+    interactive: { ar: 'تفاعلي', en: 'Interactive' },
+    inThisBook: { ar: 'في هذا الكتاب', en: 'In this book' },
+    browse: { ar: 'التصفّح', en: 'Browse' },
+    booksList: { ar: 'الكتب', en: 'Books' },
+    currentBook: { ar: 'الكتاب الحالي', en: 'Current book' },
+    sections: { ar: 'أقسام الكتاب', en: 'Book sections' },
+    time: { ar: 'الوقت', en: 'Time' },
+    hover: { ar: 'مرّر المؤشّر لعرض القيم', en: 'Hover to see values' },
+    correct: { ar: 'إجابة صحيحة', en: 'Correct' },
+    incorrect: { ar: 'إجابة خاطئة', en: 'Not quite' },
+    actualResult: { ar: 'النتيجة الفعلية', en: 'Actual result' },
+    methodology: { ar: 'كيف أُجريت التجربة', en: 'How the experiment worked' },
+    yourGuess: { ar: 'ما رأيك في النتيجة؟', en: 'What do you think the result was?' },
+    discussion: { ar: 'نقاش', en: 'Discussion' },
+    researcher: { ar: 'الباحث/المصدر', en: 'Researcher / source' },
+    score: { ar: 'نتيجتك', en: 'Your score' },
+    studyOf: { ar: 'من', en: 'of' },
+  },
+
+  footer: {
+    built: {
+      ar: 'موقع نادي القراءة — مبنيّ على محتوى كتاب «لماذا ننام» لماثيو ووكر.',
+      en: 'Reading-club site — built on the content of Matthew Walker’s “Why We Sleep”.',
+    },
+    note: {
+      ar: 'المحتوى تعليمي مرجعي وليس نصيحة طبية.',
+      en: 'Educational reference content, not medical advice.',
+    },
+  },
+}

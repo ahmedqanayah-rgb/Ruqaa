@@ -1,0 +1,101 @@
+/* ============================================================
+   Design tokens — centralized theming (swap here to re-skin).
+   Calm, warm "reading-club" palette derived from the club logo
+   (camel #a5855b) and the book's night-sky covers. Muted and
+   restful by design. Everything reads from these variables.
+   ============================================================ */
+
+:root {
+  /* Typography */
+  --font-ar: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-en: 'Inter', system-ui, sans-serif;
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.88rem;
+  --fs-base: 1rem;
+  --fs-md: 1.12rem;
+  --fs-lg: 1.4rem;
+  --fs-xl: 1.9rem;
+  --fs-2xl: 2.6rem;
+
+  /* Spacing / layout */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.85rem;
+  --space-4: 1.25rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --sidebar-w: 288px;
+  --maxw: 900px;
+  --shadow-sm: 0 1px 3px rgba(58, 47, 30, 0.08);
+  --shadow: 0 6px 24px rgba(58, 47, 30, 0.10);
+  --shadow-lg: 0 18px 48px rgba(40, 32, 20, 0.16);
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Brand (the club logo colour) — constant across themes */
+  --brand: #a5855b;
+  --brand-ink: #ffffff;
+}
+
+/* ---- Light theme (default): warm paper ---- */
+:root,
+[data-theme='light'] {
+  --bg: #f7f4ee;
+  --bg-elev: #fffdf9;
+  --bg-elev-2: #f1ebdf;
+  --surface-hover: #ece5d6;
+  --text: #2c2620;
+  --text-soft: #5b5348;
+  --text-muted: #8a8073;
+  --border: #e7ded0;
+  --border-strong: #d5c9b3;
+
+  --accent: #8a6a39;         /* readable camel — links / active */
+  --accent-soft: #f0e7d6;
+  --accent-contrast: #ffffff;
+  --violet: #786aa6;         /* REM — muted */
+  --violet-soft: #ece9f2;
+  --blue: #4c72a4;           /* NREM — muted */
+  --blue-soft: #e7edf4;
+  --warm: #c2883b;           /* wakefulness / day — warm gold */
+  --warm-soft: #f6ecd7;
+  --cool: #56988f;           /* sleep / night — calm teal */
+  --danger: #bd5b4c;         /* muted terracotta */
+  --success: #5f9469;        /* muted sage */
+
+  --chart-grid: #e7ded0;
+  --chart-c: #c2883b;        /* Process-C circadian — gold */
+  --chart-s: #5a6a9c;        /* Process-S sleep pressure — muted indigo */
+}
+
+/* ---- Dark theme: warm night ---- */
+[data-theme='dark'] {
+  --bg: #17140f;
+  --bg-elev: #211d16;
+  --bg-elev-2: #2a251c;
+  --surface-hover: #322c22;
+  --text: #f2ede2;
+  --text-soft: #cabfab;
+  --text-muted: #9a8f7c;
+  --border: #383125;
+  --border-strong: #4d4534;
+
+  --accent: #c6a878;         /* lighter camel on dark */
+  --accent-soft: #322a1c;
+  --accent-contrast: #17140f;
+  --violet: #a99cd2;
+  --violet-soft: #2b2540;
+  --blue: #82a4d2;
+  --blue-soft: #1e2942;
+  --warm: #d8a75d;
+  --warm-soft: #33280f;
+  --cool: #6fb6ac;
+  --danger: #e0847a;
+  --success: #7cc088;
+
+  --chart-grid: #322c22;
+  --chart-c: #d8a75d;
+  --chart-s: #93a2d6;
+}
