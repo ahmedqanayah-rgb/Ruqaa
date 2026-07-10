@@ -24,6 +24,9 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
             aria-label="collapse">
             <span aria-hidden>{collapsed ? '»' : '«'}</span>
           </button>
+          <button className="drawer-close only-mobile" onClick={onClose} aria-label={t(ui.actions.closeMenu)}>
+            <span aria-hidden>✕</span>
+          </button>
 
           <nav className="side-nav">
             <span className="side-heading">{t(ui.labels.browse)}</span>
