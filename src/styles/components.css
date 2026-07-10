@@ -100,6 +100,15 @@
    Main content
    ============================================================ */
 .app-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* Flex text children must be able to shrink below their content so long
+   strings wrap instead of forcing horizontal overflow. */
+.callout > div, .book-info, .person-body, .myth-card, .quiz-card,
+.myth-claim > *, .quiz-opt, .quiz-opt > *, .brand, .brand-text, .nav-lbl,
+.section-nav .btn { min-width: 0; }
+.brand-text strong, .brand-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
+/* figure scroll wrappers never push the page wider than the viewport */
+.figure-body > div, .section-content > figure { max-width: 100%; }
 .page { flex: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: var(--space-5) var(--space-4); }
 .site-footer {
   border-top: 1px solid var(--border); padding: var(--space-4);
@@ -378,8 +387,10 @@
     transform: translateX(-110%); box-shadow: var(--shadow-lg);
     border-inline-end: 1px solid var(--border);
   }
-  html[dir='rtl'] .sidebar { inset-inline-start: auto; inset-inline-end: 0; transform: translateX(110%); }
-  .sidebar.open { transform: translateX(0); }
+  /* RTL: anchored at inline-start (the right edge); only the hide direction flips. */
+  html[dir='rtl'] .sidebar { transform: translateX(110%); }
+  /* .open must beat the dir-specific closed rule (equal-or-higher specificity) */
+  .sidebar.open, html[dir='rtl'] .sidebar.open { transform: translateX(0); }
   .sidebar.collapsed { width: var(--sidebar-w); }
   .sidebar-inner { padding-top: 54px; padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px)); }
   .side-nav { margin-top: 0; }
