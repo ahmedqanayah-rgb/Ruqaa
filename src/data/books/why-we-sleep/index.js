@@ -25,6 +25,13 @@ export const whyWeSleep = {
     'A book proving sleep is the most powerful, cheapest preventive medicine we have — resetting brain, body and emotion every night.'
   ),
   accent: 'var(--accent)',
+  groups: [
+    { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'summary'] },
+    { title: L('علم النوم', 'The science of sleep'), slugs: ['mechanism', 'rem', 'nrem', 'memory'] },
+    { title: L('النوم وحياتك', 'Sleep and your life'), slugs: ['health', 'lifespan', 'dreams', 'animal'] },
+    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['assessment', 'studies'] },
+    { title: L('مراجع النادي', 'Club reference'), slugs: ['characters', 'shocking', 'myths', 'discussion'] },
+  ],
   sections: [
     author,
     summary,

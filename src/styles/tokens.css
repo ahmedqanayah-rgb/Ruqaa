@@ -42,6 +42,9 @@
 /* ---- Light theme (default): warm paper ---- */
 :root,
 [data-theme='light'] {
+  /* "only light" opts out of Android Chrome's Auto Dark Theme, which would
+     otherwise force-darken the light theme on phones in system dark mode. */
+  color-scheme: only light;
   --bg: #f7f4ee;
   --bg-elev: #fffdf9;
   --bg-elev-2: #f1ebdf;
@@ -72,6 +75,7 @@
 
 /* ---- Dark theme: warm night ---- */
 [data-theme='dark'] {
+  color-scheme: dark;
   --bg: #17140f;
   --bg-elev: #211d16;
   --bg-elev-2: #2a251c;

@@ -3,25 +3,32 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import RichText from './RichText.jsx'
 
+// Two orderings: the book's order, or "most interesting/important first".
+function orderStudies(studies, interestOrder, mode) {
+  if (mode === 'book' || !interestOrder.length) return studies
+  const rank = new Map(interestOrder.map((id, k) => [id, k]))
+  return [...studies].sort((a, b) => (rank.get(a.id) ?? 1e6) - (rank.get(b.id) ?? 1e6))
+}
+
 export default function StudiesQuiz({ studies, interestOrder = [] }) {
   const { t } = useApp()
   const [i, setI] = useState(0)
   const [picked, setPicked] = useState(null)   // index chosen for current study
   const [revealed, setRevealed] = useState(false)
-  const [answers, setAnswers] = useState({})   // id -> correct?
+  const [answers, setAnswers] = useState({})   // id -> picked option index
   const [sort, setSort] = useState('book')     // 'book' | 'interest'
 
-  // Two orderings: the book's order, or "most interesting/important first".
-  const ordered = useMemo(() => {
-    if (sort === 'book' || !interestOrder.length) return studies
-    const rank = new Map(interestOrder.map((id, k) => [id, k]))
-    return [...studies].sort(
-      (a, b) => (rank.has(a.id) ? rank.get(a.id) : 1e6) - (rank.has(b.id) ? rank.get(b.id) : 1e6)
-    )
-  }, [sort, studies, interestOrder])
+  const ordered = useMemo(
+    () => orderStudies(studies, interestOrder, sort),
+    [sort, studies, interestOrder]
+  )
 
   const study = ordered[i]
-  const score = useMemo(() => Object.values(answers).filter(Boolean).length, [answers])
+  const isCorrectAnswer = (s) => answers[s.id] === s.correct
+  const score = useMemo(
+    () => ordered.filter((s) => answers[s.id] != null && isCorrectAnswer(s)).length,
+    [answers, ordered]
+  )
   const answeredCount = Object.keys(answers).length
 
   const choose = (idx) => {
@@ -31,23 +38,22 @@ export default function StudiesQuiz({ studies, interestOrder = [] }) {
   const reveal = () => {
     if (picked == null) return
     setRevealed(true)
-    setAnswers((a) => ({ ...a, [study.id]: picked === study.correct }))
+    setAnswers((a) => ({ ...a, [study.id]: picked }))
   }
-  const go = (delta) => {
-    const ni = Math.min(ordered.length - 1, Math.max(0, i + delta))
+  // Restore the stored answer when landing on an already-answered study.
+  const showStudy = (ni) => {
     setI(ni)
-    setPicked(null)
+    setPicked(answers[ordered[ni].id] ?? null)
     setRevealed(answers[ordered[ni].id] != null)
   }
+  const go = (delta) => showStudy(Math.min(ordered.length - 1, Math.max(0, i + delta)))
   const changeSort = (mode) => {
     if (mode === sort) return
+    const first = orderStudies(studies, interestOrder, mode)[0]
     setSort(mode)
     setI(0)
-    setPicked(null)
-    setRevealed(answers[(mode === 'book' ? studies : [...studies].sort((a, b) => {
-      const rank = new Map(interestOrder.map((id, k) => [id, k]))
-      return (rank.has(a.id) ? rank.get(a.id) : 1e6) - (rank.has(b.id) ? rank.get(b.id) : 1e6)
-    }))[0]?.id] != null)
+    setPicked(answers[first?.id] ?? null)
+    setRevealed(answers[first?.id] != null)
   }
 
   return (
@@ -73,8 +79,8 @@ export default function StudiesQuiz({ studies, interestOrder = [] }) {
 
       <div className="quiz-dots">
         {ordered.map((s, k) => (
-          <button key={s.id} className={`quiz-dot ${k === i ? 'current' : ''} ${answers[s.id] === true ? 'ok' : answers[s.id] === false ? 'no' : ''}`}
-            onClick={() => { setI(k); setPicked(null); setRevealed(answers[s.id] != null) }}
+          <button key={s.id} className={`quiz-dot ${k === i ? 'current' : ''} ${answers[s.id] == null ? '' : isCorrectAnswer(s) ? 'ok' : 'no'}`}
+            onClick={() => showStudy(k)}
             aria-label={`${k + 1}`} />
         ))}
       </div>

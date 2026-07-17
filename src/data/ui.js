@@ -38,6 +38,8 @@ export const ui = {
     browse: { ar: 'التصفّح', en: 'Browse' },
     booksList: { ar: 'الكتب', en: 'Books' },
     currentBook: { ar: 'الكتاب الحالي', en: 'Current book' },
+    ourBooks: { ar: 'كتب النادي', en: 'Our books' },
+    allBooks: { ar: 'كلّ الكتب', en: 'All books' },
     sections: { ar: 'أقسام الكتاب', en: 'Book sections' },
     time: { ar: 'الوقت', en: 'Time' },
     hover: { ar: 'مرّر المؤشّر لعرض القيم', en: 'Hover to see values' },

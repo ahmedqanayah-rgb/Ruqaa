@@ -5,5 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: './',
-  server: { open: true }
+  // PORT is set by the Claude Code preview harness when auto-assigning a port.
+  server: { open: true, port: Number(process.env.PORT) || 5273 }
 })

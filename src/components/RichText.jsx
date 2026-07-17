@@ -53,8 +53,8 @@ function renderRuns(str, lang) {
   })
 }
 
-export default function RichText({ value, as: Tag = 'span' }) {
+export default function RichText({ value, as: Tag = 'span', className }) {
   const { t, lang } = useApp()
   const str = t(value)
-  return <Tag>{renderRuns(str, lang)}</Tag>
+  return <Tag className={className}>{renderRuns(str, lang)}</Tag>
 }

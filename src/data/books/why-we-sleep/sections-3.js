@@ -255,7 +255,7 @@ export const characters = {
       { img: port('allan-rechtschaffen.jpg'), name: L('آلان رِختشافن', 'Allan Rechtschaffen'), tag: L('صاحب تجربة الفئران', 'The rat-deprivation experiment'),
         story: L('الباحث الذي أجرى في جامعة شيكاغو (١٩٨٣) واحدةً من أكثر التجارب مأساويةً وإثارةً للجدل الأخلاقي: حرمان الفئران من النوم كلياً، فماتت جميعها خلال نحو ١٥ يوماً (بنفس سرعة الموت جوعاً)، وتبيّن أن سبب موتها **إنتانٌ دموي** من بكتيريا أمعائها. (آخر تجربةٍ من نوعها).',
                  'The researcher who ran, at the University of Chicago (1983), one of the most tragic and ethically controversial experiments: totally depriving rats of sleep, so that they all died within about 15 days (as fast as death by starvation), the cause turning out to be **septicaemia** from their own gut bacteria. (The last experiment of its kind.)') },
-      { img: port('randy-gardner.jpg'), name: L('راندي غاردنر', 'Randy Gardner'), tag: L('سياق قياسي للسهر', 'The record for staying awake'),
+      { img: port('randy-gardner.jpg'), name: L('راندي غاردنر', 'Randy Gardner'), tag: L('الرقم القياسي في السهر', 'The record for staying awake'),
         story: L('يشير الكتاب إلى تاريخ محاولات تسجيل أرقامٍ قياسية في البقاء مستيقظاً — وهي محاولاتٌ خطيرة توقّفت موسوعة غينيس عن الاعتراف بها في الثمانينيات لخطرها على الصحّة. (تبقى قصص السهر القياسي شاهداً على حدود احتمال الجسم البشري لقلّة النوم).',
                  'The book points to the history of attempts to set records for staying awake — dangerous attempts that the Guinness Book of Records stopped recognizing in the 1980s because of their danger to health. (The record-sleeplessness stories remain a testament to the limits of the human body’s tolerance for lack of sleep.)') },
     ] },

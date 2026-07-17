@@ -1,8 +1,26 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import RichText from './RichText.jsx'
 import { Figure } from './figures/registry.jsx'
+
+/* Internal navigation cards — used e.g. to cross-link between books. */
+function LinkCards({ block }) {
+  return (
+    <nav className="link-cards">
+      {block.title && <strong className="link-cards-title"><RichText value={block.title} /></strong>}
+      <div className="section-cards">
+        {block.links.map((l, i) => (
+          <Link key={i} to={l.to} className="section-card card">
+            <span className="section-card-icon" aria-hidden>{l.icon || '↗'}</span>
+            <span className="section-card-title"><RichText value={l.label} /></span>
+          </Link>
+        ))}
+      </div>
+    </nav>
+  )
+}
 
 function MythCard({ block }) {
   const { t } = useApp()
@@ -84,6 +102,34 @@ function PeopleGrid({ people }) {
   )
 }
 
+/* People organised in titled groups, with filter chips ("all" + one per group).
+   Used by character galleries large enough to need filtering. */
+function PeopleGroups({ block }) {
+  const { t } = useApp()
+  const [sel, setSel] = useState(-1) // -1 = all
+  const groups = sel < 0 ? block.groups : [block.groups[sel]]
+  return (
+    <div className="people-groups">
+      <div className="people-filter" role="tablist" aria-label={t({ ar: 'تصفية الشخصيات', en: 'Filter people' })}>
+        <button className={`people-chip ${sel < 0 ? 'active' : ''}`} onClick={() => setSel(-1)}>
+          {t({ ar: 'الكلّ', en: 'All' })} ({block.groups.reduce((n, g) => n + g.people.length, 0)})
+        </button>
+        {block.groups.map((g, i) => (
+          <button key={i} className={`people-chip ${sel === i ? 'active' : ''}`} onClick={() => setSel(i)}>
+            {t(g.title)} ({g.people.length})
+          </button>
+        ))}
+      </div>
+      {groups.map((g, i) => (
+        <section key={t(g.title)} className="people-group fade-in">
+          <RichText as="h3" value={g.title} />
+          <PeopleGrid people={g.people} />
+        </section>
+      ))}
+    </div>
+  )
+}
+
 export default function ContentBlocks({ blocks }) {
   return (
     <>
@@ -120,6 +166,8 @@ export default function ContentBlocks({ blocks }) {
               </div>
             )
           case 'people': return <PeopleGrid key={i} people={b.people} />
+          case 'peoplegroups': return <PeopleGroups key={i} block={b} />
+          case 'linkcards': return <LinkCards key={i} block={b} />
           case 'myth': return <MythCard key={i} block={b} />
           default: return null
         }
