@@ -8,9 +8,7 @@ export const ui = {
   nav: {
     home: { ar: 'الرئيسية', en: 'Home' },
     books: { ar: 'الكتب', en: 'Books' },
-    assessment: { ar: 'تقييم النوم', en: 'Sleep Assessment' },
     about: { ar: 'عن النادي', en: 'About the Club' },
-    book: { ar: 'كتاب: لماذا ننام', en: 'Book: Why We Sleep' },
   },
 
   actions: {
@@ -56,8 +54,8 @@ export const ui = {
 
   footer: {
     built: {
-      ar: 'موقع نادي القراءة — مبنيّ على محتوى كتاب «لماذا ننام» لماثيو ووكر.',
-      en: 'Reading-club site — built on the content of Matthew Walker’s “Why We Sleep”.',
+      ar: 'ملخّصاتٌ من صنع أعضاء نادي «رُقعة» للقراءة، لأغراض النقاش — غير مرتبطة بالمؤلّفين أو دور النشر.',
+      en: 'Fan-made summaries by the Ruqʿa reading club, for discussion — not affiliated with the authors or publishers.',
     },
     note: {
       ar: 'المحتوى تعليمي مرجعي وليس نصيحة طبية.',

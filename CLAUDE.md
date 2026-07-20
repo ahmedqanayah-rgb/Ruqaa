@@ -14,7 +14,7 @@ npm run preview   # serve the built dist/ locally
 
 There is **no test runner and no linter configured** — don't reference `npm test`/`npm lint`.
 Verify changes by running the app (`npm run dev`) and checking the affected section in the
-browser. `.claude/launch.json` defines a preview server named `why-we-sleep`.
+browser. `.claude/launch.json` defines a preview server named `ruqaa`.
 
 **Windows/PowerShell gotcha:** Node was installed via winget and may not be on PATH in a
 fresh PowerShell. If `npm` isn't found, refresh PATH first:

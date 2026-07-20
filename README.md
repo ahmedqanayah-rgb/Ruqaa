@@ -1,8 +1,12 @@
-# Reading Club — Why We Sleep / نادي القراءة — لماذا ننام
+# Ruqʿa — Reading Club / رُقعة — نادي القراءة
 
 A bilingual (Arabic RTL / English LTR), responsive React site for a book‑reading
-club. The first book is Matthew Walker's **Why We Sleep / لماذا ننام**. Content is
-data‑driven so more books can be added later as new entries.
+club. Books covered so far: **Why We Sleep / لماذا ننام** (Matthew Walker) and
+**Stolen Focus / التركيز المسروق** (Johann Hari). Content is data‑driven so more
+books can be added as new entries.
+
+The summaries are made by club members for discussion and are not affiliated with
+the authors or publishers.
 
 ## Run it
 
