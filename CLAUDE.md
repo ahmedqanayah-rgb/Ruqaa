@@ -87,10 +87,20 @@ content you almost always edit data, not JSX.
 - `README.md` is a good complement but its "Project structure" list predates the per-book
   `data/books/<slug>/` reorganization — trust the actual tree over it.
 
-## Current project state (last big update: 2026-07-16)
+## Current project state (last big update: 2026-07-20)
 
+- **The project is Ruqʿa / رُقعة** (`ruqaa-reading-club`) — a multi-book club site, not a
+  single-book site. Keep site chrome book-agnostic. The footer carries a required
+  disclaimer (fan-made summaries, not affiliated with authors/publishers) — don't remove
+  it. The workspace folder is still named `Sleep\` for historical reasons.
+- **Git: the only repo is this `app/` folder** → github.com/ahmedqanayah-rgb/Ruqaa
+  (**public**). The parent `Sleep/` is intentionally not a repo. **Never commit the book
+  reference material** (`Sleep/Why we Sleep/`, `Sleep/Stolen focus/` — epub, raw book
+  text, figure PDFs); history was rewritten on 2026-07-20 to purge exactly those.
 - **Two books are live**: `why-we-sleep` (16 sections, 122-study quiz) and `stolen-focus`
   (20 sections, 61-study quiz, built per `PLAN-stolen-focus.md` — kept for reference).
+  Stolen Focus in Arabic is **«تركيزنا المسلوب»** by **«يوهان هاري»** (the published
+  Dar Al-Tanweer edition) — not «التركيز المسروق»/«جوهان هاري».
 - `BookSection.jsx` dispatches a third kind, **`'focus-lab'`** → `components/FocusLab.jsx`
   (7 games: Stroop, task-switching with pure/mixed blocks, SART, visual search, 2-back,
   adaptive digit span, distracted reading — all in-memory, RT via `performance.now()`,
