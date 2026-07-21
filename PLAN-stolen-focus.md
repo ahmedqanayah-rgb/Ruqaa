@@ -118,8 +118,8 @@ the book gives a range, chart the range, don't invent precision.
 ## 5. Photos needed (put in `app/public/images/characters/` unless noted)
 
 **Staging folder (ALL PHOTOS ALREADY DELIVERED, verified 2026-07-14):**
-`C:\Users\aq\Desktop\Sleep\Stolen focus\Photos\` holds every photo below plus both covers;
-the EPUB is at `C:\Users\aq\Desktop\Sleep\Stolen focus\Stolen Focus - Johann Hari.epub`.
+`C:\Users\aq\Desktop\Ruqaa\Stolen focus\Photos\` holds every photo below plus both covers;
+the EPUB is at `C:\Users\aq\Desktop\Ruqaa\Stolen focus\Stolen Focus - Johann Hari.epub`.
 Never move/delete the originals.
 
 **Import step (do in Phase 1):** don't copy raw. Write a one-off `scripts/import-stolen-focus-photos.mjs`

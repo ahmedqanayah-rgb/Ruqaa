@@ -9,7 +9,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const SRC = 'C:/Users/aq/Desktop/Sleep/Stolen focus/Photos'
+const SRC = 'C:/Users/aq/Desktop/Ruqaa/Stolen focus/Photos'
 const PUB = path.resolve(__dirname, '../public/images')
 const CHARS = path.join(PUB, 'characters')
 fs.mkdirSync(CHARS, { recursive: true })

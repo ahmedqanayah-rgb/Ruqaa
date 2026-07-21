@@ -2,7 +2,7 @@
 
 Bilingual (Arabic RTL / English LTR) reading-club site built with Vite + React 18. No
 backend, no build step beyond Vite. The git repo root and all commands live in this
-`app/` directory (the repo sits under `Sleep/app`, not `Sleep/`).
+`app/` directory (the repo sits under `Ruqaa/app`, not `Ruqaa/`).
 
 ## Commands
 
@@ -92,10 +92,11 @@ content you almost always edit data, not JSX.
 - **The project is Ruqʿa / رُقعة** (`ruqaa-reading-club`) — a multi-book club site, not a
   single-book site. Keep site chrome book-agnostic. The footer carries a required
   disclaimer (fan-made summaries, not affiliated with authors/publishers) — don't remove
-  it. The workspace folder is still named `Sleep\` for historical reasons.
+  it. The workspace folder is `C:\Users\aq\Desktop\Ruqaa\` (renamed from `Sleep\` on
+  2026-07-20).
 - **Git: the only repo is this `app/` folder** → github.com/ahmedqanayah-rgb/Ruqaa
-  (**public**). The parent `Sleep/` is intentionally not a repo. **Never commit the book
-  reference material** (`Sleep/Why we Sleep/`, `Sleep/Stolen focus/` — epub, raw book
+  (**public**). The parent `Ruqaa/` is intentionally not a repo. **Never commit the book
+  reference material** (`Ruqaa/Why we Sleep/`, `Ruqaa/Stolen focus/` — epub, raw book
   text, figure PDFs); history was rewritten on 2026-07-20 to purge exactly those.
 - **Two books are live**: `why-we-sleep` (16 sections, 122-study quiz) and `stolen-focus`
   (20 sections, 61-study quiz, built per `PLAN-stolen-focus.md` — kept for reference).
@@ -123,5 +124,5 @@ content you almost always edit data, not JSX.
   used by the stolen-focus characters section; the plain `people` block still works.
 - **Paused side-project (do NOT mention on the member-facing site — it's a surprise):**
   a homepage intro video. All work, assets, and a full resume guide are stashed OUTSIDE
-  the repo in `C:\Users\aq\Desktop\Sleep\hero-video-wip\RESUME.md`. Read that file when
+  the repo in `C:\Users\aq\Desktop\Ruqaa\hero-video-wip\RESUME.md`. Read that file when
   the user asks to continue "the video".
