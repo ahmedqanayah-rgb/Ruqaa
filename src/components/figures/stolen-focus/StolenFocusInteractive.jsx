@@ -226,7 +226,17 @@ const ADHD_PRESETS = [
 export function SfAdhdThreshold() {
   const { t } = useApp()
   const [z, setZ] = useState(1.2) // threshold in SD above the mean
+  const [hovering, setHovering] = useState(false)
   const pct = Math.round(normalRightTail(z) * 100)
+
+  // Sweeping the curve moves the line, same as SfFlowChannel's draggable plane.
+  // Pointer x → z, clamped to the slider's own range so the two agree.
+  const setFromPointer = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const px = ((e.clientX - rect.left) / rect.width) * 300
+    const zz = ((px - 20) / 260) * 6 - 3
+    setZ(Math.max(-0.5, Math.min(2.5, Math.round(zz * 20) / 20)))
+  }
   // bell curve points 0..300 (z from -3..3)
   const pts = []
   for (let i = 0; i <= 60; i++) {
@@ -239,10 +249,13 @@ export function SfAdhdThreshold() {
   return (
     <FigureFrame number={12}
       title={L('أين نرسم الخطّ؟ (نقاش فرط الحركة)', 'Where do we draw the line? (the ADHD debate)')}
-      caption={L('التململ والحركة طيفٌ متّصل في أيّ مجموعة بشرية. كم منهم «مصاب بفرط الحركة»؟ يعتمد على مكان خطّ التشخيص. حرّك الخطّ — أو انقر نقطة مرجعية حقيقية — لترى كيف تتغيّر النسبة: هذا جوهر نقاش نيغ والتميمي.',
-                 'Restlessness is a smooth spectrum in any population. How many “have ADHD”? It depends where the diagnostic line sits. Move the line — or tap a real-world reference — and watch the share change: the heart of the Nigg–Timimi debate.')}>
+      caption={L('التململ والحركة طيفٌ متّصل في أيّ مجموعة بشرية. كم منهم «مصاب بفرط الحركة»؟ يعتمد على مكان خطّ التشخيص. **مرّر المؤشّر عبر المنحنى** — أو استخدم المنزلق أو انقر نقطة مرجعية حقيقية — لترى كيف تتغيّر النسبة: هذا جوهر نقاش نيغ والتميمي.',
+                 'Restlessness is a smooth spectrum in any population. How many “have ADHD”? It depends where the diagnostic line sits. **Sweep the pointer across the curve** — or use the slider, or tap a real-world reference — and watch the share change: the heart of the Nigg–Timimi debate.')}>
       <div className="sf-adhd">
         <svg viewBox="0 0 300 170" className="sf-adhd-svg" role="img"
+          onPointerMove={(e) => { setHovering(true); setFromPointer(e) }}
+          onPointerDown={setFromPointer}
+          onPointerLeave={() => setHovering(false)}
           aria-label={t({ ar: `${pct}٪ يقعون فوق خطّ التشخيص`, en: `${pct}% fall above the diagnostic line` })}>
           <defs>
             <clipPath id="sfBell">
@@ -260,13 +273,14 @@ export function SfAdhdThreshold() {
           <line x1={thX} y1="20" x2={thX} y2="150" stroke="var(--danger)" strokeWidth="2.5" />
           <text x={thX} y="15" textAnchor="middle" fontSize="12" fill="var(--danger)">{t(L('خطّ التشخيص', 'diagnostic line'))}</text>
         </svg>
-        <div className="sf-adhd-readout">
+        <div className="sf-adhd-readout" aria-live="polite">
           {t({ ar: 'المُشخَّصون:', en: 'Diagnosed:' })} <b>{t({ ar: `${pct}٪`, en: `${pct}%` })}</b>
+          {hovering && <span className="sf-slider-hint"> · {t(L('تتبع المؤشّر', 'following the pointer'))}</span>}
         </div>
         <label className="sf-slider">
           <span className="sf-slider-lbl">{t(L('حرّك خطّ التشخيص', 'Move the diagnostic line'))}</span>
           <input type="range" min="-0.5" max="2.5" step="0.05" value={z}
-            onChange={(e) => setZ(+e.target.value)} />
+            onChange={(e) => { setHovering(false); setZ(+e.target.value) }} />
         </label>
         <div className="sf-presets" role="group" aria-label={t(L('نقاط مرجعية', 'Reference points'))}>
           {ADHD_PRESETS.map((p) => (

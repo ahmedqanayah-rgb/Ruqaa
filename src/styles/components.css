@@ -418,6 +418,35 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .sf-slider-lbl b { color: var(--accent); font-variant-numeric: tabular-nums; }
 /* height enlarges the touch target on phones without changing the look */
 .sf-slider input[type='range'] { width: 100%; height: 30px; accent-color: var(--accent); touch-action: pan-x; }
+/* shown while the pointer is driving the figure instead of the slider */
+.sf-slider-hint { color: var(--text-muted); font-weight: 600; font-size: var(--fs-xs); }
+
+/* Chart hover tooltip: the value leads and the label follows (the legend's
+   hierarchy inverted — here the reader has the series and wants the number).
+   Series are keyed by a short stroke rather than a filled box, which at this
+   density would be data-weight ink doing a label's job. */
+.sf-tip { max-width: 260px; }
+.sf-tip-head { font-size: var(--fs-xs); color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
+.sf-tip-row { display: flex; align-items: baseline; gap: 8px; }
+.sf-tip-row + .sf-tip-row { margin-top: 4px; }
+.sf-tip-key { flex: none; width: 14px; height: 3px; border-radius: 2px; transform: translateY(-3px); }
+.sf-tip-val { color: var(--text); font-variant-numeric: tabular-nums; }
+.sf-tip-lbl { color: var(--text-soft); font-size: var(--fs-xs); min-width: 0; }
+/* Stacked variant: the emphasized half is a sentence, not a number, so it drops
+   to its own full-width line under the key + series name instead of trailing
+   them and wrapping raggedly. */
+.sf-tip--stacked .sf-tip-row { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; row-gap: 2px; align-items: center; }
+.sf-tip--stacked .sf-tip-row + .sf-tip-row { margin-top: 8px; }
+.sf-tip--stacked .sf-tip-key { grid-column: 1; grid-row: 1; transform: none; }
+.sf-tip--stacked .sf-tip-lbl { grid-column: 2; grid-row: 1; }
+.sf-tip--stacked .sf-tip-val { grid-column: 1 / -1; grid-row: 2; font-weight: 600; line-height: 1.45; }
+.sf-tip-note {
+  margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--border);
+  font-size: var(--fs-xs); color: var(--text-soft); line-height: 1.5;
+}
+
+/* Plots that respond to a pointer sweep advertise it with the cursor. */
+.sf-adhd-svg { cursor: crosshair; touch-action: none; }
 
 /* Preset chips shared by several figures (switch cost, ADHD line) */
 .sf-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--space-2); }
