@@ -103,7 +103,9 @@ const enrich = (s) => ({ ...s, fam: FAM[s.slug], quick: QUICK[s.slug] })
 export const stolenFocus = {
   id: 'stolen-focus',
   title: L('تركيزنا المسلوب', 'Stolen Focus'),
-  subtitle: L('لماذا لا تستطيع التركيز — وكيف تستعيد قدرتك على التفكير العميق',
+  // Arabic subtitle follows the published Dar Al-Tanweer edition; the English is the
+  // book's own subtitle. The two deliberately do not mirror each other.
+  subtitle: L('لماذا صرنا نعاني مشكلة قلة الانتباه؟',
               'Why You Can’t Pay Attention — and How to Think Deeply Again'),
   author: L('يوهان هاري', 'Johann Hari'),
   authorPhoto: './images/characters/johann-hari.jpg',
