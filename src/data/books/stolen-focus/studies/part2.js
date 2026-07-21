@@ -76,7 +76,7 @@ export default [
   {
     id: 'sf21', chapter: L('السبب ٧ · التفاؤل القاسي', 'Cause 7 · Cruel optimism'),
     title: L('تجربة هاري: ثلاثة أشهر بلا إنترنت', 'Hari’s experiment: three months offline'),
-    researcher: L('جوهان هاري (تجربة ذاتية)', 'Johann Hari (self-experiment)'),
+    researcher: L('يوهان هاري (تجربة ذاتية)', 'Johann Hari (self-experiment)'),
     method: L(
       'انتقل هاري إلى بروفينستاون وعاش ثلاثة أشهر بلا هاتفٍ ذكيّ ولا إنترنت ليختبر أثر ذلك على تركيزه وقراءته. ثم راقب ما يحدث حين يعود إلى حياته القديمة.',
       'Hari moved to Provincetown and lived three months with no smartphone and no internet to test the effect on his focus and reading. He then watched what happened when he returned to his old life.'),

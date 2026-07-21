@@ -13,7 +13,7 @@ export const summary = {
   blocks: [
     { type: 'h', text: L('القصّة الافتتاحية: غريسلاند', 'The opening story: Graceland') },
     { type: 'p', text: L(
-      'يفتتح **جوهان هاري** الكتاب بقصّةٍ شخصية: وعدَ ابنَ عمّته «آدم» — المهووس بـ**إلفيس بريسلي (Elvis Presley)** — بأن يصطحبه يوماً إلى **غريسلاند (Graceland)**، قصر إلفيس. وبعد عشر سنوات صار آدم شابّاً «ضائعاً»، يقضي معظم يقظته متنقّلاً بين الشاشات، عاجزاً عن البقاء مع أيّ موضوعٍ دقائق. وحين ذهبا أخيراً إلى غريسلاند، وجدا الزوّار جميعاً يحدّقون في أجهزة **آيباد (iPad)** تعرض الغرف — بدل النظر إلى الغرف نفسها المحيطة بهم.',
+      'يفتتح **يوهان هاري** الكتاب بقصّةٍ شخصية: وعدَ ابنَ عمّته «آدم» — المهووس بـ**إلفيس بريسلي (Elvis Presley)** — بأن يصطحبه يوماً إلى **غريسلاند (Graceland)**، قصر إلفيس. وبعد عشر سنوات صار آدم شابّاً «ضائعاً»، يقضي معظم يقظته متنقّلاً بين الشاشات، عاجزاً عن البقاء مع أيّ موضوعٍ دقائق. وحين ذهبا أخيراً إلى غريسلاند، وجدا الزوّار جميعاً يحدّقون في أجهزة **آيباد (iPad)** تعرض الغرف — بدل النظر إلى الغرف نفسها المحيطة بهم.',
       'Johann Hari opens the book with a personal story: he promised his godson “Adam” — obsessed with **Elvis Presley** — that one day he would take him to **Graceland**, Elvis’s mansion. Ten years later Adam had become a “lost” young man, spending almost all his waking hours flitting between screens, unable to stay with any subject for more than minutes. When they finally went to Graceland, they found every visitor staring into **iPads** displaying the rooms — instead of looking at the actual rooms around them.'
     ) },
 

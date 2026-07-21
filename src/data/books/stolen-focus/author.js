@@ -7,16 +7,16 @@ export const author = {
   icon: '✍️',
   title: L('عن المؤلّف', 'About the Author'),
   lead: L(
-    'جوهان هاري — صحفيٌّ وكاتبٌ بريطاني، صاحب كتبٍ رائجة عن الإدمان والاكتئاب والانتباه، ومؤلّف «التركيز المسروق».',
+    'يوهان هاري — صحفيٌّ وكاتبٌ بريطاني، صاحب كتبٍ رائجة عن الإدمان والاكتئاب والانتباه، ومؤلّف «تركيزنا المسلوب».',
     'Johann Hari — British journalist and author of bestselling books on addiction, depression and attention, and the author of “Stolen Focus.”'
   ),
   blocks: [
     { type: 'image', src: port('johann-hari.jpg'), wide: true,
-      alt: L('جوهان هاري', 'Johann Hari'),
-      caption: L('الصحفي والكاتب جوهان هاري (Johann Hari).', 'Journalist and author Johann Hari.') },
+      alt: L('يوهان هاري', 'Johann Hari'),
+      caption: L('الصحفي والكاتب يوهان هاري (Johann Hari).', 'Journalist and author Johann Hari.') },
 
     { type: 'p', text: L(
-      '**جوهان هاري (Johann Hari)** كاتبٌ وصحفيٌّ بريطاني وُلد عام **١٩٧٩** لأمٍّ اسكتلندية وأبٍ سويسري، ونشأ بين لندن وسويسرا. درس **العلوم الاجتماعية والسياسية** في **كلّية كينغز بجامعة كامبريدج (King’s College, Cambridge)**. اشتهر بأسلوبٍ سرديّ يمزج القصص الإنسانية بمقابلاتٍ مع كبار الباحثين، وبكتبٍ تحوّلت إلى الأكثر مبيعاً وحاضراتِ **TED** شاهدها عشرات الملايين.',
+      '**يوهان هاري (Johann Hari)** كاتبٌ وصحفيٌّ بريطاني وُلد عام **١٩٧٩** لأمٍّ اسكتلندية وأبٍ سويسري، ونشأ بين لندن وسويسرا. درس **العلوم الاجتماعية والسياسية** في **كلّية كينغز بجامعة كامبريدج (King’s College, Cambridge)**. اشتهر بأسلوبٍ سرديّ يمزج القصص الإنسانية بمقابلاتٍ مع كبار الباحثين، وبكتبٍ تحوّلت إلى الأكثر مبيعاً وحاضراتِ **TED** شاهدها عشرات الملايين.',
       '**Johann Hari** is a British writer and journalist born in **1979** to a Scottish mother and Swiss father, raised between London and Switzerland. He studied **Social and Political Sciences** at **King’s College, Cambridge**. He is known for a narrative style that braids human stories with interviews of leading researchers, and for bestselling books and **TED talks** watched by tens of millions.'
     ) },
 
@@ -42,7 +42,7 @@ export const author = {
         '**“Chasing the Scream”** (2015) on the war on drugs and the roots of addiction — the source of his famous TED talk, “Everything you think you know about addiction is wrong.”'),
       L('**«اتصالات مفقودة» (Lost Connections)** (٢٠١٨) يجادل بأن للاكتئاب والقلق أسباباً اجتماعية لا كيميائية فحسب.',
         '**“Lost Connections”** (2018), arguing that depression and anxiety have social causes, not only chemical ones.'),
-      L('**«التركيز المسروق» (Stolen Focus)** (٢٠٢٢) — موضوع هذا الموقع: لماذا انهار انتباهنا، وكيف نستعيده.',
+      L('**«تركيزنا المسلوب» (Stolen Focus)** (٢٠٢٢) — موضوع هذا الموقع: لماذا انهار انتباهنا، وكيف نستعيده.',
         '**“Stolen Focus”** (2022) — the subject of this site: why our attention collapsed, and how to reclaim it.'),
     ] },
 

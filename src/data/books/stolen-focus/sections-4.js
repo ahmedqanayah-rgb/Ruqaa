@@ -272,7 +272,7 @@ export const discussion = {
         'If we chose one collective “rebellion” to begin with (right to disconnect, a shorter week, freedom to play…), which would it be?'),
     ] },
     { type: 'callout', variant: 'key', title: L('كتابان، حجّةٌ واحدة', 'Two books, one argument'), text: L(
-      'يلتقي «التركيز المسروق» مع «لماذا ننام» في فكرةٍ جوهرية: مشكلاتنا الصحّية والذهنية الكبرى ليست فشلاً فردياً بل نتاج أنظمةٍ وبيئاتٍ يمكن تغييرها. النوم والانتباه كلاهما ضحيّةٌ لثقافة السرعة والإنهاك — وكلاهما يُستعاد بقرارٍ فرديّ وإصلاحٍ جماعيّ معاً.',
+      'يلتقي «تركيزنا المسلوب» مع «لماذا ننام» في فكرةٍ جوهرية: مشكلاتنا الصحّية والذهنية الكبرى ليست فشلاً فردياً بل نتاج أنظمةٍ وبيئاتٍ يمكن تغييرها. النوم والانتباه كلاهما ضحيّةٌ لثقافة السرعة والإنهاك — وكلاهما يُستعاد بقرارٍ فرديّ وإصلاحٍ جماعيّ معاً.',
       'Stolen Focus meets Why We Sleep in one core idea: our biggest health and mental problems are not individual failings but the product of systems and environments we can change. Sleep and attention are both casualties of a culture of speed and exhaustion — and both are reclaimed by individual choice and collective reform together.'
     ) },
     { type: 'linkcards', title: L('جسور بين الكتابين', 'Bridges between the books'), links: [

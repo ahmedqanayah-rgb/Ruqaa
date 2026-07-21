@@ -426,7 +426,7 @@ export default [
   {
     id: 'sf60', chapter: L('السبب ٧ · التفاؤل القاسي', 'Cause 7 · Cruel optimism'),
     title: L('ماذا عاد إلى هاري في عزلته؟', 'What returned to Hari in his retreat?'),
-    researcher: L('جوهان هاري (تجربة ذاتية)', 'Johann Hari (self-experiment)'),
+    researcher: L('يوهان هاري (تجربة ذاتية)', 'Johann Hari (self-experiment)'),
     method: L(
       'راقب هاري خلال أشهره الثلاثة بلا إنترنت ما الذي يعود إليه من قدراتٍ فقدها. تتبّع بوجهٍ خاصّ قدرته على القراءة الطويلة والانغماس في كتاب.',
       'During his three internet-free months, Hari watched which lost capacities returned to him. He tracked in particular his ability to read at length and lose himself in a book.'),

@@ -102,10 +102,10 @@ const enrich = (s) => ({ ...s, fam: FAM[s.slug], quick: QUICK[s.slug] })
 
 export const stolenFocus = {
   id: 'stolen-focus',
-  title: L('التركيز المسروق', 'Stolen Focus'),
+  title: L('تركيزنا المسلوب', 'Stolen Focus'),
   subtitle: L('لماذا لا تستطيع التركيز — وكيف تستعيد قدرتك على التفكير العميق',
               'Why You Can’t Pay Attention — and How to Think Deeply Again'),
-  author: L('جوهان هاري', 'Johann Hari'),
+  author: L('يوهان هاري', 'Johann Hari'),
   authorPhoto: './images/characters/johann-hari.jpg',
   cover: L('./images/stolen-focus-cover-ar.jpg', './images/stolen-focus-cover-en.jpg'),
   blurb: L(

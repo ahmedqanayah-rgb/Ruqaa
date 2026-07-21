@@ -2,7 +2,7 @@
 
 A bilingual (Arabic RTL / English LTR), responsive React site for a book‑reading
 club. Books covered so far: **Why We Sleep / لماذا ننام** (Matthew Walker) and
-**Stolen Focus / التركيز المسروق** (Johann Hari). Content is data‑driven so more
+**Stolen Focus / تركيزنا المسلوب** (Johann Hari). Content is data‑driven so more
 books can be added as new entries.
 
 The summaries are made by club members for discussion and are not affiliated with
