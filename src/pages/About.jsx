@@ -1,48 +1,171 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
+import { ui } from '../data/ui.js'
+import { books, getBook } from '../data/books.js'
+import { club } from '../data/club.js'
+
+const L = (ar, en) => ({ ar, en })
+
+/* Totals across every book, so the stats row never goes stale as books land. */
+function clubStats() {
+  let sections = 0, studies = 0, interactives = 0
+  books.forEach((b) => {
+    b.sections.forEach((s) => {
+      sections += 1
+      if (s.studies) studies += s.studies.length
+      if (s.blocks) interactives += s.blocks.filter((x) => x.type === 'figure').length
+    })
+  })
+  return { books: books.length, sections, studies, interactives }
+}
+
+function Stat({ n, label }) {
+  const { t } = useApp()
+  return (
+    <div className="club-stat">
+      <span className="club-stat-n">{n}</span>
+      <span className="club-stat-l">{t(label)}</span>
+    </div>
+  )
+}
+
+/* Member portrait, falling back to an initial monogram when there is no photo
+   (or it fails to load) — the same tile anyone who'd rather not appear gets. */
+function Avatar({ member }) {
+  const { t } = useApp()
+  const [failed, setFailed] = useState(false)
+  const name = t(member.name)
+  if (!member.photo || failed) {
+    return <span className="club-avatar mono" aria-hidden>{name.trim().charAt(0)}</span>
+  }
+  return (
+    <img className="club-avatar" src={member.photo} alt={name} loading="lazy"
+      onError={() => setFailed(true)} />
+  )
+}
+
+/* One season on the timeline — pulls title/cover from the books registry. */
+function Season({ season }) {
+  const { t } = useApp()
+  const book = getBook(season.bookId)
+  if (!book) return null
+  const statusLabel = {
+    done: L('اكتمل', 'Completed'),
+    current: L('جارٍ الآن', 'Reading now'),
+    planned: L('قادم', 'Upcoming'),
+  }[season.status]
+
+  return (
+    <li className={`season season-${season.status}`}>
+      <div className="season-dot" aria-hidden />
+      <div className="season-body card">
+        <div className="season-cover">
+          <img src={t(book.cover)} alt={t(book.title)}
+            onError={(e) => { e.currentTarget.style.opacity = 0 }} />
+        </div>
+        <div className="season-info">
+          <span className={`pill season-pill ${season.status}`}>{t(statusLabel)}</span>
+          <h3>{t(book.title)}</h3>
+          <span className="season-author">{t(L('تأليف', 'by'))} {t(book.author)}</span>
+          {(season.start || season.end) && (
+            <p className="season-dates">
+              📅 {t(season.start)}{season.end ? ` — ${t(season.end)}` : ''}
+            </p>
+          )}
+          {!season.start && (
+            <p className="season-dates muted">
+              📅 {t(L('المواعيد تُعلَن قريباً', 'Dates to be announced'))}
+            </p>
+          )}
+          {season.note && <p className="season-note">{t(season.note)}</p>}
+          <Link className="season-open" to={`/book/${book.id}`}>
+            {t(ui.actions.openBook)} →
+          </Link>
+        </div>
+      </div>
+    </li>
+  )
+}
 
 export default function About() {
   const { t } = useApp()
-  return (
-    <div className="prose-page">
-      <span className="pill">{t({ ar: 'عن نادي القراءة', en: 'About the Reading Club' })}</span>
-      <h1>{t({ ar: 'عن نادي القراءة', en: 'About the Reading Club' })}</h1>
-      <p>
-        {t({
-          ar: 'نادي القراءة مساحةٌ نلتقي فيها لقراءة كتابٍ مهمّ ومناقشته معاً — لا لنجمع المعلومات فحسب، بل لنغيّر بها عاداتنا وحياتنا. نختار كلّ موسمٍ كتاباً، ونعدّ له ملخّصاتٍ وموادَّ تفاعلية تُعرَض في الجلسات وتبقى مرجعاً للأعضاء بعدها.',
-          en: 'The Reading Club is a space where we meet to read and discuss an important book together — not merely to gather information, but to change our habits and lives with it. Each season we choose a book and prepare summaries and interactive materials that are presented in the sessions and remain a reference for members afterward.',
-        })}
-      </p>
+  const stats = clubStats()
 
-      <div className="callout key">
-        <span className="callout-icon" aria-hidden>📅</span>
+  return (
+    <div className="prose-page club-page">
+      <span className="pill">{t(ui.nav.about)}</span>
+      <h1>{t(L('عن نادي «رُقعة»', 'About the Ruqʿa Club'))}</h1>
+      <p className="club-lead">{t(club.intro)}</p>
+
+      <div className="club-stats">
+        <Stat n={stats.books} label={L('كتب', 'books')} />
+        <Stat n={stats.sections} label={L('قسماً', 'sections')} />
+        <Stat n={stats.studies} label={L('دراسة', 'studies')} />
+        <Stat n={stats.interactives} label={L('شكلاً تفاعلياً', 'interactives')} />
+      </div>
+
+      <h2>{t(L('لماذا «رُقعة»؟', 'Why “Ruqʿa”?'))}</h2>
+      <p>{t(club.nameStory)}</p>
+
+      <h2>{t(L('مواسمنا', 'Our seasons'))}</h2>
+      <ol className="season-list">
+        {club.seasons.map((s) => <Season key={s.bookId} season={s} />)}
+      </ol>
+
+      <h2>{t(L('كيف نعمل', 'How we work'))}</h2>
+      <ul>
+        {club.howWeWork.map((item, i) => <li key={i}>{t(item)}</li>)}
+      </ul>
+
+      {club.gallery.length > 0 && (
+        <>
+          <h2>{t(L('من الجلسات', 'From our sessions'))}</h2>
+          <div className="club-gallery">
+            {club.gallery.map((g, i) => (
+              <figure key={i} className="club-shot">
+                <img src={g.src} alt={t(g.caption) || ''} loading="lazy"
+                  onError={(e) => { e.currentTarget.closest('figure').style.display = 'none' }} />
+                <figcaption>
+                  {g.date && <b>{t(g.date)}</b>}
+                  {g.caption && <span>{t(g.caption)}</span>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </>
+      )}
+
+      {club.members.length > 0 && (
+        <>
+          <h2>{t(L('أعضاء النادي', 'Club members'))}</h2>
+          <div className="club-members">
+            {club.members.map((m, i) => (
+              <div key={i} className="club-member">
+                <Avatar member={m} />
+                <strong>{t(m.name)}</strong>
+                {m.line && <span className="club-member-line">{t(m.line)}</span>}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="callout key club-cta">
+        <span className="callout-icon" aria-hidden>📖</span>
         <div>
-          <strong>{t({ ar: 'مواعيد الجلسات', en: 'Session dates' })}</strong>
-          <p>
-            {t({
-              ar: 'الكتاب الأوّل: «لماذا ننام» لماثيو ووكر. الجلسة الأولى بتاريخ 26.12.2025، والجلسة الأخيرة بتاريخ 05.07.2026.',
-              en: 'The first book: “Why We Sleep” by Matthew Walker. The first session is on 26.12.2025, and the final session is on 05.07.2026.',
-            })}
-          </p>
+          <strong>{t(L('تريد أن تبدأ؟', 'Want to jump in?'))}</strong>
+          <p>{t(L(
+            'كلّ كتابٍ هنا قائمٌ بذاته — افتح أيّ كتابٍ وابدأ من «ابدأ هنا»، أو جرّب الدراسات كلعبة تخمين.',
+            'Every book here stands on its own — open any book and start from “Start here”, or try the studies as a guessing game.'
+          ))}</p>
+          <div className="club-cta-actions">
+            <Link className="btn primary" to="/books">{t(ui.labels.allBooks)} →</Link>
+          </div>
         </div>
       </div>
 
-      <h2>{t({ ar: 'كيف نعمل', en: 'How we work' })}</h2>
-      <ul>
-        <li>{t({ ar: 'نقرأ الكتاب على مراحل، ونلتقي دورياً لمناقشة كلّ جزء.', en: 'We read the book in stages and meet regularly to discuss each part.' })}</li>
-        <li>{t({ ar: 'هذا الموقع مرجعٌ شخصي، وشاشة عرضٍ في الجلسات، ومرجعٌ عامّ للنادي.', en: 'This site is a personal reference, a screen to present during sessions, and a public reference for the club.' })}</li>
-        <li>{t({ ar: 'كلّ المحتوى ثنائي اللغة (عربي/إنجليزي)، مع أشكالٍ تفاعلية ودراساتٍ على هيئة لعبة.', en: 'All content is bilingual (Arabic/English), with interactive figures and studies presented as a game.' })}</li>
-      </ul>
-
-      <h2>{t({ ar: 'الكتاب الحالي', en: 'The current book' })}</h2>
-      <p>
-        {t({
-          ar: '«لماذا ننام» يجادل بأن النوم أقوى وأرخص دواءٍ وقائيّ نملكه. تصفّح أقسام الكتاب من القائمة الجانبية، وجرّب الأشكال التفاعلية وتقييم النوم.',
-          en: '“Why We Sleep” argues that sleep is the most powerful and cheapest preventive medicine we have. Browse the book’s sections from the sidebar, and try the interactive figures and the sleep assessment.',
-        })}
-      </p>
-      <p className="muted">
-        {t({ ar: 'المحتوى تعليمي مرجعي وليس نصيحة طبية.', en: 'Educational reference content, not medical advice.' })}
-      </p>
+      <p className="muted">{t(ui.footer.note)}</p>
     </div>
   )
 }

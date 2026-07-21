@@ -2,12 +2,22 @@ import { useState, useMemo } from 'react'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import RichText from './RichText.jsx'
+import ResultCard from './ResultCard.jsx'
+
+/* One-line summary of how many distinct tips were triggered, for the result
+   card. Arabic needs the dual/plural split, so it isn't a plain interpolation. */
+function tipCountLine(n) {
+  if (n === 0) return { ar: 'لا نقاط ضعفٍ لافتة — عاداتٌ متينة.', en: 'No notable weak spots — solid habits.' }
+  if (n === 1) return { ar: 'نقطةٌ واحدة تستحقّ الانتباه.', en: '1 point worth attention.' }
+  if (n === 2) return { ar: 'نقطتان تستحقّان الانتباه.', en: '2 points worth attention.' }
+  return { ar: `${n} نقاط تستحقّ الانتباه.`, en: `${n} points worth attention.` }
+}
 
 /*
  * Generic sleep-assessment form. Question/tip data is passed in (from the book
  * module) so the component stays book-agnostic. Runs fully in memory.
  */
-export default function AssessmentForm({ questions, tips, goodTip }) {
+export default function AssessmentForm({ questions, tips, goodTip, bookTitle, sectionTitle }) {
   const { t } = useApp()
   const [answers, setAnswers] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -80,6 +90,18 @@ export default function AssessmentForm({ questions, tips, goodTip }) {
               ))
             )}
           </div>
+          {bookTitle && (
+            <ResultCard
+              icon="📝"
+              title={sectionTitle}
+              bookTitle={bookTitle}
+              score={result.score}
+              suffix="%"
+              bandLabel={band(result.score)}
+              bandColor={band(result.score).col}
+              lines={[tipCountLine(new Set(result.tips).size)]}
+            />
+          )}
           <button className="btn big" onClick={reset}>↺ {t(ui.actions.retake)}</button>
           <p className="muted center">{t(ui.footer.note)}</p>
         </div>

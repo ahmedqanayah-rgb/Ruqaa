@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import RichText from './RichText.jsx'
+import ResultCard from './ResultCard.jsx'
 import { SfDistractedReading } from './figures/stolen-focus/DistractedReading.jsx'
 
 const L = (ar, en) => ({ ar, en })
@@ -651,11 +652,13 @@ const GRADES = [
   { min: 45, icon: '🍂', label: L('انتباهٌ تحت الضغط — الأسباب الاثنا عشر تعمل فيك', 'Attention under pressure — the twelve causes are at work on you') },
   { min: 0, icon: '🚨', label: L('تركيزٌ مسروق — هذا الكتاب كُتب لك تحديداً', 'Stolen focus — this book was written precisely for you') },
 ]
+/* Card accent per grade band, keyed by the band's `min` threshold. */
+const GRADE_COLORS = { 85: 'var(--success)', 65: 'var(--cool)', 45: 'var(--warm)', 0: 'var(--danger)' }
 
 /* ============================================================
    Focus Lab — orchestrates the seven tests
    ============================================================ */
-export default function FocusLab() {
+export default function FocusLab({ bookTitle, sectionTitle }) {
   const { t } = useApp()
   const [res, setRes] = useState({})
   // Stable per-test handlers: a changing onDone identity would re-run the
@@ -848,6 +851,23 @@ export default function FocusLab() {
             <Link className="btn" to="/book/stolen-focus/rebellion">{t(L('كيف أستعيد تركيزي؟', 'How do I reclaim my focus?'))}</Link>
             <button className="btn ghost" onClick={reset}>↺ {t(L('أعِد كلّ الاختبارات', 'Redo all tests'))}</button>
           </div>
+
+          {bookTitle && (
+            <ResultCard
+              icon={grade.icon}
+              title={sectionTitle}
+              bookTitle={bookTitle}
+              score={overall}
+              suffix="/100"
+              bandLabel={grade.label}
+              bandColor={GRADE_COLORS[grade.min]}
+              lines={[
+                L(`أكملتُ ${doneCount} من ٧ تجارب.`, `Completed ${doneCount} of 7 games.`),
+                ...(res.stroop ? [L(`كلفة التداخل: +${res.stroop.interference} مللي ثانية.`, `Interference cost: +${res.stroop.interference}ms.`)] : []),
+                ...(res.span ? [L(`سعة الذاكرة: ${res.span.span} أرقام.`, `Digit span: ${res.span.span}.`)] : []),
+              ]}
+            />
+          )}
         </div>
       )}
     </div>

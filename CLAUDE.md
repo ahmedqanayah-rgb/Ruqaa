@@ -122,6 +122,23 @@ content you almost always edit data, not JSX.
   window), next-up card, arrow-key + swipe navigation, `route-fade` transition.
 - `ContentBlocks` supports `peoplegroups` (people in titled groups with filter chips) —
   used by the stolen-focus characters section; the plain `people` block still works.
+- **Club data** lives in `src/data/club.js` (seasons, `members`, `gallery`) and drives the
+  About page, which is book-agnostic and reads titles/covers from the books registry.
+  `members`/`gallery` are empty by design — the page hides those sections until they're
+  filled, and members without a `photo` render an initial monogram. Session photos go in
+  `public/images/club/`.
+- **Shareable result cards** (`components/ResultCard.jsx`) end the assessment, the studies
+  quiz and the Focus Lab. Built to be screenshotted, so the club branding is baked into
+  the card itself. Copy falls back clipboard API → `execCommand` → a selectable textarea;
+  don't "simplify" that chain, the first two fail on insecure origins and unfocused docs.
+- **Search** — `⌘K`/`Ctrl-K` or `/` opens `components/SearchPalette.jsx`, over a flat index
+  built once at load in `src/data/searchIndex.js` (every section + every study, both
+  languages in one haystack). Study hits deep-link as `…/studies?study=<id>`; `StudiesQuiz`
+  reads that param and jumps, guarded by a ref so answering can't yank the reader back.
+- **Presentation mode** — `presenting` in `AppContext` reflects onto `<html data-presenting>`;
+  CSS hides the chrome and scales the *root font-size* (21px), which lifts every rem-based
+  token at once. Toggle: navbar 📽️ button or bare `p`; Esc exits. The palette's Esc handler
+  uses `stopImmediatePropagation` because both it and Layout listen on `window`.
 - **Paused side-project (do NOT mention on the member-facing site — it's a surprise):**
   a homepage intro video. All work, assets, and a full resume guide are stashed OUTSIDE
   the repo in `C:\Users\aq\Desktop\Ruqaa\hero-video-wip\RESUME.md`. Read that file when

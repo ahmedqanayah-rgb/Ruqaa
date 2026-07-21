@@ -307,12 +307,14 @@ export default function BookSection() {
       </header>
 
       {section.kind === 'quiz' ? (
-        <StudiesQuiz studies={section.studies} interestOrder={section.interestOrder} />
+        <StudiesQuiz studies={section.studies} interestOrder={section.interestOrder}
+          bookTitle={book.title} sectionTitle={section.title} />
       ) : section.kind === 'assessment' ? (
         <AssessmentForm questions={section.assessment.questions}
-          tips={section.assessment.tips} goodTip={section.assessment.goodTip} />
+          tips={section.assessment.tips} goodTip={section.assessment.goodTip}
+          bookTitle={book.title} sectionTitle={section.title} />
       ) : section.kind === 'focus-lab' ? (
-        <FocusLab />
+        <FocusLab bookTitle={book.title} sectionTitle={section.title} />
       ) : (
         <div className="section-content">
           <ContentBlocks blocks={section.blocks} />

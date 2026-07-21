@@ -22,6 +22,9 @@ function toWesternDigits(s) {
 export function AppProvider({ children }) {
   const [lang, setLang] = useState('ar')      // 'ar' | 'en'
   const [theme, setTheme] = useState('light') // 'light' | 'dark'
+  // Presentation mode: chrome hidden and type scaled up, for projecting the
+  // site during club sessions. In-memory like everything else.
+  const [presenting, setPresenting] = useState(false)
   // Sections read this sitting, as "bookId/slug" keys. In-memory only (no
   // localStorage per project constraints), so it resets on refresh by design.
   const [visited, setVisited] = useState(() => new Set())
@@ -39,8 +42,14 @@ export function AppProvider({ children }) {
     if (meta) meta.content = getComputedStyle(html).getPropertyValue('--bg').trim()
   }, [lang, dir, theme])
 
+  // Reflect presentation mode onto <html> so CSS alone can restyle the shell.
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-presenting', presenting)
+  }, [presenting])
+
   const toggleLang = useCallback(() => setLang(l => (l === 'ar' ? 'en' : 'ar')), [])
   const toggleTheme = useCallback(() => setTheme(t => (t === 'light' ? 'dark' : 'light')), [])
+  const togglePresenting = useCallback(() => setPresenting(p => !p), [])
   const markVisited = useCallback((bookId, slug) => {
     setVisited(v => {
       const key = `${bookId}/${slug}`
@@ -60,8 +69,11 @@ export function AppProvider({ children }) {
   )
 
   const value = useMemo(
-    () => ({ lang, dir, theme, isAr: lang === 'ar', setLang, setTheme, toggleLang, toggleTheme, t, visited, markVisited }),
-    [lang, dir, theme, toggleLang, toggleTheme, t, visited, markVisited]
+    () => ({
+      lang, dir, theme, isAr: lang === 'ar', setLang, setTheme, toggleLang, toggleTheme,
+      presenting, setPresenting, togglePresenting, t, visited, markVisited,
+    }),
+    [lang, dir, theme, toggleLang, toggleTheme, presenting, togglePresenting, t, visited, markVisited]
   )
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

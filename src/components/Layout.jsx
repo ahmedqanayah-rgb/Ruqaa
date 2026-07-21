@@ -4,11 +4,13 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
+import SearchPalette from './SearchPalette.jsx'
 
 export default function Layout({ children }) {
-  const { t } = useApp()
+  const { t, presenting, setPresenting, togglePresenting } = useApp()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const loc = useLocation()
 
   // Close mobile drawer + scroll to top on navigation.
@@ -17,9 +19,39 @@ export default function Layout({ children }) {
     window.scrollTo({ top: 0 })
   }, [loc.pathname])
 
+  /* Global shortcuts. "/" and "p" are bare keys, so they must never fire while
+     the reader is typing — and "p" must not steal Ctrl/⌘-P (print). */
+  useEffect(() => {
+    const onKey = (e) => {
+      const typing = /^(input|textarea|select)$/i.test(e.target.tagName) || e.target.isContentEditable
+      const plain = !e.metaKey && !e.ctrlKey && !e.altKey
+
+      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setSearchOpen((s) => !s)
+        return
+      }
+      if (typing) return
+      if (e.key === '/' && plain) {
+        e.preventDefault()
+        setSearchOpen(true)
+        return
+      }
+      if (e.key.toLowerCase() === 'p' && plain) {
+        e.preventDefault()
+        togglePresenting()
+        return
+      }
+      // Esc closes the palette first; it shouldn't also drop the projector.
+      if (e.key === 'Escape' && !searchOpen) setPresenting(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [togglePresenting, setPresenting, searchOpen])
+
   return (
     <div className={`app-shell ${collapsed ? 'is-collapsed' : ''}`}>
-      <Navbar onMenu={() => setDrawerOpen(true)} />
+      <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} />
       <div className="app-body">
         <Sidebar
           open={drawerOpen}
@@ -35,6 +67,12 @@ export default function Layout({ children }) {
           </footer>
         </main>
       </div>
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      {presenting && (
+        <button className="present-exit" onClick={() => setPresenting(false)}>
+          ✕ {t(ui.actions.exitPresent)} <kbd>esc</kbd>
+        </button>
+      )}
     </div>
   )
 }
