@@ -1124,3 +1124,85 @@ html[data-presenting] img { margin-inline: auto; }
   display: block; width: 100%;
   height: clamp(190px, 32vw, 340px); object-fit: cover;
 }
+
+/* ============================================================
+   About — "from across the world" member map
+   ============================================================ */
+.reach { margin-top: var(--space-6); }
+.reach-head { margin-bottom: var(--space-3); }
+.reach-sub { color: var(--text-soft); margin: 0; }
+.reach-sub b { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+.reach-mapwrap {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--accent-soft) 0%, transparent 55%),
+    var(--bg-elev);
+  padding: var(--space-3); overflow: hidden;
+}
+.reach-map { display: block; width: 100%; height: auto; }
+
+.reach-grat line { stroke: var(--border-strong); stroke-width: 1; opacity: 0.35; }
+.reach-dots circle { fill: var(--border-strong); opacity: 0.4; }
+.reach-land { fill: var(--bg-elev-2); stroke: var(--border-strong); stroke-width: 0.8; }
+
+.reach-arc {
+  fill: none; stroke-width: 2.4; stroke-linecap: round;
+  opacity: 0.55; stroke-dasharray: 5 9;
+  animation: reach-flow 3.4s linear infinite;
+  transition: opacity var(--transition), stroke-width var(--transition);
+}
+.reach-arc.on { opacity: 1; stroke-width: 3.4; }
+.reach-arc.dim { opacity: 0.12; }
+@keyframes reach-flow { to { stroke-dashoffset: -140; } }
+
+/* Hub — the shared weekly call */
+.reach-hub-halo {
+  fill: var(--accent); opacity: 0.16;
+  transform-box: fill-box; transform-origin: center;
+  animation: reach-pulse 2.6s ease-in-out infinite;
+}
+.reach-hub-ring { fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0.7; }
+.reach-hub-core { fill: var(--accent); stroke: var(--accent-contrast); stroke-width: 1.5; }
+.reach-hub-label {
+  fill: var(--text-soft); font-size: 20px; font-weight: 700;
+  paint-order: stroke; stroke: var(--bg-elev); stroke-width: 4px;
+}
+@keyframes reach-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.16; }
+  50% { transform: scale(1.5); opacity: 0.04; }
+}
+
+/* Pins */
+.reach-pin { cursor: pointer; transition: opacity var(--transition); outline: none; }
+.reach-pin.dim { opacity: 0.32; }
+.reach-pin-glow { fill: var(--c); opacity: 0.45; }
+.reach-pin-dot { fill: var(--c); stroke: var(--bg-elev); stroke-width: 2; transition: r var(--transition); }
+.reach-pin.on .reach-pin-dot { r: 7.5; }
+.reach-pin:focus-visible .reach-pin-dot { stroke: var(--accent); stroke-width: 3; }
+.reach-tip {
+  font-size: 22px; font-weight: 800; pointer-events: none;
+  paint-order: stroke; stroke: var(--bg-elev); stroke-width: 5px;
+}
+
+/* Legend */
+.reach-legend {
+  list-style: none; margin: var(--space-4) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-2);
+}
+.reach-leg {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-elev); transition: border-color var(--transition), background var(--transition);
+}
+.reach-leg.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, transparent); }
+.reach-leg-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+.reach-leg-txt { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.reach-leg-txt b { font-size: var(--fs-sm); }
+.reach-leg-txt span { font-size: var(--fs-xs); color: var(--text-muted); }
+
+.reach-note { margin-top: var(--space-3); text-align: center; font-size: var(--fs-sm); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reach-arc, .reach-hub-halo { animation: none; }
+}

@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books, getBook } from '../data/books.js'
 import { club } from '../data/club.js'
+import WorldReach from '../components/WorldReach.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -135,6 +136,8 @@ export default function About() {
       <ul>
         {club.howWeWork.map((item, i) => <li key={i}>{t(item)}</li>)}
       </ul>
+
+      {club.reach && <WorldReach />}
 
       {club.gallery.length > 0 && (
         <>

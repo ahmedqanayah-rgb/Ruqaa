@@ -45,6 +45,33 @@ export const club = {
   ],
 
   /*
+   * Where members join from. The club is online — everyone meets in one weekly
+   * session — so this is the club's geography. `lat`/`lon` place each point on
+   * the About-page world map; adding or moving a member is a single line here.
+   *
+   * Only `country` is ever shown (map tooltip + legend). `city` is deliberately
+   * kept but NOT rendered: it records which point the coordinates refer to, so
+   * the numbers stay meaningful to whoever edits this next.
+   *
+   * No flag emoji by design: Windows renders them as bare letter pairs, so the
+   * map uses per-location colours + real names instead — consistent everywhere.
+   */
+  reach: {
+    meeting: L('نلتقي أسبوعياً على مكالمة Google Meet واحدة',
+               'We meet weekly on a single Google Meet call'),
+    locations: [
+      { code: 'sy', country: L('سوريا', 'Syria'),                   city: L('دمشق', 'Damascus'),           lat: 33.51, lon: 36.29 },
+      // Istanbul nudged a hair NW onto its own Thracian (European) side — its
+      // true point falls in the Bosphorus, which the low-res coastline reads as sea.
+      { code: 'tr', country: L('تركيا', 'Turkey'),                  city: L('إسطنبول', 'Istanbul'),        lat: 41.30, lon: 28.60 },
+      { code: 'de', country: L('ألمانيا', 'Germany'),               city: L('برلين', 'Berlin'),            lat: 52.52, lon: 13.40 },
+      { code: 'gb', country: L('المملكة المتحدة', 'United Kingdom'), city: L('لندن', 'London'),             lat: 51.51, lon: -0.13 },
+      { code: 'ae', country: L('الإمارات', 'UAE'),                  city: L('دبي', 'Dubai'),               lat: 25.20, lon: 55.27 },
+      { code: 'my', country: L('ماليزيا', 'Malaysia'),              city: L('كوالالمبور', 'Kuala Lumpur'), lat: 3.14,  lon: 101.69 },
+    ],
+  },
+
+  /*
    * Seasons, newest last. `bookId` links to the books registry, so the timeline
    * picks up each book's real title and cover automatically.
    *   status: 'done' | 'current' | 'planned'
