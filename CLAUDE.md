@@ -138,6 +138,24 @@ content you almost always edit data, not JSX.
   built once at load in `src/data/searchIndex.js` (every section + every study, both
   languages in one haystack). Study hits deep-link as `…/studies?study=<id>`; `StudiesQuiz`
   reads that param and jumps, guarded by a ref so answering can't yank the reader back.
+- **Member world map** (`components/WorldReach.jsx`, data in `club.reach`) — the club is
+  online, so the About page maps where members join the weekly session from. Non-obvious
+  constraints, all deliberate:
+  - **Continents are real, baked at build time.** `scripts/gen-world.mjs` projects the
+    public-domain world-atlas `land-110m` polygons through the same equirectangular window
+    as the component and writes `src/data/worldLand.js`. Nothing is hand-drawn and nothing
+    is fetched at runtime. Its packages (`world-atlas`, `topojson-client`) are **not**
+    dependencies — install them on demand only to regenerate, which is needed **only if
+    `VIEW` in WorldReach.jsx changes** (the two must stay in sync).
+  - **No flag emoji anywhere.** Windows ships no flag glyphs, so 🇬🇧 renders as "GB". Each
+    location gets a palette colour + its real name instead. Don't "improve" this with flags.
+  - **Only `country` is rendered**; `city` is kept in the data purely to document what the
+    coordinates point at.
+  - **Istanbul is nudged ~2px NW** onto its Thracian side — its true point sits in the
+    Bosphorus, which the 110m coastline reads as sea. Verify pins with the SVG fill
+    hit-test (`path.isPointInFill`) rather than by eye.
+  - **The hover tooltip is centre-anchored on purpose.** `text-anchor: start/end` flips
+    meaning between LTR and RTL, which threw the longest Arabic label off-frame.
 - **Presentation mode** — `presenting` in `AppContext` reflects onto `<html data-presenting>`;
   CSS hides the chrome and scales the *root font-size* (21px), which lifts every rem-based
   token at once. Toggle: navbar 📽️ button or bare `p`; Esc exits. The palette's Esc handler
