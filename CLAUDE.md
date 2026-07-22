@@ -122,11 +122,14 @@ content you almost always edit data, not JSX.
   window), next-up card, arrow-key + swipe navigation, `route-fade` transition.
 - `ContentBlocks` supports `peoplegroups` (people in titled groups with filter chips) —
   used by the stolen-focus characters section; the plain `people` block still works.
-- **Club data** lives in `src/data/club.js` (seasons, `members`, `gallery`) and drives the
-  About page, which is book-agnostic and reads titles/covers from the books registry.
-  `members`/`gallery` are empty by design — the page hides those sections until they're
-  filled, and members without a `photo` render an initial monogram. Session photos go in
-  `public/images/club/`.
+- **Club data** lives in `src/data/club.js` (seasons, `banner`, `members`, `gallery`) and
+  drives the About page, which is book-agnostic and reads titles/covers from the books
+  registry. `members`/`gallery` are empty by design — the page hides those sections until
+  they're filled, and members without a `photo` render an initial monogram. Photos go in
+  `public/images/club/`. The optional atmospheric `banner` (About-page hero) expects
+  `public/images/club/reading-corner.jpg`; its `ClubBanner` starts `display:none` and
+  reveals only on successful image load (eager `<img>`, so it still fetches while hidden) —
+  a missing file leaves no broken box or overflow.
 - **Shareable result cards** (`components/ResultCard.jsx`) end the assessment, the studies
   quiz and the Focus Lab. Built to be screenshotted, so the club branding is baked into
   the card itself. Copy falls back clipboard API → `execCommand` → a selectable textarea;

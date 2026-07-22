@@ -13,6 +13,15 @@ const L = (ar, en) => ({ ar, en })
 export const club = {
   founded: L('ديسمبر ٢٠٢٥', 'December 2025'),
 
+  // A warm atmospheric banner for the top of the About page. Optional and
+  // degrades gracefully — the page hides it until the image file exists at
+  // public/images/club/reading-corner.jpg.
+  banner: {
+    src: './images/club/reading-corner.jpg',
+    alt: L('كوبُ شايٍ يتصاعد بخاره وكتابٌ مفتوح ونظّارةٌ على غطاءٍ صوفيّ دافئ',
+           'A steaming cup of tea, an open book and reading glasses on a warm knit throw'),
+  },
+
   intro: L(
     'نادي «رُقعة» مساحةٌ نلتقي فيها لقراءة كتابٍ مهمّ ومناقشته معاً — لا لنجمع المعلومات فحسب، بل لنغيّر بها عاداتنا وحياتنا. نختار في كلّ موسمٍ كتاباً، ونعدّ له ملخّصاتٍ وموادَّ تفاعلية تُعرَض في الجلسات وتبقى مرجعاً للأعضاء بعدها.',
     'Ruqʿa is a space where we meet to read and discuss an important book together — not merely to gather information, but to change our habits and lives with it. Each season we choose a book and prepare summaries and interactive materials that are presented in the sessions and remain a reference for members afterward.'
@@ -53,9 +62,8 @@ export const club = {
     {
       bookId: 'stolen-focus',
       status: 'current',
-      // TODO(club): fill in once the season's dates are set.
-      start: null,
-      end: null,
+      start: L('الجلسة الأولى: ١١ يوليو ٢٠٢٦', 'First session: 11 July 2026'),
+      end: null,   // ongoing — the "Reading now" pill carries the rest
       note: L('موسمنا الحالي — عن الانتباه: من سرقه، وكيف نستعيده.',
               'Our current season — on attention: who stole it, and how we take it back.'),
     },

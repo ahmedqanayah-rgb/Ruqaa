@@ -30,6 +30,22 @@ function Stat({ n, label }) {
   )
 }
 
+/* Atmospheric banner at the top of the page. Stays hidden until the image
+   actually loads, so a not-yet-added photo leaves no broken box (and no
+   overflow from the alt text) — the image is eager, so it still fetches while
+   the figure is display:none and reveals itself on success. */
+function ClubBanner({ banner }) {
+  const { t } = useApp()
+  const [ready, setReady] = useState(false)
+  if (!banner) return null
+  return (
+    <figure className={`club-banner ${ready ? 'ready' : ''}`}>
+      <img src={banner.src} alt={t(banner.alt)}
+        onLoad={() => setReady(true)} onError={() => setReady(false)} />
+    </figure>
+  )
+}
+
 /* Member portrait, falling back to an initial monogram when there is no photo
    (or it fails to load) — the same tile anyone who'd rather not appear gets. */
 function Avatar({ member }) {
@@ -97,6 +113,8 @@ export default function About() {
       <span className="pill">{t(ui.nav.about)}</span>
       <h1>{t(L('عن نادي «رُقعة»', 'About the Ruqʿa Club'))}</h1>
       <p className="club-lead">{t(club.intro)}</p>
+
+      <ClubBanner banner={club.banner} />
 
       <div className="club-stats">
         <Stat n={stats.books} label={L('كتب', 'books')} />

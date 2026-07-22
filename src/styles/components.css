@@ -1111,3 +1111,16 @@ html[data-presenting] img { margin-inline: auto; }
 @media (max-width: 720px) {
   .not-mobile { display: none; }
 }
+
+/* About — atmospheric banner (warm reading-corner photo).
+   Hidden until the image loads, so a missing file leaves no trace. */
+.club-banner { display: none; }
+.club-banner.ready {
+  display: block; margin: var(--space-5) 0;
+  border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.club-banner img {
+  display: block; width: 100%;
+  height: clamp(190px, 32vw, 340px); object-fit: cover;
+}
