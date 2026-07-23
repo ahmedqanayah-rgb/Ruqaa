@@ -130,10 +130,16 @@ export function SfSwitchCost() {
    plane (pointer events, touch-friendly) or use the sliders — both stay in
    sync. Flow lives on the diagonal where high challenge meets high skill. */
 function flowZone(skill, challenge) {
-  if (challenge >= 55 && skill < 45) return { key: 'anxiety', ar: 'قلق', en: 'Anxiety' }
-  if (challenge < 45 && skill >= 55) return { key: 'boredom', ar: 'ملل', en: 'Boredom' }
-  if (challenge < 45 && skill < 45) return { key: 'apathy', ar: 'لا مبالاة', en: 'Apathy' }
-  return { key: 'flow', ar: 'تدفّق', en: 'Flow' }
+  // Must match the four coloured quadrants exactly — they split at 50 on each
+  // axis (x/y = 150 in the plane). The old 45/55 thresholds left a dead band
+  // that all resolved to "flow", so the marker reported Flow while sitting
+  // visibly inside the Anxiety or Boredom rectangle.
+  const hiSkill = skill >= 50
+  const hiChallenge = challenge >= 50
+  if (hiSkill && hiChallenge) return { key: 'flow', ar: 'تدفّق', en: 'Flow' }
+  if (!hiSkill && hiChallenge) return { key: 'anxiety', ar: 'قلق', en: 'Anxiety' }
+  if (hiSkill && !hiChallenge) return { key: 'boredom', ar: 'ملل', en: 'Boredom' }
+  return { key: 'apathy', ar: 'لا مبالاة', en: 'Apathy' }
 }
 const clamp01 = (x) => Math.max(0, Math.min(100, x))
 export function SfFlowChannel() {

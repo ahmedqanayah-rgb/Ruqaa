@@ -7,6 +7,12 @@ html, body, #root { height: 100%; }
 /* Safety net against any element poking past the viewport (esp. RTL mobile). */
 html, body { max-width: 100%; overflow-x: hidden; }
 
+/* Put the theme background on <html> too, not just <body>. Some mobile browsers
+   (Samsung Internet, Chrome with "darken websites" on) will force-darken a page
+   whose root has no explicit background even when color-scheme says only-light;
+   giving the root a concrete light surface is the reliable belt-and-suspenders. */
+html { background-color: var(--bg); }
+
 body {
   margin: 0;
   background: var(--bg);

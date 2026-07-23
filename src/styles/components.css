@@ -1206,6 +1206,25 @@ html[data-presenting] img { margin-inline: auto; }
 
 .reach-note { margin-top: var(--space-3); text-align: center; font-size: var(--fs-sm); }
 
+/* On phones the map renders ~310px wide (scale ~0.31), which shrinks the marks
+   and the fine grid into illegible specks. Bump every mark, drop the graticule
+   noise, and hide the hub label — the section subtitle already names the weekly
+   session, so the pulsing hub reads fine on its own. */
+@media (max-width: 620px) {
+  .reach-dots circle { display: none; }
+  .reach-grat line { opacity: 0.22; }
+  .reach-land { stroke-width: 1.4; }
+  .reach-arc { stroke-width: 4.5; stroke-dasharray: 7 10; }
+  .reach-pin-dot { r: 11px; }
+  .reach-pin.on .reach-pin-dot { r: 14px; }
+  .reach-pin-glow { r: 22px; }
+  .reach-hub-halo { r: 32px; }
+  .reach-hub-ring { r: 17px; }
+  .reach-hub-core { r: 10px; }
+  .reach-hub-label { display: none; }
+  .reach-tip { font-size: 42px; stroke-width: 7px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reach-arc, .reach-hub-halo { animation: none; }
 }
