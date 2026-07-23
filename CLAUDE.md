@@ -132,6 +132,14 @@ content you almost always edit data, not JSX.
   to attack authors — keep that bar if you extend it. Two block types serve it:
   `debate` (claim → critique → optional response, with a `critic` attribution) and
   `sources` (the site's only off-site links; they open in a new tab with `noopener`).
+- **7-day challenge** — `BookSection` dispatches a fourth kind, **`'challenge'`** →
+  `components/WeekChallenge.jsx`, with content in `data/books/<slug>/challenge.js`. It is
+  the site's answer to its own tagline («نقرأ الكتاب… ثم نعيشه»): seven small experiments
+  drawn from the book, each linking to the section that explains it (every `to` must be a
+  real slug). Tick state lives in `AppContext.challengeDone` keyed `bookId/n` — in memory
+  like `visited`, so it survives navigation but not a refresh, and each book's week is
+  tracked independently. Both books' day 7 sends the reader back to a measurement
+  (assessment / Focus Lab) so the week has a before-and-after.
 - **"Ask me one"** (`components/AskMeOne.jsx`, pool in `data/studiesPool.js`) — a session
   opener at the foot of Home that draws a random study from *any* book. Reuses the quiz's
   own class names so a drawn study looks identical to the real quiz, and inherits

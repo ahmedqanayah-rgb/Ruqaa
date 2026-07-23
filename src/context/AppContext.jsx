@@ -28,6 +28,9 @@ export function AppProvider({ children }) {
   // Sections read this sitting, as "bookId/slug" keys. In-memory only (no
   // localStorage per project constraints), so it resets on refresh by design.
   const [visited, setVisited] = useState(() => new Set())
+  // Ticked days of a book's 7-day challenge, as "bookId/n". Same deal: in
+  // memory, so it survives navigation within a sitting but not a refresh.
+  const [challengeDone, setChallengeDone] = useState(() => new Set())
 
   const dir = lang === 'ar' ? 'rtl' : 'ltr'
 
@@ -50,6 +53,14 @@ export function AppProvider({ children }) {
   const toggleLang = useCallback(() => setLang(l => (l === 'ar' ? 'en' : 'ar')), [])
   const toggleTheme = useCallback(() => setTheme(t => (t === 'light' ? 'dark' : 'light')), [])
   const togglePresenting = useCallback(() => setPresenting(p => !p), [])
+  const toggleChallengeDay = useCallback((bookId, n) => {
+    setChallengeDone(d => {
+      const key = `${bookId}/${n}`
+      const next = new Set(d)
+      next.has(key) ? next.delete(key) : next.add(key)
+      return next
+    })
+  }, [])
   const markVisited = useCallback((bookId, slug) => {
     setVisited(v => {
       const key = `${bookId}/${slug}`
@@ -72,8 +83,10 @@ export function AppProvider({ children }) {
     () => ({
       lang, dir, theme, isAr: lang === 'ar', setLang, setTheme, toggleLang, toggleTheme,
       presenting, setPresenting, togglePresenting, t, visited, markVisited,
+      challengeDone, toggleChallengeDay,
     }),
-    [lang, dir, theme, toggleLang, toggleTheme, presenting, togglePresenting, t, visited, markVisited]
+    [lang, dir, theme, toggleLang, toggleTheme, presenting, togglePresenting, t, visited, markVisited,
+     challengeDone, toggleChallengeDay]
   )
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

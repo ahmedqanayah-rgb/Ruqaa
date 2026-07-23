@@ -9,6 +9,7 @@ import { rem, nrem, memory } from './sections-2.js'
 import { health, lifespan, dreams, animal, characters } from './sections-3.js'
 import { shocking, myths, discussion } from './sections-4.js'
 import { verdict, reception } from './reception.js'
+import { challenge } from './challenge.js'
 import { studies, interestOrder } from './studies.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 
@@ -31,7 +32,7 @@ export const whyWeSleep = {
     { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'summary'] },
     { title: L('علم النوم', 'The science of sleep'), slugs: ['mechanism', 'rem', 'nrem', 'memory'] },
     { title: L('النوم وحياتك', 'Sleep and your life'), slugs: ['health', 'lifespan', 'dreams', 'animal'] },
-    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['assessment', 'studies'] },
+    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['assessment', 'challenge', 'studies'] },
     { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
   ],
   sections: [
@@ -60,6 +61,7 @@ export const whyWeSleep = {
       ),
       assessment: { questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP },
     },
+    challenge,
     {
       slug: 'studies',
       kind: 'quiz',

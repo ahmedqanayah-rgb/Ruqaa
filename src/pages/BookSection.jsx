@@ -7,6 +7,7 @@ import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
 import FocusLab from '../components/FocusLab.jsx'
+import WeekChallenge from '../components/WeekChallenge.jsx'
 import RichText from '../components/RichText.jsx'
 
 const L = (ar, en) => ({ ar, en })
@@ -354,6 +355,8 @@ export default function BookSection() {
           bookTitle={book.title} sectionTitle={section.title} />
       ) : section.kind === 'focus-lab' ? (
         <FocusLab bookTitle={book.title} sectionTitle={section.title} />
+      ) : section.kind === 'challenge' ? (
+        <WeekChallenge challenge={section} bookId={book.id} />
       ) : (
         <div className="section-content">
           <ContentBlocks blocks={section.blocks} />

@@ -10,6 +10,7 @@ import { readingMindwandering, bigTech, cruelOptimism } from './sections-2.js'
 import { stressVigilance, dietPollution, adhd, childhood, rebellion } from './sections-3.js'
 import { characters, shocking, myths, discussion } from './sections-4.js'
 import { verdict, reception } from './reception.js'
+import { challenge } from './challenge.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 import { studies, interestOrder } from './studies.js'
 
@@ -122,7 +123,7 @@ export const stolenFocus = {
     { title: L('الأسباب الاثنا عشر', 'The twelve causes'),
       slugs: ['speed-flow', 'exhaustion', 'reading-mindwandering', 'big-tech', 'cruel-optimism',
               'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
-    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-assessment', 'focus-lab', 'studies'] },
+    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-assessment', 'focus-lab', 'challenge', 'studies'] },
     { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
   ],
   sections: [
@@ -164,6 +165,7 @@ export const stolenFocus = {
         'Seven short games that let you feel your attention at work: suppressing distraction, the cost of switching, steady vigilance, filtering through noise, working memory, digit span, and reading amid notifications — with an overall score at the end.'
       ),
     },
+    challenge,
     {
       slug: 'studies',
       kind: 'quiz',
