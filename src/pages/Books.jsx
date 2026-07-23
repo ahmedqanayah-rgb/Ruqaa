@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
+import BookConnections from '../components/BookConnections.jsx'
 
 export default function Books() {
   const { t } = useApp()
@@ -35,6 +36,8 @@ export default function Books() {
           </div>
         </div>
       </div>
+
+      <BookConnections />
     </div>
   )
 }

@@ -132,6 +132,13 @@ content you almost always edit data, not JSX.
   to attack authors — keep that bar if you extend it. Two block types serve it:
   `debate` (claim → critique → optional response, with a `critic` attribution) and
   `sources` (the site's only off-site links; they open in a new tab with `noopener`).
+- **Cross-book connections.** `src/data/connections.js` + `components/BookConnections.jsx`
+  render "where our books meet" at the foot of the Books page: per theme, what each book
+  says side by side, then the club's synthesis. This is **original club analysis, not a
+  summary of either book**, so nothing needs sourcing — but each `slug` must be a real
+  section (they render as links, and an invalid slug silently falls back to the book
+  landing rather than erroring, so check them). Themes whose books aren't registered drop
+  out automatically, so adding a third book only means adding themes here.
 - **Club data** lives in `src/data/club.js` (seasons, `banner`, `members`, `gallery`) and
   drives the About page, which is book-agnostic and reads titles/covers from the books
   registry. `members`/`gallery` are empty by design — the page hides those sections until

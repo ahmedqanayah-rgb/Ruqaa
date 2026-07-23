@@ -1245,3 +1245,35 @@ html[data-presenting] img { margin-inline: auto; }
 .sources ul { margin: 0; padding-inline-start: 1.1em; }
 .sources li { margin-bottom: 8px; font-size: var(--fs-sm); }
 .sources-pub { display: block; font-size: var(--fs-xs); color: var(--text-muted); }
+
+/* ============================================================
+   Cross-book connections ("where our books meet")
+   ============================================================ */
+.xbook { margin-top: var(--space-6); }
+.xbook-lead { color: var(--text-soft); max-width: 62ch; }
+.xbook-card { padding: var(--space-4); margin-bottom: var(--space-4); }
+.xbook-card.caution { border-inline-start: 3px solid var(--warm); }
+.xbook-theme { margin: 0 0 var(--space-4); font-size: var(--fs-md); }
+
+.xbook-sides { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--space-3); align-items: stretch; }
+.xbook-side {
+  display: flex; flex-direction: column; gap: 6px; min-width: 0;
+  padding: var(--space-3); background: var(--bg-elev-2);
+  border-radius: var(--radius); border: 1px solid var(--border);
+}
+.xbook-book { font-size: var(--fs-xs); font-weight: 700; color: var(--accent); }
+.xbook-side p { margin: 0; font-size: var(--fs-sm); }
+.xbook-link { margin-top: auto; font-size: var(--fs-xs); font-weight: 600; }
+.xbook-join { align-self: center; color: var(--text-muted); font-size: var(--fs-lg); }
+
+.xbook-synthesis {
+  margin-top: var(--space-3); padding: var(--space-3);
+  background: var(--accent-soft); border-radius: var(--radius);
+}
+.xbook-synthesis strong { display: block; font-size: var(--fs-xs); color: var(--accent); margin-bottom: 4px; }
+.xbook-synthesis p { margin: 0; font-size: var(--fs-sm); }
+
+@media (max-width: 700px) {
+  .xbook-sides { grid-template-columns: 1fr; }
+  .xbook-join { transform: rotate(90deg); }
+}
