@@ -277,6 +277,28 @@ function BookLanding({ book }) {
   )
 }
 
+/* Shown when the book exists but the section slug doesn't — a stale bookmark,
+   a typo, or a section that has been renamed. */
+function SectionNotFound({ book }) {
+  const { t } = useApp()
+  return (
+    <div className="prose-page">
+      <span className="pill">{t(book.title)}</span>
+      <h1>{t(L('لم نجد هذا القسم', 'We couldn’t find that section'))}</h1>
+      <p>
+        {t(L(
+          'ربّما تغيّر الرابط أو حُذف القسم. كلّ أقسام الكتاب موجودة في صفحته — أو ابحث عمّا تريد مباشرةً.',
+          'The link may have changed, or the section may have been removed. Every section is listed on the book’s page — or search for what you want directly.'
+        ))}
+      </p>
+      <div className="hero-actions">
+        <Link className="btn primary" to={`/book/${book.id}`}>{t(book.title)} →</Link>
+        <Link className="btn" to="/books">{t(ui.labels.allBooks)}</Link>
+      </div>
+    </div>
+  )
+}
+
 /* ---- section page ---- */
 export default function BookSection() {
   const { bookId, slug } = useParams()
@@ -315,7 +337,10 @@ export default function BookSection() {
   }, [section, dir, next, prev, book, navigate])
 
   if (!book) return <div className="prose-page"><h1>404</h1></div>
-  if (!section) return <BookLanding book={book} />
+  if (!slug) return <BookLanding book={book} />
+  // A slug that matches nothing used to fall through to the landing, so a stale
+  // or mistyped link looked like it had worked. Say so instead.
+  if (!section) return <SectionNotFound book={book} />
 
   // Swipe navigation (mobile). Ignore swipes that start on interactive pieces
   // — figures, sliders, feeds, lab games — so their own gestures keep working.

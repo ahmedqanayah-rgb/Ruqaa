@@ -2,14 +2,21 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
+import { club } from '../data/club.js'
 import AskMeOne from '../components/AskMeOne.jsx'
 
 export default function Home() {
   const { t } = useApp()
-  const featured = books[0]
-  // Show up to three books in the sliding list; a "see all" card follows so the
-  // rest are one tap away. The row scroll-snaps and is RTL-aware (flex + dir).
-  const shown = books.slice(0, 3)
+  // Feature the season the club is actually reading — not whichever book
+  // happens to sit first in the registry. club.seasons is the single source of
+  // truth for that, so the front page can't drift from the About page.
+  const currentId = club.seasons?.find((s) => s.status === 'current')?.bookId
+  const featured = books.find((b) => b.id === currentId) || books[0]
+  // Show up to three books in the sliding list, current one first; a "see all"
+  // card follows so the rest are one tap away. The row scroll-snaps and is
+  // RTL-aware (flex + dir).
+  const ordered = featured ? [featured, ...books.filter((b) => b.id !== featured.id)] : books
+  const shown = ordered.slice(0, 3)
   const hasMore = books.length > shown.length
 
   return (
@@ -25,7 +32,9 @@ export default function Home() {
           })}
         </p>
         <div className="hero-actions">
-          <Link className="btn primary" to={`/book/${featured.id}`}>{t(ui.actions.openBook)} →</Link>
+          <Link className="btn primary" to={`/book/${featured.id}`}>
+            📖 {t(featured.title)} →
+          </Link>
           <Link className="btn" to="/books">{t(ui.nav.books)}</Link>
           <Link className="btn ghost" to="/about">{t(ui.nav.about)}</Link>
         </div>
