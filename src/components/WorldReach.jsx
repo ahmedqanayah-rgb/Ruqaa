@@ -162,9 +162,18 @@ export default function WorldReach() {
             key={p.code}
             className={`reach-leg ${active === p.code ? 'on' : ''}`}
             style={{ '--c': p.color }}
+            tabIndex={0}
+            role="button"
+            aria-pressed={active === p.code}
+            aria-label={t(p.country)}
             onMouseEnter={() => setActive(p.code)}
             onMouseLeave={() => setActive(null)}
+            onFocus={() => setActive(p.code)}
+            onBlur={() => setActive(null)}
             onClick={() => pick(p.code)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(p.code) }
+            }}
           >
             <span className="reach-leg-dot" aria-hidden />
             <span className="reach-leg-txt">

@@ -26,6 +26,8 @@ function blockWords(b, lang) {
     case 'callout': s = `${pick(b.title)} ${pick(b.text)}`; break
     case 'ul': case 'ol': s = (b.items || []).map(pick).join(' '); break
     case 'myth': s = `${pick(b.claim)} ${pick(b.reply)}`; break
+    // `sources` is a link list, not prose — deliberately left at 0.
+    case 'debate': s = `${pick(b.topic)} ${pick(b.claim)} ${pick(b.critique)} ${pick(b.response)}`; break
     case 'people': s = (b.people || []).map((p) => pick(p.story)).join(' '); break
     case 'peoplegroups': s = (b.groups || []).flatMap((g) => g.people).map((p) => pick(p.story)).join(' '); break
     default: return 0
@@ -135,6 +137,18 @@ function countExperts(book) {
     return n
   }, 0)
 }
+/* What a section card advertises under its title. Prose sections get a read
+   time; the interactive ones say what they actually contain, which is more use
+   than a blanket "interactive". */
+function sectionMeta(section, minutes) {
+  if (minutes) return { ar: `⏱ ~${minutes} د قراءة`, en: `⏱ ~${minutes} min read` }
+  if (section.kind === 'challenge' && section.days)
+    return { ar: `🗓️ ${section.days.length} أيام`, en: `🗓️ ${section.days.length} days` }
+  if (section.kind === 'quiz' && section.studies)
+    return { ar: `🔬 ${section.studies.length} دراسة`, en: `🔬 ${section.studies.length} studies` }
+  return { ar: '🎮 تفاعلي', en: '🎮 Interactive' }
+}
+
 function SectionCard({ book, section, index, minutes }) {
   const { t, visited } = useApp()
   const seen = visited.has(`${book.id}/${section.slug}`)
@@ -149,11 +163,7 @@ function SectionCard({ book, section, index, minutes }) {
         <span className="section-card-title">{t(section.title)}</span>
       </div>
       {section.lead && <span className="section-card-lead">{t(section.lead)}</span>}
-      <span className="section-card-meta">
-        {minutes
-          ? t({ ar: `⏱ ~${minutes} د قراءة`, en: `⏱ ~${minutes} min read` })
-          : t(L('🎮 تفاعلي', '🎮 Interactive'))}
-      </span>
+      <span className="section-card-meta">{t(sectionMeta(section, minutes))}</span>
     </Link>
   )
 }

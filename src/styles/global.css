@@ -94,3 +94,16 @@ bdi, .isolate { unicode-bidi: isolate; }
 
 .fade-in { animation: fadeIn 380ms ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Safety net for reduced-motion. components.css also disables specific
+   animations, but that list has to be remembered for every new feature and
+   several already slipped through (this .fade-in among them). Near-zero
+   durations rather than `none` so animationend/transitionend still fire. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
