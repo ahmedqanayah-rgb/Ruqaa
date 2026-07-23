@@ -122,6 +122,16 @@ content you almost always edit data, not JSX.
   window), next-up card, arrow-key + swipe navigation, `route-fade` transition.
 - `ContentBlocks` supports `peoplegroups` (people in titled groups with filter chips) —
   used by the stolen-focus characters section; the plain `people` block still works.
+- **Verdict + critical reception.** Each book module may export a `verdict` (rating,
+  opinion, read-it-if / watch-out-for) — rendered as the «رأي النادي» card on the book
+  landing — and a `reception` section («الكتاب في الميزان») holding the book's critical
+  reception. Both live in `data/books/<slug>/reception.js`. **The verdict text is the
+  club's opinion, not fact — edit it freely.** The reception content is the opposite:
+  every criticism must stay sourced, paired with the author's reply where one exists, and
+  limited to what is publicly documented. It exists to make the club read critically, not
+  to attack authors — keep that bar if you extend it. Two block types serve it:
+  `debate` (claim → critique → optional response, with a `critic` attribution) and
+  `sources` (the site's only off-site links; they open in a new tab with `noopener`).
 - **Club data** lives in `src/data/club.js` (seasons, `banner`, `members`, `gallery`) and
   drives the About page, which is book-agnostic and reads titles/covers from the books
   registry. `members`/`gallery` are empty by design — the page hides those sections until

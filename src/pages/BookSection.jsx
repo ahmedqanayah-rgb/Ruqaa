@@ -156,6 +156,43 @@ function SectionCard({ book, section, index, minutes }) {
     </Link>
   )
 }
+/* The club's own opinion of the book — the one thing a summary can't give you.
+   Renders only for books that define a `verdict`. */
+function VerdictCard({ book }) {
+  const { t } = useApp()
+  const v = book.verdict
+  if (!v) return null
+  const full = Math.floor(v.rating)
+  const half = v.rating - full >= 0.5
+  return (
+    <section className="verdict card">
+      <div className="verdict-head">
+        <span className="pill">{t(L('رأي النادي', 'The club’s verdict'))}</span>
+        <span className="verdict-stars" aria-label={t(L(`${v.rating} من ٥`, `${v.rating} out of 5`))}>
+          <span aria-hidden>{'★'.repeat(full)}{half ? '½' : ''}</span>
+          <b className="verdict-num">{v.rating}/5</b>
+        </span>
+      </div>
+      <RichText as="p" className="verdict-text" value={v.text} />
+      <div className="verdict-grid">
+        <div className="verdict-cell good">
+          <strong>{t(L('اقرأه إن…', 'Read it if…'))}</strong>
+          <RichText as="p" value={v.readIf} />
+        </div>
+        <div className="verdict-cell warn">
+          <strong>{t(L('انتبه إلى…', 'Watch out for…'))}</strong>
+          <RichText as="p" value={v.caveat} />
+        </div>
+      </div>
+      {v.reception && (
+        <Link className="btn verdict-more" to={`/book/${book.id}/${v.reception}`}>
+          ⚖️ {t(L('الكتاب في الميزان', 'The book under scrutiny'))} →
+        </Link>
+      )}
+    </section>
+  )
+}
+
 function BookLanding({ book }) {
   const { t, lang, visited } = useApp()
   const bySlug = useMemo(() => new Map(book.sections.map((s, i) => [s.slug, { s, i }])), [book])
@@ -205,6 +242,8 @@ function BookLanding({ book }) {
           )}
         </div>
       </header>
+
+      <VerdictCard book={book} />
 
       <FactRotator book={book} />
 

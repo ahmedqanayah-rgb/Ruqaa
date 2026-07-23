@@ -8,6 +8,7 @@ import { summary, mechanism } from './sections-1.js'
 import { rem, nrem, memory } from './sections-2.js'
 import { health, lifespan, dreams, animal, characters } from './sections-3.js'
 import { shocking, myths, discussion } from './sections-4.js'
+import { verdict, reception } from './reception.js'
 import { studies, interestOrder } from './studies.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 
@@ -25,12 +26,13 @@ export const whyWeSleep = {
     'A book proving sleep is the most powerful, cheapest preventive medicine we have — resetting brain, body and emotion every night.'
   ),
   accent: 'var(--accent)',
+  verdict,
   groups: [
     { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'summary'] },
     { title: L('علم النوم', 'The science of sleep'), slugs: ['mechanism', 'rem', 'nrem', 'memory'] },
     { title: L('النوم وحياتك', 'Sleep and your life'), slugs: ['health', 'lifespan', 'dreams', 'animal'] },
     { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['assessment', 'studies'] },
-    { title: L('مراجع النادي', 'Club reference'), slugs: ['characters', 'shocking', 'myths', 'discussion'] },
+    { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
   ],
   sections: [
     author,
@@ -43,6 +45,7 @@ export const whyWeSleep = {
     lifespan,
     dreams,
     animal,
+    reception,
     characters,
     shocking,
     myths,

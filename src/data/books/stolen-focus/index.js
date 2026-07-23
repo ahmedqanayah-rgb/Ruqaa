@@ -9,6 +9,7 @@ import { summary, causesMap, speedFlow, exhaustion } from './sections-1.js'
 import { readingMindwandering, bigTech, cruelOptimism } from './sections-2.js'
 import { stressVigilance, dietPollution, adhd, childhood, rebellion } from './sections-3.js'
 import { characters, shocking, myths, discussion } from './sections-4.js'
+import { verdict, reception } from './reception.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 import { studies, interestOrder } from './studies.js'
 
@@ -114,6 +115,7 @@ export const stolenFocus = {
     'تحقيقٌ عالميّ في أسباب انهيار انتباهنا — اثنا عشر سبباً خارجياً تسرق تركيزنا، وكيف نستعيده فرداً وجماعة.',
     'A global investigation into why our attention collapsed — twelve external forces stealing our focus, and how to reclaim it as individuals and together.'
   ),
+  verdict,
   accent: 'var(--accent)',
   groups: [
     { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'summary', 'causes-map'] },
@@ -121,7 +123,7 @@ export const stolenFocus = {
       slugs: ['speed-flow', 'exhaustion', 'reading-mindwandering', 'big-tech', 'cruel-optimism',
               'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
     { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-assessment', 'focus-lab', 'studies'] },
-    { title: L('مراجع النادي', 'Club reference'), slugs: ['characters', 'shocking', 'myths', 'discussion'] },
+    { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
   ],
   sections: [
     author,
@@ -137,6 +139,7 @@ export const stolenFocus = {
     enrich(adhd),
     enrich(childhood),
     enrich(rebellion),
+    reception,
     characters,
     shocking,
     myths,

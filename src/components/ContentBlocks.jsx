@@ -47,6 +47,55 @@ function MythCard({ block }) {
   )
 }
 
+/* Claim → critique → response, for the "book under scrutiny" sections. Laid out
+   as three tinted rows so a reader can see both sides without clicking. */
+function DebateCard({ block }) {
+  const { t } = useApp()
+  return (
+    <article className="debate card">
+      {block.topic && <RichText as="h4" className="debate-topic" value={block.topic} />}
+      <div className="debate-row claim">
+        <span className="debate-tag">{t({ ar: 'ما يقوله الكتاب', en: 'What the book says' })}</span>
+        <RichText as="p" value={block.claim} />
+      </div>
+      <div className="debate-row critique">
+        <span className="debate-tag">{t({ ar: 'ما يقوله النقّاد', en: 'What critics say' })}</span>
+        <RichText as="p" value={block.critique} />
+        {block.critic && <cite className="debate-critic"><RichText value={block.critic} /></cite>}
+      </div>
+      {block.response && (
+        <div className="debate-row response">
+          <span className="debate-tag">{t({ ar: 'وفي المقابل', en: 'In response' })}</span>
+          <RichText as="p" value={block.response} />
+        </div>
+      )}
+    </article>
+  )
+}
+
+/* External reference list. The only place the site links off-site, so links are
+   explicit about it (new tab + ↗) rather than looking like internal nav. */
+function SourceList({ block }) {
+  const { t } = useApp()
+  return (
+    <aside className="sources">
+      <strong className="sources-title">
+        {t(block.title || { ar: 'المصادر', en: 'Sources' })}
+      </strong>
+      <ul>
+        {block.items.map((s, i) => (
+          <li key={i}>
+            <a href={s.url} target="_blank" rel="noopener noreferrer">
+              {t(s.label)} <span aria-hidden>↗</span>
+            </a>
+            {s.publisher && <span className="sources-pub">{t(s.publisher)}</span>}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
+
 function Callout({ block }) {
   const variant = block.variant || 'note'
   const icons = { note: 'ℹ️', key: '🔑', warn: '⚠️', fact: '💡', quote: '❝' }
@@ -169,6 +218,8 @@ export default function ContentBlocks({ blocks }) {
           case 'peoplegroups': return <PeopleGroups key={i} block={b} />
           case 'linkcards': return <LinkCards key={i} block={b} />
           case 'myth': return <MythCard key={i} block={b} />
+          case 'debate': return <DebateCard key={i} block={b} />
+          case 'sources': return <SourceList key={i} block={b} />
           default: return null
         }
       })}
