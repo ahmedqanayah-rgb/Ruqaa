@@ -1,6 +1,6 @@
 const L = (ar, en) => ({ ar, en })
 const anat = (f) => `./images/anatomical/${f}`
-const clean = (f) => `./images/clean/${f}`
+const clean = (f) => `./images/clean/${f.replace(/\.\w+$/, '')}.webp`
 const port = (f) => `./images/characters/${f}`
 
 /* ===================== 6) Sleep, Health, Immunity & Cancer ===================== */

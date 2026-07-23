@@ -1,6 +1,7 @@
 const L = (ar, en) => ({ ar, en })
 const anat = (f) => `./images/anatomical/${f}`
-const clean = (f) => `./images/clean/${f}` // background-removed, blended
+// background-removed cut-outs, now WebP; callers still pass the old .png name.
+const clean = (f) => `./images/clean/${f.replace(/\.\w+$/, '')}.webp`
 
 /* ===================== 1) General Summary ===================== */
 export const summary = {

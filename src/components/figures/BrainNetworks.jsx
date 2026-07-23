@@ -6,7 +6,7 @@ const L = (ar, en) => ({ ar, en })
 // Each sleep phase is its own pre-cropped, trimmed row of the illustration.
 // The left row-labels and top column-headers were excluded during extraction;
 // the column labels are re-rendered as translatable HTML below.
-const rowImg = (phase) => `./images/clean/brain/${phase}.png`
+const rowImg = (phase) => `./images/clean/brain/${phase}.webp`
 const PHASES = {
   light: { label: L('النوم الخفيف', 'Light Sleep') },
   nrem: { label: L('النوم العميق (NREM)', 'Deep NREM Sleep') },

@@ -38,15 +38,15 @@ filename across `src/`, `scripts/` and `index.html`:
 **1b. Resize + recompress in place** (done — see below). Keeps filenames and formats, so no
 reference churn.
 
-**1c. Convert to WebP — the remaining big win, not yet done.** WebP supports alpha, so even
-the `clean/` cut-outs convert. Expect a further ~50-70% on top of 1b. The catch is reference
-churn: paths flow through helpers (`anat()`, `img()`, `panel()`, `rowImg()`) that take a
-filename *with* extension. Cleanest approach is to swap the extension inside the helpers
-rather than editing every call site:
-```js
-const anat = (f) => `./images/anatomical/${f.replace(/\.\w+$/, '')}.webp`
-```
-Book covers are full literal paths in each book's `index.js` and need editing directly.
+**1c. Convert to WebP.** ✅ **`clean/` done** (2026-07-24): 5.1 MB → 2.3 MB (−55%), via
+`scripts/clean-to-webp.mjs` + swapping the extension inside the `clean()`/`panel()`/`rowImg()`
+helpers, no call-site churn. Images total is now **7.4 MB**.
+*Remaining (deferred, smaller):* `characters/` (57 jpgs, ~1.7 MB — jpg→webp saves less than
+png→webp, and there are two literal `authorPhoto` refs in the book `index.js` files to fix),
+book covers (literal paths, one already webp), and `anatomical/` (2.5 MB — **left on
+purpose**: those double as the source images for `clean/` via `process-images.mjs`, so
+converting them entangles the regeneration path). `og:image` must stay JPG regardless —
+several social scrapers won't fetch a WebP preview image.
 
 **1d. Reserve image space to stop layout shift.** `.club-banner` and `.reach-map` are fine
 (fixed height / viewBox). Book covers and person photos have no dimensions, so text jumps as

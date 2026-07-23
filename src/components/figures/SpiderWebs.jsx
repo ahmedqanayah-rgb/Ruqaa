@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext.jsx'
 import FigureFrame from './FigureFrame.jsx'
 
 const L = (ar, en) => ({ ar, en })
-const panel = (f) => `./images/clean/spider/${f}.png`
+const panel = (f) => `./images/clean/spider/${f}.webp`
 
 const DRUGS = [
   { key: 'lsd', label: L('LSD', 'LSD') },

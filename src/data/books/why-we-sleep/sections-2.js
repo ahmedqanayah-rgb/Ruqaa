@@ -1,6 +1,6 @@
 const L = (ar, en) => ({ ar, en })
 const anat = (f) => `./images/anatomical/${f}`
-const clean = (f) => `./images/clean/${f}`
+const clean = (f) => `./images/clean/${f.replace(/\.\w+$/, '')}.webp`
 
 /* ===================== 3) REM Sleep ===================== */
 export const rem = {
