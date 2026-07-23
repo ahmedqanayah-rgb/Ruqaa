@@ -49,7 +49,7 @@ export default function Home() {
           {shown.map((b) => (
             <Link key={b.id} to={`/book/${b.id}`} className="book-card card carousel-card" role="listitem">
               <div className="book-cover">
-                <img src={t(b.cover)} alt={t(b.title)} onError={(e) => { e.currentTarget.style.opacity = 0 }} />
+                <img src={t(b.cover)} alt={t(b.title)} loading="lazy" onError={(e) => { e.currentTarget.style.opacity = 0 }} />
               </div>
               <div className="book-info">
                 <h3>{t(b.title)}</h3>

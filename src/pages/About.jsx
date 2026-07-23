@@ -78,7 +78,7 @@ function Season({ season }) {
       <div className="season-dot" aria-hidden />
       <div className="season-body card">
         <div className="season-cover">
-          <img src={t(book.cover)} alt={t(book.title)}
+          <img src={t(book.cover)} alt={t(book.title)} loading="lazy"
             onError={(e) => { e.currentTarget.style.opacity = 0 }} />
         </div>
         <div className="season-info">

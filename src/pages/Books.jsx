@@ -19,7 +19,7 @@ export default function Books() {
         {books.map((b) => (
           <Link key={b.id} to={`/book/${b.id}`} className="book-card card">
             <div className="book-cover">
-              <img src={t(b.cover)} alt={t(b.title)} onError={(e) => { e.currentTarget.style.opacity = 0 }} />
+              <img src={t(b.cover)} alt={t(b.title)} loading="lazy" onError={(e) => { e.currentTarget.style.opacity = 0 }} />
             </div>
             <div className="book-info">
               <h3>{t(b.title)}</h3>

@@ -48,10 +48,16 @@ purpose**: those double as the source images for `clean/` via `process-images.mj
 converting them entangles the regeneration path). `og:image` must stay JPG regardless —
 several social scrapers won't fetch a WebP preview image.
 
-**1d. Reserve image space to stop layout shift.** `.club-banner` and `.reach-map` are fine
-(fixed height / viewBox). Book covers and person photos have no dimensions, so text jumps as
-they load. Add `aspect-ratio` in CSS rather than width/height attributes, since the sources
-vary.
+**1d. Reserve image space to stop layout shift.** ✅ **covers done** (2026-07-24): all four
+book covers are a consistent 2:3, so `.book-cover` / `.book-hero-cover` / `.season-cover` got
+`aspect-ratio: 2/3` + `object-fit: cover`, and the list covers (Home carousel, Books grid,
+About seasons) got `loading="lazy"` — the book-landing hero cover stays eager as that page's
+LCP. Person photos and logos were already fixed-size.
+*Remaining:* inline **content images** (`.img-block`) still have no reserved height and their
+aspect ratios genuinely vary (e.g. provincetown 1.78 vs graceland 1.36), so a single
+`aspect-ratio` would distort them. The correct fix is intrinsic `width`/`height` per image,
+which means carrying dimensions in the block data (a small build-time manifest generated with
+sharp, then read by `ImageBlock`). Left for a focused pass — it's more than CSS.
 
 ---
 

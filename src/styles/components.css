@@ -182,8 +182,10 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .book-carousel .ghost-card { min-height: 0; }
 .book-card { display: flex; overflow: hidden; color: var(--text); transition: transform var(--transition), box-shadow var(--transition); }
 .book-card:hover { text-decoration: none; transform: translateY(-3px); box-shadow: var(--shadow); }
-.book-cover { width: 128px; flex-shrink: 0; background: #101426; display: grid; place-items: center; }
-.book-cover img { width: 100%; height: 100%; max-height: 210px; object-fit: cover; }
+/* aspect-ratio reserves the cover's space before it loads, so text doesn't jump
+   as images arrive in bursts on a slow connection. Covers are a consistent 2:3. */
+.book-cover { width: 128px; aspect-ratio: 2 / 3; flex-shrink: 0; background: #101426; display: grid; place-items: center; overflow: hidden; }
+.book-cover img { width: 100%; height: 100%; object-fit: cover; }
 .book-info { padding: var(--space-3) var(--space-4); }
 .book-info h3 { margin-bottom: 2px; }
 .book-author { color: var(--text-muted); font-size: var(--fs-sm); }
@@ -200,8 +202,8 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    Book landing + section pages
    ============================================================ */
 .book-hero { display: flex; gap: var(--space-5); align-items: center; margin-bottom: var(--space-5); flex-wrap: wrap; }
-.book-hero-cover { width: 150px; flex-shrink: 0; border-radius: var(--radius); overflow: hidden; background: #101426; box-shadow: var(--shadow); }
-.book-hero-cover img { width: 100%; height: auto; display: block; }
+.book-hero-cover { width: 150px; aspect-ratio: 2 / 3; flex-shrink: 0; border-radius: var(--radius); overflow: hidden; background: #101426; box-shadow: var(--shadow); }
+.book-hero-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .book-subtitle { color: var(--text-soft); font-size: var(--fs-md); margin: 0 0 var(--space-2); }
 .section-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-3); }
 .section-card { display: flex; align-items: center; gap: 10px; padding: var(--space-3) var(--space-4); color: var(--text); transition: transform var(--transition), box-shadow var(--transition); }
@@ -842,8 +844,8 @@ button.sf-toast:hover { border-color: var(--danger); }
 .season-current .season-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 
 .season-body { display: flex; gap: var(--space-4); padding: var(--space-4); align-items: flex-start; }
-.season-cover { flex-shrink: 0; width: 86px; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm); }
-.season-cover img { display: block; width: 100%; height: auto; }
+.season-cover { flex-shrink: 0; width: 86px; aspect-ratio: 2 / 3; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm); }
+.season-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .season-info { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .season-info h3 { margin: 4px 0 0; }
 .season-author { font-size: var(--fs-sm); color: var(--text-muted); }
