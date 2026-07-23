@@ -132,6 +132,12 @@ content you almost always edit data, not JSX.
   to attack authors — keep that bar if you extend it. Two block types serve it:
   `debate` (claim → critique → optional response, with a `critic` attribution) and
   `sources` (the site's only off-site links; they open in a new tab with `noopener`).
+- **"Ask me one"** (`components/AskMeOne.jsx`, pool in `data/studiesPool.js`) — a session
+  opener at the foot of Home that draws a random study from *any* book. Reuses the quiz's
+  own class names so a drawn study looks identical to the real quiz, and inherits
+  presentation mode for free. Study ids are only unique within a book, hence `poolId`.
+  NB: Home.jsx is also where the paused hero video gets restored — that work touches the
+  top of the page, this sits at the bottom, so they shouldn't collide.
 - **Cross-book connections.** `src/data/connections.js` + `components/BookConnections.jsx`
   render "where our books meet" at the foot of the Books page: per theme, what each book
   says side by side, then the club's synthesis. This is **original club analysis, not a

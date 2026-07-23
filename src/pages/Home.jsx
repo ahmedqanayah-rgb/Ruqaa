@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
+import AskMeOne from '../components/AskMeOne.jsx'
 
 export default function Home() {
   const { t } = useApp()
@@ -59,6 +60,8 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <AskMeOne />
     </div>
   )
 }

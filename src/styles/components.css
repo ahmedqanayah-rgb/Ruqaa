@@ -1277,3 +1277,19 @@ html[data-presenting] img { margin-inline: auto; }
   .xbook-sides { grid-template-columns: 1fr; }
   .xbook-join { transform: rotate(90deg); }
 }
+
+/* ============================================================
+   "Ask me one" — random-study session opener (Home)
+   ============================================================ */
+.ask { margin-top: var(--space-6); }
+.ask-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-4); flex-wrap: wrap;
+}
+.ask-head h2 { margin: 0 0 4px; }
+.ask-sub { margin: 0; color: var(--text-soft); font-size: var(--fs-sm); max-width: 60ch; }
+.ask-cta { flex-shrink: 0; }
+.ask-card { padding: var(--space-4); margin-top: var(--space-4); }
+.ask-tags { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.ask-book { font-size: var(--fs-xs); font-weight: 700; color: var(--accent); }
+.ask-more { display: inline-block; margin-top: var(--space-3); font-size: var(--fs-sm); font-weight: 600; }
