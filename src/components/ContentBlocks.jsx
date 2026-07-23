@@ -1,9 +1,16 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import RichText from './RichText.jsx'
-import { Figure } from './figures/registry.jsx'
+
+/* The figure registry pulls in every chart component and, through them, all of
+   recharts — the heaviest dependency in the app. Loading it lazily keeps it off
+   Home, Books, About and every text-only section; it arrives only when a
+   section actually renders a figure. */
+const Figure = lazy(() =>
+  import('./figures/registry.jsx').then((m) => ({ default: m.Figure }))
+)
 
 /* Internal navigation cards — used e.g. to cross-link between books. */
 function LinkCards({ block }) {
@@ -206,7 +213,12 @@ export default function ContentBlocks({ blocks }) {
                 <RichText value={b.text} />
               </blockquote>
             )
-          case 'figure': return <Figure key={i} id={b.id} />
+          case 'figure':
+            return (
+              <Suspense key={i} fallback={<div className="figure-loading" aria-hidden />}>
+                <Figure id={b.id} />
+              </Suspense>
+            )
           case 'image': return <ImageBlock key={i} block={b} />
           case 'imggrid':
             return (

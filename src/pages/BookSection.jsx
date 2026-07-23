@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
@@ -6,8 +6,10 @@ import { getBook } from '../data/books.js'
 import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
-import FocusLab from '../components/FocusLab.jsx'
 import WeekChallenge from '../components/WeekChallenge.jsx'
+
+/* Seven games' worth of logic for a single section — loaded on arrival. */
+const FocusLab = lazy(() => import('../components/FocusLab.jsx'))
 import RichText from '../components/RichText.jsx'
 
 const L = (ar, en) => ({ ar, en })
@@ -389,7 +391,9 @@ export default function BookSection() {
           tips={section.assessment.tips} goodTip={section.assessment.goodTip}
           bookTitle={book.title} sectionTitle={section.title} />
       ) : section.kind === 'focus-lab' ? (
-        <FocusLab bookTitle={book.title} sectionTitle={section.title} />
+        <Suspense fallback={<div className="figure-loading" aria-hidden />}>
+          <FocusLab bookTitle={book.title} sectionTitle={section.title} />
+        </Suspense>
       ) : section.kind === 'challenge' ? (
         <WeekChallenge challenge={section} bookId={book.id} />
       ) : (

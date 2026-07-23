@@ -1325,3 +1325,10 @@ html[data-presenting] img { margin-inline: auto; }
 .week-why { margin: 0; font-size: var(--fs-sm); color: var(--text-muted); }
 .week-link { font-size: var(--fs-xs); font-weight: 600; align-self: flex-start; margin-top: 2px; }
 .week-closing { margin-top: var(--space-5); }
+
+/* Placeholder while a lazily-loaded figure or the Focus Lab arrives. Reserves
+   height so the page doesn't jump when the real component swaps in. */
+.figure-loading {
+  min-height: 220px; border-radius: var(--radius);
+  background: var(--bg-elev-2); border: 1px solid var(--border);
+}

@@ -68,6 +68,23 @@ content you almost always edit data, not JSX.
   options:[3], correct, result, discussion }`. `StudiesQuiz.jsx` can sort by book order or
   by interest.
 
+## Bundle splitting (don't undo by accident)
+
+Members join from places with very uneven connections, so initial payload is treated as a
+feature. `vite.config.js` splits `react`/`react-dom`/`react-router-dom` and `recharts` into
+their own chunks, and two things are loaded lazily:
+
+- **`figures/registry.jsx`** (via `React.lazy` in `ContentBlocks`) — it imports every chart
+  component and, through them, all of recharts (~105 kB gzipped). Keeping it lazy is what
+  keeps recharts off Home, Books, About and every text-only section. **Never import the
+  registry statically**, or recharts lands back in the entry chunk.
+- **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
+
+Both render a `.figure-loading` placeholder through `Suspense` so the page doesn't jump.
+Verify with `npm run build`: the entry `index.html` should reference only `index-*.js`,
+`react-*.js` and the CSS — if `charts-*` appears there, something started importing
+recharts eagerly.
+
 ## Project constraints & decisions (non-obvious)
 
 - **No `localStorage`/`sessionStorage` — ever.** All state (quiz score, assessment answers,
