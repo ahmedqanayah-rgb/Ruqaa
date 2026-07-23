@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
@@ -12,11 +12,16 @@ export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const loc = useLocation()
+  const mainRef = useRef(null)
 
   // Close mobile drawer + scroll to top on navigation.
   useEffect(() => {
     setDrawerOpen(false)
     window.scrollTo({ top: 0 })
+    // Move focus into the content region. Without this the keyboard stays on
+    // the link that was just clicked — in the sidebar, several pages back in
+    // tab order — and a screen reader never announces the new page.
+    mainRef.current?.focus()
   }, [loc.pathname])
 
   /* Global shortcuts. "/" and "p" are bare keys, so they must never fire while
@@ -51,6 +56,11 @@ export default function Layout({ children }) {
 
   return (
     <div className={`app-shell ${collapsed ? 'is-collapsed' : ''}`}>
+      {/* First focusable thing on the page: the sidebar's whole section tree
+          sits between the navbar and the article in tab order. */}
+      <a className="skip-link" href="#main">
+        {t(ui.actions.skipToContent)}
+      </a>
       <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} />
       <div className="app-body">
         <Sidebar
@@ -59,7 +69,7 @@ export default function Layout({ children }) {
           onClose={() => setDrawerOpen(false)}
           onToggleCollapse={() => setCollapsed((c) => !c)}
         />
-        <main className="app-main">
+        <main className="app-main" id="main" ref={mainRef} tabIndex={-1}>
           <div className="page fade-in" key={loc.pathname}>{children}</div>
           <footer className="site-footer">
             <p>{t(ui.footer.built)}</p>

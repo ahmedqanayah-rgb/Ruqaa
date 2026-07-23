@@ -20,6 +20,7 @@ export const ui = {
     closeMenu: { ar: 'إغلاق القائمة', en: 'Close menu' },
     openBook: { ar: 'افتح الكتاب', en: 'Open the book' },
     search: { ar: 'بحث', en: 'Search' },
+    skipToContent: { ar: 'تجاوز إلى المحتوى', en: 'Skip to content' },
     present: { ar: 'وضع العرض (للجلسات)', en: 'Presentation mode (for sessions)' },
     exitPresent: { ar: 'إنهاء وضع العرض', en: 'Exit presentation mode' },
     back: { ar: 'رجوع', en: 'Back' },

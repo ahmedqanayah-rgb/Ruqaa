@@ -1332,3 +1332,19 @@ html[data-presenting] img { margin-inline: auto; }
   min-height: 220px; border-radius: var(--radius);
   background: var(--bg-elev-2); border: 1px solid var(--border);
 }
+
+/* Skip link — hidden until focused, then parks below the navbar. Uses the
+   logical start edge so it lands correctly in both RTL and LTR. */
+.skip-link {
+  position: fixed; inset-block-start: -100px; inset-inline-start: var(--space-3);
+  z-index: 300; padding: 10px 18px; border-radius: var(--radius-sm);
+  background: var(--accent); color: var(--accent-contrast);
+  font-weight: 700; font-size: var(--fs-sm); box-shadow: var(--shadow);
+  transition: inset-block-start var(--transition);
+}
+.skip-link:focus { inset-block-start: var(--space-3); text-decoration: none; }
+
+/* Focused programmatically on every navigation, so no ring for mouse users —
+   but keep one if it is ever reached by keyboard. */
+.app-main:focus { outline: none; }
+.app-main:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
