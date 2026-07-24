@@ -60,7 +60,7 @@ function DebateCard({ block }) {
   const { t } = useApp()
   return (
     <article className="debate card">
-      {block.topic && <RichText as="h4" className="debate-topic" value={block.topic} />}
+      {block.topic && <RichText as="h2" className="debate-topic" value={block.topic} />}
       <div className="debate-row claim">
         <span className="debate-tag">{t({ ar: 'ما يقوله الكتاب', en: 'What the book says' })}</span>
         <RichText as="p" value={block.claim} />
@@ -191,8 +191,11 @@ export default function ContentBlocks({ blocks }) {
     <>
       {blocks.map((b, i) => {
         switch (b.type) {
-          case 'h': return <RichText key={i} as="h3" value={b.text} />
-          case 'h4': return <RichText key={i} as="h4" value={b.text} />
+          // A section's title is the page h1, so its in-content headings are h2
+          // (major) and h3 (minor) — never h3/h4, which skips a level. The block
+          // type name 'h4' is kept for content compatibility; only the tag moved.
+          case 'h': return <RichText key={i} as="h2" value={b.text} />
+          case 'h4': return <RichText key={i} as="h3" value={b.text} />
           case 'p': return <RichText key={i} as="p" value={b.text} />
           case 'ul':
             return (

@@ -15,6 +15,7 @@ export default function Books() {
         en: 'The club’s books — we begin with one, and new books are added each season. Pick a book to open its interactive materials.',
       })}</p>
 
+      <h2 className="sr-only">{t(ui.labels.ourBooks)}</h2>
       <div className="books-grid">
         {books.map((b) => (
           <Link key={b.id} to={`/book/${b.id}`} className="book-card card">

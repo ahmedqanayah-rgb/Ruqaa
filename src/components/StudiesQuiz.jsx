@@ -127,7 +127,7 @@ export default function StudiesQuiz({ studies, interestOrder = [], bookTitle, se
 
       <div className="quiz-card card" key={study.id}>
         <span className="pill violet">{t(study.chapter)}</span>
-        <h3 className="quiz-title">{t(study.title)}</h3>
+        <h2 className="quiz-title">{t(study.title)}</h2>
         <p className="quiz-researcher"><b>{t(ui.labels.researcher)}:</b> {t(study.researcher)}</p>
 
         <div className="quiz-method">

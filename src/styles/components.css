@@ -278,8 +278,10 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .people-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .section-emoji { font-size: 0.9em; }
 .section-lead { font-size: var(--fs-md); color: var(--text-soft); margin-top: var(--space-2); }
-.section-content h3 { margin-top: var(--space-5); }
-.section-content h4 { margin-top: var(--space-4); color: var(--text); }
+/* Content headings were promoted h3/h4 -> h2/h3 for correct hierarchy; keep the
+   previous visual sizes so reading sub-headings don't balloon to page-title size. */
+.section-content h2 { font-size: var(--fs-lg); margin-top: var(--space-5); }
+.section-content h3 { font-size: var(--fs-md); margin-top: var(--space-4); color: var(--text); }
 
 .section-nav { display: flex; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-6); }
 .section-nav .btn { max-width: 46%; text-align: start; }
@@ -708,7 +710,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .quiz-dot.ok { background: var(--success); border-color: var(--success); }
 .quiz-dot.no { background: var(--danger); border-color: var(--danger); }
 .quiz-card { padding: var(--space-4); }
-.quiz-title { margin: var(--space-2) 0; }
+.quiz-title { margin: var(--space-2) 0; font-size: var(--fs-lg); }
 .quiz-researcher { font-size: var(--fs-sm); color: var(--text-muted); }
 .quiz-h { display: inline-block; font-weight: 700; color: var(--text); margin-bottom: 4px; font-size: var(--fs-sm); }
 .quiz-method { background: var(--bg-elev-2); border-radius: var(--radius); padding: var(--space-3); margin: var(--space-3) 0; }
@@ -753,6 +755,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .assess-opt.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
 .assess-opt input { accent-color: var(--accent); }
 .btn.big { padding: 14px 26px; font-size: var(--fs-md); align-self: center; }
+.assess-tips-h { font-size: var(--fs-lg); }
 
 .assess-result { text-align: center; }
 .score-ring {
@@ -1248,7 +1251,9 @@ html[data-presenting] img { margin-inline: auto; }
 
 /* claim → critique → response */
 .debate { padding: var(--space-4); margin: var(--space-4) 0; }
-.debate-topic { margin: 0 0 var(--space-3); }
+/* debate-topic is an h2 (major subsection); this beats `.section-content h2` so
+   the card title keeps its compact size and no top margin inside the card. */
+.debate .debate-topic { font-size: var(--fs-md); margin: 0 0 var(--space-3); }
 .debate-row { padding: var(--space-3); border-radius: var(--radius); margin-bottom: var(--space-2); background: var(--bg-elev-2); border-inline-start: 3px solid var(--border-strong); }
 .debate-row.claim { border-inline-start-color: var(--blue); }
 .debate-row.critique { border-inline-start-color: var(--danger); }

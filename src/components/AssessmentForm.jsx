@@ -77,7 +77,7 @@ export default function AssessmentForm({ questions, tips, goodTip, bookTitle, se
           </div>
           <div className="score-band" style={{ color: band(result.score).col }}>{t(band(result.score))}</div>
 
-          <h3>{t({ ar: 'نصائح مخصّصة لك', en: 'Your personalized tips' })}</h3>
+          <h2 className="assess-tips-h">{t({ ar: 'نصائح مخصّصة لك', en: 'Your personalized tips' })}</h2>
           <div className="tips-list">
             {result.tips.length === 0 ? (
               <div className="callout key"><span className="callout-icon" aria-hidden>🎉</span><div><RichText as="p" value={goodTip} /></div></div>
