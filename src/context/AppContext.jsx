@@ -3,7 +3,8 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 /*
  * Single provider for the two global concerns: language (which drives text
  * direction) and theme. State is kept in memory only — no localStorage per
- * project constraints. Defaults: Arabic (RTL) + light.
+ * project constraints. Defaults: Arabic (RTL); theme follows the device's
+ * prefers-color-scheme (see the theme init below for why).
  */
 
 const AppContext = createContext(null)
@@ -21,7 +22,17 @@ function toWesternDigits(s) {
 
 export function AppProvider({ children }) {
   const [lang, setLang] = useState('ar')      // 'ar' | 'en'
-  const [theme, setTheme] = useState('light') // 'light' | 'dark'
+  // Default the theme to the device's preferred scheme. This is the fix for
+  // phones whose browser force-darkens light web content: by opening in our own
+  // dark theme (which declares color-scheme:dark), the browser sees an
+  // already-dark page and leaves it alone — so members get the clean designed
+  // dark theme instead of a mangled force-inverted light one. A light-mode
+  // device / PC still opens light, and the toggle still works either way. No
+  // website can render *white* on a device that force-darks web content, so
+  // matching that device is the best achievable result there.
+  const prefersDark = typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+  const [theme, setTheme] = useState(prefersDark ? 'dark' : 'light') // 'light' | 'dark'
   // Presentation mode: chrome hidden and type scaled up, for projecting the
   // site during club sessions. In-memory like everything else.
   const [presenting, setPresenting] = useState(false)
