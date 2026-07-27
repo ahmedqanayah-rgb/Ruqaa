@@ -42,9 +42,31 @@ const DIR = 'public/images/clean'
 const PAPER = { r: 0xf7, g: 0xf4, b: 0xee } // = --bg in the light theme
 const WHITE = 236 // at/above this in every channel counts as the print's paper
 
+/* Diagrams that were never cut out — they still have their original white
+   background, so their labels are readable on dark already. They only need the
+   white toned down to match, or they read as a brighter, cooler slab beside the
+   backed cut-outs. No margin is added: these keep their own. */
+const HARMONIZE = ['public/images/anatomical/rem-vs-nrem.webp']
+
 const walk = (d) =>
   fs.readdirSync(d, { withFileTypes: true })
     .flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]))
+
+/* Repaint every near-white pixel as paper. Idempotent: PAPER is itself above
+   WHITE, so a second pass maps it to itself. */
+const toPaper = (d, channels) => {
+  for (let i = 0; i < d.length; i += channels) {
+    if (d[i] >= WHITE && d[i + 1] >= WHITE && d[i + 2] >= WHITE) {
+      d[i] = PAPER.r; d[i + 1] = PAPER.g; d[i + 2] = PAPER.b
+    }
+  }
+  return d
+}
+
+const report = (file, size, len) => {
+  const pct = Math.round((len / size - 1) * 100)
+  console.log(`  ${String(Math.round(size / 1024)).padStart(4)} KB → ${String(Math.round(len / 1024)).padStart(4)} KB  (${pct >= 0 ? '+' : ''}${pct}%)  ${file.replace(/\\/g, '/').replace('public/images/', '')}`)
+}
 
 let done = 0, skipped = 0, before = 0, after = 0
 
@@ -65,12 +87,7 @@ for (const file of walk(DIR).filter((f) => /\.webp$/i.test(f))) {
   // the paper. These are prints on white paper, so remap what is still near-white
   // to the same paper tone. WHITE is low enough to catch off-white scans and high
   // enough to leave the pale blue/pink/orange fills in the diagrams alone.
-  const d = flat.data
-  for (let i = 0; i < d.length; i += channels) {
-    if (d[i] >= WHITE && d[i + 1] >= WHITE && d[i + 2] >= WHITE) {
-      d[i] = PAPER.r; d[i + 1] = PAPER.g; d[i + 2] = PAPER.b
-    }
-  }
+  const d = toPaper(flat.data, channels)
 
   // A margin of paper around the artwork, so a label at the very edge of a
   // trimmed cut-out isn't flush against the plate. Proportional, because these
@@ -83,9 +100,18 @@ for (const file of walk(DIR).filter((f) => /\.webp$/i.test(f))) {
   fs.writeFileSync(file, buf)
 
   before += size; after += buf.length; done++
-  const pct = Math.round((buf.length / size - 1) * 100)
-  console.log(`  ${String(Math.round(size / 1024)).padStart(4)} KB → ${String(Math.round(buf.length / 1024)).padStart(4)} KB  (${pct >= 0 ? '+' : ''}${pct}%)  ${path.relative(DIR, file).replace(/\\/g, '/')}`)
+  report(file, size, buf.length)
+}
+
+for (const file of HARMONIZE) {
+  const size = fs.statSync(file).size
+  const { data, info } = await sharp(fs.readFileSync(file)).raw().toBuffer({ resolveWithObject: true })
+  const buf = await sharp(toPaper(data, info.channels), { raw: info })
+    .webp({ quality: 82, effort: 6 }).toBuffer()
+  fs.writeFileSync(file, buf)
+  before += size; after += buf.length; done++
+  report(file, size, buf.length)
 }
 
 const kb = (n) => Math.round(n / 1024)
-console.log(`\n${done} backed, ${skipped} already opaque — ${kb(before)} KB → ${kb(after)} KB`)
+console.log(`\n${done} papered, ${skipped} already opaque — ${kb(before)} KB → ${kb(after)} KB`)

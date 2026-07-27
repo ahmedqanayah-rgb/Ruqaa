@@ -118,8 +118,17 @@ brain) stayed pure white and showed as a bright patch against the paper — the 
 what is still near-white to the same tone. And dropping the alpha channel made the files
 *smaller*: 1696 kB → 1331 kB. **Images now total 3.6 MB.**
 
-The script is idempotent (it skips images that already lost their alpha), but it is the **last
-step of a pipeline** — the order is documented in its header.
+A sweep of the images that *weren't* cut out found one more: `anatomical/rem-vs-nrem.webp`, a
+labelled diagram still on pure `#ffffff`. Its text was readable on dark (it was never
+transparent), but beside the backed cut-outs it read as a brighter, cooler slab — so the
+script's `HARMONIZE` list tones its white to the same paper, with no margin added since it
+keeps its own. The other non-cut-out content images are photographs
+(`natural-killer-cells` is a micrograph, plus provincetown/graceland and the portraits) and
+need nothing.
+
+The script is idempotent — cut-outs that already lost their alpha are skipped, and the
+white→paper remap maps paper to itself — but it is the **last step of a pipeline**, and the
+order is documented in its header.
 
 ---
 
