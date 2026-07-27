@@ -1,10 +1,15 @@
 # Polishing plan
 
-A review of the whole site as of **2026-07-23**, ordered by real impact. Written to be
-picked up in a later session — each item says what's wrong, how it was measured, and how
-to know it worked. Same spirit as `PLAN-stolen-focus.md`.
+A review of the whole site, ordered by real impact. Written to be picked up in a later
+session — each item says what's wrong, how it was measured, and how to know it worked.
+Same spirit as `PLAN-stolen-focus.md`. **Last updated 2026-07-24.**
 
-Everything already **done** this round is at the bottom, so nobody redoes it.
+Everything already **done** is listed at the bottom, so nobody redoes it. §6 records design
+decisions the user made about the figures — treat those as settled.
+
+**Start here:** the site is live at https://ruqaa.vercel.app and every push to `main`
+auto-deploys. Working tree was clean at last handoff. The biggest remaining wins are §1
+(images, partly done) and §3 (content only the club can write).
 
 ---
 
@@ -61,20 +66,18 @@ sharp, then read by `ImageBlock`). Left for a focused pass — it's more than CS
 
 ---
 
-## 2. Nobody can see the site  ⚠️ **highest value overall**
+## 2. Deployment — ✅ resolved (it was already live)
 
-GitHub Pages is not enabled and the repo has no homepage URL. Every feature built this
-round — the world map, the reviews, the challenges, the session opener — is invisible to the
-club unless a member clones the repo and runs a dev server.
+**The site is live at https://ruqaa.vercel.app and Vercel auto-deploys every push to `main`.**
+So **push = deploy**, and a fix should be verified by loading that URL, not just localhost.
 
-`vite.config.js` already sets `base: './'`, which is exactly what a Pages project site needs,
-and the build is a static `dist/`. Roughly a 20-line Actions workflow.
+This section previously claimed nothing was deployed — that was wrong, and it cost a detour:
+a GitHub Pages workflow was added on 2026-07-24 and then removed as a redundant second
+deployment. Don't re-add Pages. `og:image`/`og:url` in `index.html` are absolute and point at
+the Vercel domain; update them only if a custom domain is added.
 
-Two things to settle first:
-- It makes the **site** public, not just the source. Resolve member-photo consent before
-  members go up.
-- Then make the two `og:image` tags in `index.html` absolute (they're relative and marked
-  with a comment) — WhatsApp and Facebook scrapers won't fetch relative image URLs.
+Still worth settling before members' faces go up: the repo *and* the site are public, so get
+each person's consent (see §3).
 
 ---
 
@@ -106,12 +109,34 @@ Real work, real risk, and worth far less than item 1. Don't start it before the 
 
 ## 5. Smaller items
 
-- **Heading order** hasn't been audited page by page; check no page jumps h1 → h3.
+- ✅ **Heading order** — audited across nine page types and fixed (2026-07-24): content
+  headings are h2/h3, no page skips a level, sizes unchanged.
+- ✅ **Book covers** now lazy-load (list contexts only; the book-landing hero stays eager).
 - **Redundant CSS**: the per-component `prefers-reduced-motion` block in `components.css`
   is now superseded by the global safety net in `global.css`. Harmless, could be pruned.
-- **Book covers** lack `loading="lazy"` (person photos and content images have it).
 - **Housekeeping**: two backups are deletable once confidence settles —
   `Ruqaa/.git-backup-outer` and `Ruqaa/Ruqaa-mirror-backup-20260720.git`.
+
+---
+
+## 6. Figure design decisions (user feedback, 2026-07-24) — don't undo
+
+The user reviewed the Stolen Focus figures directly. Their calls, now implemented:
+
+- **No recharts entrance animation** — they called it a "float effect" and don't want it.
+  `isAnimationActive={false}` on bars *and* tooltips in `StolenFocusCharts.jsx`.
+- **"How your attention is sold" must be a circle** — it's a loop, so it now renders as a
+  circular SVG ring (`.sf-loop`) with the detail in the centre, not a left-to-right row.
+- **"The cost of interruption"** was "really bad" as a stacked bar → now a 60-minute timeline
+  where each interruption casts a 23-min refocus shadow; shadows overlap and visibly eat the
+  hour (`hourModel()`).
+- **"The flow channel"** structure was liked — enhanced rather than replaced: a mood emoji at
+  the marker plus real-life scenario presets that move the dot.
+- **Distraction-game notifications** must be genuinely tempting; realistic-but-dull ones
+  ("3 new messages") don't distract once you know they're fake. They now use curiosity-gap and
+  social-pull copy.
+- Related invariant: `flowZone()` splits at **exactly 50** to match the four coloured
+  quadrants. The old 45/55 thresholds reported "Flow" while the dot sat in Anxiety/Boredom.
 
 ---
 
@@ -135,11 +160,15 @@ Also: `computer` screenshots time out here (rAF never fires), so verify through 
 
 ---
 
-## Already done this round — don't redo
+## Already done — don't redo
 
 Club verdict + sourced critical reception for both books · cross-book connections ·
 "ask me one" session opener · 7-day challenge per book · world map of members ·
 ⌘K search · presentation mode · shareable result cards · rebuilt About page ·
 bundle split (491 → 346 kB gzipped) · skip link + focus management ·
 reduced-motion safety net · link-preview metadata · honest section-card metadata ·
-fixed Home pointing at the finished book · bad section slugs no longer fail silently.
+fixed Home pointing at the finished book · bad section slugs no longer fail silently ·
+**images 43.3 MB → 7.4 MB** (delete unused + resize/recompress + `clean/` to WebP) ·
+cover layout-shift fixed · heading hierarchy fixed · flow-zone quadrant bug fixed ·
+map made legible on mobile · theme now follows the device colour scheme ·
+four Stolen Focus figures redesigned per user feedback (§6).
