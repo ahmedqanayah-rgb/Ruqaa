@@ -106,6 +106,19 @@ recharts eagerly.
   `panel()` and `rowImg()` helpers swap the extension, which is what kept the conversion from
   churning hundreds of data lines. **The covers used for `og:image` stay JPG**: several social
   scrapers won't fetch a WebP preview.
+- **The `clean/` cut-outs are no longer transparent.** They are scans of printed diagrams —
+  black labels, thin leader lines, engraved hatching — so on a dark background their text
+  disappeared. Each now carries a **paper backing and margin baked into the pixels**
+  (`scripts/paper-backing.mjs`). It had to be pixels, not CSS: phone browsers that force-dark
+  a page darken background colours and deliberately leave image pixels alone, so a CSS plate
+  gets darkened right back out from under the artwork. The colour equals the light theme's
+  `--bg`, so in the light theme they still blend into the page exactly as before. `.img-block.transparent`
+  therefore sets no padding of its own, and `--figure-paper` (theme-independent, in
+  `tokens.css`) exists only for chrome that sits flush against them, like `.spider-box`.
+- **The image pipeline has an order**, documented at the top of `paper-backing.mjs`:
+  generators → `brain-rows`/`spider-panels` → `to-webp` → `paper-backing`. `clean/brain-areas`
+  and `clean/spider-web` are *intermediates* for the row/panel splitters, not display assets;
+  `check-image-refs.mjs` correctly reports them as unreferenced once the outputs exist.
 - **`src/data/imageDims.js` is generated** by `gen-image-dims.mjs` — intrinsic sizes for
   inline content images so `ImageBlock` can emit `width`/`height` and reserve the box before
   the bytes land. Content images have genuinely different aspect ratios, so the flat

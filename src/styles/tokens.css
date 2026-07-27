@@ -37,6 +37,16 @@
   /* Brand (the club logo colour) — constant across themes */
   --brand: #a5855b;
   --brand-ink: #ffffff;
+
+  /* The paper the scanned figures are printed on. Constant across themes on
+     purpose: those diagrams are black ink on white, so their backing has to
+     stay light or the labels vanish. It is baked into the pixels by
+     scripts/paper-backing.mjs (a CSS colour would be force-darkened by phone
+     browsers, which leave image pixels alone) — this variable exists only for
+     the chrome that has to sit flush against them, and MUST stay equal to
+     PAPER in that script. Same value as the light theme's --bg, so in the
+     light theme the figures still blend into the page. */
+  --figure-paper: #f7f4ee;
 }
 
 /* ---- Light theme (default): warm paper ---- */

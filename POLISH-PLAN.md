@@ -98,6 +98,31 @@ Re-run the generator after adding or replacing a content image —
 
 ---
 
+**1e. Cut-out legibility on dark backgrounds.** ✅ **done (2026-07-27), user-reported.** The
+`clean/` images are scans of printed diagrams — black labels, thin black leader lines,
+engraved hatching, pale fills. Flood-filling the white background out left them transparent,
+which reads beautifully on a light page and is *unreadable* on a dark one: black ink on
+`#17140f`. The same happens in the light theme on a phone browser that force-darkens the page.
+
+Fixed by baking a **paper backing plus margin into the pixels** (`scripts/paper-backing.mjs`).
+The choice of pixels over CSS is the whole point: force-dark engines darken background
+colours and deliberately leave image pixels alone, so a CSS plate would be darkened right back
+out from under the artwork — and `tokens.css` already records that `color-scheme: only light`
+doesn't reliably stop them. The paper colour is exactly the light theme's `--bg`, so in the
+light theme the figures still blend into the page as originally designed; nothing about the
+light view changed.
+
+Two details worth keeping: the flood-fill only reaches the background from outside, so white
+regions it couldn't enter (the cells inside a spider web's frame, the interior of an engraved
+brain) stayed pure white and showed as a bright patch against the paper — the script remaps
+what is still near-white to the same tone. And dropping the alpha channel made the files
+*smaller*: 1696 kB → 1331 kB. **Images now total 3.6 MB.**
+
+The script is idempotent (it skips images that already lost their alpha), but it is the **last
+step of a pipeline** — the order is documented in its header.
+
+---
+
 ## 2. Deployment — ✅ resolved (it was already live)
 
 **The site is live at https://ruqaa.vercel.app and Vercel auto-deploys every push to `main`.**
