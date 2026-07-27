@@ -57,8 +57,10 @@ export const club = {
    * map uses per-location colours + real names instead — consistent everywhere.
    */
   reach: {
-    meeting: L('نلتقي أسبوعياً على مكالمة Google Meet واحدة',
-               'We meet weekly on a single Google Meet call'),
+    // «جلسة», not «مكالمة» — the hub label and the rest of the site call it a
+    // session, so this matches. The English follows for the same reason.
+    meeting: L('نلتقي أسبوعياً في جلسةٍ واحدة على Google Meet',
+               'We meet weekly in a single session on Google Meet'),
     locations: [
       { code: 'sy', country: L('سوريا', 'Syria'),                   city: L('دمشق', 'Damascus'),           lat: 33.51, lon: 36.29 },
       // Istanbul nudged a hair NW onto its own Thracian (European) side — its

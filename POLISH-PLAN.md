@@ -156,9 +156,9 @@ each person's consent (see §3).
   both sections stay hidden until filled. Repo is public — get each person's OK. Photos go
   in `public/images/club/`. (Watch the filename: the banner first arrived as
   `clubreading-corner.jpg.jpg`.)
-- **Subtitle wording.** The reach subtitle still reads «نلتقي أسبوعياً على مكالمة Google Meet
-  واحدة». The hub label moved to «جلسة» wording; the user was offered
-  «نلتقي أسبوعياً في جلسةٍ واحدة على Google Meet» and hasn't decided.
+- ✅ **Subtitle wording decided** (2026-07-27) — the user chose «نلتقي أسبوعياً في جلسةٍ واحدة
+  على Google Meet». The English follows it («…in a single session on Google Meet»), so both
+  match the «جلسة» wording the hub label and `WorldReach` already use.
 
 ---
 
@@ -184,8 +184,10 @@ Real work, real risk, and worth far less than item 1. Don't start it before the 
   those elements fired no `animationend` at all. The global rule deliberately uses near-zero
   durations instead of `none` precisely so those events keep firing. Both blocks are gone and
   the comment in `global.css` now says not to reintroduce them.
-- **Housekeeping**: two backups are deletable once confidence settles —
-  `Ruqaa/.git-backup-outer` and `Ruqaa/Ruqaa-mirror-backup-20260720.git`.
+- ✅ **Housekeeping done** (2026-07-27) — `Ruqaa/.git-backup-outer` and
+  `Ruqaa/Ruqaa-mirror-backup-20260720.git` deleted on the user's go-ahead, freeing 138 MB.
+  Checked first that the repo was clean, level with `origin/main` and `git fsck`-clean, so the
+  pre-rewrite history they held was genuinely redundant.
 
 ---
 
