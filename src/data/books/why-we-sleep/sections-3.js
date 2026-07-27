@@ -1,7 +1,8 @@
 const L = (ar, en) => ({ ar, en })
 const anat = (f) => `./images/anatomical/${f}`
 const clean = (f) => `./images/clean/${f.replace(/\.\w+$/, '')}.webp`
-const port = (f) => `./images/characters/${f}`
+// portraits are WebP now; callers still pass the old .jpg name.
+const port = (f) => `./images/characters/${f.replace(/\.\w+$/, '')}.webp`
 
 /* ===================== 6) Sleep, Health, Immunity & Cancer ===================== */
 export const health = {
@@ -27,7 +28,7 @@ export const health = {
         '**Chronic inflammation:** sleep loss keeps the body in a hidden inflammatory state linked to heart disease and diabetes.'),
     ] },
     { type: 'imggrid', images: [
-      { src: anat('natural-killer-cells.jpg'), alt: L('الخلايا القاتلة الطبيعية', 'Natural killer cells'),
+      { src: anat('natural-killer-cells.webp'), alt: L('الخلايا القاتلة الطبيعية', 'Natural killer cells'),
         caption: L('الخلايا القاتلة الطبيعية (Natural Killer Cells) تهاجم خليّة خبيثة.', 'Natural Killer Cells attacking a malignant cell.') },
       { src: clean('nk-cells-1.png'), transparent: true, alt: L('نشاط الخلايا المناعية', 'Immune-cell activity'),
         caption: L('نشاط المناعة يعتمد على النوم ليلةً بليلة.', 'Immune activity depends on sleep, night by night.') },
@@ -174,7 +175,7 @@ export const animal = {
       L('بعض **الطيور المهاجرة** تنام أثناء الطيران بلمحاتٍ قصيرة و/أو بنصف دماغ.',
         'Some **migrating birds** sleep in flight in brief snatches and/or unihemispherically.'),
     ] },
-    { type: 'image', src: anat('half-sleeping-bird.jpg'), wide: true, alt: L('طائر ينام بنصف دماغ', 'A bird sleeping unihemispherically'),
+    { type: 'image', src: anat('half-sleeping-bird.webp'), wide: true, alt: L('طائر ينام بنصف دماغ', 'A bird sleeping unihemispherically'),
       caption: L('النوم أحادي النصف الكروي — طائرٌ بعينٍ مفتوحة يحرس بينما ينام نصفُ دماغه.', 'Unihemispheric sleep — a bird keeps one eye open on guard while half its brain sleeps.') },
     { type: 'callout', variant: 'fact', title: L('«أثر الليلة الأولى» فينا', 'The “first-night effect” in us'), text: L(
       'حين تنام في مكانٍ جديد يبقى **نصف دماغك أكثر تيقّظاً** فتنام نوماً أخفّ — صدىً باهتٌ للنوم أحادي النصف عند الحيوانات. والدرس الأكبر: **الإنسان وحده يحرم نفسه من النوم عمداً**.',

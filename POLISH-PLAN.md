@@ -2,18 +2,18 @@
 
 A review of the whole site, ordered by real impact. Written to be picked up in a later
 session — each item says what's wrong, how it was measured, and how to know it worked.
-Same spirit as `PLAN-stolen-focus.md`. **Last updated 2026-07-24.**
+Same spirit as `PLAN-stolen-focus.md`. **Last updated 2026-07-27.**
 
 Everything already **done** is listed at the bottom, so nobody redoes it. §6 records design
 decisions the user made about the figures — treat those as settled.
 
 **Start here:** the site is live at https://ruqaa.vercel.app and every push to `main`
-auto-deploys. Working tree was clean at last handoff. The biggest remaining wins are §1
-(images, partly done) and §3 (content only the club can write).
+auto-deploys. Working tree was clean at last handoff. **§1 is now finished** — the only
+remaining item of substance is §3, which is content only the club can write.
 
 ---
 
-## 1. Images — 43 MB, and the single biggest problem on the site  ⚠️ **do this first**
+## 1. Images — 43 MB → 3.9 MB  ✅ **done (2026-07-27)**
 
 The JS bundle was just cut to 346 kB gzipped. The images are **43.3 MB across 116 files** —
 roughly **125× the entire JS payload**. For members joining from Syria, Malaysia, Turkey and
@@ -43,26 +43,58 @@ filename across `src/`, `scripts/` and `index.html`:
 **1b. Resize + recompress in place** (done — see below). Keeps filenames and formats, so no
 reference churn.
 
-**1c. Convert to WebP.** ✅ **`clean/` done** (2026-07-24): 5.1 MB → 2.3 MB (−55%), via
-`scripts/clean-to-webp.mjs` + swapping the extension inside the `clean()`/`panel()`/`rowImg()`
-helpers, no call-site churn. Images total is now **7.4 MB**.
-*Remaining (deferred, smaller):* `characters/` (57 jpgs, ~1.7 MB — jpg→webp saves less than
-png→webp, and there are two literal `authorPhoto` refs in the book `index.js` files to fix),
-book covers (literal paths, one already webp), and `anatomical/` (2.5 MB — **left on
-purpose**: those double as the source images for `clean/` via `process-images.mjs`, so
-converting them entangles the regeneration path). `og:image` must stay JPG regardless —
-several social scrapers won't fetch a WebP preview image.
+**1c. Convert to WebP.** ✅ **done.** `clean/` first (2026-07-24): 5.1 MB → 2.3 MB (−55%).
+Then `characters/` (2026-07-27): 57 portraits, 1.7 MB → 1.4 MB — only −19%, because these
+were already width-capped jpgs and jpg→webp pays far less than png→webp. Both went through
+`scripts/to-webp.mjs <dir>` (the old `clean-to-webp.mjs`, now taking a directory argument),
+with the extension swapped inside the `clean()`/`panel()`/`rowImg()`/`port()` helpers so no
+call site changed; the two literal `authorPhoto` paths in the book `index.js` files were
+fixed by hand. **`og:image` must stay JPG** — several social scrapers won't fetch a WebP
+preview image — so the covers used in link previews were left alone.
+
+**1c-bis. The real win: stop shipping build inputs** (2026-07-27, 7.4 MB → 3.9 MB).
+`anatomical/` was never really a WebP problem. Auditing it showed **17 of its 20 files are
+never requested by the site at all** — 12 are inputs to `process-images.mjs` and 5 to
+`fix-images.mjs`, both of which write cut-outs into `clean/`. Only three are rendered
+(`rem-vs-nrem`, `half-sleeping-bird`, `natural-killer-cells`). The same was true of
+`spider-web.png` (496 kB). They sat in `public/`, which Vite copies verbatim into `dist`, so
+every visitor was served ~2.9 MB of source material nobody downloads.
+
+Those 18 originals now live in **`assets-src/`**, outside `public/` — still in the repo, still
+regenerating `clean/`, just not shipped. The two scripts point there instead. A further
+650 kB went with four generated cut-outs in `clean/` (`brain-areas`, `pineal-gland`, `prion`,
+`spider-web`) that no section ever ended up using; all four regenerate from `assets-src/`.
+
+> **The lesson generalises: `public/` is a shipping manifest, not a shed.** Anything that is
+> only an input to a script belongs in `assets-src/`.
+
+**`scripts/check-image-refs.mjs`** now guards both directions. It imports the real book data
+and walks every block rather than grepping — §1a records why a filename grep is untrustworthy
+here — then reports refs pointing at missing files *and* files in `public/images` that
+nothing references. Run it after any image rename, move or format change:
+
+```bash
+node scripts/check-image-refs.mjs
+```
 
 **1d. Reserve image space to stop layout shift.** ✅ **covers done** (2026-07-24): all four
 book covers are a consistent 2:3, so `.book-cover` / `.book-hero-cover` / `.season-cover` got
 `aspect-ratio: 2/3` + `object-fit: cover`, and the list covers (Home carousel, Books grid,
 About seasons) got `loading="lazy"` — the book-landing hero cover stays eager as that page's
 LCP. Person photos and logos were already fixed-size.
-*Remaining:* inline **content images** (`.img-block`) still have no reserved height and their
-aspect ratios genuinely vary (e.g. provincetown 1.78 vs graceland 1.36), so a single
-`aspect-ratio` would distort them. The correct fix is intrinsic `width`/`height` per image,
-which means carrying dimensions in the block data (a small build-time manifest generated with
-sharp, then read by `ImageBlock`). Left for a focused pass — it's more than CSS.
+✅ **content images done** (2026-07-27). Their aspect ratios genuinely vary (provincetown
+1.78 vs graceland 1.36), so a single `aspect-ratio` would have distorted them; the fix is
+intrinsic `width`/`height` per image. `scripts/gen-image-dims.mjs` walks the book data for
+`image`/`imggrid` blocks, reads each file with sharp and writes **`src/data/imageDims.js`**
+(21 entries); `ImageBlock` looks up `block.src` and emits the attributes.
+
+No CSS changed, and that's the point: `.img-block img` keeps `width/height: auto` under
+`max-width: 100%` + `max-height: 460px`, so the attributes only supply the aspect ratio and
+the existing clamps still decide the rendered size. Before, an unloaded image had an
+intrinsic size of 0×0 and the article reflowed around it on arrival.
+
+Re-run the generator after adding or replacing a content image —
+`check-image-refs.mjs` fails if any content image is missing from the manifest.
 
 ---
 
@@ -112,8 +144,12 @@ Real work, real risk, and worth far less than item 1. Don't start it before the 
 - ✅ **Heading order** — audited across nine page types and fixed (2026-07-24): content
   headings are h2/h3, no page skips a level, sizes unchanged.
 - ✅ **Book covers** now lazy-load (list contexts only; the book-landing hero stays eager).
-- **Redundant CSS**: the per-component `prefers-reduced-motion` block in `components.css`
-  is now superseded by the global safety net in `global.css`. Harmless, could be pruned.
+- ✅ **Redundant CSS pruned** (2026-07-27) — and it was not harmless. The two per-component
+  `prefers-reduced-motion` blocks in `components.css` used `animation: none`, which drops
+  `animation-name` entirely; the global net in `global.css` only overrides *durations*, so
+  those elements fired no `animationend` at all. The global rule deliberately uses near-zero
+  durations instead of `none` precisely so those events keep firing. Both blocks are gone and
+  the comment in `global.css` now says not to reintroduce them.
 - **Housekeeping**: two backups are deletable once confidence settles —
   `Ruqaa/.git-backup-outer` and `Ruqaa/Ruqaa-mirror-backup-20260720.git`.
 
@@ -168,7 +204,8 @@ Club verdict + sourced critical reception for both books · cross-book connectio
 bundle split (491 → 346 kB gzipped) · skip link + focus management ·
 reduced-motion safety net · link-preview metadata · honest section-card metadata ·
 fixed Home pointing at the finished book · bad section slugs no longer fail silently ·
-**images 43.3 MB → 7.4 MB** (delete unused + resize/recompress + `clean/` to WebP) ·
-cover layout-shift fixed · heading hierarchy fixed · flow-zone quadrant bug fixed ·
+**images 43.3 MB → 3.9 MB** (delete unused + resize/recompress + `clean/` and `characters/`
+to WebP + build inputs moved out of `public/`) · layout shift fixed for covers *and* content
+images · heading hierarchy fixed · flow-zone quadrant bug fixed ·
 map made legible on mobile · theme now follows the device colour scheme ·
 four Stolen Focus figures redesigned per user feedback (§6).

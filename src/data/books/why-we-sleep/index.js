@@ -20,7 +20,7 @@ export const whyWeSleep = {
   title: L('لماذا ننام', 'Why We Sleep'),
   subtitle: L('اكتشف طاقة النوم والأحلام', 'Unlocking the Power of Sleep and Dreams'),
   author: L('ماثيو ووكر', 'Matthew Walker'),
-  authorPhoto: './images/characters/matthew-walker.jpg',
+  authorPhoto: './images/characters/matthew-walker.webp',
   cover: L('./images/cover-ar.jpg', './images/cover-en.webp'),
   blurb: L(
     'كتابٌ يثبت أن النوم أقوى وأرخص دواءٍ وقائيّ نملكه — يعيد كلّ ليلةٍ ضبط الدماغ والجسد والعاطفة.',

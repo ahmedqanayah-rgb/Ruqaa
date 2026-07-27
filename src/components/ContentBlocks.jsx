@@ -2,6 +2,7 @@ import { useState, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
+import { imageDims } from '../data/imageDims.js'
 import RichText from './RichText.jsx'
 
 /* The figure registry pulls in every chart component and, through them, all of
@@ -120,9 +121,14 @@ function Callout({ block }) {
 function ImageBlock({ block }) {
   const { t } = useApp()
   const cls = ['img-block', block.wide ? 'wide' : '', block.transparent ? 'transparent' : ''].filter(Boolean).join(' ')
+  // Intrinsic size from the generated manifest, so the browser reserves the box
+  // before the image lands instead of reflowing the article around it. The CSS
+  // keeps width/height auto, so these only supply the aspect ratio — the
+  // max-width/max-height clamps still decide the rendered size.
+  const [w, h] = imageDims[block.src] || []
   return (
     <figure className={cls}>
-      <img src={block.src} alt={t(block.alt)} loading="lazy"
+      <img src={block.src} alt={t(block.alt)} loading="lazy" width={w} height={h}
         onError={(e) => { e.currentTarget.style.display = 'none' }} />
       {block.caption && <figcaption className="fig-caption"><RichText value={block.caption} /></figcaption>}
       {block.legend && (

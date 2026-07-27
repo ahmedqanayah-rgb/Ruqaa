@@ -7,7 +7,10 @@ import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const anatDir = path.resolve(__dirname, '../public/images/anatomical')
+// Sources live in assets-src/, NOT public/ — Vite copies public/ verbatim into
+// dist, and these originals are only ever inputs to clean/. Keeping them here
+// leaves ~2.9 MB out of every visitor's download.
+const anatDir = path.resolve(__dirname, '../assets-src/anatomical')
 const outDir = path.resolve(__dirname, '../public/images/clean')
 fs.mkdirSync(outDir, { recursive: true })
 
@@ -25,7 +28,7 @@ const TARGETS = [
   ['anatomical', 'memory-consolodation.png', 'memory-consolidation.png'],
   ['anatomical', 'memory-brain-chart.png', 'memory-chart.png'],
   ['anatomical', 'pineal-gland.jpg', 'pineal-gland.png'],
-  ['root', 'spider-web.png', 'spider-web.png'],
+  ['src-root', 'spider-web.png', 'spider-web.png'],
 ]
 
 const WHITE = 232 // channel value at/above which a pixel counts as "white"
@@ -66,8 +69,8 @@ async function processOne(srcPath, outName) {
 
 for (const [where, src, out] of TARGETS) {
   const srcPath =
-    where === 'root'
-      ? path.resolve(__dirname, '../public/images', src)
+    where === 'src-root'
+      ? path.resolve(__dirname, '../assets-src', src)
       : path.join(anatDir, src)
   if (!fs.existsSync(srcPath)) { console.log('MISSING', src); continue }
   try {

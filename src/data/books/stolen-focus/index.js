@@ -110,7 +110,7 @@ export const stolenFocus = {
   subtitle: L('لماذا صرنا نعاني مشكلة قلة الانتباه؟',
               'Why You Can’t Pay Attention — and How to Think Deeply Again'),
   author: L('يوهان هاري', 'Johann Hari'),
-  authorPhoto: './images/characters/johann-hari.jpg',
+  authorPhoto: './images/characters/johann-hari.webp',
   cover: L('./images/stolen-focus-cover-ar.jpg', './images/stolen-focus-cover-en.jpg'),
   blurb: L(
     'تحقيقٌ عالميّ في أسباب انهيار انتباهنا — اثنا عشر سبباً خارجياً تسرق تركيزنا، وكيف نستعيده فرداً وجماعة.',

@@ -7,7 +7,7 @@ import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const anat = path.resolve(__dirname, '../public/images/anatomical')
+const anat = path.resolve(__dirname, '../assets-src/anatomical')
 const outDir = path.resolve(__dirname, '../public/images/clean')
 fs.mkdirSync(outDir, { recursive: true })
 const WHITE = 232

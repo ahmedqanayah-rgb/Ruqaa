@@ -1,5 +1,6 @@
 const L = (ar, en) => ({ ar, en })
-const port = (f) => `./images/characters/${f}`
+// portraits are WebP now; callers still pass the old .jpg name.
+const port = (f) => `./images/characters/${f.replace(/\.\w+$/, '')}.webp`
 
 /* ===================== Characters ===================== */
 export const characters = {

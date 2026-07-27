@@ -602,15 +602,6 @@ button.sf-toast:hover { border-color: var(--danger); }
 .sf-read-score-n { font-size: var(--fs-2xl); font-weight: 800; line-height: 1; }
 .sf-read-score-lbl { font-size: var(--fs-xs); color: var(--text-muted); }
 
-@media (prefers-reduced-motion: reduce) {
-  .sf-toast { animation: none; }
-  .sf-bar-deep, .sf-bar-lost, .sf-roam-active, .sf-share-outrage { transition: none; }
-  .route-fade { animation: none; }
-  .read-progress-fill { transition: none; }
-  .side-group-items { animation: none; }
-  .side-chev { transition: none; }
-}
-
 @media (max-width: 860px) {
   .sf-scroll-wrap { grid-template-columns: 1fr; }
 }
@@ -1226,10 +1217,6 @@ html[data-presenting] img { margin-inline: auto; }
   .reach-hub-core { r: 10px; }
   .reach-hub-label { display: none; }
   .reach-tip { font-size: 42px; stroke-width: 7px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reach-arc, .reach-hub-halo { animation: none; }
 }
 
 /* ============================================================

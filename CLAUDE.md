@@ -23,8 +23,17 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 ```
 
 Image-processing scripts (`scripts/*.mjs`, one-off, require `sharp`) run with `node
-scripts/<name>.mjs`; they remove image backgrounds via edge flood-fill and write to
-`public/images/clean/`.
+scripts/<name>.mjs`. `process-images.mjs` and `fix-images.mjs` remove backgrounds via edge
+flood-fill and write to `public/images/clean/`; `to-webp.mjs <dir>` converts a directory in
+place; `gen-image-dims.mjs` regenerates `src/data/imageDims.js`.
+
+After any image rename, move or format change, run:
+```bash
+node scripts/check-image-refs.mjs
+```
+It imports the book data and walks every block (paths are helper-built, so grepping filenames
+misses them), then reports refs pointing at missing files, files in `public/images` nothing
+references, and content images missing from `imageDims.js`.
 
 ## Architecture
 
@@ -84,6 +93,23 @@ Both render a `.figure-loading` placeholder through `Suspense` so the page doesn
 Verify with `npm run build`: the entry `index.html` should reference only `index-*.js`,
 `react-*.js` and the CSS — if `charts-*` appears there, something started importing
 recharts eagerly.
+
+## Images
+
+- **`public/` is a shipping manifest, not a shed.** Vite copies it verbatim into `dist`, so
+  anything in there is downloaded by real members. Files that are only *inputs* to a script
+  live in **`assets-src/`** — the originals that `process-images.mjs` and `fix-images.mjs`
+  turn into `public/images/clean/` cut-outs. Moving them out cut 2.9 MB of dead weight; don't
+  move them back, and don't add new build inputs under `public/`.
+- **Display images are WebP** (`clean/`, `characters/`, the three rendered `anatomical/`
+  files). Call sites still pass the old `.png`/`.jpg` name — the `clean()`, `port()`,
+  `panel()` and `rowImg()` helpers swap the extension, which is what kept the conversion from
+  churning hundreds of data lines. **The covers used for `og:image` stay JPG**: several social
+  scrapers won't fetch a WebP preview.
+- **`src/data/imageDims.js` is generated** by `gen-image-dims.mjs` — intrinsic sizes for
+  inline content images so `ImageBlock` can emit `width`/`height` and reserve the box before
+  the bytes land. Content images have genuinely different aspect ratios, so the flat
+  `aspect-ratio: 2/3` that works for covers would distort them. Regenerate after adding one.
 
 ## Project constraints & decisions (non-obvious)
 
