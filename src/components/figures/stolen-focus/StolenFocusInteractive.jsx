@@ -63,41 +63,50 @@ export function SfCausesMap() {
    minutes ≈ max(0, 60 − 23N). Beyond ~2–3 interruptions/hour, deep focus
    collapses to zero. */
 const REFOCUS = 23
+const HOUR = 60
 const SW_PRESETS = [
   { n: 0, label: L('ساعة محميّة', 'A protected hour') },
   { n: 1, label: L('يوم هادئ', 'A quiet day') },
   { n: 3, label: L('يوم اعتيادي', 'A typical day') },
   { n: 6, label: L('مكتب مفتوح + هاتف', 'Open office + phone') },
 ]
+/* Place n interruptions evenly through the hour and cast a 23-min refocus
+   "shadow" forward from each. Deep work = the minutes no shadow covers; as
+   interruptions crowd, the shadows overlap and swallow the hour. */
+function hourModel(n) {
+  const marks = Array.from({ length: n }, (_, i) => ((i + 1) * HOUR) / (n + 1))
+  let lost = 0
+  for (let m = 0; m < HOUR; m++) if (marks.some((p) => m >= p && m < p + REFOCUS)) lost += 1
+  return { marks, deep: HOUR - lost }
+}
 export function SfSwitchCost() {
   const { t } = useApp()
   const [n, setN] = useState(2)
-  const deep = n === 0 ? 60 : Math.max(0, 60 - REFOCUS * n)
-  const lost = 60 - deep
-  const deepPct = Math.round((deep / 60) * 100)
+  const { marks, deep } = hourModel(n)
   return (
     <FigureFrame number={2}
       title={L('كلفة المقاطعة والتبديل', 'The cost of interruption & switching')}
-      caption={L('تحتاج في المتوسّط ٢٣ دقيقة لاستعادة تركيزك العميق بعد كلّ مقاطعة. حرّك عدد المقاطعات — أو اختر سيناريو — وشاهد كم يتبقّى من عملٍ عميقٍ حقيقي.',
-                 'It takes ~23 minutes on average to regain deep focus after each interruption. Drag the interruptions-per-hour — or pick a scenario — and watch how little genuine deep work is left.')}>
+      caption={L('تحتاج في المتوسّط ٢٣ دقيقة لاستعادة تركيزك العميق بعد كلّ مقاطعة. حرّك عدد المقاطعات — أو اختر سيناريو — وشاهد كيف تمتدّ «ظلال» الاستعادة الحمراء لتلتهم ساعتك.',
+                 'It takes ~23 minutes on average to regain deep focus after each interruption. Drag the interruptions — or pick a scenario — and watch the red refocus “shadows” spread and eat the hour.')}>
       <div className="sf-switch">
-        <div className="sf-bar-wrap">
-          {n > 0 && (
-            <div className="sf-zap-row" aria-hidden>
-              {Array.from({ length: n }).map((_, i) => (
-                <span key={i} className="sf-zap" style={{ insetInlineStart: `${((i + 1) / (n + 1)) * 100}%` }}>⚡</span>
-              ))}
-            </div>
-          )}
-          <div className="sf-bar" role="img"
-            aria-label={t({ ar: `عملٌ عميق ${deep} دقيقة من ٦٠`, en: `${deep} minutes of deep work out of 60` })}>
-            <div className="sf-bar-deep" style={{ width: `${deepPct}%` }}>
-              {deep > 6 && <span>{t({ ar: `${deep} د عميق`, en: `${deep}m deep` })}</span>}
-            </div>
-            <div className="sf-bar-lost" style={{ width: `${100 - deepPct}%` }}>
-              {lost > 6 && <span>{t({ ar: `${lost} د مبدّدة`, en: `${lost}m lost` })}</span>}
-            </div>
+        <div className="sf-tl" dir="ltr" role="img"
+          aria-label={t({ ar: `عملٌ عميق ${deep} دقيقة من ٦٠`, en: `${deep} minutes of deep work out of 60` })}>
+          <div className="sf-tl-track">
+            {marks.map((p, i) => (
+              <div key={`s${i}`} className="sf-tl-shadow"
+                style={{ left: `${(p / HOUR) * 100}%`, width: `${(Math.min(REFOCUS, HOUR - p) / HOUR) * 100}%` }} />
+            ))}
+            {marks.map((p, i) => (
+              <span key={`z${i}`} className="sf-tl-zap" style={{ left: `${(p / HOUR) * 100}%` }} aria-hidden>⚡</span>
+            ))}
           </div>
+          <div className="sf-tl-axis" aria-hidden>
+            <span>0</span><span>{t(L('٣٠ دقيقة', '30 min'))}</span><span>60</span>
+          </div>
+        </div>
+        <div className="sf-tl-key" aria-hidden>
+          <span className="sf-tl-key-item"><i className="sf-tl-sw deep" />{t(L('عملٌ عميق', 'deep work'))} · {deep}{t(L('د', 'm'))}</span>
+          <span className="sf-tl-key-item"><i className="sf-tl-sw lost" />{t(L('استعادة التركيز — ٢٣ د لكلّ مقاطعة', 'refocusing — 23 min each'))}</span>
         </div>
         <label className="sf-slider">
           <span className="sf-slider-lbl">
@@ -114,11 +123,10 @@ export function SfSwitchCost() {
           ))}
         </div>
         <p className="sf-readout">
-          {deep === 0
-            ? t(L('عند هذا المعدّل لا يبقى أيّ وقتٍ للعمل العميق — يُلتهم كلّه في إعادة التركيز.',
-                  'At this rate no time is left for deep work — it is all consumed by re-focusing.'))
-            : t({ ar: `يتبقّى ${deep} دقيقة فقط من عملٍ عميقٍ حقيقيّ في الساعة.`,
-                  en: `Only ${deep} minutes of genuine deep work remain in the hour.` })}
+          {n === 0
+            ? t(L('ساعةٌ محميّة — الستّون دقيقة كلّها لك.', 'A protected hour — all 60 minutes are yours.'))
+            : t({ ar: `يتبقّى ${deep} دقيقة فقط من عملٍ عميقٍ حقيقيّ — الباقي يُلتهم في استعادة التركيز.`,
+                  en: `Only ${deep} minutes of genuine deep work remain — the rest is eaten by re-focusing.` })}
         </p>
       </div>
     </FigureFrame>
@@ -142,12 +150,23 @@ function flowZone(skill, challenge) {
   return { key: 'apathy', ar: 'لا مبالاة', en: 'Apathy' }
 }
 const clamp01 = (x) => Math.max(0, Math.min(100, x))
+const FLOW_MOOD = { flow: '😌', anxiety: '😰', boredom: '🥱', apathy: '😐' }
+/* Real-life examples that drop the dot into each zone — a fast way to *feel*
+   what the plane means before fiddling with sliders. */
+const FLOW_SCENES = [
+  { skill: 80, challenge: 82, label: L('متسلّقٌ ماهر عند حدّ قدرته', 'A skilled climber at their limit') },
+  { skill: 18, challenge: 85, label: L('أوّل مباراة شطرنجٍ أمام بطل', 'First chess game vs a champion') },
+  { skill: 85, challenge: 18, label: L('خبيرٌ يجمع ٢+٢ طوال اليوم', 'An expert doing 2+2 all day') },
+  { skill: 24, challenge: 22, label: L('تصفّحٌ بلا هدف', 'Aimless scrolling') },
+]
 export function SfFlowChannel() {
   const { t, isAr } = useApp()
   const [skill, setSkill] = useState(70)
   const [challenge, setChallenge] = useState(72)
   const dragging = useRef(false)
   const zone = flowZone(skill, challenge)
+  const mood = FLOW_MOOD[zone.key]
+  const setScene = (s) => { setSkill(s.skill); setChallenge(s.challenge) }
   // SVG plane 0..100 → 0..300 (x = skill, y = challenge inverted for screen)
   const cx = 30 + (skill / 100) * 240
   const cy = 270 - (challenge / 100) * 240
@@ -194,10 +213,13 @@ export function SfFlowChannel() {
           {/* marker (bigger halo = friendlier touch target) */}
           <circle cx={cx} cy={cy} r="16" fill="var(--accent)" opacity="0.18" />
           <circle cx={cx} cy={cy} r="9" fill="var(--accent)" stroke="var(--bg-elev)" strokeWidth="3" />
+          {/* mood at the marker — reads the current zone at a glance */}
+          <text x={cx} y={cy < 52 ? cy + 36 : cy - 22} textAnchor="middle" fontSize="26"
+            style={{ pointerEvents: 'none' }}>{mood}</text>
         </svg>
         <div className="sf-axislabels">
           <span>{t(L('← المهارة →', '← Skill →'))}</span>
-          <span className="sf-zone" data-zone={zone.key}>{isAr ? zone.ar : zone.en}</span>
+          <span className="sf-zone" data-zone={zone.key}>{mood} {isAr ? zone.ar : zone.en}</span>
         </div>
         <label className="sf-slider">
           <span className="sf-slider-lbl">{t(L('المهارة', 'Skill'))}: <b>{skill}</b></span>
@@ -207,6 +229,14 @@ export function SfFlowChannel() {
           <span className="sf-slider-lbl">{t(L('التحدّي', 'Challenge'))}: <b>{challenge}</b></span>
           <input type="range" min="0" max="100" value={challenge} onChange={(e) => setChallenge(+e.target.value)} />
         </label>
+        <div className="sf-presets" role="group" aria-label={t(L('أمثلة من الحياة', 'Real-life examples'))}>
+          {FLOW_SCENES.map((s, i) => (
+            <button key={i} className={`sf-preset ${skill === s.skill && challenge === s.challenge ? 'active' : ''}`}
+              onClick={() => setScene(s)}>
+              {FLOW_MOOD[flowZone(s.skill, s.challenge).key]} {t(s.label)}
+            </button>
+          ))}
+        </div>
       </div>
     </FigureFrame>
   )
@@ -304,47 +334,67 @@ export function SfAdhdThreshold() {
    Surveillance-capitalism loop: your behaviour → data → prediction → ad auction
    → targeted manipulation → back to your behaviour. Tap any stage for detail. */
 const SURV_STEPS = [
-  { icon: '🧑', label: L('سلوكك', 'Your behaviour'),
+  { icon: '🧑', tag: L('سلوكك', 'Behaviour'), label: L('سلوكك', 'Your behaviour'),
     detail: L('كلّ نقرة وتمريرة وتوقّفٍ قصير أمام منشورٍ — إشارةٌ تُلتقط وتُسجَّل.', 'Every click, scroll, and brief pause on a post — a signal captured and logged.') },
-  { icon: '📊', label: L('تُجمع بياناتك', 'Data harvested'),
+  { icon: '📊', tag: L('بياناتك', 'Data'), label: L('تُجمع بياناتك', 'Data harvested'),
     detail: L('تتراكم الإشارات ملفّاً دقيقاً عن ميولك ومخاوفك ونقاط ضعفك.', 'The signals pile into a fine-grained profile of your leanings, fears, and weak spots.') },
-  { icon: '🔮', label: L('تنبّؤ بسلوكك', 'Behaviour predicted'),
+  { icon: '🔮', tag: L('تنبّؤ', 'Prediction'), label: L('تنبّؤ بسلوكك', 'Behaviour predicted'),
     detail: L('نماذج تتوقّع ما سيُبقيك محدّقاً، وما قد تشتريه، ومتى تضعف مقاومتك.', 'Models forecast what will keep you staring, what you might buy, and when your resistance dips.') },
-  { icon: '💰', label: L('يُباع في مزاد الإعلانات', 'Sold in the ad auction'),
+  { icon: '💰', tag: L('المزاد', 'Auction'), label: L('يُباع في مزاد الإعلانات', 'Sold in the ad auction'),
     detail: L('في أجزاء من الثانية، يشتري المعلنون لحظة انتباهك القادمة في مزادٍ فوريّ.', 'In fractions of a second, advertisers buy your next moment of attention in a live auction.') },
-  { icon: '🎯', label: L('محتوى يوجّهك', 'Content that steers you'),
+  { icon: '🎯', tag: L('توجيه', 'Steering'), label: L('محتوى يوجّهك', 'Content that steers you'),
     detail: L('تُرتَّب خلاصتك لتحقيق التنبّؤ — لا لمصلحتك — فيتولّد سلوكٌ جديد… وتدور الحلقة.', 'Your feed is arranged to fulfil the prediction — not to serve you — producing new behaviour… and the loop turns.') },
 ]
 export function SfSurveillanceFlow() {
   const { t } = useApp()
   const [sel, setSel] = useState(0)
+  const N = SURV_STEPS.length
+  // Nodes evenly around a ring (start at top, go clockwise); arrowheads sit at
+  // the midpoints pointing along the ring, so it reads as a cycle, not a line.
+  const onRing = (deg, r) => {
+    const a = ((deg - 90) * Math.PI) / 180
+    return { x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a) }
+  }
+  const step = SURV_STEPS[sel]
   return (
     <FigureFrame number={9}
       title={L('كيف يُباع انتباهك', 'How your attention is sold')}
       caption={L('حلقة «رأسمالية المراقبة»: انتباهك يُجمع ويُتنبّأ به ويُباع، ثم يُعاد توجيهك — فتبدأ الحلقة من جديد. **انقر كلّ مرحلة** لتقرأ ما يجري فيها. المنتج هو أنت.',
                  'The “surveillance capitalism” loop: your attention is harvested, predicted and sold, then you are steered — and the loop begins again. **Tap each stage** to read what happens inside it. The product is you.')}>
-      <div className="sf-flow-diagram">
-        <div className="sf-flow-row">
-          {SURV_STEPS.map((s, i) => (
-            <div key={i} className="sf-flow-node-wrap">
-              <button className={`sf-flow-node ${sel === i ? 'active' : ''}`} onClick={() => setSel(i)}
-                aria-pressed={sel === i}>
-                <span className="sf-flow-icon" aria-hidden>{s.icon}</span>
-                <span className="sf-flow-lbl">{t(s.label)}</span>
-              </button>
-              {i < SURV_STEPS.length - 1 && <span className="sf-flow-arrow" aria-hidden>→</span>}
-            </div>
-          ))}
-        </div>
-        <p className="sf-flow-detail" aria-live="polite">
-          <b>{t({ ar: `${sel + 1}.`, en: `${sel + 1}.` })}</b> {t(SURV_STEPS[sel].detail)}
-        </p>
-        {/* return channel: makes the sequence read as a loop, not a line */}
-        <div className="sf-flow-loop">
-          <span className="sf-flow-loop-arrow" aria-hidden>⟲</span>
-          <span>{t(L('ثم تبدأ الحلقة من جديد', 'then the loop begins again'))}</span>
+      <div className="sf-loop">
+        <svg className="sf-loop-svg" viewBox="0 0 100 100" aria-hidden>
+          <circle cx="50" cy="50" r="40" className="sf-loop-ring" />
+          {SURV_STEPS.map((_, i) => {
+            const mid = (i + 0.5) * (360 / N)
+            const p = onRing(mid, 40)
+            return (
+              <path key={i} className="sf-loop-dir"
+                d="M -2.6 -1.9 L 2.8 0 L -2.6 1.9 Z"
+                transform={`translate(${p.x} ${p.y}) rotate(${mid})`} />
+            )
+          })}
+        </svg>
+        {SURV_STEPS.map((s, i) => {
+          const p = onRing(i * (360 / N), 40)
+          return (
+            <button key={i} className={`sf-loop-node ${sel === i ? 'active' : ''}`}
+              style={{ left: `${p.x}%`, top: `${p.y}%` }}
+              aria-pressed={sel === i} onClick={() => setSel(i)}
+              aria-label={`${i + 1}. ${t(s.label)}`}>
+              <span className="sf-loop-icon" aria-hidden>{s.icon}</span>
+              <span className="sf-loop-lbl">{t(s.tag)}</span>
+            </button>
+          )
+        })}
+        <div className="sf-loop-center" aria-hidden>
+          <span className="sf-loop-center-icon">{step.icon}</span>
+          <span className="sf-loop-center-n">{t(L(`مرحلة ${sel + 1}⁄${N}`, `stage ${sel + 1}⁄${N}`))}</span>
         </div>
       </div>
+      <p className="sf-flow-detail" aria-live="polite">
+        <b>{t({ ar: `${sel + 1}.`, en: `${sel + 1}.` })}</b> {t(step.detail)}
+      </p>
+      <p className="sf-loop-note">{t(L('ثم يتولّد سلوكٌ جديد وتدور الحلقة — والمنتج هو أنت.', 'then new behaviour forms and the loop turns — and the product is you.'))}</p>
     </FigureFrame>
   )
 }

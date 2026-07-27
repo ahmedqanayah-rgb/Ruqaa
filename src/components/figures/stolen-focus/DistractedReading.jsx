@@ -6,17 +6,21 @@ import RichText from '../../RichText.jsx'
 const L = (ar, en) => ({ ar, en })
 
 /* Fake notifications that pop over the panel during the distracted round.
-   They are deliberately tempting — and clickable. Clicking one counts as
-   being "lured", exactly like real life. */
+   Generic "3 new messages" alerts are easy to ignore once you know they're
+   props, so these instead pull on curiosity gaps and social intrigue — the
+   reflexes that hijack attention even when you *know* the message is fake.
+   They are clickable; clicking one counts as being "lured", exactly like real
+   life. */
 const NOTIFS = [
-  L('🔔 ٣ رسائل جديدة', '🔔 3 new messages'),
-  L('📧 ردٌّ عاجل مطلوب', '📧 Urgent reply needed'),
-  L('❤️ أعجب ١٢ شخصاً بمنشورك', '❤️ 12 people liked your post'),
-  L('🛒 التخفيض ينتهي خلال ١٠ دقائق', '🛒 Sale ends in 10 minutes'),
-  L('📱 البطارية ٢٠٪', '📱 Battery at 20%'),
-  L('💬 بدأ أحدهم يكتب…', '💬 Someone is typing…'),
-  L('🎁 خصمٌ خاصّ لك وحدك — افتح الآن', '🎁 A special discount just for you — open now'),
-  L('📸 ذكرى من مثل هذا اليوم قبل سنة', '📸 A memory from this day last year'),
+  L('👀 لن تصدّق ما قالوه عنك للتوّ', '👀 You won’t believe what they just said about you'),
+  L('💬 «نحتاج أن نتحدّث… عندما تفرغ»', '💬 “we need to talk… when you get a sec”'),
+  L('😳 التقط أحدهم صورةً لقصّتك', '😳 Someone screenshotted your story'),
+  L('🕵️ شاهد أحدهم ملفّك ٧ مرّاتٍ اليوم', '🕵️ Someone viewed your profile 7 times today'),
+  L('🔥 تعليقك يشتعل — ١٢٠٠ ردّ ينتظرك', '🔥 Your comment is blowing up — 1,200 replies'),
+  L('📸 وُسمت في صورة… قد لا تعجبك', '📸 You were tagged in a photo… you might not like it'),
+  L('🎬 الفيديو الذي يتحدّث عنه الجميع الآن', '🎬 The video everyone is talking about right now'),
+  L('❓ سؤالٌ واحد يعرف الجميع إجابته عنك… إلّا أنت', '❓ One question everyone knows about you… except you'),
+  L('😏 ما زلت تقرأ؟ أراهن أنك ستفتحني', '😏 Still reading? Bet you’ll open me anyway'),
 ]
 
 /* Two short passages, each with three comprehension questions. */

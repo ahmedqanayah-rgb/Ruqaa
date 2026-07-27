@@ -103,8 +103,8 @@ export function SfCollectiveAttention() {
               label={{ value: t(L('السنة', 'Year')), position: 'insideBottom', offset: -8, ...axisLbl }} />
             <YAxis tick={axisTick} width={44} domain={[0, 20]}
               label={{ value: t(L('ساعات في الصدارة', 'Hours on top')), angle: -90, position: 'insideLeft', ...axisLbl }} />
-            <Tooltip content={<Tip />} cursor={tipCursor} />
-            <Bar dataKey="h" radius={[6, 6, 0, 0]} maxBarSize={72} isAnimationActive>
+            <Tooltip content={<Tip />} cursor={tipCursor} isAnimationActive={false} />
+            <Bar dataKey="h" radius={[6, 6, 0, 0]} maxBarSize={72} isAnimationActive={false}>
               {attnData.map((d, i) => (
                 <Cell key={i} fill={d.c} fillOpacity={dim(active, i)} stroke={ring(active, i)} strokeWidth={2} />
               ))}
@@ -169,8 +169,8 @@ export function SfReadingDecline() {
             <XAxis type="number" tick={axisTick} domain={[0, 360]}
               label={{ value: t(L('دقائق في اليوم', 'Minutes per day')), position: 'insideBottom', offset: -4, ...axisLbl }} />
             <YAxis type="category" dataKey="label" tick={axisTick} width={96} />
-            <Tooltip content={<Tip />} cursor={tipCursor} />
-            <Bar dataKey="min" radius={[0, 6, 6, 0]} maxBarSize={40} isAnimationActive>
+            <Tooltip content={<Tip />} cursor={tipCursor} isAnimationActive={false} />
+            <Bar dataKey="min" radius={[0, 6, 6, 0]} maxBarSize={40} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={i} fill={d.c} fillOpacity={dim(active, i)} stroke={ring(active, i)} strokeWidth={2} />
               ))}
@@ -230,8 +230,8 @@ export function SfFourDayWeek() {
             <XAxis type="number" tick={axisTick} domain={[0, 50]}
               label={{ value: t(L('تحسّن %', 'Improvement %')), position: 'insideBottom', offset: -4, ...axisLbl }} />
             <YAxis type="category" dataKey="label" tick={axisTick} width={118} />
-            <Tooltip content={<Tip />} cursor={tipCursor} />
-            <Bar dataKey="pct" radius={[0, 6, 6, 0]} maxBarSize={40} isAnimationActive>
+            <Tooltip content={<Tip />} cursor={tipCursor} isAnimationActive={false} />
+            <Bar dataKey="pct" radius={[0, 6, 6, 0]} maxBarSize={40} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={i} fill={d.c} fillOpacity={dim(active, i)} stroke={ring(active, i)} strokeWidth={2} />
               ))}

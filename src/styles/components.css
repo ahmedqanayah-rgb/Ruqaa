@@ -1374,3 +1374,60 @@ html[data-presenting] img { margin-inline: auto; }
    but keep one if it is ever reached by keyboard. */
 .app-main:focus { outline: none; }
 .app-main:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+/* "How your attention is sold" — circular loop (replaces the old straight row) */
+/* `.figure-body > div { max-width:100% }` outranks a bare `.sf-loop`, so this
+   selector matches its specificity to keep the ring from filling the figure. */
+.figure-body > .sf-loop, .sf-loop { position: relative; width: 100%; max-width: 340px; aspect-ratio: 1 / 1; margin: var(--space-4) auto; }
+.sf-loop-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sf-loop-ring { fill: none; stroke: var(--border-strong); stroke-width: 0.7; stroke-dasharray: 1.4 2.4; }
+.sf-loop-dir { fill: var(--accent); }
+.sf-loop-node {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  width: 80px; padding: 7px 4px; border-radius: var(--radius);
+  background: var(--bg-elev); border: 1.5px solid var(--border);
+  font-family: inherit; cursor: pointer; text-align: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+.sf-loop-node:hover { border-color: var(--accent); }
+.sf-loop-node.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: var(--shadow-sm); }
+.sf-loop-node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sf-loop-icon { font-size: 1.4rem; line-height: 1; }
+.sf-loop-lbl { font-size: var(--fs-xs); color: var(--text-soft); line-height: 1.15; font-weight: 600; }
+.sf-loop-center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: 96px; text-align: center; pointer-events: none;
+}
+.sf-loop-center-icon { font-size: 2.2rem; line-height: 1; }
+.sf-loop-center-n { font-size: var(--fs-xs); color: var(--text-muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+.sf-loop-note { text-align: center; font-size: var(--fs-sm); color: var(--text-soft); margin-top: var(--space-2); }
+@media (max-width: 460px) {
+  .sf-loop { max-width: 300px; }
+  .sf-loop-node { width: 66px; padding: 5px 3px; }
+  .sf-loop-icon { font-size: 1.2rem; }
+  .sf-loop-center-icon { font-size: 1.9rem; }
+}
+
+/* Interruption-cost timeline — green hour, red 23-min refocus shadows overlap */
+.sf-tl { margin: var(--space-2) 0 var(--space-3); }
+.sf-tl-track {
+  position: relative; height: 58px; border-radius: var(--radius); overflow: hidden;
+  background: color-mix(in srgb, var(--success) 20%, var(--bg-elev-2));
+  border: 1px solid var(--border-strong);
+}
+.sf-tl-shadow {
+  position: absolute; top: 0; bottom: 0;
+  background: color-mix(in srgb, var(--danger) 52%, transparent);
+}
+.sf-tl-zap {
+  position: absolute; top: -3px; transform: translateX(-50%);
+  font-size: 1.05rem; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+.sf-tl-axis { display: flex; justify-content: space-between; margin-top: 5px; font-size: var(--fs-xs); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.sf-tl-key { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-3); font-size: var(--fs-sm); color: var(--text-soft); }
+.sf-tl-key-item { display: inline-flex; align-items: center; gap: 7px; }
+.sf-tl-sw { width: 15px; height: 15px; border-radius: 4px; flex: none; }
+.sf-tl-sw.deep { background: color-mix(in srgb, var(--success) 38%, var(--bg-elev-2)); border: 1px solid var(--success); }
+.sf-tl-sw.lost { background: color-mix(in srgb, var(--danger) 52%, var(--bg-elev)); border: 1px solid var(--danger); }
