@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   build: {
+    /*
+     * Never inline a font. Vite base64s assets under 4 kB by default, which
+     * swept up the single-glyph ʿ cuts and added 6 kB gzipped to the
+     * render-blocking CSS — paid by every visitor, in both languages. Inlining
+     * also defeats the `unicode-range` on each @font-face, whose entire job is
+     * to stop an Arabic reader ever fetching the Latin faces. Keep them files.
+     */
+    assetsInlineLimit: (filePath) => (/\.(woff2?|ttf|otf|eot)$/i.test(filePath) ? false : undefined),
     rollupOptions: {
       output: {
         /*

@@ -162,13 +162,21 @@ each person's consent (see §3).
 
 ---
 
-## 3b. Fonts — 551 kB, the second-biggest payload after the images  ✅ done (2026-07-28)
+## 3b. Fonts — self-hosted, and two faults fixed  ✅ done (2026-07-28)
 
-Nobody had costed the webfonts. A visitor pulls **551 kB across 15 files** — more than the
-entire JS bundle (346 kB gzipped). Two faults, both measured rather than guessed:
+Nobody had costed the webfonts. A visitor pulled **362 kB across 11 files** — comparable to
+the entire JS bundle (346 kB gzipped).
+
+> **Correction.** The first pass reported this as "551 kB / 15 files" and the `300` saving as
+> 111 kB. That over-counted: Google's CSS declares 15 `@font-face` blocks, but **Inter is a
+> variable font and all four of its weights point at the same URL**, so the browser fetches 11
+> unique files, not 15. Counting unique URLs, the real figures are 362 kB before and 298 kB
+> after. The commit message `860f7fd` carries the wrong numbers; these are right.
+
+Two faults, both measured rather than guessed:
 
 - **`300` was requested and never used once.** Not a single `font-weight: 300` anywhere in
-  `src/`. Dropping it: **−111 kB, 3 fewer files, zero visual change.**
+  `src/`. Dropping it: **−64 kB, 2 fewer files, zero visual change.**
 - **`800` was used 18 times and never requested.** Worse, **IBM Plex Sans Arabic has no 800
   at all** — the Google API returns HTTP 400 for `wght@800` on that family. Measured in the
   browser, `700` and `800` render *byte-identically* at every size in both families, because
@@ -188,11 +196,37 @@ The request is now `wght@400;500;600;700` for both families. `500` stays despite
 uses because one of them is `.term-en`, which wraps **every** English technical term inside
 Arabic text — it's on nearly every page.
 
-*Not done:* self-hosting the fonts. It would drop two third-party preconnects and a
-render-blocking round trip, and would work where Google Fonts is slow or blocked — a real
-consideration for members in Syria. But it means committing ~250 kB of binaries to a public
-repo, and unicode-range subsetting already keeps the browser from fetching what it doesn't
-need, so the win is latency and privacy rather than bytes. **Worth doing — needs a decision.**
+### Self-hosted (user's call, same day)
+
+The site no longer contacts `fonts.googleapis.com` at all — verified, 0 requests. That removes
+two preconnects and a render-blocking cross-origin stylesheet from the critical path, keeps
+the site working where Google Fonts is slow or blocked, and stops handing every visitor's IP
+to a third party. **As predicted it is byte-neutral** — 300 kB self-hosted vs 298 kB from
+Google for both languages — because `unicode-range` was already doing the real work. The win
+is the removed dependency, not the payload.
+
+`scripts/fetch-fonts.mjs` downloads the woff2 files and generates `src/styles/fonts.css`.
+Four things in it are non-obvious and were each driven by a measurement:
+
+- **Only the `arabic` and `latin` subsets.** Scanning every `.js/.jsx/.css/.html` file found
+  exactly one codepoint outside them: **ʿ (U+02BF), 12 times, always in "Ruqʿa"** — the club's
+  own name, so it is on every page. It lives in `latin-ext`, which costs 7 kB per Plex weight
+  and **83 kB per Inter weight**: ~360 kB of font data for one glyph. Instead the script asks
+  Google's `&text=` API to cut a font containing just that character — **0.9 kB** — pinned to
+  `unicode-range: U+02BF`.
+- **That cut is fetched for Inter only.** IBM Plex Sans Arabic **has no ʿ glyph**; Google still
+  answers a `&text=` request for it, with an empty font. Measured at 100px, Plex renders ʿ at
+  33.31 px on every weight — exactly the fallback width — while Inter gives a real, weight-
+  varying glyph (17.58 → 16.86). The Plex face would have cost a request that finds nothing.
+- **Files are written by content hash and shared.** Inter's four weights are one identical
+  48 kB variable file; without this the repo would carry four copies.
+- **Fonts are never inlined.** Vite base64s assets under 4 kB by default, which swept up the
+  ʿ cuts and put **+6 kB gzipped into the render-blocking CSS**, paid by every visitor in both
+  languages — and inlining defeats the `unicode-range` gating entirely. `vite.config.js` now
+  excludes font files from inlining.
+
+Result, measured in the browser: an Arabic reader fetches **8 files / 251 kB** and no Inter at
+all; switching to English adds 3 more for **11 files / 300 kB**.
 
 ---
 

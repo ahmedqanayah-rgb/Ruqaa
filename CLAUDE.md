@@ -130,17 +130,28 @@ recharts eagerly.
 
 ## Fonts
 
-Loaded from Google Fonts in `index.html`: IBM Plex Sans Arabic + Inter, **weights 400/500/600/700
-only**. Two rules when touching typography:
+**Self-hosted — the site makes no request to Google.** IBM Plex Sans Arabic + Inter, weights
+**400/500/600/700 only**. `scripts/fetch-fonts.mjs` downloads the woff2 files into
+`src/styles/fonts/` and generates `src/styles/fonts.css`; both are generated, don't hand-edit.
+They live in `src/` rather than `public/` so Vite rewrites and content-hashes the URLs, which
+keeps `base: './'` sub-path hosting working.
 
 - **Never use `font-weight: 800`.** IBM Plex Sans Arabic has no 800 — the Google API rejects
   `wght@800` for it outright — so 800 renders identically to 700 with the webfont loaded and
   only diverges in the `system-ui` fallback, i.e. it makes the fallback heavier than the
   design. 700 is the honest ceiling for both families.
-- **Add a weight to the `<link>` before using it in CSS**, and drop it when the last use goes.
-  A visitor pulls ~440 kB of fonts, so an unused weight is expensive; `300` sat there unused
-  and cost 111 kB. `500` looks barely used but is load-bearing — it's `.term-en`, the English
-  technical terms embedded in Arabic text.
+- **Adding a weight means re-running the script**, not editing CSS. Drop it when the last use
+  goes: a visitor pulls ~300 kB of fonts, and `300` sat unused costing 64 kB. `500` looks
+  barely used but is load-bearing — it's `.term-en`, the English technical terms embedded in
+  Arabic text.
+- **Adding a character outside Latin/Arabic needs a look.** Only the `arabic` and `latin`
+  subsets ship. The one exception is **ʿ (U+02BF) in "Ruqʿa"**, which needs `latin-ext` — far
+  too expensive for one glyph (83 kB per Inter weight), so the script cuts a 0.9 kB
+  single-character font via Google's `&text=` API instead. Anything else outside those subsets
+  will silently render from a system font and look subtly wrong.
+- **Fonts must never be inlined.** `vite.config.js` excludes them from `assetsInlineLimit`;
+  base64ing them bloats the render-blocking CSS and defeats the `unicode-range` gating that
+  stops an Arabic reader downloading the Latin faces.
 
 ## Project constraints & decisions (non-obvious)
 
