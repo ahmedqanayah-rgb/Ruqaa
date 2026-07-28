@@ -91,7 +91,7 @@ export function SfCollectiveAttention() {
   }
 
   return (
-    <FigureFrame number={3}
+    <FigureFrame number={2}
       title={L('انكماش الانتباه الجماعي', 'The shrinking of collective attention')}
       caption={L('كم بقي الموضوع الرائج ضمن أكثر ٥٠ موضوعاً تداولاً على تويتر — هبط من ١٧٫٥ ساعة (٢٠١٣) إلى ١١٫٩ ساعة (٢٠١٦). النمط نفسه ظهر في بحث غوغل ومبيعات الأفلام. **مرّر المؤشّر على العمودين** لقراءة الفارق.',
                  'How long a trending topic stayed in Twitter’s top-50 — down from 17.5 hours (2013) to 11.9 hours (2016). The same pattern appeared in Google searches and movie sales. **Hover the two bars** to read the gap.')}>
@@ -158,7 +158,7 @@ export function SfReadingDecline() {
   }
 
   return (
-    <FigureFrame number={6}
+    <FigureFrame number={5}
       title={L('القراءة مقابل الهاتف', 'Reading vs. the phone')}
       caption={L('دقائق اليوم عام ٢٠١٧: ١٧ دقيقة لقراءة الكتب مقابل ٥٫٤ ساعة (٣٢٤ دقيقة) على الهاتف. وبين ٢٠٠٤ و٢٠١٧ هبطت القراءة للمتعة ٤٠٪ لدى الرجال و٢٩٪ لدى النساء. **مرّر المؤشّر على الشريطين** لترى النسبة بينهما.',
                  'Minutes per day in 2017: 17 for reading books vs 5.4 hours (324 minutes) on the phone. Between 2004 and 2017, reading for pleasure fell 40% for men and 29% for women. **Hover the two bars** to see the ratio.')}>
@@ -219,7 +219,7 @@ export function SfFourDayWeek() {
   }
 
   return (
-    <FigureFrame number={10}
+    <FigureFrame number={9}
       title={L('أسبوع العمل الأقصر', 'The shorter work week')}
       caption={L('حين قصُر وقت العمل تحسّن الأداء: مايكروسوفت اليابان (٢٠١٩) سجّلت +٤٠٪ إنتاجية على أربعة أيّام، وكيلوغ (العشرينيات) خفّض الحوادث ٤١٪ بيومٍ من ست ساعات. وجرّبت بيربتشوال غارديان النيوزيلندية الفكرة بنجاح. **مرّر المؤشّر على كلّ حالة** لتفصيلها.',
                  'When working time shrank, performance improved: Microsoft Japan (2019) logged +40% productivity on four days, and Kellogg (1920s) cut accidents 41% with a six-hour day. New Zealand’s Perpetual Guardian trialled it successfully. **Hover each case** for the detail.')}>
@@ -309,7 +309,7 @@ export function SfBloodSugar() {
   }
 
   return (
-    <FigureFrame number={11}
+    <FigureFrame number={10}
       title={L('سكّر الدم والتركيز', 'Blood sugar & focus')}
       caption={L('رسمٌ توضيحيّ (لا أرقام دقيقة): النشويات المكرّرة ترفع السكّر بسرعة ثم تُسقطه، فيأتي «انهيار» التركيز؛ أمّا الإطلاق البطيء فيُبقي الانتباه أثبت. **مرّر المؤشّر عبر الرسم** — أو استخدم المنزلق — وقارن حالتك على النظامين ساعةً بساعة.',
                  'An illustrative schematic (no precise numbers): refined carbs spike blood sugar then drop it, bringing a focus “crash”; a slower release keeps attention steadier. **Sweep the pointer across the plot** — or use the slider — and compare your state on each diet, hour by hour.')}>

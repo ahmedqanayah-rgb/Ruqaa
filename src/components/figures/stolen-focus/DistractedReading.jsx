@@ -192,7 +192,7 @@ export function SfDistractedReading({ embedded = false, onDone }) {
 
   if (embedded) return body
   return (
-    <FigureFrame number={5}
+    <FigureFrame number={4}
       title={L('القراءة وسط التشتيت', 'Reading amid distraction')}
       caption={L('جرّبها بنفسك: اقرأ فقرةً وسط إشعاراتٍ مُغرية ثم أجب، ثم اقرأ أخرى في هدوءٍ وقارن فهمك وزمنك. أثر التشتيت يظهر فوراً.',
                  'Try it yourself: read a passage amid tempting notifications and answer, then read another in calm and compare your comprehension and time. Distraction’s effect shows up at once.')}>

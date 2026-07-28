@@ -31,10 +31,10 @@ const QUICK = {
     note: L('يبدو مرتبطاً بالتقنية، لكنه خطابٌ اجتماعيّ يحمّل الفرد وحده مشكلةً جماعية.', 'It sounds tech-related, but it is a social script that loads a collective problem onto the individual.'),
   },
   'speed-flow': {
-    q: L('كم تحتاج في المتوسّط لتعود إلى تركيزك العميق بعد مقاطعة؟', 'On average, how long does it take to regain deep focus after an interruption?'),
+    q: L('كم من الوقت يقول الكتاب إنك تحتاجه لتعود إلى تركيزك العميق بعد مقاطعة؟', 'How long does the book say it takes to regain deep focus after an interruption?'),
     opts: [L('٣ دقائق', '3 minutes'), L('٢٣ دقيقة', '23 minutes'), L('ساعتان', 'Two hours')],
     correct: 1,
-    note: L('دراسة مايكل بوزنر — ولهذا يعيش المُقاطَع باستمرار في «طريق العودة» إلى تركيزٍ لا يصله.', 'Michael Posner’s finding — which is why the constantly interrupted live forever “on the way back” to a focus they never reach.'),
+    note: L('هذا ما يقوله الكتاب — والرقم لغلوريا مارك لا لبوزنر، ولم يُنشر في بحثٍ محكَّم. تقديراتٌ أخرى تقول ١١–١٦ دقيقة.', 'That is what the book says — the figure is Gloria Mark’s, not Posner’s, and was never published in a peer-reviewed paper. Other estimates put it at 11–16 minutes.'),
   },
   exhaustion: {
     q: L('البقاء مستيقظاً نحو ١٩ ساعة يجعل أداءك المعرفيّ مكافئاً لِمَن؟', 'Staying awake about 19 hours leaves your cognition equivalent to whose?'),

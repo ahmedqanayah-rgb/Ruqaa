@@ -165,9 +165,9 @@ export const shocking = {
       'حين رُصد طلّابٌ ببرنامج تتبّع، كان الزمن الوسيط الذي يركّزون فيه على شيءٍ واحد **١٩ ثانية فقط**، ويبدّلون المهمّة مرّةً كلّ **٦٥ ثانية**.',
       'When students were tracked with software, the median time they focused on one thing was **just 19 seconds**, switching task once every **65 seconds**.'
     ) },
-    { type: 'callout', variant: 'warn', title: L('٢٣ دقيقة', '23 minutes'), text: L(
-      'بعد كلّ مقاطعةٍ وأنت مركّز، تحتاج في المتوسّط إلى **٢٣ دقيقة** لتعود إلى الحالة نفسها (دراسة مايكل بوزنر).',
-      'After each interruption while focusing, it takes on average **23 minutes** to return to the same state (Michael Posner’s study).'
+    { type: 'callout', variant: 'warn', title: L('٢٣ دقيقة؟', '23 minutes?'), text: L(
+      'أشهر أرقام الكتاب: **٢٣ دقيقة** لتعود إلى تركيزك بعد كلّ مقاطعة. ينسبه الكتاب إلى مايكل بوزنر، وهو في الحقيقة رقم **غلوريا مارك** — ولم يُنشر في بحثٍ محكَّم قطّ. أدرجناه لأنه من الكتاب، لا لأنه ثابت.',
+      'The book’s most famous number: **23 minutes** to get back to focus after each interruption. The book credits Michael Posner; it is in fact **Gloria Mark’s** figure — and it has never been published in a peer-reviewed paper. It is here because the book says it, not because it is settled.'
     ) },
     { type: 'callout', variant: 'fact', title: L('٢٬٦١٧ لمسة', '2,617 touches'), text: L(
       'يلمس الأمريكيّ المتوسّط هاتفه **٢٬٦١٧ مرّة** كلّ ٢٤ ساعة، ويقضي عليه نحو **٣ ساعات و١٥ دقيقة** يومياً.',

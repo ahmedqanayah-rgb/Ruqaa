@@ -21,7 +21,7 @@ export function SfInfiniteScroll() {
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - 24) setCount((c) => c + 6)
   }
   return (
-    <FigureFrame number={7}
+    <FigureFrame number={6}
       title={L('التمرير اللانهائي', 'The infinite scroll')}
       caption={L('اليسار: خلاصةٌ لا تنتهي ولا تمنحك لحظة توقّف — مرّر لترى كيف تتكاثر بلا حدّ، وراقب العدّاد. اليمين: خلاصةٌ مُصفَّحة تخبرك متى انتهيت. الفرق كلّه في وجود «إشارة توقّف».',
                  'Left: a feed that never ends and never offers a pause — scroll to watch it multiply, and watch the tally. Right: a paginated feed that tells you when you’re done. The whole difference is a “stopping cue.”')}>
@@ -137,7 +137,7 @@ export function SfOutrageAlgorithm() {
   const outragePct = reached ? Math.round((counts.outrage / reached) * 100) : 50
 
   return (
-    <FigureFrame number={8}
+    <FigureFrame number={7}
       title={L('خوارزمية الغضب', 'The outrage algorithm')}
       caption={L('منشورٌ هادئ (أزرق) ومنشورٌ غاضب (أحمر) ينتشران بين الناس. أطفئ «ترتيب التفاعل» فينتشران متقاربَين؛ أشعله فتضخّم الخوارزمية الغضب. شغّل المحاكاة ▶ أو تقدّم خطوةً خطوة، وقارن الحصّتين.',
                  'A calm post (blue) and an outrage post (red) spread among people. Turn “engagement ranking” off and they spread similarly; turn it on and the algorithm amplifies outrage. Auto-run ▶ or step through, and compare the shares.')}>
@@ -199,7 +199,7 @@ export function SfRoamingRadius() {
   const [sel, setSel] = useState('g4')
   const active = GENERATIONS.find((g) => g.key === sel)
   return (
-    <FigureFrame number={13}
+    <FigureFrame number={12}
       title={L('انكماش مساحة اللعب', 'The shrinking roaming radius')}
       caption={L('كم يُسمح للطفل أن يبتعد عن البيت وحده، عبر أربعة أجيالٍ من عائلةٍ واحدة — من أميالٍ إلى بضع مئات من الأمتار. (الحلقات ليست بمقياسٍ حقيقي؛ المسافات مكتوبة. توثيقٌ صحفيّ شهير لعائلةٍ من شيفيلد، يُستشهد به كثيراً خارج نصّ الكتاب).',
                  'How far a child is allowed to roam from home alone, across four generations of one family — from miles to a few hundred metres. (Rings are not to scale; distances are labelled. A famous press-documented Sheffield family, widely cited beyond the book’s own text.)')}>

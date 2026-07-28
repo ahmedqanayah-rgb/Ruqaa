@@ -10,7 +10,7 @@ import {
   SfCollectiveAttention, SfReadingDecline, SfFourDayWeek, SfBloodSugar,
 } from './stolen-focus/StolenFocusCharts.jsx'
 import {
-  SfCausesMap, SfSwitchCost, SfFlowChannel, SfAdhdThreshold, SfSurveillanceFlow,
+  SfCausesMap, SfFlowChannel, SfAdhdThreshold, SfSurveillanceFlow,
 } from './stolen-focus/StolenFocusInteractive.jsx'
 import {
   SfInfiniteScroll, SfOutrageAlgorithm, SfRoamingRadius,
@@ -35,7 +35,6 @@ export const FIGURES = {
 
   // ----- Stolen Focus -----
   sfCausesMap: SfCausesMap,
-  sfSwitchCost: SfSwitchCost,
   sfCollectiveAttention: SfCollectiveAttention,
   sfFlowChannel: SfFlowChannel,
   sfDistractedReading: SfDistractedReading,

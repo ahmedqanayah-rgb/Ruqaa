@@ -57,83 +57,16 @@ export function SfCausesMap() {
   )
 }
 
-/* ---------------- Fig 2 — The cost of interruption & switching ----------------
-   Model grounded in Posner's finding that it takes ~23 min to regain deep focus
-   after an interruption. If interrupted N evenly-spaced times per hour, deep
-   minutes ≈ max(0, 60 − 23N). Beyond ~2–3 interruptions/hour, deep focus
-   collapses to zero. */
-const REFOCUS = 23
-const HOUR = 60
-const SW_PRESETS = [
-  { n: 0, label: L('ساعة محميّة', 'A protected hour') },
-  { n: 1, label: L('يوم هادئ', 'A quiet day') },
-  { n: 3, label: L('يوم اعتيادي', 'A typical day') },
-  { n: 6, label: L('مكتب مفتوح + هاتف', 'Open office + phone') },
-]
-/* Place n interruptions evenly through the hour and cast a 23-min refocus
-   "shadow" forward from each. Deep work = the minutes no shadow covers; as
-   interruptions crowd, the shadows overlap and swallow the hour. */
-function hourModel(n) {
-  const marks = Array.from({ length: n }, (_, i) => ((i + 1) * HOUR) / (n + 1))
-  let lost = 0
-  for (let m = 0; m < HOUR; m++) if (marks.some((p) => m >= p && m < p + REFOCUS)) lost += 1
-  return { marks, deep: HOUR - lost }
-}
-export function SfSwitchCost() {
-  const { t } = useApp()
-  const [n, setN] = useState(2)
-  const { marks, deep } = hourModel(n)
-  return (
-    <FigureFrame number={2}
-      title={L('كلفة المقاطعة والتبديل', 'The cost of interruption & switching')}
-      caption={L('تحتاج في المتوسّط ٢٣ دقيقة لاستعادة تركيزك العميق بعد كلّ مقاطعة. حرّك عدد المقاطعات — أو اختر سيناريو — وشاهد كيف تمتدّ «ظلال» الاستعادة الحمراء لتلتهم ساعتك.',
-                 'It takes ~23 minutes on average to regain deep focus after each interruption. Drag the interruptions — or pick a scenario — and watch the red refocus “shadows” spread and eat the hour.')}>
-      <div className="sf-switch">
-        <div className="sf-tl" dir="ltr" role="img"
-          aria-label={t({ ar: `عملٌ عميق ${deep} دقيقة من ٦٠`, en: `${deep} minutes of deep work out of 60` })}>
-          <div className="sf-tl-track">
-            {marks.map((p, i) => (
-              <div key={`s${i}`} className="sf-tl-shadow"
-                style={{ left: `${(p / HOUR) * 100}%`, width: `${(Math.min(REFOCUS, HOUR - p) / HOUR) * 100}%` }} />
-            ))}
-            {marks.map((p, i) => (
-              <span key={`z${i}`} className="sf-tl-zap" style={{ left: `${(p / HOUR) * 100}%` }} aria-hidden>⚡</span>
-            ))}
-          </div>
-          <div className="sf-tl-axis" aria-hidden>
-            <span>0</span><span>{t(L('٣٠ دقيقة', '30 min'))}</span><span>60</span>
-          </div>
-        </div>
-        <div className="sf-tl-key" aria-hidden>
-          <span className="sf-tl-key-item"><i className="sf-tl-sw deep" />{t(L('عملٌ عميق', 'deep work'))} · {deep}{t(L('د', 'm'))}</span>
-          <span className="sf-tl-key-item"><i className="sf-tl-sw lost" />{t(L('استعادة التركيز — ٢٣ د لكلّ مقاطعة', 'refocusing — 23 min each'))}</span>
-        </div>
-        <label className="sf-slider">
-          <span className="sf-slider-lbl">
-            {t(L('مقاطعات في الساعة', 'Interruptions per hour'))}: <b>{t({ ar: String(n), en: String(n) })}</b>
-          </span>
-          <input type="range" min="0" max="6" step="1" value={n}
-            onChange={(e) => setN(+e.target.value)} />
-        </label>
-        <div className="sf-presets" role="group" aria-label={t(L('سيناريوهات جاهزة', 'Preset scenarios'))}>
-          {SW_PRESETS.map((p) => (
-            <button key={p.n} className={`sf-preset ${n === p.n ? 'active' : ''}`} onClick={() => setN(p.n)}>
-              {t(p.label)} ({t({ ar: String(p.n), en: String(p.n) })})
-            </button>
-          ))}
-        </div>
-        <p className="sf-readout">
-          {n === 0
-            ? t(L('ساعةٌ محميّة — الستّون دقيقة كلّها لك.', 'A protected hour — all 60 minutes are yours.'))
-            : t({ ar: `يتبقّى ${deep} دقيقة فقط من عملٍ عميقٍ حقيقيّ — الباقي يُلتهم في استعادة التركيز.`,
-                  en: `Only ${deep} minutes of genuine deep work remain — the rest is eaten by re-focusing.` })}
-        </p>
-      </div>
-    </FigureFrame>
-  )
-}
+/* The "cost of interruption" figure lived here and was REMOVED (2026-07-28).
+   It modelled an hour eaten by 23-minute refocus "shadows", but that 23-minute
+   figure does not hold up: the book attributes it to Michael Posner, it is
+   actually Gloria Mark's, and it appears in no peer-reviewed paper — see the
+   sourced entry in data/books/stolen-focus/reception.js. A whole interactive
+   built on one unsourced number was asserting more than the evidence supports,
+   so the user chose to drop it rather than caveat it. This supersedes the §6
+   note in POLISH-PLAN about its redesign. Don't reinstate it. */
 
-/* ---------------- Fig 4 — The flow channel ----------------
+/* ---------------- Fig 3 — The flow channel ----------------
    Csikszentmihalyi's challenge-vs-skill plane. Drag the dot directly on the
    plane (pointer events, touch-friendly) or use the sliders — both stay in
    sync. Flow lives on the diagonal where high challenge meets high skill. */
@@ -184,7 +117,7 @@ export function SfFlowChannel() {
   const onUp = () => { dragging.current = false }
 
   return (
-    <FigureFrame number={4}
+    <FigureFrame number={3}
       title={L('قناة التدفّق', 'The flow channel')}
       caption={L('التدفّق يسكن القطر حيث يلتقي تحدٍّ عالٍ بمهارةٍ عالية. تحدٍّ أكبر من مهارتك = قلق؛ مهارةٌ أكبر من التحدّي = ملل. **اسحب النقطة على المستوى مباشرةً** أو استخدم المنزلقين.',
                  'Flow lives on the diagonal where high challenge meets high skill. Challenge above skill = anxiety; skill above challenge = boredom. **Drag the dot directly on the plane** or use the sliders.')}>
@@ -283,7 +216,7 @@ export function SfAdhdThreshold() {
   }
   const thX = 20 + ((z + 3) / 6) * 260
   return (
-    <FigureFrame number={12}
+    <FigureFrame number={11}
       title={L('أين نرسم الخطّ؟ (نقاش فرط الحركة)', 'Where do we draw the line? (the ADHD debate)')}
       caption={L('التململ والحركة طيفٌ متّصل في أيّ مجموعة بشرية. كم منهم «مصاب بفرط الحركة»؟ يعتمد على مكان خطّ التشخيص. **مرّر المؤشّر عبر المنحنى** — أو استخدم المنزلق أو انقر نقطة مرجعية حقيقية — لترى كيف تتغيّر النسبة: هذا جوهر نقاش نيغ والتميمي.',
                  'Restlessness is a smooth spectrum in any population. How many “have ADHD”? It depends where the diagnostic line sits. **Sweep the pointer across the curve** — or use the slider, or tap a real-world reference — and watch the share change: the heart of the Nigg–Timimi debate.')}>
@@ -357,7 +290,7 @@ export function SfSurveillanceFlow() {
   }
   const step = SURV_STEPS[sel]
   return (
-    <FigureFrame number={9}
+    <FigureFrame number={8}
       title={L('كيف يُباع انتباهك', 'How your attention is sold')}
       caption={L('حلقة «رأسمالية المراقبة»: انتباهك يُجمع ويُتنبّأ به ويُباع، ثم يُعاد توجيهك — فتبدأ الحلقة من جديد. **انقر كلّ مرحلة** لتقرأ ما يجري فيها. المنتج هو أنت.',
                  'The “surveillance capitalism” loop: your attention is harvested, predicted and sold, then you are steered — and the loop begins again. **Tap each stage** to read what happens inside it. The product is you.')}>

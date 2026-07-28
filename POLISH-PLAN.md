@@ -267,9 +267,13 @@ The user reviewed the Stolen Focus figures directly. Their calls, now implemente
   `isAnimationActive={false}` on bars *and* tooltips in `StolenFocusCharts.jsx`.
 - **"How your attention is sold" must be a circle** — it's a loop, so it now renders as a
   circular SVG ring (`.sf-loop`) with the detail in the centre, not a left-to-right row.
-- **"The cost of interruption"** was "really bad" as a stacked bar → now a 60-minute timeline
-  where each interruption casts a 23-min refocus shadow; shadows overlap and visibly eat the
-  hour (`hourModel()`).
+- ~~**"The cost of interruption"** was "really bad" as a stacked bar → now a 60-minute timeline
+  where each interruption casts a 23-min refocus shadow.~~ **Superseded 2026-07-28 — the figure
+  is gone.** The user questioned the 23-minute number; checking it found the book misattributes
+  it to Michael Posner (it is Gloria Mark's), it appears in **no peer-reviewed paper**, and
+  Mark's own 2008 study found interrupted work finished *faster* but far more stressfully. A
+  whole interactive resting on one unsourced number asserted more than the evidence carries, so
+  the user chose to remove it rather than caveat it. See §7.
 - **"The flow channel"** structure was liked — enhanced rather than replaced: a mood emoji at
   the marker plus real-life scenario presets that move the dot.
 - **Distraction-game notifications** must be genuinely tempting; realistic-but-dull ones
@@ -277,6 +281,44 @@ The user reviewed the Stolen Focus figures directly. Their calls, now implemente
   social-pull copy.
 - Related invariant: `flowZone()` splits at **exactly 50** to match the four coloured
   quadrants. The old 45/55 thresholds reported "Flow" while the dot sat in Anxiety/Boredom.
+
+---
+
+## 7. The 23-minute claim — fact-checked and corrected (2026-07-28)
+
+The user doubted «استعادة التركيز — ٢٣ د لكلّ مقاطعة» and asked for it to be verified online.
+It did not survive. Three findings, in order of severity:
+
+1. **The attribution is wrong.** The figure is **Gloria Mark's** (UC Irvine), not Michael
+   Posner's (Oregon). Posner studies attention *networks*; no study of his yields it. This is
+   the book's error, not the club's — Hari credits Posner. Sharpest detail: `sections-1.js`
+   already cited Mark correctly for the "three minutes" figure **one paragraph earlier**.
+2. **It has no published source.** "23 minutes 15 seconds" appears in no peer-reviewed paper —
+   only in Mark's press interviews. Her best-known paper contains no "23" at all.
+3. **That paper found something else.** Mark, Gudith & Klocke, *The Cost of Interrupted Work*
+   (CHI 2008), reports the interrupted group finishing **faster** (20.3 / 20.6 min vs 22.8) but
+   with markedly higher stress, frustration and effort. It never measured recovery time. Other
+   studies put recovery nearer 11–16 min.
+
+**What changed.** The user chose: correct the attribution everywhere, flag it in
+«الكتاب في الميزان», and **remove the figure**. So:
+
+- `SfSwitchCost` deleted — component, registry entry, its block in `sections-1.js`, and the
+  `.sf-switch`/`.sf-tl-*` CSS. Remaining Stolen Focus figures renumbered **3–13 → 2–12** to
+  close the gap (safe: no prose in that book cites a figure by number).
+- Attribution corrected in `sections-1.js`, `sections-4.js`, the landing quick-check, and the
+  `sf3` quiz entry. The advice copy in `assessment.js` and `challenge.js` no longer asserts the
+  number at all — the guidance stands without it.
+- **`sf3` was the club's own fault, not Hari's**: it invented a methodology, narrating Posner
+  "tracking how long a person needs to return to the same level of immersion" for a study that
+  was never run. It now teaches Mark's real, better finding — faster but more stressed — which
+  makes a sharper quiz question than the myth did.
+- `reception.js` gains a sourced `debate` entry attributed to «تحقّقٌ من النادي» — the first
+  one that is the club's own checking rather than a critic's — plus links to Mark's paper and
+  the trace of the number's origin.
+
+The number still appears in the two narrative sections, deliberately: the site summarises the
+book, and the book says it. It now carries a caveat and points at §الميزان.
 
 ---
 

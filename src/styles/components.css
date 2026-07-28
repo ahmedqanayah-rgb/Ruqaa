@@ -479,7 +479,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .sf-cause-lbl { min-width: 0; }
 
 /* Fig 2 — switch cost bar */
-.sf-switch { margin-top: var(--space-2); }
 .sf-bar-wrap { position: relative; }
 .sf-zap-row { position: relative; height: 20px; }
 .sf-zap { position: absolute; top: 0; transform: translateX(-50%); font-size: 0.85rem; }
@@ -1403,23 +1402,3 @@ html[data-presenting] img { margin-inline: auto; }
 }
 
 /* Interruption-cost timeline — green hour, red 23-min refocus shadows overlap */
-.sf-tl { margin: var(--space-2) 0 var(--space-3); }
-.sf-tl-track {
-  position: relative; height: 58px; border-radius: var(--radius); overflow: hidden;
-  background: color-mix(in srgb, var(--success) 20%, var(--bg-elev-2));
-  border: 1px solid var(--border-strong);
-}
-.sf-tl-shadow {
-  position: absolute; top: 0; bottom: 0;
-  background: color-mix(in srgb, var(--danger) 52%, transparent);
-}
-.sf-tl-zap {
-  position: absolute; top: -3px; transform: translateX(-50%);
-  font-size: 1.05rem; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
-}
-.sf-tl-axis { display: flex; justify-content: space-between; margin-top: 5px; font-size: var(--fs-xs); color: var(--text-muted); font-variant-numeric: tabular-nums; }
-.sf-tl-key { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-3); font-size: var(--fs-sm); color: var(--text-soft); }
-.sf-tl-key-item { display: inline-flex; align-items: center; gap: 7px; }
-.sf-tl-sw { width: 15px; height: 15px; border-radius: 4px; flex: none; }
-.sf-tl-sw.deep { background: color-mix(in srgb, var(--success) 38%, var(--bg-elev-2)); border: 1px solid var(--success); }
-.sf-tl-sw.lost { background: color-mix(in srgb, var(--danger) 52%, var(--bg-elev)); border: 1px solid var(--danger); }

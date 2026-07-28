@@ -39,8 +39,8 @@ export const challenge = {
       title: L('مهمّةٌ واحدة فقط', 'One task only'),
       task: L('اختر مهمّةً واحدة وابقَ معها تسعين دقيقة: لا تبويبات أخرى، ولا بريد، ولا «نظرةٌ سريعة».',
               'Pick one task and stay with it for ninety minutes: no other tabs, no email, no “quick look.”'),
-      why: L('كلّ مقاطعةٍ تكلّفك نحو ٢٣ دقيقة للعودة إلى عمقك. مَن يُقاطَع دائماً يعيش في «طريق العودة» إلى تركيزٍ لا يصله.',
-             'Every interruption costs about 23 minutes to get back to depth. The constantly interrupted live permanently “on the way back” to a focus they never reach.') },
+      why: L('للمقاطعة ذيلٌ يمتدّ بعدها: لا تعود إلى عمقك لحظة انتهائها. ومَن يُقاطَع دائماً يعيش في «طريق العودة» إلى تركيزٍ لا يصله.',
+             'An interruption has a tail that outlasts it: you do not drop back into depth the moment it ends. The constantly interrupted live permanently “on the way back” to a focus they never reach.') },
 
     { n: 4, to: 'reading-mindwandering',
       title: L('ثلاثون دقيقةً على ورق', 'Thirty minutes on paper'),

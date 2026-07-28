@@ -217,6 +217,11 @@ keeps `base: './'` sub-path hosting working.
   to attack authors — keep that bar if you extend it. Two block types serve it:
   `debate` (claim → critique → optional response, with a `critic` attribution) and
   `sources` (the site's only off-site links; they open in a new tab with `noopener`).
+  A `debate` entry may also be the **club's own fact-check** (`critic: «تحقّقٌ من النادي»`) —
+  the 23-minute entry is one: the book misattributes that figure to Michael Posner when it is
+  Gloria Mark's, and it appears in no peer-reviewed paper. Same bar applies: check it yourself
+  and link the primary source. **Don't "restore" the 23-minute claim as fact anywhere**, and
+  don't reinstate the interruption figure that was built on it (POLISH-PLAN §7).
 - **7-day challenge** — `BookSection` dispatches a fourth kind, **`'challenge'`** →
   `components/WeekChallenge.jsx`, with content in `data/books/<slug>/challenge.js`. It is
   the site's answer to its own tagline («نقرأ الكتاب… ثم نعيشه»): seven small experiments

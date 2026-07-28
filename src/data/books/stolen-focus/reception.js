@@ -55,6 +55,23 @@ export const reception = {
     },
 
     { type: 'debate',
+      topic: L('رقم الـ٢٣ دقيقة', 'The 23-minute number'),
+      claim: L(
+        'أشهر رقمٍ في الكتاب: بعد كلّ مقاطعة تحتاج في المتوسّط **٢٣ دقيقة** لتعود إلى تركيزك. ينسبه الكتاب إلى **مايكل بوزنر** في جامعة أوريغون.',
+        'The book’s most famous number: after each interruption it takes on average **23 minutes** to get back to your focus. The book attributes it to **Michael Posner** at the University of Oregon.'
+      ),
+      critique: L(
+        'ثلاث مشكلات، وجدناها بالتحقّق المباشر لا نقلاً عن ناقد. **أولاً النسبة خاطئة**: الرقم لـ**غلوريا مارك (Gloria Mark)** في جامعة كاليفورنيا بإرفاين — وهي نفسها التي يستشهد بها الكتاب قبل سطورٍ في رقم «الدقائق الثلاث» — وبوزنر عالِمُ **شبكات الانتباه**، ولا نعرف له بحثاً يُخرج هذا الرقم. **وثانياً لا مصدر منشوراً له**: لا يظهر «٢٣ دقيقة و١٥ ثانية» في أيّ بحثٍ محكَّم، وإنما في مقابلاتٍ صحفية مع مارك؛ وبحثه في ورقتها الأشهر لا يعطي نتيجةً واحدة لكلمة «23». **وثالثاً الورقة نفسها وجدت شيئاً آخر**: في «كلفة العمل المُقاطَع» (٢٠٠٨) أنجز المُقاطَعون مهمّتهم **أسرع** (٢٠٫٣ و٢٠٫٦ دقيقة) ممّن لم يُقاطَعوا (٢٢٫٨ دقيقة)، لكن بتوتّرٍ وإحباطٍ وجهدٍ أعلى — ولم تقس زمن الاستعادة أصلاً. وتقديرات دراساتٍ أخرى في الأدبيات أقرب إلى ١١–١٦ دقيقة.',
+        'Three problems, found by checking directly rather than repeating a critic. **First, the attribution is wrong**: the figure is **Gloria Mark’s**, at UC Irvine — the very researcher the book cites a few lines earlier for the “three minutes” figure — while Posner is a scientist of **attention networks**, with no study we can find that yields this number. **Second, it has no published source**: “23 minutes 15 seconds” appears in no peer-reviewed paper, only in press interviews with Mark; searching her best-known paper for “23” returns nothing. **Third, that paper found something else**: in “The Cost of Interrupted Work” (2008) the interrupted group finished **faster** (20.3 and 20.6 minutes) than the uninterrupted one (22.8 minutes), but with higher stress, frustration and effort — and it never measured recovery time at all. Other studies in the literature put recovery nearer 11–16 minutes.'
+      ),
+      response: L(
+        'لم نجد للمؤلّف ردّاً منشوراً على هذه النقطة تحديداً. وقد بقي الرقم في الكتاب على حاله في الطبعات اللاحقة. أزلنا من الموقع الشكل التفاعليّ الذي كان مبنيّاً عليه، وأبقينا الرقم في النصّ لأنه ممّا يقوله الكتاب — مع هذا التنبيه بجانبه.',
+        'We found no published response from the author on this specific point, and the figure stands unchanged in later printings. We removed the interactive figure that was built on it, and kept the number in the text because it is what the book says — with this note beside it.'
+      ),
+      critic: L('تحقّقٌ من النادي، ٢٠٢٦', 'The club’s own fact-check, 2026'),
+    },
+
+    { type: 'debate',
       topic: L('فصول فرط الحركة وتشتّت الانتباه (ADHD)', 'The ADHD chapters'),
       claim: L(
         'يتشكّك الكتاب في تصاعد تشخيص فرط الحركة وتشتّت الانتباه، ويقترح أن كثيراً منه استجابةٌ لبيئةٍ مريضة لا لخللٍ في الدماغ.',
@@ -96,6 +113,10 @@ export const reception = {
         url: 'https://www.irishtimes.com/culture/too-few-of-us-are-paying-attention-to-the-problems-with-johann-hari-s-new-book-1.4775651' },
       { label: L('هاري يُعيد جائزة أورويل', 'Hari returns the Orwell Prize'),
         publisher: L('بي بي سي، ٢٠١١', 'BBC News, 2011'), url: 'https://www.bbc.co.uk/news/uk-14924182' },
+      { label: L('«كلفة العمل المُقاطَع» — ورقة غلوريا مارك نفسها', '“The Cost of Interrupted Work” — Gloria Mark’s own paper'),
+        publisher: L('مؤتمر CHI، ٢٠٠٨', 'CHI Conference, 2008'), url: 'https://ics.uci.edu/~gmark/chi08-mark.pdf' },
+      { label: L('تتبّعٌ لأصل رقم «٢٣ دقيقة و١٥ ثانية»', 'Tracing the origin of the “23 minutes 15 seconds” figure'),
+        publisher: L('مدوّنة oberien، ٢٠٢٣', 'oberien’s blog, 2023'), url: 'https://blog.oberien.de/2023/11/05/23-minutes-15-seconds.html' },
     ] },
   ],
 }

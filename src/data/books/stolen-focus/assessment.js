@@ -126,8 +126,8 @@ export const TIPS = {
     'Close to target but a little short; adding 30–60 minutes shows up directly in your daytime clarity.'
   ),
   notifications: L(
-    'كلّ إشعارٍ مقاطعة، وتحتاج ~٢٣ دقيقة لاستعادة تركيزك بعدها. **أطفئ ما لا يلزم** من الإشعارات، فهي مصمّمة لجذبك لا لخدمتك.',
-    'Every notification is an interruption, and it takes ~23 minutes to refocus after one. **Turn off all but essential** notifications — they’re designed to grab you, not serve you.'
+    'كلّ إشعارٍ مقاطعة، وثمنها لا ينتهي بانتهائها: قياس المختبر يقول إنك تعوّض الوقت بالسرعة، فتدفعه توتّراً وإجهاداً. **أطفئ ما لا يلزم** من الإشعارات، فهي مصمّمة لجذبك لا لخدمتك.',
+    'Every notification is an interruption, and its cost does not end when it does: the lab measurement says you buy the time back with speed, and pay for it in stress and strain. **Turn off all but essential** notifications — they’re designed to grab you, not serve you.'
   ),
   phoneMorning: L(
     'إن كان الهاتف أوّل وآخر ما تلمس، فأنت تسلّم انتباهك للآلة طرفَي يومك. جرّب **الالتزام المسبَق**: منبّهٌ منفصل، والهاتف خارج غرفة النوم.',
