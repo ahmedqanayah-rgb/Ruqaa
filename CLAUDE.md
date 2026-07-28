@@ -27,13 +27,17 @@ scripts/<name>.mjs`. `process-images.mjs` and `fix-images.mjs` remove background
 flood-fill and write to `public/images/clean/`; `to-webp.mjs <dir>` converts a directory in
 place; `gen-image-dims.mjs` regenerates `src/data/imageDims.js`.
 
-After any image rename, move or format change, run:
+Two data checks, neither wired into a test runner (there isn't one) — run them by hand:
 ```bash
 node scripts/check-image-refs.mjs
+node scripts/check-links.mjs
 ```
-It imports the book data and walks every block (paths are helper-built, so grepping filenames
-misses them), then reports refs pointing at missing files, files in `public/images` nothing
-references, and content images missing from `imageDims.js`.
+`check-image-refs` imports the book data and walks every block (paths are helper-built, so
+grepping filenames misses them), then reports refs pointing at missing files, files in
+`public/images` nothing references, and content images missing from `imageDims.js`.
+`check-links` validates every internal slug — cross-book `connections`, challenge `to`
+targets, sidebar `groups`, and content links. **Both classes of error fail silently at
+runtime** (a bad slug quietly falls back to the book landing), which is why they exist.
 
 ## Architecture
 
@@ -123,6 +127,20 @@ recharts eagerly.
   inline content images so `ImageBlock` can emit `width`/`height` and reserve the box before
   the bytes land. Content images have genuinely different aspect ratios, so the flat
   `aspect-ratio: 2/3` that works for covers would distort them. Regenerate after adding one.
+
+## Fonts
+
+Loaded from Google Fonts in `index.html`: IBM Plex Sans Arabic + Inter, **weights 400/500/600/700
+only**. Two rules when touching typography:
+
+- **Never use `font-weight: 800`.** IBM Plex Sans Arabic has no 800 — the Google API rejects
+  `wght@800` for it outright — so 800 renders identically to 700 with the webfont loaded and
+  only diverges in the `system-ui` fallback, i.e. it makes the fallback heavier than the
+  design. 700 is the honest ceiling for both families.
+- **Add a weight to the `<link>` before using it in CSS**, and drop it when the last use goes.
+  A visitor pulls ~440 kB of fonts, so an unused weight is expensive; `300` sat there unused
+  and cost 111 kB. `500` looks barely used but is load-bearing — it's `.term-en`, the English
+  technical terms embedded in Arabic text.
 
 ## Project constraints & decisions (non-obvious)
 

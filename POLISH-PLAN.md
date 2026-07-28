@@ -162,6 +162,40 @@ each person's consent (see §3).
 
 ---
 
+## 3b. Fonts — 551 kB, the second-biggest payload after the images  ✅ done (2026-07-28)
+
+Nobody had costed the webfonts. A visitor pulls **551 kB across 15 files** — more than the
+entire JS bundle (346 kB gzipped). Two faults, both measured rather than guessed:
+
+- **`300` was requested and never used once.** Not a single `font-weight: 300` anywhere in
+  `src/`. Dropping it: **−111 kB, 3 fewer files, zero visual change.**
+- **`800` was used 18 times and never requested.** Worse, **IBM Plex Sans Arabic has no 800
+  at all** — the Google API returns HTTP 400 for `wght@800` on that family. Measured in the
+  browser, `700` and `800` render *byte-identically* at every size in both families, because
+  the browser clamps to the heaviest weight it has:
+
+  | font | 700 | 800 |
+  |---|---|---|
+  | IBM Plex Sans Arabic, 3rem | 206.63 px | 206.63 px |
+  | Inter, 3rem | 247.83 px | 247.83 px |
+  | **system-ui** (fallback), 3rem | 220.53 px | **225.52 px** |
+
+  So those 18 rules only ever did anything when the webfonts *failed* to load — the fallback
+  has a real 800 and rendered heavier than the design. All 18 are now `700`, which both
+  families genuinely have; the fallback now matches the webfont instead of diverging from it.
+
+The request is now `wght@400;500;600;700` for both families. `500` stays despite only four CSS
+uses because one of them is `.term-en`, which wraps **every** English technical term inside
+Arabic text — it's on nearly every page.
+
+*Not done:* self-hosting the fonts. It would drop two third-party preconnects and a
+render-blocking round trip, and would work where Google Fonts is slow or blocked — a real
+consideration for members in Syria. But it means committing ~250 kB of binaries to a public
+repo, and unicode-range subsetting already keeps the browser from fetching what it doesn't
+need, so the win is latency and privacy rather than bytes. **Worth doing — needs a decision.**
+
+---
+
 ## 4. The 649 kB entry chunk is now mostly book content
 
 After the vendor/lazy split, what's left in the entry is the books themselves — 183 studies

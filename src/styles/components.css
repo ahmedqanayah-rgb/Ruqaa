@@ -604,7 +604,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .sf-read-score { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: var(--space-4); border-radius: var(--radius); border: 1px solid var(--border); min-width: 120px; }
 .sf-read-score.distract { border-top: 3px solid var(--danger); }
 .sf-read-score.focus { border-top: 3px solid var(--success); }
-.sf-read-score-n { font-size: var(--fs-2xl); font-weight: 800; line-height: 1; }
+.sf-read-score-n { font-size: var(--fs-2xl); font-weight: 700; line-height: 1; }
 .sf-read-score-lbl { font-size: var(--fs-xs); color: var(--text-muted); }
 
 @media (max-width: 860px) {
@@ -618,7 +618,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .fl-card { padding: var(--space-4); }
 .fl-card.done { border-color: var(--success); }
 .fl-card-head { display: flex; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-3); }
-.fl-card-n { width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: var(--accent-contrast); font-weight: 800; }
+.fl-card-n { width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: var(--accent-contrast); font-weight: 700; }
 .fl-card.done .fl-card-n { background: var(--success); }
 .fl-card-titles { display: flex; flex-direction: column; min-width: 0; }
 .fl-card-title { font-size: var(--fs-md); }
@@ -628,7 +628,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .fl-stage { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-2); }
 .fl-progress { font-size: var(--fs-xs); color: var(--text-muted); font-variant-numeric: tabular-nums; align-self: flex-end; }
 .fl-stim { min-height: 96px; display: grid; place-items: center; }
-.fl-stroop-word { font-size: 2.6rem; font-weight: 800; letter-spacing: 0.02em; }
+.fl-stroop-word { font-size: 2.6rem; font-weight: 700; letter-spacing: 0.02em; }
 .fl-fix { font-size: 2rem; color: var(--text-muted); }
 .fl-hint { font-size: var(--fs-sm); color: var(--text-soft); margin: 0; }
 .fl-hint--sm { font-size: var(--fs-xs); color: var(--text-muted); }
@@ -641,18 +641,18 @@ button.sf-toast:hover { border-color: var(--danger); }
 .fl-color-btn:hover:not(:disabled), .fl-resp-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
 .fl-color-btn:disabled, .fl-resp-btn:disabled { opacity: 0.5; cursor: default; }
 .fl-swatch { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
-.fl-cue { font-weight: 800; font-size: var(--fs-md); padding: 4px 14px; border-radius: 999px; background: var(--bg-elev-2); color: var(--text); }
+.fl-cue { font-weight: 700; font-size: var(--fs-md); padding: 4px 14px; border-radius: 999px; background: var(--bg-elev-2); color: var(--text); }
 .fl-cue.switch { background: var(--accent-soft); color: var(--accent); }
 .fl-sart-stage { width: 100%; max-width: 260px; height: 150px; border-radius: var(--radius); border: 2px solid var(--border-strong); background: var(--bg-elev-2); display: grid; place-items: center; cursor: pointer; }
 .fl-sart-stage:active { background: var(--surface-hover); }
-.fl-digit { font-size: 3.2rem; font-weight: 800; color: var(--text); }
+.fl-digit { font-size: 3.2rem; font-weight: 700; color: var(--text); }
 .fl-digit.nogo { color: var(--text); }
 
 .fl-result { display: flex; flex-direction: column; gap: var(--space-3); }
 .fl-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 10px; }
 .fl-metric { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px; background: var(--bg-elev-2); border-radius: var(--radius-sm); }
 .fl-metric.hi { background: var(--accent-soft); }
-.fl-metric-v { font-size: var(--fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
+.fl-metric-v { font-size: var(--fs-lg); font-weight: 700; font-variant-numeric: tabular-nums; }
 .fl-metric.hi .fl-metric-v { color: var(--accent); }
 .fl-metric-l { font-size: var(--fs-xs); color: var(--text-muted); text-align: center; }
 .fl-msg { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }
@@ -682,12 +682,12 @@ button.sf-toast:hover { border-color: var(--danger); }
 .fl-keypad { display: grid; grid-template-columns: repeat(5, minmax(48px, 1fr)); gap: 8px; width: 100%; max-width: 330px; }
 .fl-key { padding: 10px 0; font-size: var(--fs-lg); font-weight: 700; background: var(--bg-elev-2); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); color: var(--text); cursor: pointer; transition: all var(--transition); }
 .fl-key:hover { border-color: var(--accent); background: var(--accent-soft); }
-.fl-span-entry { min-height: 36px; font-size: var(--fs-xl); font-weight: 800; letter-spacing: 0.18em; direction: ltr; font-variant-numeric: tabular-nums; color: var(--text); }
-.fl-span-digit { font-size: 3.6rem; font-weight: 800; color: var(--text); }
+.fl-span-entry { min-height: 36px; font-size: var(--fs-xl); font-weight: 700; letter-spacing: 0.18em; direction: ltr; font-variant-numeric: tabular-nums; color: var(--text); }
+.fl-span-digit { font-size: 3.6rem; font-weight: 700; color: var(--text); }
 
 /* Overall snapshot score */
 .fl-summary-score { display: flex; align-items: center; gap: var(--space-4); margin: var(--space-3) 0; padding: var(--space-3) var(--space-4); background: var(--bg-elev-2); border-radius: var(--radius); }
-.fl-score-n { font-size: 2.8rem; font-weight: 800; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.fl-score-n { font-size: 2.8rem; font-weight: 700; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
 .fl-score-lbl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 
 /* ============================================================
@@ -724,12 +724,12 @@ button.sf-toast:hover { border-color: var(--danger); }
 .quiz-opt.wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
 .quiz-opt:disabled { cursor: default; }
 .quiz-opt-letter { width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--bg-elev-2); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
-.quiz-opt-mark { margin-inline-start: auto; font-weight: 800; }
+.quiz-opt-mark { margin-inline-start: auto; font-weight: 700; }
 .quiz-opt.correct .quiz-opt-mark { color: var(--success); }
 .quiz-opt.wrong .quiz-opt-mark { color: var(--danger); }
 .quiz-reveal { margin-top: var(--space-4); width: 100%; }
 .quiz-result { margin-top: var(--space-4); }
-.quiz-verdict { font-weight: 800; font-size: var(--fs-md); margin-bottom: var(--space-3); }
+.quiz-verdict { font-weight: 700; font-size: var(--fs-md); margin-bottom: var(--space-3); }
 .quiz-verdict.ok { color: var(--success); }
 .quiz-verdict.no { color: var(--danger); }
 .quiz-actual, .quiz-discussion { background: var(--bg-elev-2); border-radius: var(--radius); padding: var(--space-3); margin-bottom: var(--space-3); }
@@ -761,7 +761,7 @@ button.sf-toast:hover { border-color: var(--danger); }
   box-shadow: var(--shadow);
 }
 .score-inner { width: 138px; height: 138px; border-radius: 50%; background: var(--bg-elev); display: grid; place-items: center; }
-.score-num { font-size: 3rem; font-weight: 800; line-height: 1; color: var(--text); }
+.score-num { font-size: 3rem; font-weight: 700; line-height: 1; color: var(--text); }
 .score-cap { font-size: var(--fs-sm); color: var(--text-muted); }
 .score-band { font-size: var(--fs-lg); font-weight: 700; margin-bottom: var(--space-4); }
 .tips-list { text-align: start; max-width: 640px; margin: 0 auto var(--space-4); }
@@ -821,7 +821,7 @@ button.sf-toast:hover { border-color: var(--danger); }
   border: 1px solid var(--border); border-radius: var(--radius);
 }
 .club-stat-n {
-  font-size: var(--fs-xl); font-weight: 800; line-height: 1;
+  font-size: var(--fs-xl); font-weight: 700; line-height: 1;
   color: var(--accent); font-variant-numeric: tabular-nums;
 }
 .club-stat-l { font-size: var(--fs-sm); color: var(--text-muted); text-align: center; }
@@ -879,7 +879,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .club-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-strong); }
 .club-avatar.mono {
   display: grid; place-items: center; background: var(--accent-soft);
-  color: var(--accent); font-size: var(--fs-lg); font-weight: 800;
+  color: var(--accent); font-size: var(--fs-lg); font-weight: 700;
 }
 .club-member-line { font-size: var(--fs-xs); color: var(--text-muted); }
 
@@ -926,7 +926,7 @@ button.sf-toast:hover { border-color: var(--danger); }
   margin-top: var(--space-3);
 }
 .result-card-num {
-  font-size: var(--fs-2xl); font-weight: 800; line-height: 1;
+  font-size: var(--fs-2xl); font-weight: 700; line-height: 1;
   color: var(--band); font-variant-numeric: tabular-nums;
 }
 .result-card-band { font-weight: 700; color: var(--band); font-size: var(--fs-md); }
@@ -959,7 +959,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .quiz-card-toggle:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .quiz-done {
   margin-top: var(--space-5); text-align: center;
-  font-size: var(--fs-lg); font-weight: 800; color: var(--accent);
+  font-size: var(--fs-lg); font-weight: 700; color: var(--accent);
 }
 
 /* Manual-copy fallback when the clipboard API is unavailable */
@@ -1182,7 +1182,7 @@ html[data-presenting] img { margin-inline: auto; }
 .reach-pin.on .reach-pin-dot { r: 7.5; }
 .reach-pin:focus-visible .reach-pin-dot { stroke: var(--accent); stroke-width: 3; }
 .reach-tip {
-  font-size: 22px; font-weight: 800; pointer-events: none;
+  font-size: 22px; font-weight: 700; pointer-events: none;
   paint-order: stroke; stroke: var(--bg-elev); stroke-width: 5px;
 }
 
@@ -1332,7 +1332,7 @@ html[data-presenting] img { margin-inline: auto; }
 .week-num {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
   background: var(--bg-elev-2); border: 2px solid var(--border-strong);
-  font-weight: 800; color: var(--text-soft); transition: all var(--transition);
+  font-weight: 700; color: var(--text-soft); transition: all var(--transition);
 }
 .week-check input:focus-visible + .week-num { outline: 2px solid var(--accent); outline-offset: 2px; }
 .week-day.done .week-num { background: var(--success); border-color: var(--success); color: #fff; }
