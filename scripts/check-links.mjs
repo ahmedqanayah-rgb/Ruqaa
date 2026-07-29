@@ -48,6 +48,31 @@ for (const b of books) {
   for (const s of b.sections) walk(s.blocks, `${b.id}/${s.slug} · content link`)
 }
 
+/*
+ * Figure ids fail silently too: `{ type:'figure', id }` with an id the registry
+ * doesn't know renders nothing at all, leaving a hole in the article. The
+ * registry is JSX so it can't be imported here — match against its source.
+ */
+const fs = await import('node:fs')
+const path = await import('node:path')
+const { fileURLToPath } = await import('node:url')
+const here = path.dirname(fileURLToPath(import.meta.url))
+const registry = fs.readFileSync(path.resolve(here, '../src/components/figures/registry.jsx'), 'utf8')
+const figureIds = new Set()
+const walkFigures = (v) => {
+  if (!v || typeof v !== 'object') return
+  if (Array.isArray(v)) return v.forEach(walkFigures)
+  if (v.type === 'figure' && v.id) figureIds.add(v.id)
+  Object.values(v).forEach(walkFigures)
+}
+walkFigures(books)
+for (const id of [...figureIds].sort()) {
+  if (!new RegExp(`^\\s*${id}:`, 'm').test(registry)) {
+    console.log(`  NO FIGURE  "${id}" is used in a section but not in registry.jsx`)
+    bad++
+  }
+}
+
 const total = [...slugs.values()].reduce((n, s) => n + s.size, 0)
-console.log(`${total} sections across ${books.length} books; ${bad} bad reference(s)`)
+console.log(`${total} sections and ${figureIds.size} figures across ${books.length} books; ${bad} bad reference(s)`)
 process.exit(bad ? 1 : 0)

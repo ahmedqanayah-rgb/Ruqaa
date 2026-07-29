@@ -9,6 +9,7 @@ import { summary, causesMap, speedFlow, exhaustion } from './sections-1.js'
 import { readingMindwandering, bigTech, cruelOptimism } from './sections-2.js'
 import { stressVigilance, dietPollution, adhd, childhood, rebellion } from './sections-3.js'
 import { characters, shocking, myths, discussion } from './sections-4.js'
+import { flowState } from './sections-flow.js'
 import { verdict, reception } from './reception.js'
 import { challenge } from './challenge.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
@@ -84,6 +85,14 @@ const QUICK = {
     correct: 0,
     note: L('جيلٌ واحد فقط — وانتقلت الطفولة خلف الأبواب المغلقة وإلى الشاشات.', 'A single generation — and childhood moved behind closed doors and onto screens.'),
   },
+  'flow-state': {
+    q: L('ماذا وجدت دراسة تشيكسنتميهايي ولوفيفر حين رنّت أجهزة النداء؟', 'What did Csikszentmihalyi & LeFevre’s pagers reveal?'),
+    opts: [L('نتدفّق في الفراغ أكثر من العمل', 'We flow more in leisure than at work'),
+           L('نتدفّق في العمل أكثر — ومع ذلك نفضّل الفراغ', 'We flow more at work — yet still prefer leisure'),
+           L('لا فرق بين الحالتين', 'No difference between the two')],
+    correct: 1,
+    note: L('«مفارقة العمل»: العمل يأتي ببنية التدفّق جاهزة (هدفٌ وقواعد وتغذيةٌ راجعة)، والفراغ يصلنا بلا بنية — فنختار الأسهل ونسمّيه راحة.', 'The “paradox of work”: a job arrives with the architecture of flow pre-installed — goal, rules, feedback — while free time arrives with none, so we take the easy option and call it rest.'),
+  },
   rebellion: {
     q: L('ما السابقتان اللتان يستشهد بهما هاري على أن التمرّد الجماعي ينجح؟', 'Which two precedents does Hari cite to show collective rebellion works?'),
     opts: [L('الرصاص وطبقة الأوزون', 'Lead and the ozone layer'), L('التبغ والوجبات السريعة', 'Tobacco and fast food'), L('التلفاز والراديو', 'Television and radio')],
@@ -123,6 +132,9 @@ export const stolenFocus = {
     { title: L('الأسباب الاثنا عشر', 'The twelve causes'),
       slugs: ['speed-flow', 'exhaustion', 'reading-mindwandering', 'big-tech', 'cruel-optimism',
               'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
+    // Drawn from another book, so it gets its own group rather than sitting
+    // among Hari's twelve causes as though he wrote it.
+    { title: L('قراءةٌ في الكتاب الأصل', 'Into the source book'), slugs: ['flow-state'] },
     { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-assessment', 'focus-lab', 'challenge', 'studies'] },
     { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
   ],
@@ -140,6 +152,7 @@ export const stolenFocus = {
     enrich(adhd),
     enrich(childhood),
     enrich(rebellion),
+    enrich(flowState),
     reception,
     characters,
     shocking,

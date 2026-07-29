@@ -16,6 +16,7 @@ import {
   SfInfiniteScroll, SfOutrageAlgorithm, SfRoamingRadius,
 } from './stolen-focus/StolenFocusSims.jsx'
 import { SfDistractedReading } from './stolen-focus/DistractedReading.jsx'
+import { SfFlowNine, SfFlowBrain, SfFlowRatchet } from './stolen-focus/FlowFigures.jsx'
 
 // figure id -> component. Referenced from section content blocks { type:'figure', id }.
 export const FIGURES = {
@@ -46,6 +47,11 @@ export const FIGURES = {
   sfBloodSugar: SfBloodSugar,
   sfAdhdRise: SfAdhdThreshold,
   sfRoamingRadius: SfRoamingRadius,
+
+  // ----- the flow-state deep dive (from Csikszentmihalyi's *Flow*) -----
+  sfFlowNine: SfFlowNine,
+  sfFlowBrain: SfFlowBrain,
+  sfFlowRatchet: SfFlowRatchet,
 }
 
 export function Figure({ id }) {
