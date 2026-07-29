@@ -222,6 +222,14 @@ keeps `base: './'` sub-path hosting working.
   Gloria Mark's, and it appears in no peer-reviewed paper. Same bar applies: check it yourself
   and link the primary source. **Don't "restore" the 23-minute claim as fact anywhere**, and
   don't reinstate the interruption figure that was built on it (POLISH-PLAN §7).
+- **Flow-state deep dive** (`data/books/stolen-focus/sections-flow.js`) — a section inside the
+  Stolen Focus tab sourced from **another book**, Csikszentmihalyi's *Flow*. It sits in its own
+  sidebar group («قراءةٌ في الكتاب الأصل») and opens with a callout saying so, precisely so it
+  never reads as Hari's. Its four figures live in `figures/stolen-focus/FlowFigures.jsx` and are
+  hand-rolled SVG — **don't reach for recharts there**, it would drag the charting library into
+  a text section. Fig 15 looks for `public/images/flow/brain-lateral.webp` and falls back to a
+  schematic if absent (ClubBanner's degrade-don't-break pattern), so dropping that file in
+  upgrades the figure with no code change.
 - **7-day challenge** — `BookSection` dispatches a fourth kind, **`'challenge'`** →
   `components/WeekChallenge.jsx`, with content in `data/books/<slug>/challenge.js`. It is
   the site's answer to its own tagline («نقرأ الكتاب… ثم نعيشه»): seven small experiments

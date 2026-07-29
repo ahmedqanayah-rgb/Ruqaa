@@ -1404,57 +1404,111 @@ html[data-presenting] img { margin-inline: auto; }
 /* Interruption-cost timeline — green hour, red 23-min refocus shadows overlap */
 
 /* ============================================================
-   Flow-state deep dive (figures 13–15) — from Csikszentmihalyi's *Flow*
+   Flow-state deep dive (figures 13–16) — from Csikszentmihalyi's *Flow*
    ============================================================ */
-/* The nine components: conditions you set, then symptoms that follow. */
-.flow9 { display: grid; gap: var(--space-2); }
-.flow9-col { display: flex; flex-direction: column; gap: 8px; }
-.flow9-hd { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
-.flow9-hd.cond { color: var(--accent); }
-.flow9-hd.symp { color: var(--violet); }
-.flow9-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
-.flow9-card {
-  display: flex; align-items: center; gap: 8px; text-align: start;
-  padding: 9px 11px; border-radius: var(--radius-sm);
-  background: var(--bg-elev-2); border: 1px solid var(--border);
-  color: var(--text); font: inherit; font-size: var(--fs-sm); cursor: pointer;
+
+/* ---- Fig 13: the paradox of work ---- */
+.paradox { display: flex; flex-direction: column; gap: var(--space-3); }
+.pdx-switch { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.pdx-panel { padding: var(--space-4); background: var(--bg-elev-2); border-radius: var(--radius); border: 1px solid var(--border); }
+.pdx-meter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 12px; margin-bottom: var(--space-3); }
+.pdx-meter-lbl { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+.pdx-meter-val { font-size: var(--fs-xs); font-weight: 700; color: var(--text-soft); }
+.pdx-bar { grid-column: 1 / -1; block-size: 14px; border-radius: 999px; background: var(--bg-elev); border: 1px solid var(--border); overflow: hidden; }
+.pdx-bar i { display: block; block-size: 100%; border-radius: 999px; transition: inline-size var(--transition); }
+.pdx-bar.flow i { background: var(--accent); }
+.pdx-bar.want i { background: var(--violet); }
+.pdx-line { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }
+.pdx-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-3); }
+.pdx-col { padding: var(--space-3); border-radius: var(--radius); background: var(--bg-elev-2); border-inline-start: 3px solid var(--border-strong); }
+.pdx-col.follows-flow { border-inline-start-color: var(--accent); }
+.pdx-col.follows-place { border-inline-start-color: var(--warm); }
+.pdx-col-hd { display: block; font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: var(--space-2); }
+.pdx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pdx-chip { font-size: var(--fs-xs); font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--text); border: 1px solid var(--border); }
+.pdx-chip.more { background: transparent; color: var(--text-muted); font-weight: 500; }
+.pdx-chip.warn { background: var(--warm-soft); border-color: var(--warm); }
+.pdx-col-note { margin: var(--space-3) 0 0; font-size: var(--fs-sm); color: var(--text-soft); }
+
+/* ---- Fig 14: the gate ---- */
+.gate { display: flex; flex-direction: column; align-items: center; }
+.gate-conds { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; inline-size: 100%; }
+.gate-cond {
+  display: flex; align-items: center; gap: 9px; text-align: start; font: inherit;
+  padding: 11px 13px; border-radius: var(--radius-sm); cursor: pointer;
+  background: var(--accent-soft); border: 1px solid var(--accent); color: var(--text);
+  transition: background var(--transition), border-color var(--transition), opacity var(--transition);
+}
+.gate-cond.off { background: var(--bg-elev-2); border-color: var(--border); opacity: 0.62; }
+.gate-ic { font-size: 1.15rem; flex: none; }
+.gate-nm { font-size: var(--fs-sm); font-weight: 600; min-width: 0; flex: 1; }
+.gate-sw { inline-size: 34px; block-size: 19px; border-radius: 999px; background: var(--accent); flex: none; position: relative; transition: background var(--transition); }
+.gate-cond.off .gate-sw { background: var(--border-strong); }
+.gate-sw i { position: absolute; inset-block-start: 2px; inset-inline-start: 2px; inline-size: 15px; block-size: 15px; border-radius: 50%; background: var(--bg-elev); transition: inset-inline-start var(--transition); }
+.gate-cond:not(.off) .gate-sw i { inset-inline-start: 17px; }
+.gate-flow { display: flex; align-items: center; gap: 10px; margin: var(--space-3) 0; color: var(--text-muted); }
+.gate-pipe { inline-size: 54px; block-size: 3px; border-radius: 2px; background: var(--border-strong); transition: background var(--transition); }
+.gate-pipe.lit { background: var(--accent); }
+.gate-verdict { font-size: 1.1rem; font-weight: 700; }
+.gate.open .gate-verdict { color: var(--accent); }
+.gate.shut .gate-verdict { color: var(--warm); }
+.gate-symptoms { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
+.gate-symp {
+  display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 600;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--bg-elev-2); border: 1px solid var(--border); color: var(--text-muted);
   transition: all var(--transition);
 }
-.flow9-card:hover { border-color: var(--border-strong); }
-.flow9-card.active { border-color: var(--accent); background: var(--accent-soft); }
-.flow9-ic { font-size: 1.1rem; flex: none; }
-.flow9-nm { font-weight: 600; min-width: 0; }
-.flow9-arrow { text-align: center; color: var(--text-muted); font-size: 1.2rem; line-height: 1; }
-.flow9-detail {
-  margin: var(--space-3) 0 0; padding: var(--space-3);
-  background: var(--bg-elev-2); border-radius: var(--radius);
-  border-inline-start: 3px solid var(--accent); font-size: var(--fs-sm);
+.gate-symp.lit { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+.gate-readout {
+  margin: var(--space-4) 0 0; padding: var(--space-3); inline-size: 100%;
+  background: var(--bg-elev-2); border-radius: var(--radius); font-size: var(--fs-sm);
+  border-inline-start: 3px solid var(--border-strong);
 }
+.gate-readout.good { border-inline-start-color: var(--success); }
+.gate-readout.bad { border-inline-start-color: var(--warm); }
 
-/* The ratchet: the challenge/skill plane walked over time. */
-.flow-ratchet { display: flex; flex-direction: column; align-items: center; }
-.ratchet-svg { width: 100%; max-width: 340px; height: auto; touch-action: none; }
-.ratchet-axes { display: flex; justify-content: space-between; width: 100%; max-width: 340px; font-size: var(--fs-xs); color: var(--text-muted); }
-.ratchet-steps { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: var(--space-3) 0 0; }
-.ratchet-note {
-  margin: var(--space-3) 0 0; padding: var(--space-3); width: 100%;
-  background: var(--bg-elev-2); border-radius: var(--radius);
-  border-inline-start: 3px solid var(--border-strong); font-size: var(--fs-sm);
-}
+/* ---- Fig 15: the brain ---- */
+.flow-brain { display: flex; flex-direction: column; align-items: center; }
+.brain-modes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-3); }
+.brain-stage { position: relative; inline-size: 100%; max-inline-size: 360px; aspect-ratio: 320 / 210; }
+.brain-svg, .brain-photo { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.brain-photo { object-fit: contain; border-radius: var(--radius-sm); }
+/* Percentage-positioned so they land correctly on either the schematic or a
+   supplied left-facing lateral photo of the same aspect ratio. */
+.brain-hot { position: absolute; border-radius: 50%; background: var(--accent); transition: opacity var(--transition); pointer-events: none; }
+.brain-hot.dlpfc { inset-inline-start: 15%; inset-block-start: 26%; inline-size: 22%; block-size: 30%; }
+.brain-hot.mpfc { inset-inline-start: 10%; inset-block-start: 57%; inline-size: 17%; block-size: 24%; }
+.brain-tag { position: absolute; font-size: var(--fs-xs); font-weight: 700; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 999px; padding: 1px 8px; pointer-events: none; }
+.brain-tag.dlpfc { inset-inline-start: 30%; inset-block-start: 16%; }
+.brain-tag.mpfc { inset-inline-start: 2%; inset-block-start: 84%; }
+.brain-key { list-style: none; padding: 0; margin: var(--space-4) 0 0; inline-size: 100%; display: grid; gap: 10px; }
+.brain-key li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 10px; margin: 0; font-size: var(--fs-sm); }
+.brain-key b { color: var(--text); }
+.brain-role { color: var(--text-soft); font-size: var(--fs-xs); min-width: 0; }
+.brain-track { grid-column: 1 / -1; block-size: 10px; border-radius: 999px; background: var(--bg-elev-2); border: 1px solid var(--border); overflow: hidden; }
+.brain-track i { display: block; block-size: 100%; border-radius: 999px; transition: inline-size var(--transition), background var(--transition); }
+.brain-track i.up { background: var(--accent); }
+.brain-track i.down { background: var(--violet); }
+.brain-lvl { font-size: var(--fs-xs); font-weight: 700; border-radius: 999px; padding: 2px 10px; }
+.brain-lvl.up { background: var(--accent-soft); color: var(--text); }
+.brain-lvl.dn { background: var(--bg-elev-2); color: var(--text-muted); }
+.brain-note { margin: var(--space-3) 0 0; padding: var(--space-3); inline-size: 100%; background: var(--bg-elev-2); border-radius: var(--radius); border-inline-start: 3px solid var(--accent); font-size: var(--fs-sm); }
+
+/* ---- Fig 16: the ratchet ---- */
+.ratchet { display: flex; flex-direction: column; align-items: center; }
+.ratchet-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4); inline-size: 100%; }
+.ratchet-pane { margin: 0; display: flex; flex-direction: column; }
+.ratchet-svg { inline-size: 100%; block-size: auto; }
+.ratchet-axis { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); margin-top: 4px; }
+.rt-zone { font-size: 11px; fill: var(--text-muted); font-weight: 600; }
+.rt-lbl { font-size: 11px; font-weight: 800; }
+.rt-lbl2 { font-size: 12px; font-weight: 800; fill: var(--text); }
+.rt-pt circle { transition: r var(--transition), fill var(--transition); }
+.ratchet-steps { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: var(--space-4) 0 0; }
+.ratchet-note { margin: var(--space-3) 0 0; padding: var(--space-3); inline-size: 100%; background: var(--bg-elev-2); border-radius: var(--radius); border-inline-start: 3px solid var(--border-strong); }
+.ratchet-note strong { display: block; font-size: var(--fs-sm); margin-bottom: 4px; }
+.ratchet-note p { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }
 .ratchet-note.zone-flow { border-inline-start-color: var(--success); }
 .ratchet-note.zone-boredom { border-inline-start-color: var(--blue); }
 .ratchet-note.zone-anxiety { border-inline-start-color: var(--warm); }
-
-/* The brain during improvisation. */
-.flow-brain { display: flex; flex-direction: column; align-items: center; }
-.brain-modes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-3); }
-.brain-svg { width: 100%; max-width: 340px; height: auto; }
-.brain-key { list-style: none; padding: 0; margin: var(--space-3) 0 0; width: 100%; display: grid; gap: 8px; }
-.brain-key li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }
-.brain-dot { width: 15px; height: 15px; border-radius: 4px; flex: none; border: 1px solid var(--accent); }
-.brain-lvl { margin-inline-start: auto; font-size: var(--fs-xs); font-weight: 700; color: var(--text); background: var(--bg-elev-2); border-radius: 999px; padding: 2px 10px; }
-.brain-note {
-  margin: var(--space-3) 0 0; padding: var(--space-3); width: 100%;
-  background: var(--bg-elev-2); border-radius: var(--radius);
-  border-inline-start: 3px solid var(--accent); font-size: var(--fs-sm);
-}

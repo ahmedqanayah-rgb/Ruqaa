@@ -57,6 +57,15 @@ export const flowState = {
       'ثم جاء الجزء الذي جعلها «مفارقة». فحين سُئل الناس في اللحظة نفسها عن **دافعهم** — هل تودّ أن تكون في مكانٍ آخر الآن؟ — كان الجواب في العمل: نعم، حتى وهم في تدفّق. وفي الفراغ: لا، حتى وهم في ملل. أي أننا نهرب من الحالة التي تعطينا أفضل لحظاتنا، ونتشبّث بالحالة التي لا تعطينا شيئاً.',
       'Then came the part that made it a “paradox.” When people were asked in the same moment about their **motivation** — would you rather be doing something else? — at work the answer was yes, even while in flow. In leisure it was no, even while bored. We flee the state that gives us our best moments, and cling to the one that gives us little.'
     ) },
+    { type: 'p', text: L(
+      'وفي ملخّص الورقة تفصيلٌ أدقّ يستحقّ التوقّف: حين قارن الباحثان مقاييس جودة الخبرة كلّها — التركيز، والإبداع، والرضا، والنشاط، وسواها — وجدا أنها **تتبع التدفّق** لا المكان. أي أن سؤال «هل أنت في تدفّق؟» يتنبّأ بشعورك أفضل من سؤال «هل أنت في العمل أم في بيتك؟». باستثناء اثنين فقط: **الاسترخاء، والدافع**. هذان وحدهما يتبعان مكانك.',
+      'The paper’s abstract holds a sharper detail worth pausing on. When the two researchers compared every measure of experience quality — concentration, creativity, satisfaction, activity and the rest — they found these track **flow**, not location. Asking “are you in flow?” predicts how you feel better than asking “are you at work or at home?”. With exactly two exceptions: **relaxation and motivation**. Those two follow where you are.'
+    ) },
+    { type: 'p', text: L(
+      'فكّر في ما يعنيه هذا. الدافع — البوصلة التي تقرّر بها كيف تقضي يومك — هو واحدٌ من شيئين اثنين لا يشيران إلى أفضل لحظاتك. نحن نُوجَّه بمؤشّرٍ معطوب.',
+      'Consider what that means. Motivation — the compass by which you decide how to spend your day — is one of only two things that do not point at your best moments. We are being steered by a broken instrument.'
+    ) },
+    { type: 'figure', id: 'sfFlowParadox' },
     { type: 'callout', variant: 'fact', title: L('لماذا نفعل ذلك بأنفسنا؟', 'Why do we do this to ourselves?'), text: L(
       'تفسير تشيكسنتميهايي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. الفراغ غير المنظّم هو المهارة التي لم يعلّمنا أحدٌ إيّاها.',
       'Csikszentmihalyi’s explanation: work usually arrives with the architecture of flow pre-installed — a defined goal, rules, feedback, colleagues measuring your performance. Leisure arrives with **no structure at all** — and building your own structure while tired is hard. So we take the easy option: the television, the scroll. And we call it rest. Unstructured free time is the skill nobody taught us.'

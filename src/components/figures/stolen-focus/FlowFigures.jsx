@@ -1,12 +1,13 @@
 /*
  * Figures for the "flow state" deep-dive — drawn from Csikszentmihalyi's own
- * book *Flow* (1990), not from Stolen Focus.
+ * book *Flow* (1990) and the underlying papers, not from Stolen Focus.
  *
  * Hand-rolled SVG on purpose: the figure registry is lazy-loaded precisely to
- * keep recharts out of the entry chunk, and none of these three needs a charting
- * library. Adding one here would pull ~105 kB gzipped back into the section.
+ * keep recharts out of the entry chunk, and none of these needs a charting
+ * library. Adding one would pull ~105 kB gzipped into a text section.
  *
  * No entrance animation anywhere (a settled user preference — POLISH-PLAN §6).
+ * Transitions on state *changes* are fine and are what make these readable.
  */
 import { useState } from 'react'
 import { useApp } from '../../../context/AppContext.jsx'
@@ -14,138 +15,388 @@ import FigureFrame from '../FigureFrame.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
-/* ---------------- The nine components ----------------
-   Csikszentmihalyi's nine, split the way he himself splits them: the first
-   three are *conditions* you can arrange before you start, the other six are
-   *symptoms* that arrive on their own once you are in. That split is the whole
-   practical point — you cannot will yourself into flow, you can only set the
-   table for it. */
-const CONDITIONS = [
-  { k: 'goals', icon: '🎯', name: L('هدفٌ واضح', 'Clear goals'),
-    body: L('تعرف في كلّ لحظة ما الخطوة التالية بالضبط. الغموض يستهلك الانتباه في السؤال «ماذا الآن؟» بدل العمل نفسه.',
-            'At every moment you know exactly what the next step is. Ambiguity burns attention on “what now?” instead of on the work.') },
-  { k: 'feedback', icon: '📶', name: L('تغذيةٌ راجعة فورية', 'Immediate feedback'),
-    body: L('تعرف فوراً إن كنت تُحسن أم لا — الوتر نشاز، الحجر لم يستقرّ، السطر لا يقرأ. لا تنتظر تقييماً بعد شهر.',
-            'You know at once whether it is going well — the note is off, the stone did not seat, the sentence does not read. You are not waiting a month for an appraisal.') },
-  { k: 'balance', icon: '⚖️', name: L('توازن التحدّي والمهارة', 'Challenge meets skill'),
-    body: L('المهمّة أصعب قليلاً ممّا تُتقن. أسهل فتملّ، أصعب بكثيرٍ فتقلق. الحافّة ضيّقة — ولهذا يحتاج التدفّق إلى ضبطٍ لا إلى حظّ.',
-            'The task sits a little above what you have mastered. Easier and you are bored; much harder and you are anxious. The edge is narrow — which is why flow needs tuning, not luck.') },
-]
-const SYMPTOMS = [
-  { k: 'merge', icon: '🔗', name: L('اندماج الفعل بالوعي', 'Action and awareness merge'),
-    body: L('تتوقّف عن مراقبة نفسك وأنت تفعل؛ يصير الفعل والوعي به شيئاً واحداً.',
-            'You stop watching yourself act; the doing and the awareness of doing become one thing.') },
-  { k: 'focus', icon: '🎧', name: L('تركيزٌ يبتلع كلّ شيء', 'All-consuming concentration'),
-    body: L('يضيق حقل الانتباه على المهمّة وحدها، فتسقط منه الهموم التي كانت تلاحقك قبل دقائق.',
-            'The field of attention narrows onto the task alone, and the worries that chased you minutes ago simply drop out of it.') },
-  { k: 'control', icon: '🎛️', name: L('إحساسٌ بالسيطرة', 'A sense of control'),
-    body: L('لا سيطرةٌ فعلية على النتيجة، بل غياب القلق من فقدانها — فرقٌ دقيق يميّز التدفّق عن التوتّر.',
-            'Not actual control over the outcome, but the absence of worry about losing it — a fine distinction that separates flow from strain.') },
-  { k: 'self', icon: '🫥', name: L('اختفاء الوعي بالذات', 'Self-consciousness disappears'),
-    body: L('يصمت الصوت الذي يسألك كيف تبدو وماذا يظنّون. وهذا تحديداً ما رُصد في الدماغ — انظر الشكل التالي.',
-            'The voice asking how you look and what they think goes quiet. This is precisely what shows up in the brain — see the next figure.') },
-  { k: 'time', icon: '⏳', name: L('تشوّه الزمن', 'Time distorts'),
-    body: L('تمرّ ساعاتٌ كدقائق، أو تتمدّد ثانيةٌ واحدة كما يصفها الرياضيّون. الساعة الداخلية تتوقّف عن العدّ.',
-            'Hours pass like minutes — or a single second stretches, as athletes describe it. The internal clock stops counting.') },
-  { k: 'autotelic', icon: '♾️', name: L('غايةٌ في ذاته', 'Autotelic — an end in itself'),
-    body: L('تفعله لأجل فعله. وهذا معيار تشيكسنتميهايي الأهمّ: لو زالت المكافأة الخارجية كلّها، هل تستمرّ؟',
-            'You do it for its own sake. This is Csikszentmihalyi’s most telling criterion: if every external reward vanished, would you keep going?') },
-]
+/* ============================================================
+   Fig 13 — The paradox of work
+   ============================================================
+   Csikszentmihalyi & LeFevre, JPSP 1989 (78 workers, one week of pager
+   signals). The abstract is unusually quotable and is the whole figure:
+   every measure of experience quality is more affected by *flow* than by
+   whether you are at work or at leisure — EXCEPT relaxation and motivation.
+   And the great majority of flow moments happen at work.
 
-export function SfFlowNine() {
+   Deliberately NOT a bar chart. The paper's exact work-vs-leisure percentages
+   could not be traced to a primary source, and inventing plausible bar heights
+   is exactly the failure the 23-minute entry in reception.js documents. So this
+   shows the *direction and the split*, which are sourced, and says so. */
+const PARADOX = {
+  work: {
+    key: 'work', label: L('في العمل', 'At work'), icon: '🛠️',
+    flow: 'high', want: 'low',
+    line: L('هنا تحدث الغالبية العظمى من لحظات التدفّق — ومع ذلك تقول: أتمنّى لو كنت في مكانٍ آخر.',
+            'This is where the great majority of flow moments happen — and yet you say: I would rather be somewhere else.'),
+  },
+  leisure: {
+    key: 'leisure', label: L('في الفراغ', 'At leisure'), icon: '🛋️',
+    flow: 'low', want: 'high',
+    line: L('هنا تقلّ لحظات التدفّق كثيراً — ومع ذلك تقول: لا أريد أن أكون في مكانٍ آخر.',
+            'This is where flow moments are far rarer — and yet you say: I do not want to be anywhere else.'),
+  },
+}
+const TRACKS_FLOW = [
+  L('التركيز', 'Concentration'), L('الإبداع', 'Creativity'), L('الرضا', 'Satisfaction'),
+  L('النشاط', 'Activity'), L('اليقظة', 'Alertness'), L('تقدير الذات', 'Self-esteem'),
+]
+export function SfFlowParadox() {
   const { t } = useApp()
-  const [open, setOpen] = useState('balance')
-  const all = [...CONDITIONS, ...SYMPTOMS]
-  const cur = all.find((c) => c.k === open)
-  const Card = (c) => (
-    <button key={c.k} className={`flow9-card ${open === c.k ? 'active' : ''}`}
-      onClick={() => setOpen(c.k)} aria-pressed={open === c.k}>
-      <span className="flow9-ic" aria-hidden>{c.icon}</span>
-      <span className="flow9-nm">{t(c.name)}</span>
-    </button>
+  const [side, setSide] = useState('work')
+  const cur = PARADOX[side]
+  const Meter = ({ label, level, tone }) => (
+    <div className="pdx-meter">
+      <span className="pdx-meter-lbl">{t(label)}</span>
+      <div className={`pdx-bar ${tone} ${level}`} aria-hidden>
+        <i style={{ inlineSize: level === 'high' ? '86%' : '22%' }} />
+      </div>
+      <span className="pdx-meter-val">{level === 'high' ? t(L('مرتفع', 'high')) : t(L('منخفض', 'low'))}</span>
+    </div>
   )
   return (
     <FigureFrame number={13}
-      title={L('تشريح الحالة: العناصر التسعة', 'Anatomy of the state: the nine components')}
-      caption={L('الثلاثة الأولى **شروطٌ ترتّبها أنت قبل أن تبدأ**؛ والستّة الباقية **أعراضٌ تأتيك وحدها** إن صحّت الشروط. انقر أيّ عنصرٍ لتفصيله.',
-                 'The first three are **conditions you arrange before you start**; the other six are **symptoms that arrive on their own** if the conditions hold. Click any component for the detail.')}>
-      <div className="flow9">
-        <div className="flow9-col">
-          <span className="flow9-hd cond">{t(L('شروطٌ ترتّبها', 'Conditions you set'))}</span>
-          <div className="flow9-cards">{CONDITIONS.map(Card)}</div>
+      title={L('مفارقة العمل', 'The paradox of work')}
+      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (تشيكسنتميهايي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** *الشكل يعرض الاتجاه لا المقادير — الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.*',
+                 '78 workers, one full week, pagers going off at random (Csikszentmihalyi & LeFevre, 1989). Switch between the two states, then look below the figure for the sharper finding: **what follows your flow, and what follows only your location.** *This shows direction, not magnitudes — the paper’s exact percentages could not be traced to a primary source, so we did not invent them.*')}>
+      <div className="paradox">
+        <div className="pdx-switch" role="group">
+          {Object.values(PARADOX).map((p) => (
+            <button key={p.key} className={`sf-preset ${side === p.key ? 'active' : ''}`}
+              onClick={() => setSide(p.key)}>
+              <span aria-hidden>{p.icon}</span> {t(p.label)}
+            </button>
+          ))}
         </div>
-        <div className="flow9-arrow" aria-hidden>↓</div>
-        <div className="flow9-col">
-          <span className="flow9-hd symp">{t(L('أعراضٌ تأتيك', 'Symptoms that follow'))}</span>
-          <div className="flow9-cards">{SYMPTOMS.map(Card)}</div>
+        <div className="pdx-panel">
+          <Meter label={L('لحظات التدفّق المرصودة', 'Flow moments recorded')} level={cur.flow} tone="flow" />
+          <Meter label={L('رغبتك في أن تكون هنا', 'Wanting to be here')} level={cur.want} tone="want" />
+          <p className="pdx-line" role="status">{t(cur.line)}</p>
+        </div>
+        <div className="pdx-split">
+          <div className="pdx-col follows-flow">
+            <span className="pdx-col-hd">{t(L('يتبع تدفّقك', 'Follows your flow'))}</span>
+            <div className="pdx-chips">
+              {TRACKS_FLOW.map((x, i) => <span key={i} className="pdx-chip">{t(x)}</span>)}
+              <span className="pdx-chip more">{t(L('وبقيّة مقاييس جودة الخبرة', 'and every other quality measure'))}</span>
+            </div>
+          </div>
+          <div className="pdx-col follows-place">
+            <span className="pdx-col-hd">{t(L('يتبع مكانك أنت', 'Follows only where you are'))}</span>
+            <div className="pdx-chips">
+              <span className="pdx-chip warn">{t(L('الاسترخاء', 'Relaxation'))}</span>
+              <span className="pdx-chip warn">{t(L('الدافع', 'Motivation'))}</span>
+            </div>
+            <p className="pdx-col-note">{t(L('استثناءان اثنان فقط — وأحدهما هو الدافع. أي أن البوصلة التي تقودك هي الشيء الوحيد تقريباً الذي لا يشير إلى أفضل لحظاتك.',
+                                             'Exactly two exceptions — and one of them is motivation. The compass steering you is almost the only thing that does not point at your best moments.'))}</p>
+          </div>
         </div>
       </div>
-      <p className="flow9-detail" role="status">
-        <strong>{t(cur.name)}</strong> — {t(cur.body)}
-      </p>
     </FigureFrame>
   )
 }
 
-/* ---------------- The ratchet ----------------
-   Csikszentmihalyi's own worked example (a boy learning tennis, "Alex" in the
-   book). The point most summaries miss: flow is not a place you arrive at, it
-   is a moving target. Skill grows -> the old challenge bores you -> you must
-   raise it to get back in. That ratchet is why he calls flow the engine of a
-   growing self, and it is exactly the part Stolen Focus leaves out. */
+/* ============================================================
+   Fig 14 — The nine components, as a gate you either open or don't
+   ============================================================
+   The static-card version of this taught the list but not the mechanism. The
+   point of Csikszentmihalyi's split is causal: the first three are conditions
+   you arrange, the other six are consequences you cannot summon directly. So
+   the figure is a gate — switch a condition off and watch the six consequences
+   go dark, with a readout naming what you get *instead*. You can feel that you
+   cannot decide your way into flow. */
+const CONDITIONS = [
+  { k: 'goal', icon: '🎯', name: L('هدفٌ واضح', 'A clear goal'),
+    on: L('تعرف في كلّ لحظة ما الخطوة التالية.', 'At every moment you know the next step.'),
+    off: L('بلا هدفٍ واضح يتبدّد الانتباه في السؤال «ماذا الآن؟». الحالة الناتجة: **تشتّت**، لا تدفّق.',
+           'With no clear goal, attention leaks into “what now?”. What you get instead: **scatter**, not flow.') },
+  { k: 'feedback', icon: '📶', name: L('تغذيةٌ راجعة فورية', 'Immediate feedback'),
+    on: L('تعرف فوراً إن كنت تُحسن أم لا.', 'You know at once whether it is going well.'),
+    off: L('بلا تغذيةٍ راجعة تضطرّ إلى الحكم على نفسك من الخارج باستمرار. الحالة الناتجة: **قلقٌ من الأداء**.',
+           'With no feedback you must keep judging yourself from outside. What you get instead: **performance anxiety**.') },
+  { k: 'balance', icon: '⚖️', name: L('تحدٍّ عند حافّة مهارتك', 'Challenge at your skill’s edge'),
+    on: L('أصعب قليلاً ممّا تُتقن — لا أكثر.', 'A little above what you have mastered — no more.'),
+    off: L('أسهل من مهارتك فتملّ، أصعب بكثيرٍ فتقلق. الحالة الناتجة: **مللٌ أو قلق** بحسب أيّ الطرفين اختلّ.',
+           'Below your skill you are bored; far above it you are anxious. What you get instead: **boredom or anxiety**, depending which way it tipped.') },
+]
+const SYMPTOMS = [
+  { icon: '🔗', name: L('يندمج الفعل بالوعي', 'Action merges with awareness') },
+  { icon: '🎧', name: L('يبتلعك التركيز', 'Concentration consumes you') },
+  { icon: '🎛️', name: L('يهدأ الخوف من الفشل', 'The fear of failing quiets') },
+  { icon: '🫥', name: L('يختفي الوعي بالذات', 'Self-consciousness disappears') },
+  { icon: '⏳', name: L('يتشوّه الزمن', 'Time distorts') },
+  { icon: '♾️', name: L('يصير غايةً في ذاته', 'It becomes an end in itself') },
+]
+export function SfFlowNine() {
+  const { t } = useApp()
+  const [on, setOn] = useState({ goal: true, feedback: true, balance: true })
+  const missing = CONDITIONS.filter((c) => !on[c.k])
+  const open = missing.length === 0
+  return (
+    <FigureFrame number={14}
+      title={L('البوّابة: ثلاثةٌ تصنعها، وستّةٌ تأتيك', 'The gate: three you build, six that arrive')}
+      caption={L('العناصر التسعة لا تقف في صفٍّ واحد. الثلاثة الأولى **شروطٌ ترتّبها قبل أن تبدأ**، والستّة الباقية **نتائج لا تُستدعى بالإرادة**. أطفئ أيّ شرطٍ وانظر ماذا يحدث للنتائج — وماذا تحصل عليه بدلاً منها.',
+                 'The nine components do not sit in one row. The first three are **conditions you arrange before you start**; the other six are **consequences you cannot summon by willing them**. Switch off any condition and watch the consequences go — and see what you get instead.')}>
+      <div className={`gate ${open ? 'open' : 'shut'}`}>
+        <div className="gate-conds">
+          {CONDITIONS.map((c) => (
+            <button key={c.k} className={`gate-cond ${on[c.k] ? 'on' : 'off'}`}
+              onClick={() => setOn((s) => ({ ...s, [c.k]: !s[c.k] }))}
+              aria-pressed={on[c.k]}>
+              <span className="gate-ic" aria-hidden>{c.icon}</span>
+              <span className="gate-nm">{t(c.name)}</span>
+              <span className="gate-sw" aria-hidden><i /></span>
+            </button>
+          ))}
+        </div>
+
+        <div className="gate-flow" aria-hidden>
+          <span className={`gate-pipe ${open ? 'lit' : ''}`} />
+          <span className="gate-verdict">{open ? '▼' : '✕'}</span>
+          <span className={`gate-pipe ${open ? 'lit' : ''}`} />
+        </div>
+
+        <div className="gate-symptoms">
+          {SYMPTOMS.map((s, i) => (
+            <span key={i} className={`gate-symp ${open ? 'lit' : ''}`}>
+              <span aria-hidden>{s.icon}</span> {t(s.name)}
+            </span>
+          ))}
+        </div>
+
+        <p className={`gate-readout ${open ? 'good' : 'bad'}`} role="status">
+          {open
+            ? t(L('**الشروط الثلاثة قائمة.** لاحظ أنك لم «تختر» أياً من الستّة أدناه — أنت رتّبت الطاولة فحسب، والباقي جاء وحده. هذا كلّ ما يمكنك فعله، وهو يكفي.',
+                  '**All three conditions hold.** Notice you did not “choose” any of the six below — you set the table, and the rest arrived on its own. That is all you can do, and it is enough.'))
+            : t(missing[0].off)}
+        </p>
+      </div>
+    </FigureFrame>
+  )
+}
+
+/* ============================================================
+   Fig 15 — The brain during improvisation
+   ============================================================
+   Two things shown, and they must not be conflated:
+   1. Dietrich's *transient hypofrontality* hypothesis (2003) — a proposal.
+   2. Limb & Braun's jazz fMRI (PLOS ONE 2008) — an actual measurement, and the
+      one clinical result that fits: improvising pianists showed dorsolateral
+      prefrontal + lateral orbital DEACTIVATION with medial prefrontal
+      ACTIVATION.
+   The figure states the second as measurement and the first as hypothesis, and
+   deliberately omits the popular "neurochemical cocktail" claim, which has
+   nothing like comparable evidence.
+
+   IMAGE: if public/images/flow/brain-lateral.webp exists it is used as the
+   base, with the two regions overlaid at percentage coordinates tuned for a
+   LEFT-FACING lateral view. If the file is missing the <img> hides itself on
+   error and the schematic SVG underneath carries the figure alone — same
+   pattern as ClubBanner, so a missing photo degrades instead of breaking. */
+const BRAIN_MODES = {
+  rehearsed: {
+    label: L('يعزف مقطوعةً محفوظة', 'Playing a memorised piece'), icon: '🎼',
+    dlpfc: 1, mpfc: 0.3,
+    note: L('العزف المحفوظ: **قشرة الجبهة الجانبية الظهرية (DLPFC) نشطة** — الرقيب الداخلي يعمل بكامل طاقته: يراقب، ويصحّح، ويقارن بالمعيار المحفوظ.',
+            'Rehearsed playing: **the dorsolateral prefrontal cortex is active** — the internal monitor running at full power: watching, correcting, comparing against the memorised standard.') },
+  improv: {
+    label: L('يرتجل بحرّية', 'Improvising freely'), icon: '🎹',
+    dlpfc: 0.16, mpfc: 1,
+    note: L('الارتجال: **تهبط DLPFC بوضوح وترتفع القشرة الجبهية الإنسية (mPFC)** — يخفت الرقيب ويعلو التعبير النابع من الداخل. هذا هو «اختفاء الوعي بالذات» مقيساً لا موصوفاً.',
+            'Improvising: **the DLPFC drops markedly while the medial prefrontal cortex rises** — the monitor dims and expression from within takes over. This is “self-consciousness disappears,” measured rather than described.') },
+}
+export function SfFlowBrain() {
+  const { t } = useApp()
+  const [mode, setMode] = useState('improv')
+  const [hasPhoto, setPhoto] = useState(true)
+  const m = BRAIN_MODES[mode]
+  const Region = ({ cls, level, label, abbr }) => (
+    <span className={`brain-hot ${cls}`} style={{ opacity: 0.18 + level * 0.72 }}
+      title={`${abbr} — ${t(label)}`} aria-hidden />
+  )
+  return (
+    <FigureFrame number={15}
+      title={L('ماذا يُطفَأ في الدماغ حين تذوب في عملك؟', 'What switches off when you dissolve into your work?')}
+      caption={L('أدخل **تشارلز ليمب وألن براون** ستّة عازفي جاز محترفين إلى ماسح رنينٍ مغناطيسيّ بلوحة مفاتيحَ بلاستيكية (٢٠٠٨)، وطلبا منهم أن يعزفوا مقطوعةً محفوظة ثم أن يرتجلوا. بدّل بين الحالتين وراقب المنطقتين.',
+                 '**Charles Limb and Allen Braun** put six professional jazz pianists into an fMRI scanner with a plastic keyboard (2008) and asked them to play a memorised piece, then to improvise. Switch between the two and watch the two regions.')}>
+      <div className="flow-brain">
+        <div className="brain-modes" role="group">
+          {Object.entries(BRAIN_MODES).map(([k, v]) => (
+            <button key={k} className={`sf-preset ${mode === k ? 'active' : ''}`} onClick={() => setMode(k)}>
+              <span aria-hidden>{v.icon}</span> {t(v.label)}
+            </button>
+          ))}
+        </div>
+
+        <div className="brain-stage" role="img" aria-label={t(m.label)}>
+          {/* Schematic base — also the fallback if no photo has been supplied. */}
+          <svg viewBox="0 0 320 210" className="brain-svg" aria-hidden>
+            <path d="M42,116 C38,72 76,40 128,38 C188,36 236,54 258,84 C280,114 272,150 244,166
+                     C220,178 174,184 128,180 C84,176 48,158 42,116 Z"
+              fill="var(--bg-elev-2)" stroke="var(--border-strong)" strokeWidth="2" />
+            <path d="M230,166 C250,176 256,194 238,200 C216,206 194,196 190,184"
+              fill="var(--bg-elev-2)" stroke="var(--border-strong)" strokeWidth="2" />
+            {/* a few sulci so it reads as a brain, not a bean */}
+            <g stroke="var(--border-strong)" strokeWidth="1.4" fill="none" opacity="0.55">
+              <path d="M92,60 C110,78 104,96 120,104" />
+              <path d="M150,46 C162,70 150,88 166,102" />
+              <path d="M200,52 C210,76 196,92 210,108" />
+            </g>
+          </svg>
+          {hasPhoto && (
+            <img className="brain-photo" src="./images/flow/brain-lateral.webp" alt=""
+              onError={() => setPhoto(false)} />
+          )}
+          <Region cls="dlpfc" level={m.dlpfc} abbr="DLPFC"
+            label={L('قشرة الجبهة الجانبية الظهرية', 'dorsolateral prefrontal cortex')} />
+          <Region cls="mpfc" level={m.mpfc} abbr="mPFC"
+            label={L('القشرة الجبهية الإنسية', 'medial prefrontal cortex')} />
+          <span className="brain-tag dlpfc">DLPFC</span>
+          <span className="brain-tag mpfc">mPFC</span>
+        </div>
+
+        <ul className="brain-key">
+          <li>
+            <b>DLPFC</b>
+            <span className="brain-role">{t(L('الرقيب — المراقبة والتصحيح والحكم على النفس', 'the monitor — watching, correcting, self-judging'))}</span>
+            <span className="brain-track" aria-hidden><i className="down" style={{ inlineSize: `${m.dlpfc * 100}%` }} /></span>
+            <span className={`brain-lvl ${m.dlpfc > 0.6 ? 'up' : 'dn'}`}>
+              {m.dlpfc > 0.6 ? t(L('نشطة', 'active')) : t(L('منخفضة', 'down'))}
+            </span>
+          </li>
+          <li>
+            <b>mPFC</b>
+            <span className="brain-role">{t(L('التعبير عن الذات وتوليد ما هو داخليّ المنشأ', 'self-expression, generating from within'))}</span>
+            <span className="brain-track" aria-hidden><i className="up" style={{ inlineSize: `${m.mpfc * 100}%` }} /></span>
+            <span className={`brain-lvl ${m.mpfc > 0.6 ? 'up' : 'dn'}`}>
+              {m.mpfc > 0.6 ? t(L('نشطة', 'active')) : t(L('منخفضة', 'down'))}
+            </span>
+          </li>
+        </ul>
+        <p className="brain-note" role="status">{t(m.note)}</p>
+      </div>
+    </FigureFrame>
+  )
+}
+
+/* ============================================================
+   Fig 16 — The ratchet
+   ============================================================
+   Csikszentmihalyi's own worked example (a boy learning tennis, "Alex").
+   Two panels, because the idea only lands with both: the LEFT panel is the
+   familiar challenge/skill plane, and the RIGHT is the same four moments
+   plotted as complexity over time. The left shows you keep returning to flow;
+   the right shows each return is higher than the last. That second panel is
+   the part Stolen Focus never gets to. */
 const STEPS = [
   { s: 18, c: 20, lbl: 'A1', zone: 'flow',
-    note: L('يبدأ ألِكس بلا مهارة، وتحدٍّ صغير: أن يردّ الكرة فوق الشبكة. متوازنٌ تماماً — وهو في تدفّق.',
-            'Alex starts with no skill and a small challenge: get the ball over the net. Perfectly matched — and he is in flow.') },
+    head: L('يبدأ', 'He begins'),
+    note: L('ألِكس بلا مهارةٍ تقريباً، وتحدٍّ صغير: أن يردّ الكرة فوق الشبكة. الطرفان متساويان — وهو في تدفّق. لاحظ أن التدفّق هنا **لا يتطلّب براعة**، بل تطابقاً.',
+            'Alex has almost no skill and a small challenge: get the ball over the net. The two match — and he is in flow. Note that flow here **requires no excellence**, only a match.') },
   { s: 78, c: 20, lbl: 'A2', zone: 'boredom',
-    note: L('يتمرّن فتنمو مهارته. التحدّي نفسه لم يتغيّر — فصار مملّاً. الملل ليس فشلاً، إنه إشارة نموّ.',
-            'He practises and his skill grows. The challenge has not moved — so it has gone stale. Boredom is not failure here; it is a growth signal.') },
+    head: L('يتحسّن — فيملّ', 'He improves — and goes flat'),
+    note: L('يتمرّن فتنمو مهارته، والتحدّي واقفٌ مكانه. النتيجة ملل. والمهمّ: **الملل هنا ليس فشلاً بل إشارة نجاح** — لقد أتقنتَ ما كان يكفيك.',
+            'He practises, his skill grows, the challenge stays put. The result is boredom. And crucially: **boredom here is not failure but a success signal** — you have mastered what used to fit.') },
   { s: 18, c: 82, lbl: 'A3', zone: 'anxiety',
-    note: L('ولو واجه لاعباً أقوى منه بكثير قبل أن يتمرّن، لانقلبت الحالة إلى قلق — التحدّي فوق قدرته.',
-            'And had he faced a far stronger player before practising, the state would flip to anxiety — challenge beyond his reach.') },
+    head: L('الطريق الآخر للخروج', 'The other way out'),
+    note: L('ولو واجه لاعباً أقوى منه بكثير قبل أن يتمرّن، لخرج من التدفّق من الجهة المقابلة: قلق. الإشارتان مختلفتان والعلاج واحد — أعد ضبط المسافة بين الطرفين.',
+            'Had he faced a far stronger player before practising, he would have left flow from the opposite side: anxiety. Different signals, one remedy — reset the distance between the two.') },
   { s: 80, c: 84, lbl: 'A4', zone: 'flow',
-    note: L('الحلّ نفسه في الحالتين: ارفع التحدّي لتلحق بمهارتك، أو ارفع مهارتك لتلحق بالتحدّي. يعود التدفّق — لكن عند **مستوى أعقد**. ولهذا لا يمكن أن تتدفّق مرّتين في المكان نفسه.',
-            'The fix is the same from either side: raise the challenge to meet your skill, or raise your skill to meet the challenge. Flow returns — but at a **more complex level**. Which is why you cannot flow twice in the same place.') },
+    head: L('يعود — أعلى', 'He returns — higher'),
+    note: L('يرفع التحدّي ليلحق بمهارته، فيعود التدفّق. لكنّه **ليس التدفّق نفسه**: المهارة أكبر، والتحدّي أكبر، والحالة أعقد. ولهذا لا يمكن أن تتدفّق مرّتين في المكان نفسه — النجاح فيه ينقلك منه.',
+            'He raises the challenge to meet his skill, and flow returns. But it is **not the same flow**: greater skill, greater challenge, a more complex state. Which is why you cannot flow twice in the same place — succeeding at it moves you out of it.') },
 ]
 export function SfFlowRatchet() {
   const { t } = useApp()
   const [i, setI] = useState(0)
   const step = STEPS[i]
-  const px = (v) => 30 + (v / 100) * 240
-  const py = (v) => 270 - (v / 100) * 240
+  const px = (v) => 34 + (v / 100) * 232
+  const py = (v) => 266 - (v / 100) * 232
+  // complexity = how far from the origin the pair sits; the staircase panel.
+  const complexity = (p) => Math.round(Math.sqrt(p.s * p.c))
   return (
-    <FigureFrame number={15}
+    <FigureFrame number={16}
       title={L('لماذا لا تتدفّق مرّتين في المكان نفسه', 'Why you cannot flow twice in the same place')}
-      caption={L('التدفّق هدفٌ متحرّك: كلّما نمت مهارتك، بهت التحدّي الذي كان يكفيك. تنقّل بين المراحل الأربع لترى المسار الذي يصفه تشيكسنتميهايي.',
-                 'Flow is a moving target: as your skill grows, the challenge that used to fit goes flat. Step through the four stages to see the path Csikszentmihalyi describes.')}>
-      <div className="flow-ratchet">
-        <svg viewBox="0 0 300 300" className="ratchet-svg" role="img"
-          aria-label={t({ ar: `المرحلة ${step.lbl}`, en: `Stage ${step.lbl}` })}>
-          <rect x="30" y="30" width="120" height="120" fill="var(--violet-soft)" />
-          <rect x="150" y="30" width="120" height="120" fill="var(--accent-soft)" />
-          <rect x="30" y="150" width="120" height="120" fill="var(--bg-elev-2)" />
-          <rect x="150" y="150" width="120" height="120" fill="var(--blue-soft)" />
-          <line x1="30" y1="270" x2="270" y2="270" stroke="var(--border-strong)" strokeWidth="1.5" />
-          <line x1="30" y1="30" x2="30" y2="270" stroke="var(--border-strong)" strokeWidth="1.5" />
-          <line x1="30" y1="270" x2="270" y2="30" stroke="var(--accent)" strokeWidth="1.5" strokeDasharray="5 4" />
-          {/* the path so far */}
-          <polyline
-            points={STEPS.slice(0, i + 1).map((p) => `${px(p.s)},${py(p.c)}`).join(' ')}
-            fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" opacity="0.55" />
-          {STEPS.map((p, j) => (
-            <g key={p.lbl} opacity={j <= i ? 1 : 0.22}>
-              <circle cx={px(p.s)} cy={py(p.c)} r={j === i ? 11 : 7}
-                fill={j === i ? 'var(--accent)' : 'var(--bg-elev)'}
-                stroke="var(--accent)" strokeWidth="2" />
-              <text x={px(p.s)} y={py(p.c) - 16} textAnchor="middle"
-                fontSize="13" fontWeight="700" fill="var(--text)">{p.lbl}</text>
-            </g>
-          ))}
-        </svg>
-        <div className="ratchet-axes" aria-hidden>
-          <span>{t(L('← المهارة', 'skill →'))}</span>
-          <span>{t(L('التحدّي ↑', '↑ challenge'))}</span>
+      caption={L('اليسار: المستوى المألوف — تحدٍّ في مقابل مهارة. اليمين: **اللوحة التي تُنسى عادةً** — المواضع الأربعة نفسها مرتّبةً على الزمن. الأولى تقول إنك تعود إلى التدفّق؛ والثانية تقول إن كلّ عودةٍ أعلى من سابقتها.',
+                 'Left: the familiar plane — challenge against skill. Right: **the panel usually left out** — those same four moments laid out over time. The first says you keep returning to flow; the second says each return is higher than the last.')}>
+      <div className="ratchet">
+        <div className="ratchet-panels">
+          {/* ---- plane ---- */}
+          <figure className="ratchet-pane">
+            <svg viewBox="0 0 300 300" className="ratchet-svg" role="img"
+              aria-label={t({ ar: `المرحلة ${step.lbl}`, en: `Stage ${step.lbl}` })}>
+              <rect x="34" y="34" width="116" height="116" fill="var(--violet-soft)" />
+              <rect x="150" y="34" width="116" height="116" fill="var(--accent-soft)" />
+              <rect x="34" y="150" width="116" height="116" fill="var(--bg-elev-2)" />
+              <rect x="150" y="150" width="116" height="116" fill="var(--blue-soft)" />
+              <text x="92" y="96" className="rt-zone" textAnchor="middle">{t(L('قلق', 'Anxiety'))}</text>
+              <text x="208" y="96" className="rt-zone" textAnchor="middle">{t(L('تدفّق', 'Flow'))}</text>
+              <text x="92" y="212" className="rt-zone" textAnchor="middle">{t(L('لا مبالاة', 'Apathy'))}</text>
+              <text x="208" y="212" className="rt-zone" textAnchor="middle">{t(L('ملل', 'Boredom'))}</text>
+              <line x1="34" y1="266" x2="266" y2="266" stroke="var(--border-strong)" strokeWidth="1.5" />
+              <line x1="34" y1="34" x2="34" y2="266" stroke="var(--border-strong)" strokeWidth="1.5" />
+              <line x1="34" y1="266" x2="266" y2="34" stroke="var(--accent)" strokeWidth="1.5" strokeDasharray="5 4" opacity="0.8" />
+              <polyline points={STEPS.slice(0, i + 1).map((p) => `${px(p.s)},${py(p.c)}`).join(' ')}
+                fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinejoin="round"
+                strokeLinecap="round" opacity="0.5" />
+              {STEPS.map((p, j) => (
+                <g key={p.lbl} className={`rt-pt ${j === i ? 'cur' : ''} ${j <= i ? 'seen' : ''}`}>
+                  <circle cx={px(p.s)} cy={py(p.c)} r={j === i ? 12 : 7}
+                    fill={j === i ? 'var(--accent)' : 'var(--bg-elev)'}
+                    stroke="var(--accent)" strokeWidth="2.5" />
+                  <text x={px(p.s)} y={py(p.c) + (j === i ? 4 : 4)} textAnchor="middle"
+                    className="rt-lbl" fill={j === i ? 'var(--accent-contrast)' : 'var(--text-soft)'}>
+                    {j === i ? p.lbl.slice(1) : ''}
+                  </text>
+                </g>
+              ))}
+            </svg>
+            <figcaption className="ratchet-axis">
+              <span>{t(L('المهارة ←', '← skill'))}</span><span>{t(L('↑ التحدّي', 'challenge ↑'))}</span>
+            </figcaption>
+          </figure>
+
+          {/* ---- staircase ---- */}
+          <figure className="ratchet-pane">
+            <svg viewBox="0 0 300 300" className="ratchet-svg" role="img"
+              aria-label={t({ ar: 'تعقيدٌ يتصاعد مع الزمن', en: 'complexity rising over time' })}>
+              <line x1="34" y1="266" x2="278" y2="266" stroke="var(--border-strong)" strokeWidth="1.5" />
+              <line x1="34" y1="24" x2="34" y2="266" stroke="var(--border-strong)" strokeWidth="1.5" />
+              {STEPS.map((p, j) => {
+                const x = 60 + j * 62
+                const h = (complexity(p) / 92) * 220
+                const isFlow = p.zone === 'flow'
+                return (
+                  <g key={p.lbl} opacity={j <= i ? 1 : 0.2}>
+                    <rect x={x - 21} y={266 - h} width="42" height={h} rx="6"
+                      fill={isFlow ? 'var(--accent)' : 'var(--bg-elev-2)'}
+                      stroke={isFlow ? 'var(--accent)' : 'var(--border-strong)'} strokeWidth="2"
+                      opacity={j === i ? 1 : 0.75} />
+                    <text x={x} y={266 - h - 9} textAnchor="middle" className="rt-lbl2">{p.lbl}</text>
+                    <text x={x} y={284} textAnchor="middle" className="rt-zone">
+                      {isFlow ? t(L('تدفّق', 'flow')) : (p.zone === 'boredom' ? t(L('ملل', 'bored')) : t(L('قلق', 'anxious')))}
+                    </text>
+                  </g>
+                )
+              })}
+              {/* the two flow moments, joined to show the lift */}
+              {i >= 3 && (
+                <line x1="60" y1={266 - (complexity(STEPS[0]) / 92) * 220}
+                  x2={60 + 3 * 62} y2={266 - (complexity(STEPS[3]) / 92) * 220}
+                  stroke="var(--success)" strokeWidth="2.5" strokeDasharray="6 5" />
+              )}
+            </svg>
+            <figcaption className="ratchet-axis">
+              <span>{t(L('الزمن ←', '← time'))}</span><span>{t(L('↑ التعقيد', 'complexity ↑'))}</span>
+            </figcaption>
+          </figure>
         </div>
+
         <div className="ratchet-steps" role="group">
           {STEPS.map((p, j) => (
             <button key={p.lbl} className={`sf-preset ${i === j ? 'active' : ''}`} onClick={() => setI(j)}>
@@ -153,84 +404,10 @@ export function SfFlowRatchet() {
             </button>
           ))}
         </div>
-        <p className={`ratchet-note zone-${step.zone}`} role="status">{t(step.note)}</p>
-      </div>
-    </FigureFrame>
-  )
-}
-
-/* ---------------- The brain during flow ----------------
-   Two things are being shown and they must not be conflated:
-   1. Dietrich's *transient hypofrontality* hypothesis (2003) — a proposal that
-      absorbing states down-regulate the prefrontal cortex because the metabolic
-      budget runs out.
-   2. Limb & Braun's jazz fMRI (PLOS ONE, 2008) — an actual measurement, and the
-      one clinical result that fits: improvising pianists showed dorsolateral
-      prefrontal + lateral orbital DEACTIVATION alongside medial prefrontal
-      ACTIVATION.
-   The figure states the second as measurement and the first as hypothesis. It
-   deliberately does NOT repeat the popular "flow neurochemical cocktail"
-   (dopamine/endorphins/anandamide) claim, which is a popularisation with no
-   comparable evidence behind it. */
-const BRAIN_MODES = {
-  rehearsed: {
-    label: L('يعزف مقطوعةً محفوظة', 'Playing a memorised piece'),
-    dlpfc: 1, mpfc: 0.35,
-    note: L('العزف المحفوظ: قشرة الجبهة الجانبية (DLPFC) نشطة — الرقيب الداخلي يعمل، يراقب ويصحّح ويقارن بالمعيار.',
-            'Rehearsed playing: the dorsolateral prefrontal cortex is active — the internal monitor is on, checking, correcting, comparing against the standard.') },
-  improv: {
-    label: L('يرتجل بحرّية', 'Improvising freely'),
-    dlpfc: 0.18, mpfc: 1,
-    note: L('الارتجال: تهبط (DLPFC) والقشرة الحجاجية الجانبية بوضوح، وترتفع القشرة الجبهية الإنسية (mPFC) — أي يخفت الرقيب ويعلو التعبير عن الذات. هذا هو «اختفاء الوعي بالذات» مقيساً لا موصوفاً.',
-            'Improvising: the DLPFC and lateral orbital regions drop markedly while the medial prefrontal cortex rises — the monitor dims and self-expression takes over. This is “self-consciousness disappears,” measured rather than described.') },
-}
-export function SfFlowBrain() {
-  const { t } = useApp()
-  const [mode, setMode] = useState('improv')
-  const m = BRAIN_MODES[mode]
-  const shade = (v) => `color-mix(in srgb, var(--accent) ${Math.round(v * 78)}%, var(--bg-elev-2))`
-  return (
-    <FigureFrame number={14}
-      title={L('ماذا يُطفَأ في الدماغ حين تتدفّق؟', 'What switches off in the brain during flow?')}
-      caption={L('قاس **تشارلز ليمب وألن براون** ستّة عازفي جاز محترفين داخل ماسح الرنين المغناطيسي (٢٠٠٨) وهم يعزفون مقطوعةً محفوظة ثم يرتجلون. بدّل بين الحالتين. **تنبيه:** هذه نتيجةٌ على الارتجال لا على «التدفّق» بعنوانه العريض، وعيّنتها ستّة أشخاص.',
-                 '**Charles Limb and Allen Braun** scanned six professional jazz pianists (2008) playing a memorised piece and then improvising. Switch between the two. **Caveat:** this is a result about improvisation, not about “flow” at large, and the sample was six people.')}>
-      <div className="flow-brain">
-        <div className="brain-modes" role="group">
-          {Object.entries(BRAIN_MODES).map(([k, v]) => (
-            <button key={k} className={`sf-preset ${mode === k ? 'active' : ''}`} onClick={() => setMode(k)}>
-              {t(v.label)}
-            </button>
-          ))}
+        <div className={`ratchet-note zone-${step.zone}`} role="status">
+          <strong>{step.lbl} · {t(step.head)}</strong>
+          <p>{t(step.note)}</p>
         </div>
-        <svg viewBox="0 0 320 220" className="brain-svg" role="img"
-          aria-label={t(m.label)}>
-          {/* stylised lateral brain outline, front to the left */}
-          <path d="M40,120 C36,74 74,40 126,38 C186,36 236,54 258,84 C280,114 274,152 246,168
-                   C222,182 176,188 130,184 C86,180 46,162 40,120 Z"
-            fill="var(--bg-elev-2)" stroke="var(--border-strong)" strokeWidth="2" />
-          {/* cerebellum + stem, so it reads as a brain not a blob */}
-          <path d="M232,168 C252,178 258,196 240,202 C218,208 196,198 192,186"
-            fill="var(--bg-elev-2)" stroke="var(--border-strong)" strokeWidth="2" />
-          {/* DLPFC — front upper-lateral */}
-          <ellipse cx="86" cy="92" rx="34" ry="30" fill={shade(m.dlpfc)}
-            stroke="var(--accent)" strokeWidth="2" />
-          {/* medial prefrontal / frontal pole — front lower */}
-          <ellipse cx="70" cy="146" rx="26" ry="22" fill={shade(m.mpfc)}
-            stroke="var(--accent)" strokeWidth="2" />
-        </svg>
-        <ul className="brain-key">
-          <li>
-            <span className="brain-dot" style={{ background: shade(m.dlpfc) }} aria-hidden />
-            <b>DLPFC</b> — {t(L('الرقيب: المراقبة والتصحيح والحكم على النفس', 'the monitor: self-watching, correcting, judging'))}
-            <span className="brain-lvl">{m.dlpfc > 0.6 ? t(L('نشطة', 'active')) : t(L('منخفضة', 'down'))}</span>
-          </li>
-          <li>
-            <span className="brain-dot" style={{ background: shade(m.mpfc) }} aria-hidden />
-            <b>mPFC</b> — {t(L('التعبير عن الذات وتوليد ما هو داخليّ المنشأ', 'self-expression, generating what comes from within'))}
-            <span className="brain-lvl">{m.mpfc > 0.6 ? t(L('نشطة', 'active')) : t(L('منخفضة', 'down'))}</span>
-          </li>
-        </ul>
-        <p className="brain-note" role="status">{t(m.note)}</p>
       </div>
     </FigureFrame>
   )
