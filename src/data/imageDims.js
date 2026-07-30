@@ -24,6 +24,11 @@ export const imageDims = {
   './images/clean/nk-cells-1.webp': [396, 420],
   './images/clean/orexin.webp': [1728, 1582],
   './images/clean/prefrontal.webp': [1570, 1276],
+  './images/flow/alpine-farm.webp': [1100, 619],
+  './images/flow/assembly-line.webp': [1100, 619],
+  './images/flow/flow-cover-en.webp': [560, 852],
+  './images/flow/jazz-piano.webp': [1200, 802],
+  './images/flow/pager.webp': [900, 838],
   './images/graceland-jungle-room.jpg': [800, 588],
   './images/provincetown.jpg': [800, 450],
 }

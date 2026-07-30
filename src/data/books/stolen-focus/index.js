@@ -134,7 +134,7 @@ export const stolenFocus = {
               'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
     // Drawn from another book, so it gets its own group rather than sitting
     // among Hari's twelve causes as though he wrote it.
-    { title: L('قراءةٌ في الكتاب الأصل', 'Into the source book'), slugs: ['flow-state'] },
+    { title: L('من كتاب «التدفّق»', 'From the book Flow'), slugs: ['flow-state'] },
     { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-assessment', 'focus-lab', 'challenge', 'studies'] },
     { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
   ],

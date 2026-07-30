@@ -21,7 +21,10 @@ const L = (ar, en) => ({ ar, en })
 export const flowState = {
   slug: 'flow-state',
   icon: '🌊',
-  title: L('حالة التدفّق — من الكتاب الأصل', 'The Flow State — from the source'),
+  // The group heading already says this comes from another book, so the title
+  // doesn't repeat it — and it must not read like the existing «السرعة
+  // والتشتّت والتدفّق» section in the sidebar, which is the summary version.
+  title: L('داخل حالة التدفّق', 'Inside the flow state'),
   lead: L(
     'يخصّص هاري بضع صفحاتٍ للتدفّق. وصاحب الفكرة كتب فيها كتاباً كاملاً. هذا القسم رحلةٌ في ذلك الكتاب: كيف صُيد أعمق شعورٍ إنسانيّ بجهاز نداء، ولماذا نتدفّق في العمل ونشتهي الإجازة، وما الذي يُطفَأ في الدماغ حين تذوب في عملك — ولماذا تُقلق هذه المعرفة أكثر ممّا تُطمئن.',
     'Hari gives flow a few pages. The man whose idea it was wrote a whole book about it. This section is a journey through that book: how the deepest human feeling was caught with a pager, why we find flow at work and still crave the weekend, what switches off in the brain when you dissolve into your work — and why all of this is more unsettling than reassuring.'
@@ -31,6 +34,11 @@ export const flowState = {
       'كلّ ما يلي من كتاب **«التدفّق: سيكولوجيا الخبرة المثلى»** لـ**ميهاي تشيكسنتميهايي** (١٩٩٠) وأبحاثه المنشورة — لا من «تركيزنا المسلوب». أضفناه لأن التدفّق هو السبب الثاني عند هاري، وهو السبب الوحيد الذي كتب صاحبه فيه كتاباً كاملاً يستحقّ أن يُقرأ وحده. ما تعرفه من قسم «السرعة والتشتّت والتدفّق» لن يتكرّر هنا.',
       'Everything below comes from ***Flow: The Psychology of Optimal Experience*** by **Mihaly Csikszentmihalyi** (1990) and his published research — not from Stolen Focus. We added it because flow is Hari’s second cause, and the only one whose originator wrote an entire book worth reading on its own. Nothing from the “Speed, Switching & Flow” section is repeated here.'
     ) },
+
+    { type: 'image', src: './images/flow/flow-cover-en.webp',
+      alt: L('غلاف كتاب «التدفّق» لميهاي تشيكسنتميهايي', 'Cover of Flow by Mihaly Csikszentmihalyi'),
+      caption: L('الطبعة الإنجليزية — «التدفّق: سيكولوجيا الخبرة المثلى»، هاربر بيرينيال.',
+                 'The English edition — *Flow: The Psychology of Optimal Experience*, Harper Perennial.') },
 
     /* ---------------- Act 1: the method ---------------- */
     { type: 'h', text: L('١ · كيف تصطاد شعوراً؟', '1 · How do you hunt a feeling?') },
@@ -42,6 +50,10 @@ export const flowState = {
       'فابتكر حيلةً بسيطة: أعطِ الناس جهاز نداءٍ يرنّ في أوقاتٍ عشوائية، وفي كلّ رنّةٍ يسجّلون فوراً — ماذا تفعل الآن؟ وكيف تشعر الآن؟ لا استرجاع، ولا تلخيص، ولا سرد. لحظةٌ واحدة مقتنصة قبل أن تعبث بها الذاكرة. سمّاها **«منهج أخذ العيّنات من الخبرة» (Experience Sampling Method)**، وجمع بها عشرات آلاف اللحظات من آلاف البشر عبر عقود.',
       'So he invented a simple trick: give people a pager that beeps at random moments, and at each beep they record immediately — what are you doing right now? How do you feel right now? No recall, no summary, no narrative. A single moment seized before memory can get at it. He called it the **Experience Sampling Method**, and with it collected tens of thousands of moments from thousands of people across decades.'
     ) },
+    { type: 'image', src: './images/flow/pager.webp', wide: true,
+      alt: L('جهاز نداءٍ قديم في يد، تظهر عليه الساعة والتاريخ', 'An old pager held in a hand, showing the time and date'),
+      caption: L('الآلة التي بدأ بها كلّ شيء. جهازٌ كهذا رنّ في جيوب آلاف الأشخاص سبع مرّاتٍ في اليوم عشوائياً، وفي كلّ رنّةٍ سُئل صاحبه: ماذا تفعل الآن، وكيف تشعر؟ لا استبيان في نهاية الأسبوع — لحظةٌ مقتنصة قبل أن تُحرّرها الذاكرة.',
+                 'The machine it all started with. A device like this went off in thousands of pockets seven times a day at random, and at every beep its owner was asked: what are you doing now, and how do you feel? No end-of-week questionnaire — a moment seized before memory could edit it.') },
     { type: 'callout', variant: 'key', title: L('لماذا يهمّ هذا التفصيل المنهجيّ؟', 'Why this methodological detail matters'), text: L(
       'لأن كلّ ما يأتي بعده يقف عليه. حين تقرأ لاحقاً أننا نتدفّق في العمل أكثر منه في الإجازة، فالنتيجة ليست رأياً ولا استبياناً يسأل الناس عن ذكرياتهم — إنها ملايين اللحظات المرصودة وهي تحدث. وهذا بالضبط ما يفرّق بين هذه النتيجة وبين كثيرٍ من أرقام كتب المساعدة الذاتية.',
       'Because everything that follows rests on it. When you read below that we find more flow at work than at leisure, that is not an opinion or a survey asking people about their memories — it is moments logged as they happened. Which is exactly what separates this finding from a great many self-help statistics.'
@@ -97,6 +109,10 @@ export const flowState = {
       'ثم جاء القياس. في ٢٠٠٨ أدخل **تشارلز ليمب وألن براون** ستّة عازفي جاز محترفين إلى ماسح رنينٍ مغناطيسيّ بلوحة مفاتيحَ بلاستيكية غير مغناطيسية، وطلبا منهم أن يعزفوا مقطوعةً محفوظة، ثم أن يرتجلوا. والفارق بين الحالتين كان نمطاً **مفصولاً** لافتاً: هبوطٌ واسع في القشرة الجبهية الجانبية الظهرية والحجاجية الجانبية، مع ارتفاعٍ مركّزٍ في القشرة الجبهية الإنسية.',
       'Then came the measurement. In 2008 **Charles Limb and Allen Braun** put six professional jazz pianists into an fMRI scanner with a non-magnetic plastic keyboard and asked them to play a memorised piece, then to improvise. The difference between the two was a striking **dissociated** pattern: broad deactivation across the dorsolateral prefrontal and lateral orbital cortex, alongside focal activation of the medial prefrontal cortex.'
     ) },
+    { type: 'image', src: './images/flow/jazz-piano.webp', wide: true,
+      alt: L('عازف جاز على البيانو، عيناه مغمضتان ويده مرفوعة في منتصف عبارة', 'A jazz pianist at the piano, eyes closed, hand raised mid-phrase'),
+      caption: L('هذا ما كان ليمب وبراون يحاولان تصويره: اللحظة التي يتوقّف فيها العازف عن مراقبة نفسه. العينان المغمضتان ليستا زينةً في الصورة — إنها بالضبط العلامة الخارجية للمنطقة التي رأوها تخفت في الماسح.',
+                 'This is what Limb and Braun were trying to photograph: the moment a player stops watching himself. The closed eyes are not decoration — they are the outward sign of the very region they watched dim inside the scanner.') },
     { type: 'figure', id: 'sfFlowBrain' },
     { type: 'callout', variant: 'warn', title: L('حدود ما نعرفه — ورقمٌ لن تجده هنا', 'The limits of this — and a claim you will not find here'), text: L(
       'ديتريش صاحب **فرضية**، لا قانون؛ ودراسة ليمب وبراون على **ستّة أشخاص** وعن **الارتجال** تحديداً لا عن التدفّق بعنوانه العريض. الاتجاه متّسق ومغرٍ، والدليل أضيق ممّا يُروَّج له. وستقرأ في كثيرٍ من المقالات أن التدفّق «خليطٌ كيميائيّ» من الدوبامين والإندورفين والأناندامايد — تجاهلنا هذا عمداً: إنه تبسيطٌ شائع لا يقف خلفه دليلٌ يقارَب دليل ما ذُكر أعلاه.',
@@ -116,6 +132,20 @@ export const flowState = {
     { type: 'p', text: L(
       'وعلى الطرف الآخر تماماً **سيرافينا فينون**، مزارعةٌ في السادسة والسبعين في قريةٍ ألبية نائية شمال إيطاليا. تستيقظ الخامسة فجراً لتحلب أبقارها، ثم تطبخ، ثم تندف الصوف أو تعتني ببستانها، ثم تجلس مع أحفاد أحفادها أو تعزف الأكورديون. وحين سُئلت عمّا تفضّل أن تفعله لو ملكت الحرية والمال، عدّدت ما تفعله أصلاً. **لا تفرّق أساساً بين العمل والفراغ** — وهي بذلك تعيش خارج المفارقة التي نعيش داخلها.',
       'At the opposite extreme is **Serafina Vinon**, a seventy-six-year-old farmer in a remote alpine village in northern Italy. She rises at five to milk her cows, then cooks, then cards wool or tends her orchard, then sits with her great-grandchildren or plays the accordion. Asked what she would rather do if she had freedom and money, she listed what she already does. **She draws no line between work and leisure at all** — and so lives outside the paradox the rest of us live inside.'
+    ) },
+    { type: 'imggrid', images: [
+      { src: './images/flow/assembly-line.webp',
+        alt: L('عمّالٌ على خطّ تجميع إلكترونيّ، كلٌّ منهم منحنٍ على مهمّته', 'Workers at an electronics assembly line, each bent over their task'),
+        caption: L('عالَم ريكو: المهمّة نفسها، ست مئة مرّة في اليوم — والبنية التي أضافها فوقها من عنده.',
+                   'Rico’s world: the same task six hundred times a day — and the structure he added over it himself.') },
+      { src: './images/flow/alpine-farm.webp',
+        alt: L('مزرعةٌ جبلية ألبية وأبقارٌ ومزارعٌ مسنّ أمام بيتٍ خشبيّ', 'An alpine mountain farm with cows and an elderly farmer before a wooden house'),
+        caption: L('عالَم سيرافينا: لا حدّ فيه بين العمل والعيش. *(صورةٌ توضيحية لمزرعةٍ ألبية، وليست صورةً لها.)*',
+                   'Serafina’s world: no line in it between working and living. *(An illustrative alpine farm, not a photograph of her.)*') },
+    ] },
+    { type: 'p', text: L(
+      'الرجل والمزارعة على طرفَي نقيض في كلّ شيء — إلّا في أن كلاًّ منهما يملك ما نفتقده: يومٌ له شكل. ريكو صنع الشكل بيده داخل عملٍ لم يمنحه إيّاه؛ وسيرافينا وُلدت في حياةٍ لم تنزع الشكل عنها أصلاً. ونحن بينهما: وظائفٌ تعطينا بنيةً لا نحبّها، وفراغٌ نحبّه ولا بنية فيه.',
+      'The man and the farmer are opposites in every way — except that each has what we lack: a day with a shape. Rico built the shape by hand inside a job that never gave him one; Serafina was born into a life that never stripped it away. We are in between: jobs that hand us a structure we do not love, and free time we love that has no structure in it.'
     ) },
 
     /* ---------------- Act 6: the ratchet ---------------- */
