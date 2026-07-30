@@ -3,11 +3,17 @@
  * Psychology of Optimal Experience* (1990), NOT from Stolen Focus.
  *
  * Why it lives inside the Stolen Focus tab: Hari's cause #2 is "the crippling of
- * flow", and he spends about three pages on it. The `speed-flow` section already
- * carries that summary. This section is the club going to the source — so it
- * must (a) say plainly that it is another book, and (b) not repeat what
- * `speed-flow` already covers (the wartime-chess origin, the three engineering
- * conditions, the fragility of flow). Everything here is material Hari left out.
+ * flow", and he spends about three pages on it. This section is the club going
+ * to the source, so it must say plainly that it is another book.
+ *
+ * Act 1 DELIBERATELY DUPLICATES `speed-flow` — the wartime-chess origin, the
+ * three engineering conditions, the fragility of flow, the "flow is the
+ * alternative" lesson. That was the user's call (2026-07-30): this tab should be
+ * the single place holding everything on flow, and a reader who lands here
+ * shouldn't have to go fetch the summary from another section first. So if you
+ * edit Hari's flow material in `speed-flow`, edit it here too — the duplication
+ * is intentional, not drift. Act 1 closes by naming exactly what Hari leaves
+ * out, which is what the remaining acts then cover.
  *
  * Written as a narrative in acts rather than a list of findings, at the user's
  * request, and deliberately light on direct quotation.
@@ -26,24 +32,62 @@ export const flowState = {
   // والتشتّت والتدفّق» section in the sidebar, which is the summary version.
   title: L('داخل حالة التدفّق', 'Inside the flow state'),
   lead: L(
-    'يخصّص هاري بضع صفحاتٍ للتدفّق. وصاحب الفكرة كتب فيها كتاباً كاملاً. هذا القسم رحلةٌ في ذلك الكتاب: كيف صُيد أعمق شعورٍ إنسانيّ بجهاز نداء، ولماذا نتدفّق في العمل ونشتهي الإجازة، وما الذي يُطفَأ في الدماغ حين تذوب في عملك — ولماذا تُقلق هذه المعرفة أكثر ممّا تُطمئن.',
-    'Hari gives flow a few pages. The man whose idea it was wrote a whole book about it. This section is a journey through that book: how the deepest human feeling was caught with a pager, why we find flow at work and still crave the weekend, what switches off in the brain when you dissolve into your work — and why all of this is more unsettling than reassuring.'
+    'كلّ ما يخصّ التدفّق في صفحةٍ واحدة: خلاصة ما يقوله كتابنا أوّلاً، ثم رحلةٌ في الكتاب الأصل الذي كتبه صاحب الفكرة — كيف صُيد أعمق شعورٍ إنسانيّ بجهاز نداء، ولماذا نتدفّق في العمل ونشتهي الإجازة، وما الذي يُطفَأ في الدماغ حين تذوب في عملك، ولماذا تُقلق هذه المعرفة أكثر ممّا تُطمئن.',
+    'Everything on flow in one page: what our book says, first — then a journey through the source book by the man whose idea it was. How the deepest human feeling was caught with a pager, why we find flow at work and still crave the weekend, what switches off in the brain when you dissolve into your work, and why all of this is more unsettling than reassuring.'
   ),
   blocks: [
     { type: 'callout', variant: 'note', title: L('من أين هذا القسم؟', 'Where this section comes from'), text: L(
-      'كلّ ما يلي من كتاب **«التدفّق: سيكولوجيا الخبرة المثلى»** لـ**ميهاي تشيكسنتميهايي** (١٩٩٠) وأبحاثه المنشورة — لا من «تركيزنا المسلوب». أضفناه لأن التدفّق هو السبب الثاني عند هاري، وهو السبب الوحيد الذي كتب صاحبه فيه كتاباً كاملاً يستحقّ أن يُقرأ وحده. ما تعرفه من قسم «السرعة والتشتّت والتدفّق» لن يتكرّر هنا.',
-      'Everything below comes from ***Flow: The Psychology of Optimal Experience*** by **Mihaly Csikszentmihalyi** (1990) and his published research — not from Stolen Focus. We added it because flow is Hari’s second cause, and the only one whose originator wrote an entire book worth reading on its own. Nothing from the “Speed, Switching & Flow” section is repeated here.'
+      '**الفصل الأوّل أدناه هو خلاصة ما يقوله «تركيزنا المسلوب»** عن التدفّق، وهو مكرّرٌ عن قصد من قسم «السرعة والتشتّت والتدفّق» ليكون كلّ ما يخصّ التدفّق في صفحةٍ واحدة. **وكلّ ما يليه من الكتاب الأصل**: «التدفّق: سيكولوجيا الخبرة المثلى» لـ**ميهالي سيزنتميهالي** (١٩٩٠) وأبحاثه المنشورة. أضفنا هذا القسم لأن التدفّق هو السبب الوحيد عند هاري الذي كتب صاحبه فيه كتاباً كاملاً يستحقّ أن يُقرأ وحده.',
+      '**Act 1 below is what Stolen Focus itself says** about flow, repeated on purpose from the “Speed, Switching & Flow” section so that everything on flow sits on one page. **Everything after it comes from the source book**: *Flow: The Psychology of Optimal Experience* by **Mihaly Csikszentmihalyi** (1990) and his published research. We added this section because flow is the one cause of Hari’s whose originator wrote a whole book worth reading on its own.'
     ) },
 
     { type: 'image', src: './images/flow/flow-cover-en.webp',
-      alt: L('غلاف كتاب «التدفّق» لميهاي تشيكسنتميهايي', 'Cover of Flow by Mihaly Csikszentmihalyi'),
+      alt: L('غلاف كتاب «التدفّق» لميهالي سيزنتميهالي', 'Cover of Flow by Mihaly Csikszentmihalyi'),
       caption: L('الطبعة الإنجليزية — «التدفّق: سيكولوجيا الخبرة المثلى»، هاربر بيرينيال.',
                  'The English edition — *Flow: The Psychology of Optimal Experience*, Harper Perennial.') },
 
-    /* ---------------- Act 1: the method ---------------- */
-    { type: 'h', text: L('١ · كيف تصطاد شعوراً؟', '1 · How do you hunt a feeling?') },
+    /* ---------------- Act 1: Hari's own treatment ----------------
+       Deliberately duplicated from `speed-flow` at the user's request, so this
+       tab is the single place that holds everything on flow. Kept first, and
+       kept short, so the reader gets the book's version before the deep dive. */
+    { type: 'h', text: L('١ · ما يقوله كتابنا أوّلاً', '1 · What our book says first') },
     { type: 'p', text: L(
-      'المشكلة التي واجهت تشيكسنتميهايي في السبعينيات كانت منهجيةً لا فلسفية. الناس سيّئون في تذكّر شعورهم. اسأل أحدهم مساء الأحد: كيف كان أسبوعك؟ فيجيبك عن آخر ساعتين، أو عن الحكاية التي اعتاد أن يرويها عن نفسه. الذاكرة تحرّر الماضي قبل أن تسلّمه لك.',
+      'التدفّق هو السبب الثاني في «تركيزنا المسلوب»، ويعرضه هاري في بضع صفحات. نعيدها هنا كاملةً قبل أن نغادر إلى الكتاب الأصل، حتى تكون الصورة أمامك في مكانٍ واحد — وستجدها أيضاً في قسم «السرعة والتشتّت والتدفّق» إن أردتها في سياقها.',
+      'Flow is the second cause in Stolen Focus, and Hari lays it out in a few pages. We repeat them in full here before leaving for the source book, so the whole picture sits in one place — you will also find it in the “Speed, Switching & Flow” section if you want it in context.'
+    ) },
+    { type: 'p', text: L(
+      'إن كان التبديل أسوأ حالات الانتباه، فما أفضلها؟ الجواب عند **ميهالي سيزنتميهالي** — وقصّته نفسها درسٌ: طفلٌ في بودابست أثناء الحرب العالمية الثانية، رأى الكبار من حوله ينهارون، ولاحظ أنه هو نفسه لا يجد سلاماً إلا حين يغرق في لعبة الشطرنج غرقاً يمحو الحرب من وعيه. كبر ليسأل: ما هذه الحالة؟ ولاحظ لاحقاً أن الرسّامين ينسون الجوع والنوم أمام اللوحة، ثم يفقد كثيرون اهتمامهم بها فور اكتمالها — فالمكافأة لم تكن اللوحة، بل **الانغماس نفسه**.',
+      'If switching is attention at its worst, what is attention at its best? The answer belongs to **Mihaly Csikszentmihalyi** — and his own story is a lesson: a child in Budapest during the Second World War, watching the adults around him fall apart, he noticed that he himself found peace only when he sank into chess so deeply the war vanished from his awareness. He grew up asking: what is that state? Later he observed painters forgetting hunger and sleep before a canvas — then losing interest in the painting the moment it was finished. The reward was never the painting; it was **the immersion itself**.'
+    ) },
+    { type: 'p', text: L(
+      'سمّاها **التدفّق (Flow)**: حالةٌ تنغمس فيها كلّياً في نشاطٍ ذي معنى حتى يختفي الزمن وتذوب الذات في العمل. ويلخّص هاري شروطها الثلاثة التي يمكن هندستها:',
+      'He named it **flow**: a state of total immersion in a meaningful activity until time vanishes and the self dissolves into the work. Hari sums up its three engineerable conditions:'
+    ) },
+    { type: 'ul', items: [
+      L('**هدفٌ واحد واضح:** التدفّق لا يحتمل الشراكة؛ مهمّةٌ واحدة محدّدة، لا قائمة مفتوحة ولا هاتفٌ بجوارك.',
+        '**One clear goal:** flow tolerates no rivals; a single defined task, not an open list with a phone at your elbow.'),
+      L('**معنى:** يتدفّق الإنسان فيما يهمّه هو، لا فيما فُرض عليه فرضاً بلا مغزى.',
+        '**Meaning:** people flow in what matters to them, not in what is imposed without purpose.'),
+      L('**حافّة القدرة:** أصعب قليلاً من مستواك فلا تملّ، وليس أصعب كثيراً فلا تُحبَط — عند هذه الحافّة بالضبط يُقفل الانتباه على المهمّة.',
+        '**The edge of ability:** slightly harder than your level so you are not bored, not far harder so you are not crushed — at exactly that edge, attention locks onto the task.'),
+    ] },
+    { type: 'p', text: L(
+      'لكن التدفّق هشّ: كلّ مقاطعةٍ أو إشعارٍ يطردك منه. والبيئة التي تقاطعنا كلّ دقائق ليست مزعجةً فحسب — إنها تجعل أعمق حالات العقل البشريّ **مستحيلة بنيوياً**. وهنا مفارقة العصر عند هاري: نملك أدواتٍ أكثر من أيّ جيلٍ مضى، ونحرم أنفسنا من الحالة الذهنية الوحيدة التي تُنجَز فيها الأعمال العظيمة.',
+      'But flow is fragile: every interruption or notification ejects you from it. An environment that interrupts us every few minutes is not merely annoying — it makes the deepest state of the human mind **structurally impossible**. And there is Hari’s paradox of the age: we own more tools than any generation before us, and we deny ourselves the one mental state in which great work gets done.'
+    ) },
+    { type: 'callout', variant: 'key', title: L('التدفّق هو البديل، لا الحرمان', 'Flow is the alternative — not deprivation'), text: L(
+      'درسٌ عمليّ يلحّ عليه الكتاب: لا تُهزَم المشتّتات بقوّة الإرادة العارية، بل بمنافسٍ أقوى منها. الشخص الذي يجد تدفّقه — في الكتابة أو البرمجة أو الرياضة أو الموسيقى — لا «يقاوم» هاتفه؛ إنه ببساطة مشغولٌ عنه بما هو ألذّ. اجعل سؤالك الأوّل: ما النشاط الذي أذوب فيه؟ ثم ابنِ يومك ليحميه.',
+      'A practical lesson the book insists on: distraction is not defeated by naked willpower but by a stronger competitor. The person who finds their flow — in writing, coding, sport, or music — does not “resist” their phone; they are simply too absorbed in something more delicious. Make your first question: what activity do I dissolve into? Then build your day to protect it.'
+    ) },
+    { type: 'callout', variant: 'note', title: L('وهنا ينتهي ما في كتابنا', 'And that is where our book stops'), text: L(
+      'ثلاث صفحاتٍ تقريباً. لم يذكر هاري كيف قِيست هذه الحالة أصلاً، ولا المفارقة التي وجدها سيزنتميهالي في العمل والفراغ، ولا أن التدفّق يدمّر شروطه بنفسه، ولا — وهو الأخطر — أن التدفّق **محايدٌ أخلاقياً** ويمكن تصنيعه ضدّك. الباقي من هنا هو الكتاب الأصل.',
+      'About three pages. Hari never says how the state was measured in the first place, nor the paradox Csikszentmihalyi found between work and leisure, nor that flow destroys its own conditions, nor — most consequentially — that flow is **morally neutral** and can be manufactured against you. Everything from here on is the source book.'
+    ) },
+
+    /* ---------------- Act 2: the method ---------------- */
+    { type: 'h', text: L('٢ · كيف تصطاد شعوراً؟', '2 · How do you hunt a feeling?') },
+    { type: 'p', text: L(
+      'المشكلة التي واجهت سيزنتميهالي في السبعينيات كانت منهجيةً لا فلسفية. الناس سيّئون في تذكّر شعورهم. اسأل أحدهم مساء الأحد: كيف كان أسبوعك؟ فيجيبك عن آخر ساعتين، أو عن الحكاية التي اعتاد أن يرويها عن نفسه. الذاكرة تحرّر الماضي قبل أن تسلّمه لك.',
       'The problem facing Csikszentmihalyi in the 1970s was methodological, not philosophical. People are bad at remembering how they felt. Ask someone on a Sunday evening how their week was and they will answer about the last two hours, or about the story they are used to telling about themselves. Memory edits the past before it hands it over.'
     ) },
     { type: 'p', text: L(
@@ -59,8 +103,8 @@ export const flowState = {
       'Because everything that follows rests on it. When you read below that we find more flow at work than at leisure, that is not an opinion or a survey asking people about their memories — it is moments logged as they happened. Which is exactly what separates this finding from a great many self-help statistics.'
     ) },
 
-    /* ---------------- Act 2: the paradox ---------------- */
-    { type: 'h', text: L('٢ · المفارقة التي لم يتوقّعها أحد', '2 · The paradox nobody expected') },
+    /* ---------------- Act 3: the paradox ---------------- */
+    { type: 'h', text: L('٣ · المفارقة التي لم يتوقّعها أحد', '3 · The paradox nobody expected') },
     { type: 'p', text: L(
       'في دراسةٍ مع **جوديث لوفيفر** (١٩٨٩) تتبّعا ٧٨ عاملاً بالغاً أسبوعاً كاملاً بأجهزة النداء. والسؤال: متى يعيش الناس أفضل لحظاتهم — في العمل أم خارجه؟ الجواب البديهيّ معروف. والنتيجة جاءت معكوسة: **الغالبية العظمى من لحظات التدفّق سُجّلت أثناء العمل**، لا في وقت الفراغ.',
       'In a study with **Judith LeFevre** (1989) they tracked 78 adult workers for a full week with pagers. The question: when do people live their best moments — on the job or off it? The intuitive answer is obvious. The result came back inverted: **the great majority of flow moments were logged at work**, not in leisure time.'
@@ -79,12 +123,12 @@ export const flowState = {
     ) },
     { type: 'figure', id: 'sfFlowParadox' },
     { type: 'callout', variant: 'fact', title: L('لماذا نفعل ذلك بأنفسنا؟', 'Why do we do this to ourselves?'), text: L(
-      'تفسير تشيكسنتميهايي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. الفراغ غير المنظّم هو المهارة التي لم يعلّمنا أحدٌ إيّاها.',
+      'تفسير سيزنتميهالي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. الفراغ غير المنظّم هو المهارة التي لم يعلّمنا أحدٌ إيّاها.',
       'Csikszentmihalyi’s explanation: work usually arrives with the architecture of flow pre-installed — a defined goal, rules, feedback, colleagues measuring your performance. Leisure arrives with **no structure at all** — and building your own structure while tired is hard. So we take the easy option: the television, the scroll. And we call it rest. Unstructured free time is the skill nobody taught us.'
     ) },
 
-    /* ---------------- Act 3: anatomy ---------------- */
-    { type: 'h', text: L('٣ · تشريح الحالة', '3 · The anatomy of the state') },
+    /* ---------------- Act 4: anatomy ---------------- */
+    { type: 'h', text: L('٤ · تشريح الحالة', '4 · The anatomy of the state') },
     { type: 'p', text: L(
       'حين حلّل آلاف الأوصاف — من راقصات باليه وجرّاحين ومتسلّقي صخور ولاعبي شطرنج وعمّال خطوط تجميع — وجد الوصف نفسه يتكرّر بالكلمات نفسها تقريباً، عبر الثقافات والأعمار والمهن. تسعة عناصر. والمفتاح العمليّ أن تعرف أيّها تصنعه أنت، وأيّها يأتيك.',
       'When he analysed thousands of descriptions — from ballet dancers, surgeons, rock climbers, chess players, assembly-line workers — the same account came back in almost the same words, across cultures, ages and occupations. Nine components. The practical key is knowing which ones you make and which ones arrive on their own.'
@@ -95,8 +139,8 @@ export const flowState = {
       'Notice what that split implies: **you cannot decide your way into flow**. Sitting down and saying “I will now flow” works about as well as saying “I will now fall asleep.” All you control is arranging the three conditions and then stopping watching yourself. The small irony: monitoring yourself for signs of flow is precisely what prevents it.'
     ) },
 
-    /* ---------------- Act 4: biology ---------------- */
-    { type: 'h', text: L('٤ · ما الذي يُطفَأ في الدماغ؟', '4 · What switches off in the brain?') },
+    /* ---------------- Act 5: biology ---------------- */
+    { type: 'h', text: L('٥ · ما الذي يُطفَأ في الدماغ؟', '5 · What switches off in the brain?') },
     { type: 'p', text: L(
       'أغرب عنصرٍ في القائمة هو **اختفاء الوعي بالذات**. أن يصمت الصوت الذي يسألك: كيف أبدو؟ هل أُحسن؟ ماذا سيقولون؟ فهل لهذا الصمت أثرٌ يُقاس؟',
       'The strangest item on the list is **the disappearance of self-consciousness**: the silencing of the voice that asks how you look, whether you are doing well, what they will say. Does that silence leave a measurable trace?'
@@ -119,8 +163,8 @@ export const flowState = {
       'Dietrich offers a **hypothesis**, not a law; and Limb & Braun studied **six people**, and studied **improvisation** specifically rather than flow at large. The direction is consistent and tempting; the evidence is narrower than the retelling. You will also read in many articles that flow is a “neurochemical cocktail” of dopamine, endorphins and anandamide — we left that out deliberately: it is a popular simplification with nothing like the evidence behind the results above.'
     ) },
 
-    /* ---------------- Act 5: two people ---------------- */
-    { type: 'h', text: L('٥ · ريكو وسيرافينا', '5 · Rico and Serafina') },
+    /* ---------------- Act 6: two people ---------------- */
+    { type: 'h', text: L('٦ · ريكو وسيرافينا', '6 · Rico and Serafina') },
     { type: 'p', text: L(
       'أكثر ما يُساء فهمه في الكتاب أن التدفّق مرتبطٌ بعملٍ «ممتع». وأقوى ردٍّ على ذلك رجلٌ اسمه **ريكو ميديلين**، يقف على خطّ تجميع. مهمّته على كلّ وحدةٍ تمرّ أمامه تستغرق ٤٣ ثانية، ويكرّرها نحو ست مئة مرّةٍ في اليوم. خمس سنوات. وهو يستمتع.',
       'The most misunderstood idea in the book is that flow requires “interesting” work. The strongest reply to that is a man named **Rico Medellin**, who stands at an assembly line. His task on each unit that passes takes forty-three seconds, and he repeats it about six hundred times a day. For five years. And he enjoys it.'
@@ -148,26 +192,26 @@ export const flowState = {
       'The man and the farmer are opposites in every way — except that each has what we lack: a day with a shape. Rico built the shape by hand inside a job that never gave him one; Serafina was born into a life that never stripped it away. We are in between: jobs that hand us a structure we do not love, and free time we love that has no structure in it.'
     ) },
 
-    /* ---------------- Act 6: the ratchet ---------------- */
-    { type: 'h', text: L('٦ · لماذا لا تتدفّق مرّتين في المكان نفسه', '6 · Why you cannot flow twice in the same place') },
+    /* ---------------- Act 7: the ratchet ---------------- */
+    { type: 'h', text: L('٧ · لماذا لا تتدفّق مرّتين في المكان نفسه', '7 · Why you cannot flow twice in the same place') },
     { type: 'p', text: L(
       'هنا الفكرة التي تغيب عن كلّ تلخيصٍ سريع للتدفّق — وعن «تركيزنا المسلوب» أيضاً. التدفّق ليس مكاناً تصل إليه فتستقرّ فيه؛ إنه **حالةٌ تدمّر شروطها بنفسها**. لأنك حين تتدفّق تتحسّن، وحين تتحسّن يصير التحدّي الذي كان يناسبك بالأمس أقلّ من مهارتك اليوم — فيسقط بك إلى الملل.',
       'Here is the idea missing from every quick summary of flow — and from Stolen Focus as well. Flow is not a place you reach and settle into; it is **a state that destroys its own conditions**. Because while you are in flow you improve, and once you improve, the challenge that fitted you yesterday sits below your skill today — and drops you into boredom.'
     ) },
     { type: 'figure', id: 'sfFlowRatchet' },
     { type: 'p', text: L(
-      'ولهذا يصف تشيكسنتميهايي التدفّق بأنه محرّك نموّ لا وصفة راحة: الملل والقلق ليسا أعطالاً في الطريق، بل **إشارتا توجيه**. الملل يقول: ارفع التحدّي. والقلق يقول: ارفع مهارتك أو اخفض التحدّي مؤقّتاً. من يقرأ الإشارتين يصعد سلّماً؛ ومن يتجاهلهما يتوقّف.',
+      'ولهذا يصف سيزنتميهالي التدفّق بأنه محرّك نموّ لا وصفة راحة: الملل والقلق ليسا أعطالاً في الطريق، بل **إشارتا توجيه**. الملل يقول: ارفع التحدّي. والقلق يقول: ارفع مهارتك أو اخفض التحدّي مؤقّتاً. من يقرأ الإشارتين يصعد سلّماً؛ ومن يتجاهلهما يتوقّف.',
       'This is why Csikszentmihalyi describes flow as an engine of growth rather than a recipe for comfort: boredom and anxiety are not faults along the way, they are **navigation signals**. Boredom says: raise the challenge. Anxiety says: raise your skill, or lower the challenge for now. Read both and you climb a staircase; ignore them and you stall.'
     ) },
 
-    /* ---------------- Act 7: the dark side ---------------- */
-    { type: 'h', text: L('٧ · الوجه المظلم — ولماذا يخصّنا نحن', '7 · The dark side — and why it is ours') },
+    /* ---------------- Act 8: the dark side ---------------- */
+    { type: 'h', text: L('٨ · الوجه المظلم — ولماذا يخصّنا نحن', '8 · The dark side — and why it is ours') },
     { type: 'p', text: L(
       'أخطر ما في نظرية التدفّق أن صاحبها قاله بنفسه ولا يكاد أحدٌ ينقله: **التدفّق محايدٌ أخلاقياً**. إنه وصفٌ لبنية تجربةٍ لا حكمٌ على قيمتها. الجرّاح يتدفّق وهو ينقذ حياة. والمقامر يتدفّق أمام الآلة. واللصّ يتدفّق وهو يفتح قفلاً. البنية واحدة: هدفٌ واضح، تغذيةٌ راجعة فورية، تحدٍّ عند حافّة المهارة.',
       'The most dangerous thing about flow theory is something its author said himself and almost nobody repeats: **flow is morally neutral**. It describes the structure of an experience, not the worth of it. The surgeon is in flow saving a life. The gambler is in flow at the machine. The burglar is in flow picking a lock. The structure is identical: a clear goal, immediate feedback, a challenge at the edge of skill.'
     ) },
     { type: 'p', text: L(
-      'وهنا يلتقي كتاب تشيكسنتميهايي بكتاب هاري التقاءً لم يُبرزه هاري نفسه. اقرأ شروط التدفّق الثلاثة مرّةً أخرى، ثم فكّر في تطبيقٍ صُمّم لاحتجازك: هدفٌ واضح (مرّر)، تغذيةٌ راجعة فورية (إعجابٌ، رقمٌ يرتفع)، تحدٍّ معايَر لحظياً بخوارزميةٍ تعرف مستواك أدقّ ممّا تعرفه أنت. **هذه هندسة التدفّق بحذافيرها.**',
+      'وهنا يلتقي كتاب سيزنتميهالي بكتاب هاري التقاءً لم يُبرزه هاري نفسه. اقرأ شروط التدفّق الثلاثة مرّةً أخرى، ثم فكّر في تطبيقٍ صُمّم لاحتجازك: هدفٌ واضح (مرّر)، تغذيةٌ راجعة فورية (إعجابٌ، رقمٌ يرتفع)، تحدٍّ معايَر لحظياً بخوارزميةٍ تعرف مستواك أدقّ ممّا تعرفه أنت. **هذه هندسة التدفّق بحذافيرها.**',
       'And here Csikszentmihalyi’s book meets Hari’s in a way Hari never quite draws out. Read the three conditions again, then think about an app designed to hold you: a clear goal (swipe), immediate feedback (a like, a number ticking up), and a challenge calibrated moment by moment by an algorithm that knows your level better than you do. **That is the architecture of flow, exactly.**'
     ) },
     { type: 'callout', variant: 'key', title: L('الفرق الوحيد — وهو كلّ شيء', 'The one difference — and it is everything'), text: L(
@@ -175,12 +219,12 @@ export const flowState = {
       'Real flow lifts you: you come out of it more capable than you went in, which forces you to raise the challenge, so you grow. Engineered flow is built to hold you **at the same level forever** — because your growth means your departure. It imitates the shape of the state and deletes the engine. Which is why you get up from two hours on the phone feeling drained rather than accomplished: you had the structure without the climb. This is the club’s own reading of the two books together, not a passage in either.'
     ) },
     { type: 'p', text: L(
-      'ويضيف تشيكسنتميهايي تحذيراً ثانياً: التدفّق نفسه قد يصير إدماناً. من يجد نظامه الوحيد في نشاطٍ واحد قد يصبح أسيره، ويعجز عن الاستمتاع بغيره، وينهار حين يُنتزع منه. الحالة التي تنظّم وعيك يمكن أيضاً أن تحبسه.',
+      'ويضيف سيزنتميهالي تحذيراً ثانياً: التدفّق نفسه قد يصير إدماناً. من يجد نظامه الوحيد في نشاطٍ واحد قد يصبح أسيره، ويعجز عن الاستمتاع بغيره، وينهار حين يُنتزع منه. الحالة التي تنظّم وعيك يمكن أيضاً أن تحبسه.',
       'Csikszentmihalyi adds a second warning: flow itself can become an addiction. Someone who finds their only order in a single activity can become its captive, unable to enjoy anything else, and collapse when it is taken away. The state that orders your consciousness can also imprison it.'
     ) },
 
-    /* ---------------- Act 8: what to take ---------------- */
-    { type: 'h', text: L('٨ · ماذا نأخذ من هذا كلّه؟', '8 · What to take from all this') },
+    /* ---------------- Act 9: what to take ---------------- */
+    { type: 'h', text: L('٩ · ماذا نأخذ من هذا كلّه؟', '9 · What to take from all this') },
     { type: 'ol', items: [
       L('**لا تنتظر «المزاج».** رتّب الشروط الثلاثة — هدفٌ واحد، طريقةٌ ترى بها تقدّمك فوراً، صعوبةٌ فوق مستواك بقليل — ثم ابدأ رديئاً. التدفّق يأتي بعد الدخول لا قبله.',
         '**Do not wait for the “mood.”** Arrange the three conditions — one goal, a way to see your progress immediately, a difficulty just above your level — then begin badly. Flow arrives after you enter, not before.'),
@@ -198,7 +242,7 @@ export const flowState = {
 
     { type: 'sources', title: L('اقرأ بنفسك', 'Read it yourself'), items: [
       { label: L('«التدفّق: سيكولوجيا الخبرة المثلى» — الكتاب الأصل', '“Flow: The Psychology of Optimal Experience” — the source book'),
-        publisher: L('ميهاي تشيكسنتميهايي، ١٩٩٠', 'Mihaly Csikszentmihalyi, 1990'),
+        publisher: L('ميهالي سيزنتميهالي، ١٩٩٠', 'Mihaly Csikszentmihalyi, 1990'),
         url: 'https://www.goodreads.com/book/show/66354.Flow' },
       { label: L('«الخبرة المثلى في العمل والفراغ» — دراسة مفارقة العمل', '“Optimal Experience in Work and Leisure” — the paradox-of-work study'),
         publisher: L('مجلّة علم نفس الشخصية والاجتماع، ١٩٨٩', 'J. Personality and Social Psychology, 1989'),

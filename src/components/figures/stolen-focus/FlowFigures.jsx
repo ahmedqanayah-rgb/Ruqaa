@@ -62,7 +62,7 @@ export function SfFlowParadox() {
   return (
     <FigureFrame number={13}
       title={L('مفارقة العمل', 'The paradox of work')}
-      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (تشيكسنتميهايي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** *الشكل يعرض الاتجاه لا المقادير — الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.*',
+      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (سيزنتميهالي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** *الشكل يعرض الاتجاه لا المقادير — الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.*',
                  '78 workers, one full week, pagers going off at random (Csikszentmihalyi & LeFevre, 1989). Switch between the two states, then look below the figure for the sharper finding: **what follows your flow, and what follows only your location.** *This shows direction, not magnitudes — the paper’s exact percentages could not be traced to a primary source, so we did not invent them.*')}>
       <div className="paradox">
         <div className="pdx-switch" role="group">
