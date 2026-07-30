@@ -325,7 +325,10 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .img-legend li { margin: 0; }
 .img-legend-term { display: inline-block; font-size: var(--fs-xs); font-weight: 600; color: var(--text-soft); background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 11px; }
 /* Give paired images real room instead of shrinking them side by side. */
-.img-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-4); margin: var(--space-5) 0; }
+/* min() so the track can shrink under its own 320px floor. Without it, a 320px
+   phone gave a 320px column inside a 283px column — images and captions ran 37px
+   past the text and were silently clipped by the overflow-x safety net. */
+.img-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: var(--space-4); margin: var(--space-5) 0; }
 .img-grid .img-block { margin: 0; }
 .img-grid img { width: 100%; max-height: 340px; }
 
@@ -1511,7 +1514,7 @@ html[data-presenting] img { margin-inline: auto; }
 
 /* ---- Fig 16: the ratchet ---- */
 .ratchet { display: flex; flex-direction: column; align-items: center; }
-.ratchet-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4); inline-size: 100%; }
+.ratchet-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: var(--space-4); inline-size: 100%; }
 .ratchet-pane { margin: 0; display: flex; flex-direction: column; }
 .ratchet-svg { inline-size: 100%; block-size: auto; }
 .ratchet-axis { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); margin-top: 4px; }
@@ -1526,3 +1529,36 @@ html[data-presenting] img { margin-inline: auto; }
 .ratchet-note.zone-flow { border-inline-start-color: var(--success); }
 .ratchet-note.zone-boredom { border-inline-start-color: var(--blue); }
 .ratchet-note.zone-anxiety { border-inline-start-color: var(--warm); }
+
+/* ---- Phone-view fixes for the figure chrome (measured at 375px and 320px) ---- */
+@media (max-width: 640px) {
+  /* Every figure control was 33px tall — under the 44px minimum for a finger.
+     Applies to all the stolen-focus figures, not just the flow ones, since they
+     share .sf-preset and all had the same problem. */
+  .sf-preset {
+    min-block-size: 44px;
+    padding: 8px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  /* The A1–A4 steps read as one control group, so keep them from stretching
+     apart once they are taller. */
+  .ratchet-steps .sf-preset { min-inline-size: 52px; justify-content: center; }
+
+  /* SVG text does not scale with rem — it scales with the viewBox. On a 320px
+     phone the ratchet panes render at 250px against a 300-unit viewBox, so
+     declared 11px landed at 9.2px on screen. These sizes put the labels back
+     over 11px effective at the narrowest width we support. */
+  .rt-zone { font-size: 14px; }
+  .rt-lbl { font-size: 13px; }
+  .rt-lbl2 { font-size: 15px; }
+
+  /* Region tags sit on a ~240px brain at this width; trim them so they never
+     crowd the artwork they are labelling. */
+  .brain-tag { font-size: 0.72rem; padding: 1px 6px; }
+}
+/* No `.img-grid { grid-template-columns: 1fr }` here on purpose: the min() above
+   already collapses it to one track long before a phone, because two 320px
+   tracks plus the gap need ~660px of content width. Overriding it as well would
+   also stack it on tablets, which have the room for two. */
