@@ -93,8 +93,8 @@ export const flowState = {
     /* ---------------- Act 2: the method ---------------- */
     { type: 'h', text: L('٢ · كيف تصطاد شعوراً؟', '2 · How do you hunt a feeling?') },
     { type: 'p', text: L(
-      'المشكلة التي واجهت تشيكزينتميهالي في السبعينيات كانت منهجيةً لا فلسفية. الناس سيّئون في تذكّر شعورهم. اسأل أحدهم مساء الأحد: كيف كان أسبوعك؟ فيجيبك عن آخر ساعتين، أو عن الحكاية التي اعتاد أن يرويها عن نفسه. الذاكرة تحرّر الماضي قبل أن تسلّمه لك.',
-      'The problem facing Csikszentmihalyi in the 1970s was methodological, not philosophical. People are bad at remembering how they felt. Ask someone on a Sunday evening how their week was and they will answer about the last two hours, or about the story they are used to telling about themselves. Memory edits the past before it hands it over.'
+      'المشكلة التي واجهت تشيكزينتميهالي في السبعينيات كانت منهجيةً لا فلسفية. الناس سيّئون في تذكّر شعورهم. اسأل أحدهم مساء الأحد: كيف كان أسبوعك؟ فيجيبك عن آخر ساعتين، أو عن الحكاية التي اعتاد أن يرويها عن نفسه. الذاكرة لا تسلّمك الماضي كما كان، بل بعد أن تُعيد ترتيبه.',
+      'The problem facing Csikszentmihalyi in the 1970s was methodological, not philosophical. People are bad at remembering how they felt. Ask someone on a Sunday evening how their week was and they will answer about the last two hours, or about the story they are used to telling about themselves. Memory does not hand you the past as it was — it hands it over rearranged.'
     ) },
     { type: 'p', text: L(
       'فابتكر حيلةً بسيطة: أعطِ الناس جهاز نداءٍ يرنّ في أوقاتٍ عشوائية، وفي كلّ رنّةٍ يسجّلون فوراً — ماذا تفعل الآن؟ وكيف تشعر الآن؟ لا استرجاع، ولا تلخيص، ولا سرد. لحظةٌ واحدة مقتنصة قبل أن تعبث بها الذاكرة. سمّاها **«منهج أخذ العيّنات من الخبرة» (Experience Sampling Method)**، وجمع بها عشرات آلاف اللحظات من آلاف البشر عبر عقود.',
@@ -102,8 +102,8 @@ export const flowState = {
     ) },
     { type: 'image', src: './images/flow/pager.webp', wide: true,
       alt: L('جهاز نداءٍ قديم في يد، تظهر عليه الساعة والتاريخ', 'An old pager held in a hand, showing the time and date'),
-      caption: L('نوع الآلة التي بدأ بها كلّ شيء. جهازٌ كهذا رنّ في جيوب آلاف الأشخاص في أوقاتٍ عشوائية، وفي كلّ رنّةٍ سُئل صاحبه: ماذا تفعل الآن، وكيف تشعر؟ لا استبيان في نهاية الأسبوع — لحظةٌ مقتنصة قبل أن تُحرّرها الذاكرة. (صورةٌ توضيحية لجهاز نداءٍ من الحقبة نفسها.)',
-                 'The kind of machine it all started with. A device like this went off in thousands of pockets at random moments, and at every beep its owner was asked: what are you doing now, and how do you feel? No end-of-week questionnaire — a moment seized before memory could edit it. (An illustrative pager from the era, not one used in the research.)') },
+      caption: L('نوع الآلة التي بدأ بها كلّ شيء. جهازٌ كهذا رنّ في جيوب آلاف الأشخاص في أوقاتٍ عشوائية، وفي كلّ رنّةٍ سُئل صاحبه: ماذا تفعل الآن، وكيف تشعر؟ لم يُسأل أحدٌ في نهاية الأسبوع عمّا مضى؛ كان السؤال يأتي في اللحظة نفسها، قبل أن تُعيد الذاكرة ترتيب ما حدث. (صورةٌ توضيحية لجهاز نداءٍ من الحقبة نفسها.)',
+                 'The kind of machine it all started with. A device like this went off in thousands of pockets at random moments, and at every beep its owner was asked: what are you doing now, and how do you feel? Nobody was asked at the end of the week to look back; the question arrived in the moment itself, before memory could rearrange what had happened. (An illustrative pager from the era, not one used in the research.)') },
     { type: 'callout', variant: 'key', title: L('لماذا يهمّ هذا التفصيل المنهجيّ؟', 'Why this methodological detail matters'), text: L(
       'لأن كلّ ما يأتي بعده يقف عليه. حين تقرأ لاحقاً أننا نتدفّق في العمل أكثر منه في الإجازة، فالنتيجة ليست رأياً ولا استبياناً يسأل الناس عن ذكرياتهم — إنها ملايين اللحظات المرصودة وهي تحدث. وهذا بالضبط ما يفرّق بين هذه النتيجة وبين كثيرٍ من أرقام كتب المساعدة الذاتية.',
       'Because everything that follows rests on it. When you read below that we find more flow at work than at leisure, that is not an opinion or a survey asking people about their memories — it is moments logged as they happened. Which is exactly what separates this finding from a great many self-help statistics.'
@@ -129,8 +129,8 @@ export const flowState = {
     ) },
     { type: 'figure', id: 'sfFlowParadox' },
     { type: 'callout', variant: 'fact', title: L('لماذا نفعل ذلك بأنفسنا؟', 'Why do we do this to ourselves?'), text: L(
-      'تفسير تشيكزينتميهالي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. الفراغ غير المنظّم هو المهارة التي لم يعلّمنا أحدٌ إيّاها.',
-      'Csikszentmihalyi’s explanation: work usually arrives with the architecture of flow pre-installed — a defined goal, rules, feedback, colleagues measuring your performance. Leisure arrives with **no structure at all** — and building your own structure while tired is hard. So we take the easy option: the television, the scroll. And we call it rest. Unstructured free time is the skill nobody taught us.'
+      'تفسير تشيكزينتميهالي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. أن تُنظّم فراغك بنفسك مهارةٌ لم يعلّمنا أحدٌ إيّاها.',
+      'Csikszentmihalyi’s explanation: work usually arrives with the architecture of flow pre-installed — a defined goal, rules, feedback, colleagues measuring your performance. Leisure arrives with **no structure at all** — and building your own structure while tired is hard. So we take the easy option: the television, the scroll. And we call it rest. Giving your own free time a shape is the skill nobody taught us.'
     ) },
 
     /* ---------------- Act 4: anatomy ---------------- */
@@ -232,8 +232,8 @@ export const flowState = {
     /* ---------------- Act 9: what to take ---------------- */
     { type: 'h', text: L('٩ · ماذا نأخذ من هذا كلّه؟', '9 · What to take from all this') },
     { type: 'ol', items: [
-      L('**لا تنتظر «المزاج».** رتّب الشروط الثلاثة — هدفٌ واحد، طريقةٌ ترى بها تقدّمك فوراً، صعوبةٌ فوق مستواك بقليل — ثم ابدأ رديئاً. التدفّق يأتي بعد الدخول لا قبله.',
-        '**Do not wait for the “mood.”** Arrange the three conditions — one goal, a way to see your progress immediately, a difficulty just above your level — then begin badly. Flow arrives after you enter, not before.'),
+      L('**لا تنتظر «المزاج».** رتّب الشروط الثلاثة — هدفٌ واحد، طريقةٌ ترى بها تقدّمك فوراً، صعوبةٌ فوق مستواك بقليل — ثم ابدأ ولو جاء أوّل ما تفعله رديئاً. التدفّق يأتي بعد الدخول لا قبله.',
+        '**Do not wait for the “mood.”** Arrange the three conditions — one goal, a way to see your progress immediately, a difficulty just above your level — then begin, even if what comes out first is poor. Flow arrives after you enter, not before.'),
       L('**عامل المللَ كإشارة.** إن سئمت عملاً كنت تحبّه، فالغالب أنك أتقنته ولم ترفع سقفه. المشكلة في التحدّي لا في اهتمامك.',
         '**Treat boredom as a signal.** If work you used to love has gone flat, you have most likely mastered it without raising the ceiling. The problem is the challenge, not your interest.'),
       L('**خطّط لفراغك كما تخطّط لعملك.** المفارقة تقول إن العمل يأتي ببنيةٍ جاهزة والفراغ لا. ساعةٌ من هوايةٍ تتطلّب مهارة تساوي أضعاف ساعةٍ من التمرير — لا لأنها «مفيدة»، بل لأنها الوحيدة التي ستشعر فيها بشيء.',
