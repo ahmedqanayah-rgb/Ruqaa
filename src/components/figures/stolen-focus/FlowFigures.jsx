@@ -62,7 +62,7 @@ export function SfFlowParadox() {
   return (
     <FigureFrame number={13}
       title={L('مفارقة العمل', 'The paradox of work')}
-      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (سيزنتميهالي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** *الشكل يعرض الاتجاه لا المقادير — الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.*',
+      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (تشيكزينتميهالي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** *الشكل يعرض الاتجاه لا المقادير — الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.*',
                  '78 workers, one full week, pagers going off at random (Csikszentmihalyi & LeFevre, 1989). Switch between the two states, then look below the figure for the sharper finding: **what follows your flow, and what follows only your location.** *This shows direction, not magnitudes — the paper’s exact percentages could not be traced to a primary source, so we did not invent them.*')}>
       <div className="paradox">
         <div className="pdx-switch" role="group">
@@ -215,8 +215,12 @@ export function SfFlowBrain() {
   const [mode, setMode] = useState('improv')
   const [hasPhoto, setPhoto] = useState(true)
   const m = BRAIN_MODES[mode]
+  /* Ring always at full strength so the region stays identifiable, and only the
+     FILL varies with activity. A solid disc whose opacity varied would bury the
+     engraving underneath it — the anatomy is the point of using a real drawing. */
   const Region = ({ cls, level, label, abbr }) => (
-    <span className={`brain-hot ${cls}`} style={{ opacity: 0.18 + level * 0.72 }}
+    <span className={`brain-hot ${cls}`}
+      style={{ background: `color-mix(in srgb, var(--accent) ${Math.round(level * 58)}%, transparent)` }}
       title={`${abbr} — ${t(label)}`} aria-hidden />
   )
   return (
@@ -235,7 +239,7 @@ export function SfFlowBrain() {
 
         <div className="brain-stage" role="img" aria-label={t(m.label)}>
           {/* Schematic base — also the fallback if no photo has been supplied. */}
-          <svg viewBox="0 0 320 210" className="brain-svg" aria-hidden>
+          <svg viewBox="0 0 320 210" className="brain-svg" preserveAspectRatio="xMidYMid meet" aria-hidden>
             <path d="M42,116 C38,72 76,40 128,38 C188,36 236,54 258,84 C280,114 272,150 244,166
                      C220,178 174,184 128,180 C84,176 48,158 42,116 Z"
               fill="var(--bg-elev-2)" stroke="var(--border-strong)" strokeWidth="2" />

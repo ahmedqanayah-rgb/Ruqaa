@@ -171,7 +171,7 @@ export const speedFlow = {
 
     { type: 'h', text: L('السبب الثاني: تعطيل التدفّق', 'Cause two: the crippling of flow') },
     { type: 'p', text: L(
-      'إن كان التبديل أسوأ حالات الانتباه، فما أفضلها؟ الجواب عند **ميهالي سيزنتميهالي (Mihaly Csikszentmihalyi)** — وقصّته نفسها درسٌ: طفلٌ في بودابست أثناء الحرب العالمية الثانية، رأى الكبار من حوله ينهارون، ولاحظ أنه هو نفسه لا يجد سلاماً إلا حين يغرق في لعبة الشطرنج غرقاً يمحو الحرب من وعيه. كبر ليسأل: ما هذه الحالة؟ ولاحظ لاحقاً أن الرسّامين ينسون الجوع والنوم أمام اللوحة، ثم يفقد كثيرون اهتمامهم بها فور اكتمالها — فالمكافأة لم تكن اللوحة، بل **الانغماس نفسه**.',
+      'إن كان التبديل أسوأ حالات الانتباه، فما أفضلها؟ الجواب عند **ميهالي تشيكزينتميهالي (Mihaly Csikszentmihalyi)** — وقصّته نفسها درسٌ: طفلٌ في بودابست أثناء الحرب العالمية الثانية، رأى الكبار من حوله ينهارون، ولاحظ أنه هو نفسه لا يجد سلاماً إلا حين يغرق في لعبة الشطرنج غرقاً يمحو الحرب من وعيه. كبر ليسأل: ما هذه الحالة؟ ولاحظ لاحقاً أن الرسّامين ينسون الجوع والنوم أمام اللوحة، ثم يفقد كثيرون اهتمامهم بها فور اكتمالها — فالمكافأة لم تكن اللوحة، بل **الانغماس نفسه**.',
       'If switching is attention at its worst, what is attention at its best? The answer belongs to **Mihaly Csikszentmihalyi** — and his own story is a lesson: a child in Budapest during the Second World War, watching the adults around him fall apart, he noticed that he himself found peace only when he sank into chess so deeply the war vanished from his awareness. He grew up asking: what is that state? Later he observed painters forgetting hunger and sleep before a canvas — then losing interest in the painting the moment it was finished. The reward was never the painting; it was **the immersion itself**.'
     ) },
     { type: 'p', text: L(

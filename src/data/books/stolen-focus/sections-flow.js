@@ -37,14 +37,20 @@ export const flowState = {
   ),
   blocks: [
     { type: 'callout', variant: 'note', title: L('من أين هذا القسم؟', 'Where this section comes from'), text: L(
-      '**الفصل الأوّل أدناه هو خلاصة ما يقوله «تركيزنا المسلوب»** عن التدفّق، وهو مكرّرٌ عن قصد من قسم «السرعة والتشتّت والتدفّق» ليكون كلّ ما يخصّ التدفّق في صفحةٍ واحدة. **وكلّ ما يليه من الكتاب الأصل**: «التدفّق: سيكولوجيا الخبرة المثلى» لـ**ميهالي سيزنتميهالي** (١٩٩٠) وأبحاثه المنشورة. أضفنا هذا القسم لأن التدفّق هو السبب الوحيد عند هاري الذي كتب صاحبه فيه كتاباً كاملاً يستحقّ أن يُقرأ وحده.',
+      '**الفصل الأوّل أدناه هو خلاصة ما يقوله «تركيزنا المسلوب»** عن التدفّق، وهو مكرّرٌ عن قصد من قسم «السرعة والتشتّت والتدفّق» ليكون كلّ ما يخصّ التدفّق في صفحةٍ واحدة. **وكلّ ما يليه من الكتاب الأصل**: «التدفّق: سيكولوجيا الخبرة المثلى» لـ**ميهالي تشيكزينتميهالي** (١٩٩٠) وأبحاثه المنشورة. أضفنا هذا القسم لأن التدفّق هو السبب الوحيد عند هاري الذي كتب صاحبه فيه كتاباً كاملاً يستحقّ أن يُقرأ وحده.',
       '**Act 1 below is what Stolen Focus itself says** about flow, repeated on purpose from the “Speed, Switching & Flow” section so that everything on flow sits on one page. **Everything after it comes from the source book**: *Flow: The Psychology of Optimal Experience* by **Mihaly Csikszentmihalyi** (1990) and his published research. We added this section because flow is the one cause of Hari’s whose originator wrote a whole book worth reading on its own.'
     ) },
 
-    { type: 'image', src: './images/flow/flow-cover-en.webp',
-      alt: L('غلاف كتاب «التدفّق» لميهالي سيزنتميهالي', 'Cover of Flow by Mihaly Csikszentmihalyi'),
-      caption: L('الطبعة الإنجليزية — «التدفّق: سيكولوجيا الخبرة المثلى»، هاربر بيرينيال.',
-                 'The English edition — *Flow: The Psychology of Optimal Experience*, Harper Perennial.') },
+    { type: 'imggrid', images: [
+      { src: './images/flow/flow-cover-ar.webp',
+        alt: L('غلاف الطبعة العربية من كتاب «التدفّق»', 'Cover of the Arabic edition of Flow'),
+        caption: L('**الطبعة العربية:** «التدفّق — سبيلك للوصول إلى أقصى درجات السعادة»، ضمن «سلسلة تجارب عالمية» عن وزارة الإعلام السعودية. ومنها أخذنا كتابة اسم المؤلّف: **ميهالي تشيكزينتميهالي**.',
+                   '**The Arabic edition:** «التدفّق — سبيلك للوصول إلى أقصى درجات السعادة», in the “World Experiences” series from the Saudi Ministry of Media. This is where we take the Arabic spelling of the author’s name from.') },
+      { src: './images/flow/flow-cover-en.webp',
+        alt: L('غلاف الطبعة الإنجليزية من كتاب «التدفّق»', 'Cover of the English edition of Flow'),
+        caption: L('**الأصل الإنجليزي:** «Flow: The Psychology of Optimal Experience»، ١٩٩٠ — وهو ما نعتمد عليه في هذا القسم.',
+                   '**The English original:** *Flow: The Psychology of Optimal Experience*, 1990 — the edition this section works from.') },
+    ] },
 
     /* ---------------- Act 1: Hari's own treatment ----------------
        Deliberately duplicated from `speed-flow` at the user's request, so this
@@ -56,7 +62,7 @@ export const flowState = {
       'Flow is the second cause in Stolen Focus, and Hari lays it out in a few pages. We repeat them in full here before leaving for the source book, so the whole picture sits in one place — you will also find it in the “Speed, Switching & Flow” section if you want it in context.'
     ) },
     { type: 'p', text: L(
-      'إن كان التبديل أسوأ حالات الانتباه، فما أفضلها؟ الجواب عند **ميهالي سيزنتميهالي** — وقصّته نفسها درسٌ: طفلٌ في بودابست أثناء الحرب العالمية الثانية، رأى الكبار من حوله ينهارون، ولاحظ أنه هو نفسه لا يجد سلاماً إلا حين يغرق في لعبة الشطرنج غرقاً يمحو الحرب من وعيه. كبر ليسأل: ما هذه الحالة؟ ولاحظ لاحقاً أن الرسّامين ينسون الجوع والنوم أمام اللوحة، ثم يفقد كثيرون اهتمامهم بها فور اكتمالها — فالمكافأة لم تكن اللوحة، بل **الانغماس نفسه**.',
+      'إن كان التبديل أسوأ حالات الانتباه، فما أفضلها؟ الجواب عند **ميهالي تشيكزينتميهالي** — وقصّته نفسها درسٌ: طفلٌ في بودابست أثناء الحرب العالمية الثانية، رأى الكبار من حوله ينهارون، ولاحظ أنه هو نفسه لا يجد سلاماً إلا حين يغرق في لعبة الشطرنج غرقاً يمحو الحرب من وعيه. كبر ليسأل: ما هذه الحالة؟ ولاحظ لاحقاً أن الرسّامين ينسون الجوع والنوم أمام اللوحة، ثم يفقد كثيرون اهتمامهم بها فور اكتمالها — فالمكافأة لم تكن اللوحة، بل **الانغماس نفسه**.',
       'If switching is attention at its worst, what is attention at its best? The answer belongs to **Mihaly Csikszentmihalyi** — and his own story is a lesson: a child in Budapest during the Second World War, watching the adults around him fall apart, he noticed that he himself found peace only when he sank into chess so deeply the war vanished from his awareness. He grew up asking: what is that state? Later he observed painters forgetting hunger and sleep before a canvas — then losing interest in the painting the moment it was finished. The reward was never the painting; it was **the immersion itself**.'
     ) },
     { type: 'p', text: L(
@@ -80,14 +86,14 @@ export const flowState = {
       'A practical lesson the book insists on: distraction is not defeated by naked willpower but by a stronger competitor. The person who finds their flow — in writing, coding, sport, or music — does not “resist” their phone; they are simply too absorbed in something more delicious. Make your first question: what activity do I dissolve into? Then build your day to protect it.'
     ) },
     { type: 'callout', variant: 'note', title: L('وهنا ينتهي ما في كتابنا', 'And that is where our book stops'), text: L(
-      'ثلاث صفحاتٍ تقريباً. لم يذكر هاري كيف قِيست هذه الحالة أصلاً، ولا المفارقة التي وجدها سيزنتميهالي في العمل والفراغ، ولا أن التدفّق يدمّر شروطه بنفسه، ولا — وهو الأخطر — أن التدفّق **محايدٌ أخلاقياً** ويمكن تصنيعه ضدّك. الباقي من هنا هو الكتاب الأصل.',
+      'ثلاث صفحاتٍ تقريباً. لم يذكر هاري كيف قِيست هذه الحالة أصلاً، ولا المفارقة التي وجدها تشيكزينتميهالي في العمل والفراغ، ولا أن التدفّق يدمّر شروطه بنفسه، ولا — وهو الأخطر — أن التدفّق **محايدٌ أخلاقياً** ويمكن تصنيعه ضدّك. الباقي من هنا هو الكتاب الأصل.',
       'About three pages. Hari never says how the state was measured in the first place, nor the paradox Csikszentmihalyi found between work and leisure, nor that flow destroys its own conditions, nor — most consequentially — that flow is **morally neutral** and can be manufactured against you. Everything from here on is the source book.'
     ) },
 
     /* ---------------- Act 2: the method ---------------- */
     { type: 'h', text: L('٢ · كيف تصطاد شعوراً؟', '2 · How do you hunt a feeling?') },
     { type: 'p', text: L(
-      'المشكلة التي واجهت سيزنتميهالي في السبعينيات كانت منهجيةً لا فلسفية. الناس سيّئون في تذكّر شعورهم. اسأل أحدهم مساء الأحد: كيف كان أسبوعك؟ فيجيبك عن آخر ساعتين، أو عن الحكاية التي اعتاد أن يرويها عن نفسه. الذاكرة تحرّر الماضي قبل أن تسلّمه لك.',
+      'المشكلة التي واجهت تشيكزينتميهالي في السبعينيات كانت منهجيةً لا فلسفية. الناس سيّئون في تذكّر شعورهم. اسأل أحدهم مساء الأحد: كيف كان أسبوعك؟ فيجيبك عن آخر ساعتين، أو عن الحكاية التي اعتاد أن يرويها عن نفسه. الذاكرة تحرّر الماضي قبل أن تسلّمه لك.',
       'The problem facing Csikszentmihalyi in the 1970s was methodological, not philosophical. People are bad at remembering how they felt. Ask someone on a Sunday evening how their week was and they will answer about the last two hours, or about the story they are used to telling about themselves. Memory edits the past before it hands it over.'
     ) },
     { type: 'p', text: L(
@@ -123,7 +129,7 @@ export const flowState = {
     ) },
     { type: 'figure', id: 'sfFlowParadox' },
     { type: 'callout', variant: 'fact', title: L('لماذا نفعل ذلك بأنفسنا؟', 'Why do we do this to ourselves?'), text: L(
-      'تفسير سيزنتميهالي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. الفراغ غير المنظّم هو المهارة التي لم يعلّمنا أحدٌ إيّاها.',
+      'تفسير تشيكزينتميهالي أن العمل يحمل عادةً بنية التدفّق جاهزة: هدفٌ محدّد، وقواعد، وتغذيةٌ راجعة، وزملاء يقيسون أداءك. أمّا الفراغ فيصلك **بلا بنية إطلاقاً** — ويصعب أن تبني بنيتك بنفسك وأنت متعب. فنختار الأسهل: التلفاز، والتمرير. ونسمّي ذلك راحة. الفراغ غير المنظّم هو المهارة التي لم يعلّمنا أحدٌ إيّاها.',
       'Csikszentmihalyi’s explanation: work usually arrives with the architecture of flow pre-installed — a defined goal, rules, feedback, colleagues measuring your performance. Leisure arrives with **no structure at all** — and building your own structure while tired is hard. So we take the easy option: the television, the scroll. And we call it rest. Unstructured free time is the skill nobody taught us.'
     ) },
 
@@ -200,7 +206,7 @@ export const flowState = {
     ) },
     { type: 'figure', id: 'sfFlowRatchet' },
     { type: 'p', text: L(
-      'ولهذا يصف سيزنتميهالي التدفّق بأنه محرّك نموّ لا وصفة راحة: الملل والقلق ليسا أعطالاً في الطريق، بل **إشارتا توجيه**. الملل يقول: ارفع التحدّي. والقلق يقول: ارفع مهارتك أو اخفض التحدّي مؤقّتاً. من يقرأ الإشارتين يصعد سلّماً؛ ومن يتجاهلهما يتوقّف.',
+      'ولهذا يصف تشيكزينتميهالي التدفّق بأنه محرّك نموّ لا وصفة راحة: الملل والقلق ليسا أعطالاً في الطريق، بل **إشارتا توجيه**. الملل يقول: ارفع التحدّي. والقلق يقول: ارفع مهارتك أو اخفض التحدّي مؤقّتاً. من يقرأ الإشارتين يصعد سلّماً؛ ومن يتجاهلهما يتوقّف.',
       'This is why Csikszentmihalyi describes flow as an engine of growth rather than a recipe for comfort: boredom and anxiety are not faults along the way, they are **navigation signals**. Boredom says: raise the challenge. Anxiety says: raise your skill, or lower the challenge for now. Read both and you climb a staircase; ignore them and you stall.'
     ) },
 
@@ -211,7 +217,7 @@ export const flowState = {
       'The most dangerous thing about flow theory is something its author said himself and almost nobody repeats: **flow is morally neutral**. It describes the structure of an experience, not the worth of it. The surgeon is in flow saving a life. The gambler is in flow at the machine. The burglar is in flow picking a lock. The structure is identical: a clear goal, immediate feedback, a challenge at the edge of skill.'
     ) },
     { type: 'p', text: L(
-      'وهنا يلتقي كتاب سيزنتميهالي بكتاب هاري التقاءً لم يُبرزه هاري نفسه. اقرأ شروط التدفّق الثلاثة مرّةً أخرى، ثم فكّر في تطبيقٍ صُمّم لاحتجازك: هدفٌ واضح (مرّر)، تغذيةٌ راجعة فورية (إعجابٌ، رقمٌ يرتفع)، تحدٍّ معايَر لحظياً بخوارزميةٍ تعرف مستواك أدقّ ممّا تعرفه أنت. **هذه هندسة التدفّق بحذافيرها.**',
+      'وهنا يلتقي كتاب تشيكزينتميهالي بكتاب هاري التقاءً لم يُبرزه هاري نفسه. اقرأ شروط التدفّق الثلاثة مرّةً أخرى، ثم فكّر في تطبيقٍ صُمّم لاحتجازك: هدفٌ واضح (مرّر)، تغذيةٌ راجعة فورية (إعجابٌ، رقمٌ يرتفع)، تحدٍّ معايَر لحظياً بخوارزميةٍ تعرف مستواك أدقّ ممّا تعرفه أنت. **هذه هندسة التدفّق بحذافيرها.**',
       'And here Csikszentmihalyi’s book meets Hari’s in a way Hari never quite draws out. Read the three conditions again, then think about an app designed to hold you: a clear goal (swipe), immediate feedback (a like, a number ticking up), and a challenge calibrated moment by moment by an algorithm that knows your level better than you do. **That is the architecture of flow, exactly.**'
     ) },
     { type: 'callout', variant: 'key', title: L('الفرق الوحيد — وهو كلّ شيء', 'The one difference — and it is everything'), text: L(
@@ -219,7 +225,7 @@ export const flowState = {
       'Real flow lifts you: you come out of it more capable than you went in, which forces you to raise the challenge, so you grow. Engineered flow is built to hold you **at the same level forever** — because your growth means your departure. It imitates the shape of the state and deletes the engine. Which is why you get up from two hours on the phone feeling drained rather than accomplished: you had the structure without the climb. This is the club’s own reading of the two books together, not a passage in either.'
     ) },
     { type: 'p', text: L(
-      'ويضيف سيزنتميهالي تحذيراً ثانياً: التدفّق نفسه قد يصير إدماناً. من يجد نظامه الوحيد في نشاطٍ واحد قد يصبح أسيره، ويعجز عن الاستمتاع بغيره، وينهار حين يُنتزع منه. الحالة التي تنظّم وعيك يمكن أيضاً أن تحبسه.',
+      'ويضيف تشيكزينتميهالي تحذيراً ثانياً: التدفّق نفسه قد يصير إدماناً. من يجد نظامه الوحيد في نشاطٍ واحد قد يصبح أسيره، ويعجز عن الاستمتاع بغيره، وينهار حين يُنتزع منه. الحالة التي تنظّم وعيك يمكن أيضاً أن تحبسه.',
       'Csikszentmihalyi adds a second warning: flow itself can become an addiction. Someone who finds their only order in a single activity can become its captive, unable to enjoy anything else, and collapse when it is taken away. The state that orders your consciousness can also imprison it.'
     ) },
 
@@ -242,7 +248,7 @@ export const flowState = {
 
     { type: 'sources', title: L('اقرأ بنفسك', 'Read it yourself'), items: [
       { label: L('«التدفّق: سيكولوجيا الخبرة المثلى» — الكتاب الأصل', '“Flow: The Psychology of Optimal Experience” — the source book'),
-        publisher: L('ميهالي سيزنتميهالي، ١٩٩٠', 'Mihaly Csikszentmihalyi, 1990'),
+        publisher: L('ميهالي تشيكزينتميهالي، ١٩٩٠', 'Mihaly Csikszentmihalyi, 1990'),
         url: 'https://www.goodreads.com/book/show/66354.Flow' },
       { label: L('«الخبرة المثلى في العمل والفراغ» — دراسة مفارقة العمل', '“Optimal Experience in Work and Leisure” — the paradox-of-work study'),
         publisher: L('مجلّة علم نفس الشخصية والاجتماع، ١٩٨٩', 'J. Personality and Social Psychology, 1989'),

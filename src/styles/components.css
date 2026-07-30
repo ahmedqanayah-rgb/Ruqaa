@@ -1471,17 +1471,31 @@ html[data-presenting] img { margin-inline: auto; }
 /* ---- Fig 15: the brain ---- */
 .flow-brain { display: flex; flex-direction: column; align-items: center; }
 .brain-modes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-3); }
-.brain-stage { position: relative; inline-size: 100%; max-inline-size: 360px; aspect-ratio: 320 / 210; }
+/* Ratio matches public/images/flow/brain-lateral.webp (1021×985). The engraving
+   is paper-backed like the clean/ cut-outs, so its black linework stays legible
+   in the dark theme — see scripts/paper-backing.mjs. */
+.brain-stage { position: relative; inline-size: 100%; max-inline-size: 380px; aspect-ratio: 1021 / 985; }
 .brain-svg, .brain-photo { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
 .brain-photo { object-fit: contain; border-radius: var(--radius-sm); }
-/* Percentage-positioned so they land correctly on either the schematic or a
-   supplied left-facing lateral photo of the same aspect ratio. */
-.brain-hot { position: absolute; border-radius: 50%; background: var(--accent); transition: opacity var(--transition); pointer-events: none; }
-.brain-hot.dlpfc { inset-inline-start: 15%; inset-block-start: 26%; inline-size: 22%; block-size: 30%; }
-.brain-hot.mpfc { inset-inline-start: 10%; inset-block-start: 57%; inline-size: 17%; block-size: 24%; }
-.brain-tag { position: absolute; font-size: var(--fs-xs); font-weight: 700; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 999px; padding: 1px 8px; pointer-events: none; }
-.brain-tag.dlpfc { inset-inline-start: 30%; inset-block-start: 16%; }
-.brain-tag.mpfc { inset-inline-start: 2%; inset-block-start: 84%; }
+/* LTR-anchored on purpose: these mark anatomy on a left-facing lateral view, so
+   they must NOT flip with text direction the way inset-inline-start would. */
+.brain-hot {
+  position: absolute; border-radius: 50%; border: 2.5px solid var(--accent);
+  transition: background var(--transition); pointer-events: none;
+}
+/* Positions checked by compositing them onto the actual engraving, not guessed:
+   DLPFC on the upper-lateral frontal convexity, mPFC at the anterior-inferior
+   frontal region (the "frontal polar" cortex Limb & Braun name). Retune both if
+   brain-lateral.webp is ever replaced. */
+.brain-hot.dlpfc { left: 17.5%; top: 15%;   inline-size: 18%; block-size: 18.5%; }
+.brain-hot.mpfc  { left: 10%;   top: 38.5%; inline-size: 15%; block-size: 14.5%; }
+.brain-tag {
+  position: absolute; font-size: var(--fs-xs); font-weight: 700; color: var(--text);
+  background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 999px;
+  padding: 1px 8px; pointer-events: none; direction: ltr;
+}
+.brain-tag.dlpfc { left: 19%; top: 7%; }
+.brain-tag.mpfc  { left: 8%;  top: 55%; }
 .brain-key { list-style: none; padding: 0; margin: var(--space-4) 0 0; inline-size: 100%; display: grid; gap: 10px; }
 .brain-key li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 10px; margin: 0; font-size: var(--fs-sm); }
 .brain-key b { color: var(--text); }

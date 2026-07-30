@@ -86,7 +86,7 @@ const QUICK = {
     note: L('جيلٌ واحد فقط — وانتقلت الطفولة خلف الأبواب المغلقة وإلى الشاشات.', 'A single generation — and childhood moved behind closed doors and onto screens.'),
   },
   'flow-state': {
-    q: L('ماذا وجدت دراسة سيزنتميهالي ولوفيفر حين رنّت أجهزة النداء؟', 'What did Csikszentmihalyi & LeFevre’s pagers reveal?'),
+    q: L('ماذا وجدت دراسة تشيكزينتميهالي ولوفيفر حين رنّت أجهزة النداء؟', 'What did Csikszentmihalyi & LeFevre’s pagers reveal?'),
     opts: [L('نتدفّق في الفراغ أكثر من العمل', 'We flow more in leisure than at work'),
            L('نتدفّق في العمل أكثر — ومع ذلك نفضّل الفراغ', 'We flow more at work — yet still prefer leisure'),
            L('لا فرق بين الحالتين', 'No difference between the two')],

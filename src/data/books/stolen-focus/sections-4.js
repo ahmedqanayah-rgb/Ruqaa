@@ -23,7 +23,7 @@ export const characters = {
       { img: port('sune-lehmann.jpg'), name: L('سونه ليمان', 'Sune Lehmann'), tag: L('عالِم بيانات الشبكات', 'Network-data scientist'),
         story: L('قاس كيف يتقلّص «الانتباه الجماعي»: تبقى الموضوعات الرائجة في الصدارة مدداً أقصر عاماً بعد عام.',
                  'Measured how “collective attention” is shrinking: trending topics stay on top for shorter and shorter spans each year.') },
-      { img: port('mihaly-csikszentmihalyi.jpg'), name: L('ميهالي سيزنتميهالي', 'Mihaly Csikszentmihalyi'), tag: L('صاحب نظرية «التدفّق»', 'Father of “flow”'),
+      { img: port('mihaly-csikszentmihalyi.jpg'), name: L('ميهالي تشيكزينتميهالي', 'Mihaly Csikszentmihalyi'), tag: L('صاحب نظرية «التدفّق»', 'Father of “flow”'),
         story: L('عالِم النفس الذي وصف حالة **التدفّق (Flow)**: الانغماس الكامل في نشاطٍ ذي معنى حتى يختفي الزمن — أعمق صور الانتباه.',
                  'The psychologist who described **flow**: total immersion in a meaningful activity until time disappears — the deepest form of attention.') },
       { img: port('adam-gazzaley.jpg'), name: L('آدم غزالي', 'Adam Gazzaley'), tag: L('عالِم أعصاب — «العقل المشتَّت»', 'Neuroscientist — “The Distracted Mind”'),

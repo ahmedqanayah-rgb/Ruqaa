@@ -187,7 +187,7 @@ keeps `base: './'` sub-path hosting working.
   (20 sections, 61-study quiz, built per `PLAN-stolen-focus.md` — kept for reference).
   Stolen Focus in Arabic is **«تركيزنا المسلوب»** by **«يوهان هاري»** (the published
   Dar Al-Tanweer edition) — not «التركيز المسروق»/«جوهان هاري». Same rule for
-  Csikszentmihalyi: **«ميهالي سيزنتميهالي»**, the spelling his Arabic translations use —
+  Csikszentmihalyi: **«ميهالي تشيكزينتميهالي»**, the spelling his Arabic translations use —
   not «ميهاي تشيكسنتميهايي», which the site used until 2026-07-30. Follow the published
   Arabic edition for author names rather than transliterating from English.
 - `BookSection.jsx` dispatches a third kind, **`'focus-lab'`** → `components/FocusLab.jsx`

@@ -92,9 +92,9 @@ export default [
   {
     id: 'sf7', chapter: L('السبب ٢ · التدفّق', 'Cause 2 · Flow'),
     title: L('ما شروط حالة التدفّق؟', 'What are the conditions for flow?'),
-    researcher: L('ميهالي سيزنتميهالي', 'Mihaly Csikszentmihalyi'),
+    researcher: L('ميهالي تشيكزينتميهالي', 'Mihaly Csikszentmihalyi'),
     method: L(
-      'درس سيزنتميهالي آلاف الأشخاص عبر ثقافاتٍ ومهنٍ مختلفة، وسألهم عن اللحظات التي يفقدون فيها الإحساس بالزمن انغماساً في عملهم. حلّل ما تشترك فيه هذه اللحظات ليستخلص شروط «التدفّق».',
+      'درس تشيكزينتميهالي آلاف الأشخاص عبر ثقافاتٍ ومهنٍ مختلفة، وسألهم عن اللحظات التي يفقدون فيها الإحساس بالزمن انغماساً في عملهم. حلّل ما تشترك فيه هذه اللحظات ليستخلص شروط «التدفّق».',
       'Csikszentmihalyi studied thousands of people across cultures and professions, asking about the moments when they lose all sense of time, absorbed in their work. He analysed what those moments share to distil the conditions for “flow.”'),
     options: [L('مكافأةٌ مالية كبيرة', 'A big financial reward'), L('هدفٌ واضح، وتحدٍّ عند حدود المهارة، ومعنى شخصيّ', 'A clear goal, a challenge at the edge of skill, and personal meaning'), L('ضغطٌ ومواعيد نهائية صارمة', 'Pressure and tight deadlines')],
     correct: 1,
