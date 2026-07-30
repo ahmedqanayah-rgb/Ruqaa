@@ -38,18 +38,18 @@ export const flowState = {
   blocks: [
     { type: 'callout', variant: 'note', title: L('من أين هذا القسم؟', 'Where this section comes from'), text: L(
       '**الفصل الأوّل أدناه هو خلاصة ما يقوله «تركيزنا المسلوب»** عن التدفّق، وهو مكرّرٌ عن قصد من قسم «السرعة والتشتّت والتدفّق» ليكون كلّ ما يخصّ التدفّق في صفحةٍ واحدة. **وكلّ ما يليه من الكتاب الأصل**: «التدفّق: سيكولوجيا الخبرة المثلى» لـ**ميهالي تشيكزينتميهالي** (١٩٩٠) وأبحاثه المنشورة. أضفنا هذا القسم لأن التدفّق هو السبب الوحيد عند هاري الذي كتب صاحبه فيه كتاباً كاملاً يستحقّ أن يُقرأ وحده.',
-      '**Act 1 below is what Stolen Focus itself says** about flow, repeated on purpose from the “Speed, Switching & Flow” section so that everything on flow sits on one page. **Everything after it comes from the source book**: *Flow: The Psychology of Optimal Experience* by **Mihaly Csikszentmihalyi** (1990) and his published research. We added this section because flow is the one cause of Hari’s whose originator wrote a whole book worth reading on its own.'
+      '**Act 1 below is what Stolen Focus itself says** about flow, repeated on purpose from the “Speed, Switching & Flow” section so that everything on flow sits on one page. **Everything after it comes from the source book**: «Flow: The Psychology of Optimal Experience» by **Mihaly Csikszentmihalyi** (1990) and his published research. We added this section because flow is the one cause of Hari’s whose originator wrote a whole book worth reading on its own.'
     ) },
 
     { type: 'imggrid', images: [
       { src: './images/flow/flow-cover-ar.webp',
         alt: L('غلاف الطبعة العربية من كتاب «التدفّق»', 'Cover of the Arabic edition of Flow'),
         caption: L('**الطبعة العربية:** «التدفّق — سبيلك للوصول إلى أقصى درجات السعادة»، ضمن «سلسلة تجارب عالمية» عن وزارة الإعلام السعودية. ومنها أخذنا كتابة اسم المؤلّف: **ميهالي تشيكزينتميهالي**.',
-                   '**The Arabic edition:** «التدفّق — سبيلك للوصول إلى أقصى درجات السعادة», in the “World Experiences” series from the Saudi Ministry of Media. This is where we take the Arabic spelling of the author’s name from.') },
+                   '**The Arabic edition** — «Flow: Your Path to the Highest Degrees of Happiness», in the “World Experiences” series from the Saudi Ministry of Media. This cover is where the Arabic spelling of the author’s name on this site comes from.') },
       { src: './images/flow/flow-cover-en.webp',
         alt: L('غلاف الطبعة الإنجليزية من كتاب «التدفّق»', 'Cover of the English edition of Flow'),
         caption: L('**الأصل الإنجليزي:** «Flow: The Psychology of Optimal Experience»، ١٩٩٠ — وهو ما نعتمد عليه في هذا القسم.',
-                   '**The English original:** *Flow: The Psychology of Optimal Experience*, 1990 — the edition this section works from.') },
+                   '**The English original:** «Flow: The Psychology of Optimal Experience», 1990 — the edition this section works from.') },
     ] },
 
     /* ---------------- Act 1: Hari's own treatment ----------------
@@ -102,8 +102,8 @@ export const flowState = {
     ) },
     { type: 'image', src: './images/flow/pager.webp', wide: true,
       alt: L('جهاز نداءٍ قديم في يد، تظهر عليه الساعة والتاريخ', 'An old pager held in a hand, showing the time and date'),
-      caption: L('الآلة التي بدأ بها كلّ شيء. جهازٌ كهذا رنّ في جيوب آلاف الأشخاص سبع مرّاتٍ في اليوم عشوائياً، وفي كلّ رنّةٍ سُئل صاحبه: ماذا تفعل الآن، وكيف تشعر؟ لا استبيان في نهاية الأسبوع — لحظةٌ مقتنصة قبل أن تُحرّرها الذاكرة.',
-                 'The machine it all started with. A device like this went off in thousands of pockets seven times a day at random, and at every beep its owner was asked: what are you doing now, and how do you feel? No end-of-week questionnaire — a moment seized before memory could edit it.') },
+      caption: L('نوع الآلة التي بدأ بها كلّ شيء. جهازٌ كهذا رنّ في جيوب آلاف الأشخاص في أوقاتٍ عشوائية، وفي كلّ رنّةٍ سُئل صاحبه: ماذا تفعل الآن، وكيف تشعر؟ لا استبيان في نهاية الأسبوع — لحظةٌ مقتنصة قبل أن تُحرّرها الذاكرة. (صورةٌ توضيحية لجهاز نداءٍ من الحقبة نفسها.)',
+                 'The kind of machine it all started with. A device like this went off in thousands of pockets at random moments, and at every beep its owner was asked: what are you doing now, and how do you feel? No end-of-week questionnaire — a moment seized before memory could edit it. (An illustrative pager from the era, not one used in the research.)') },
     { type: 'callout', variant: 'key', title: L('لماذا يهمّ هذا التفصيل المنهجيّ؟', 'Why this methodological detail matters'), text: L(
       'لأن كلّ ما يأتي بعده يقف عليه. حين تقرأ لاحقاً أننا نتدفّق في العمل أكثر منه في الإجازة، فالنتيجة ليست رأياً ولا استبياناً يسأل الناس عن ذكرياتهم — إنها ملايين اللحظات المرصودة وهي تحدث. وهذا بالضبط ما يفرّق بين هذه النتيجة وبين كثيرٍ من أرقام كتب المساعدة الذاتية.',
       'Because everything that follows rests on it. When you read below that we find more flow at work than at leisure, that is not an opinion or a survey asking people about their memories — it is moments logged as they happened. Which is exactly what separates this finding from a great many self-help statistics.'
@@ -161,8 +161,8 @@ export const flowState = {
     ) },
     { type: 'image', src: './images/flow/jazz-piano.webp', wide: true,
       alt: L('عازف جاز على البيانو، عيناه مغمضتان ويده مرفوعة في منتصف عبارة', 'A jazz pianist at the piano, eyes closed, hand raised mid-phrase'),
-      caption: L('هذا ما كان ليمب وبراون يحاولان تصويره: اللحظة التي يتوقّف فيها العازف عن مراقبة نفسه. العينان المغمضتان ليستا زينةً في الصورة — إنها بالضبط العلامة الخارجية للمنطقة التي رأوها تخفت في الماسح.',
-                 'This is what Limb and Braun were trying to photograph: the moment a player stops watching himself. The closed eyes are not decoration — they are the outward sign of the very region they watched dim inside the scanner.') },
+      caption: L('اللحظة التي كان ليمب وبراون يقيسانها: حين يتوقّف العازف عن مراقبة نفسه. العينان المغمضتان ليستا زينةً — إنها العلامة الخارجية للمنطقة نفسها التي رأوها تخفت في الماسح. (صورةٌ توضيحية لعازف جاز، وليست من الدراسة — كان مشاركوها يعزفون داخل الماسح على لوحةٍ بلاستيكية.)',
+                 'The moment Limb and Braun were measuring: when a player stops watching himself. The closed eyes are not decoration — they are the outward sign of the very region they watched dim inside the scanner. (An illustrative jazz pianist, not from the study — its participants played on a plastic keyboard inside the scanner.)') },
     { type: 'figure', id: 'sfFlowBrain' },
     { type: 'callout', variant: 'warn', title: L('حدود ما نعرفه — ورقمٌ لن تجده هنا', 'The limits of this — and a claim you will not find here'), text: L(
       'ديتريش صاحب **فرضية**، لا قانون؛ ودراسة ليمب وبراون على **ستّة أشخاص** وعن **الارتجال** تحديداً لا عن التدفّق بعنوانه العريض. الاتجاه متّسق ومغرٍ، والدليل أضيق ممّا يُروَّج له. وستقرأ في كثيرٍ من المقالات أن التدفّق «خليطٌ كيميائيّ» من الدوبامين والإندورفين والأناندامايد — تجاهلنا هذا عمداً: إنه تبسيطٌ شائع لا يقف خلفه دليلٌ يقارَب دليل ما ذُكر أعلاه.',
@@ -186,12 +186,12 @@ export const flowState = {
     { type: 'imggrid', images: [
       { src: './images/flow/assembly-line.webp',
         alt: L('عمّالٌ على خطّ تجميع إلكترونيّ، كلٌّ منهم منحنٍ على مهمّته', 'Workers at an electronics assembly line, each bent over their task'),
-        caption: L('عالَم ريكو: المهمّة نفسها، ست مئة مرّة في اليوم — والبنية التي أضافها فوقها من عنده.',
-                   'Rico’s world: the same task six hundred times a day — and the structure he added over it himself.') },
+        caption: L('عالَم ريكو: المهمّة نفسها، ست مئة مرّة في اليوم — والبنية التي أضافها فوقها من عنده. (صورةٌ توضيحية لخطّ تجميع، وليست صورةً له.)',
+                   'Rico’s world: the same task six hundred times a day — and the structure he added over it himself. (An illustrative assembly line, not a photograph of him.)') },
       { src: './images/flow/alpine-farm.webp',
         alt: L('مزرعةٌ جبلية ألبية وأبقارٌ ومزارعٌ مسنّ أمام بيتٍ خشبيّ', 'An alpine mountain farm with cows and an elderly farmer before a wooden house'),
-        caption: L('عالَم سيرافينا: لا حدّ فيه بين العمل والعيش. *(صورةٌ توضيحية لمزرعةٍ ألبية، وليست صورةً لها.)*',
-                   'Serafina’s world: no line in it between working and living. *(An illustrative alpine farm, not a photograph of her.)*') },
+        caption: L('عالَم سيرافينا: لا حدّ فيه بين العمل والعيش. (صورةٌ توضيحية لمزرعةٍ ألبية، وليست صورةً لها.)',
+                   'Serafina’s world: no line in it between working and living. (An illustrative alpine farm, not a photograph of her.)') },
     ] },
     { type: 'p', text: L(
       'الرجل والمزارعة على طرفَي نقيض في كلّ شيء — إلّا في أن كلاًّ منهما يملك ما نفتقده: يومٌ له شكل. ريكو صنع الشكل بيده داخل عملٍ لم يمنحه إيّاه؛ وسيرافينا وُلدت في حياةٍ لم تنزع الشكل عنها أصلاً. ونحن بينهما: وظائفٌ تعطينا بنيةً لا نحبّها، وفراغٌ نحبّه ولا بنية فيه.',
@@ -250,9 +250,12 @@ export const flowState = {
       { label: L('«التدفّق: سيكولوجيا الخبرة المثلى» — الكتاب الأصل', '“Flow: The Psychology of Optimal Experience” — the source book'),
         publisher: L('ميهالي تشيكزينتميهالي، ١٩٩٠', 'Mihaly Csikszentmihalyi, 1990'),
         url: 'https://www.goodreads.com/book/show/66354.Flow' },
-      { label: L('«الخبرة المثلى في العمل والفراغ» — دراسة مفارقة العمل', '“Optimal Experience in Work and Leisure” — the paradox-of-work study'),
+      // PubMed rather than ResearchGate: it is open, and its abstract is the
+      // source actually checked for the "78 workers" figure and the two
+      // exceptions (several secondary sources say 107 workers — they are wrong).
+      { label: L('«الخبرة المثلى في العمل والفراغ» — ملخّص دراسة مفارقة العمل', '“Optimal Experience in Work and Leisure” — abstract of the paradox-of-work study'),
         publisher: L('مجلّة علم نفس الشخصية والاجتماع، ١٩٨٩', 'J. Personality and Social Psychology, 1989'),
-        url: 'https://www.researchgate.net/publication/20432305_Optimal_Experience_in_Work_and_Leisure' },
+        url: 'https://pubmed.ncbi.nlm.nih.gov/2724069/' },
       { label: L('دراسة ارتجال الجاز داخل الماسح — النصّ الكامل', 'The jazz-improvisation fMRI study — full text'),
         publisher: L('بلوس ون، ٢٠٠٨', 'PLOS ONE, 2008'),
         url: 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0001679' },

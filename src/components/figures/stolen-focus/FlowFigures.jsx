@@ -12,6 +12,11 @@
 import { useState } from 'react'
 import { useApp } from '../../../context/AppContext.jsx'
 import FigureFrame from '../FigureFrame.jsx'
+/* Every body text below goes through RichText, not a bare {t(...)}. Two reasons:
+   FigureFrame already renders `caption` that way so **bold** works there and
+   would silently print literal asterisks anywhere else, and RichText also wraps
+   Latin runs (DLPFC, mPFC, A1…) in <bdi> so they don't flip inside Arabic. */
+import RichText from '../../RichText.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -62,8 +67,8 @@ export function SfFlowParadox() {
   return (
     <FigureFrame number={13}
       title={L('مفارقة العمل', 'The paradox of work')}
-      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (تشيكزينتميهالي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** *الشكل يعرض الاتجاه لا المقادير — الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.*',
-                 '78 workers, one full week, pagers going off at random (Csikszentmihalyi & LeFevre, 1989). Switch between the two states, then look below the figure for the sharper finding: **what follows your flow, and what follows only your location.** *This shows direction, not magnitudes — the paper’s exact percentages could not be traced to a primary source, so we did not invent them.*')}>
+      caption={L('٧٨ عاملاً، أسبوعٌ كامل، أجهزة نداءٍ ترنّ عشوائياً (تشيكزينتميهالي ولوفيفر، ١٩٨٩). بدّل بين الحالتين، ثم انظر أسفل الشكل إلى الاكتشاف الأدقّ: **ما الذي يتبع تدفّقك، وما الذي يتبع مكانك فقط.** — الشكل يعرض الاتجاه لا المقادير: الأرقام الدقيقة للورقة لم نتمكّن من ردّها إلى مصدرها الأصلي، فلم نخترعها.',
+                 '78 workers, one full week, pagers going off at random (Csikszentmihalyi & LeFevre, 1989). Switch between the two states, then look below the figure for the sharper finding: **what follows your flow, and what follows only your location.** — This shows direction, not magnitudes: the paper’s exact percentages could not be traced to a primary source, so we did not invent them.')}>
       <div className="paradox">
         <div className="pdx-switch" role="group">
           {Object.values(PARADOX).map((p) => (
@@ -76,7 +81,7 @@ export function SfFlowParadox() {
         <div className="pdx-panel">
           <Meter label={L('لحظات التدفّق المرصودة', 'Flow moments recorded')} level={cur.flow} tone="flow" />
           <Meter label={L('رغبتك في أن تكون هنا', 'Wanting to be here')} level={cur.want} tone="want" />
-          <p className="pdx-line" role="status">{t(cur.line)}</p>
+          <p className="pdx-line" role="status"><RichText value={cur.line} /></p>
         </div>
         <div className="pdx-split">
           <div className="pdx-col follows-flow">
@@ -124,6 +129,10 @@ const CONDITIONS = [
     off: L('أسهل من مهارتك فتملّ، أصعب بكثيرٍ فتقلق. الحالة الناتجة: **مللٌ أو قلق** بحسب أيّ الطرفين اختلّ.',
            'Below your skill you are bored; far above it you are anxious. What you get instead: **boredom or anxiety**, depending which way it tipped.') },
 ]
+const GATE_OPEN = L(
+  '**الشروط الثلاثة قائمة.** لاحظ أنك لم «تختر» أياً من الستّة أدناه — أنت رتّبت الطاولة فحسب، والباقي جاء وحده. هذا كلّ ما يمكنك فعله، وهو يكفي.',
+  '**All three conditions hold.** Notice you did not “choose” any of the six below — you set the table, and the rest arrived on its own. That is all you can do, and it is enough.'
+)
 const SYMPTOMS = [
   { icon: '🔗', name: L('يندمج الفعل بالوعي', 'Action merges with awareness') },
   { icon: '🎧', name: L('يبتلعك التركيز', 'Concentration consumes you') },
@@ -170,10 +179,7 @@ export function SfFlowNine() {
         </div>
 
         <p className={`gate-readout ${open ? 'good' : 'bad'}`} role="status">
-          {open
-            ? t(L('**الشروط الثلاثة قائمة.** لاحظ أنك لم «تختر» أياً من الستّة أدناه — أنت رتّبت الطاولة فحسب، والباقي جاء وحده. هذا كلّ ما يمكنك فعله، وهو يكفي.',
-                  '**All three conditions hold.** Notice you did not “choose” any of the six below — you set the table, and the rest arrived on its own. That is all you can do, and it is enough.'))
-            : t(missing[0].off)}
+          <RichText value={open ? GATE_OPEN : missing[0].off} />
         </p>
       </div>
     </FigureFrame>
@@ -282,7 +288,7 @@ export function SfFlowBrain() {
             </span>
           </li>
         </ul>
-        <p className="brain-note" role="status">{t(m.note)}</p>
+        <p className="brain-note" role="status"><RichText value={m.note} /></p>
       </div>
     </FigureFrame>
   )
@@ -410,7 +416,7 @@ export function SfFlowRatchet() {
         </div>
         <div className={`ratchet-note zone-${step.zone}`} role="status">
           <strong>{step.lbl} · {t(step.head)}</strong>
-          <p>{t(step.note)}</p>
+          <RichText as="p" value={step.note} />
         </div>
       </div>
     </FigureFrame>
