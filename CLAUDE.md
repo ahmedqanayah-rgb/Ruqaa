@@ -160,6 +160,22 @@ keeps `base: './'` sub-path hosting working.
 
 - **No `localStorage`/`sessionStorage` — ever.** All state (quiz score, assessment answers,
   language, theme, figure controls) is in-memory React state. This is a hard requirement.
+- **Analytics: Vercel Web Analytics only** (`src/components/Analytics.jsx`, mounted in
+  `main.jsx`). It renders `null` — counts are for the club in the Vercel dashboard, never shown
+  to visitors. Chosen because its script is served from our own origin
+  (`/_vercel/insights/script.js`), so the site keeps making **zero third-party requests** — the
+  reason the fonts were self-hosted — and because it sets no cookies and writes no storage, so
+  the rule above still holds. **Don't add Google Analytics**; it breaks both.
+  **Its automatic tracking is broken by HashRouter and must stay disabled.** The script patches
+  `pushState` (which react-router does call) but gates on `location.pathname`, which is `/`
+  forever here — measured: in-app navigation fired *nothing*, and full loads all logged as `/`.
+  So the component passes `route`/`path` from `useLocation()`, which sets `disableAutoTrack`
+  and fires each pageview itself. `route` is deliberately the concrete path, not a
+  `/book/:bookId/:slug` pattern — Vercel groups by the pattern, which would collapse all 36
+  sections into one row. `beforeSend` **strips** the fragment and must never fold it into the
+  path: the script already appends `location.hash` to the `path` we gave it, so folding
+  double-applies and yields `/book/why-we-sleep/book/why-we-sleep`. Verify changes in `npm run
+  dev`, where the debug script logs every event to the console instead of sending it.
 - **Study `method` fields are deliberately verbose** (2–3 sentences with setup and the
   researchers' reasoning) so each quiz question is self-explanatory before the answer is
   revealed. Keep that style if you add or edit studies; don't shorten them back to

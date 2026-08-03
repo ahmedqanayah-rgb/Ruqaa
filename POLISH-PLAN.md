@@ -2,7 +2,7 @@
 
 A review of the whole site, ordered by real impact. Written to be picked up in a later
 session — each item says what's wrong, how it was measured, and how to know it worked.
-Same spirit as `PLAN-stolen-focus.md`. **Last updated 2026-07-27.**
+Same spirit as `PLAN-stolen-focus.md`. **Last updated 2026-08-03.**
 
 Everything already **done** is listed at the bottom, so nobody redoes it. §6 records design
 decisions the user made about the figures — treat those as settled.
@@ -354,9 +354,52 @@ phone the covers and their captions ran **37px past the text column**. It looked
 `.ratchet-panels`. Also raised figure controls to a 44px tap target and enlarged the SVG labels
 on phones (SVG text scales with the viewBox, not rem, so 11px landed at 9.2px on a 320px screen).
 
-**Still open:** analytics. Nothing is installed. Vercel Web Analytics would give free aggregate
-counts, cookie-less and compatible with the no-storage rule, but cannot identify individuals.
-Avoid Google Analytics — it would undo the reason the fonts were self-hosted.
+---
+
+## 9. Analytics — Vercel Web Analytics  ✅ **done (2026-08-03)**
+
+The user's ask: *"I just want to see these informations, I don't want them to be visible on
+the site."* Those aren't in tension — no analytics tool shows anything to visitors. The counts
+live in the Vercel dashboard, `SiteAnalytics` renders `null`, and not a pixel changes.
+
+**Why this one.** In production the script is served from `/_vercel/insights/script.js` — our
+own origin — so the site *still* makes zero third-party requests, which is the entire reason
+the fonts were self-hosted. No cookies, nothing in localStorage/sessionStorage, so the hard
+no-storage rule survives. It counts page views; it cannot identify a person. Google Analytics
+was rejected for the opposite reasons.
+
+**Cost: +1.21 kB gzipped** (entry 312.04 → 313.25 kB). `charts-*` still absent from
+`index.html`, so the lazy figure registry is untouched.
+
+### The part that isn't in the docs: automatic tracking does not work here
+
+`<Analytics />` on its own would have quietly recorded almost nothing, and it would have looked
+like it was working. The script patches `pushState` — which react-router genuinely calls — but
+then decides whether a navigation happened by comparing **`location.pathname`**. Under a
+HashRouter that string is `/` forever. Measured in the browser: clicking from Home to a section
+logged **no event at all**. Only full page loads were recorded, every one of them as `/`.
+
+The fix is a supported prop, not a hack: passing `route` flips the component to
+`disableAutoTrack` and it fires the pageview itself whenever `route`/`path` change — the same
+hook the Next.js integration uses. `src/components/Analytics.jsx` feeds it react-router's
+`useLocation()`, which under HashRouter *is* the part after the `#`.
+
+Two decisions inside it worth not undoing:
+
+- **`route` is the concrete path, not a pattern** like `/book/:bookId/:slug`. The pattern is
+  what Vercel groups rows by, and grouping would fold all 36 sections into one line — the one
+  number we already knew, and the one thing we didn't want to learn.
+- **`beforeSend` strips the fragment; it must not fold it into the path.** The script builds
+  the event URL as origin + the `path` we passed + whatever is in `location.hash`, arriving as
+  `/about#/about`. A first pass folded the hash into the path — the correct fix for a
+  hash-routed site relying on *automatic* tracking, and wrong here: it double-applied and sent
+  `/book/why-we-sleep/book/why-we-sleep`. Verified in the browser both times; the dev build
+  logs every event to the console instead of sending it, which is how all of this was measured.
+
+**One manual step remains:** Web Analytics must be switched on for the project in the Vercel
+dashboard (Project → Analytics → Enable). Until then the script 404s and logs a console notice
+saying exactly that; nothing else breaks. Data only starts accruing from the deploy after it
+is enabled — it is not retroactive.
 
 ---
 
