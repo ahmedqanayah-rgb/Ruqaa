@@ -207,6 +207,20 @@ function VerdictCard({ book }) {
   )
 }
 
+/*
+ * Which landing groups are unfolded, per book. Module scope rather than
+ * component state because `BookLanding` unmounts every time the reader opens a
+ * section — without this, a group they expanded had folded itself shut by the
+ * time they came back, while their scroll position was faithfully restored to
+ * a page that no longer looked the same. In memory only, so it dies with the
+ * tab, exactly like `visited`.
+ *
+ * `touched` is what keeps both behaviours: until the reader touches a header we
+ * re-seed on every mount, so the open group follows their progress through the
+ * book; once they have an opinion, it is theirs and we stop moving it.
+ */
+const landingGroups = new Map() // bookId → { open: Set<number>, touched: boolean }
+
 function BookLanding({ book }) {
   const { t, lang, visited } = useApp()
   const bySlug = useMemo(() => new Map(book.sections.map((s, i) => [s.slug, { s, i }])), [book])
@@ -240,6 +254,29 @@ function BookLanding({ book }) {
   const ctaLabel = seenCount > 0 && nextSlug
     ? L('تابع القراءة', 'Continue reading')
     : L('ابدأ من البداية', 'Start from the beginning')
+
+  /* Collapsible groups. This landing is 7.1 screens on a phone for Stolen Focus
+     and the card list alone is 4.6 of them, so choosing the next section means
+     thumbing past everything already read. Folding the groups turns that into
+     five headers you can scan, which is the same job the sidebar drawer does —
+     and the same rule for what opens: exactly the group you are up to.
+
+     Seeding from `ctaSlug` keeps the header button and the hero's CTA agreeing
+     with each other; a newcomer therefore still lands with «ابدأ هنا» open and
+     its cards on screen, so this doesn't undo the reordering win. State is in
+     memory like `visited` — no storage — and re-seeds on remount, which is what
+     makes it follow the reader's progress instead of going stale. */
+  const ctaGroup = book.groups ? book.groups.findIndex((g) => g.slugs.includes(ctaSlug)) : -1
+  const [openGroups, setOpenGroups] = useState(() => {
+    const saved = landingGroups.get(book.id)
+    return saved?.touched ? saved.open : new Set([ctaGroup >= 0 ? ctaGroup : 0])
+  })
+  const toggleGroup = (gi) => setOpenGroups((prev) => {
+    const next = new Set(prev)
+    if (next.has(gi)) next.delete(gi); else next.add(gi)
+    landingGroups.set(book.id, { open: next, touched: true })
+    return next
+  })
 
   return (
     <div className="book-landing">
@@ -298,12 +335,33 @@ function BookLanding({ book }) {
           Reordered in the JSX rather than with CSS `order` so the reading order
           a screen reader gets stays the same as the one everyone else sees. */}
       {book.groups ? (
-        book.groups.map((g, gi) => (
+        book.groups.map((g, gi) => {
+          const open = openGroups.has(gi)
+          const items = g.slugs.map((sl) => bySlug.get(sl)).filter(Boolean)
+          const groupSeen = items.filter((h) => visited.has(`${book.id}/${h.s.slug}`)).length
+          return (
           <section key={gi} className="landing-group">
-            <h2 className="landing-group-title">{t(g.title)}</h2>
-            <div className="section-cards">{g.slugs.map(renderCard)}</div>
+            {/* The button goes *inside* the h2 rather than wrapping it: a
+                <button> may only contain phrasing content, and swallowing the
+                heading would drop it out of the document outline that was
+                audited in POLISH-PLAN §5. This is the standard accordion shape. */}
+            <h2 className="landing-group-title">
+              <button className="landing-group-toggle" aria-expanded={open}
+                onClick={() => toggleGroup(gi)}>
+                <span className={`side-chev ${open ? 'open' : ''}`} aria-hidden>›</span>
+                <span className="landing-group-text">{t(g.title)}</span>
+                {/* With the cards hidden this count is the only clue to what is
+                    inside, so it carries the read tally too — same signal, and
+                    same wording, as the drawer's group headers. */}
+                <span className="landing-group-count">
+                  {groupSeen > 0 ? `${groupSeen}/${items.length}` : items.length}
+                </span>
+              </button>
+            </h2>
+            <div className="section-cards" hidden={!open}>{g.slugs.map(renderCard)}</div>
           </section>
-        ))
+          )
+        })
       ) : (
         <>
           <h2>{t(ui.labels.sections)}</h2>

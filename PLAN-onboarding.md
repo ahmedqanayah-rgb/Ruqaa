@@ -426,6 +426,42 @@ the rule had never done anything.
 > names** — `zone-${step.zone}` and `season-${season.status}` are why `.zone-flow` and
 > `.season-current` look unreferenced and must be kept.
 
+### Collapsible landing groups (2026-08-03, the user's idea)
+
+The landing was still long once you were past the hero: **7.1 screens for Stolen Focus at
+375px, of which the card list alone was 4.6** (23 cards; the twelve-causes group is 1591px on
+its own). Why We Sleep was 5.6 screens / 18 cards. Choosing the next section meant thumbing
+past everything already read.
+
+The groups now fold, which does the same job as the drawer and follows the same rule for what
+is open — **exactly the group you are up to**, seeded from the same `ctaSlug` the hero's button
+uses, so the two always agree. A newcomer still lands with «ابدأ هنا» open and its cards on
+screen, so this doesn't undo §2. **Stolen Focus: 7.1 → 3.3 screens. Why We Sleep: 5.6 → 2.5.**
+Collapsed headers carry the count, and the read tally once there is one (`3/3`), because with
+the cards hidden that is the only clue to what is inside.
+
+Three details worth keeping:
+
+- **Phones only.** Above 860px — where the sidebar is a sidebar, not a drawer — the groups are
+  always open and the header is inert text with no chevron. Desktop has the room and the
+  request was about phones.
+- **The heading stays a heading.** The `<button>` sits *inside* the `<h2>`, not around it: a
+  button may only contain phrasing content, and wrapping the heading would drop it out of the
+  outline audited in POLISH-PLAN §5. Verified the landing still reads `H1 H2 H2 H2 H2 H2`.
+- **Open state outlives the unmount.** `BookLanding` unmounts whenever a section opens, so a
+  group the reader expanded had folded itself shut by the time they came back — while their
+  scroll position was faithfully restored to a page that no longer looked the same. It now
+  lives in a module-level `Map` keyed by book (in memory, dies with the tab, like `visited`),
+  with a `touched` flag: until the reader has an opinion the open group follows their progress
+  through the book; once they do, it is theirs and nothing moves it.
+
+> **`[hidden]` does not hide anything here.** The UA stylesheet's `[hidden]{display:none}` is
+> beaten by *any* author `display`, and `.section-cards` declares `grid` — so the attribute was
+> set correctly and changed nothing on screen: `aria-expanded` flipped to `false` while the
+> cards stayed visible and the page stayed 7.0 screens. It needs an author rule of its own,
+> `.landing-group .section-cards[hidden] { display: none }`, and the desktop override must sit
+> below it because they have equal specificity.
+
 **§7's breakpoint unification is deliberately not done.** Collapsing 460/620/640/700/720/860
 into three tiers would move layout at several widths to fix nothing a reader can see. The
 inconsistency worth knowing is documented instead: `.only-mobile` flips at **860px** and
