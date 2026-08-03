@@ -8,7 +8,9 @@ export default function Books() {
   const { t } = useApp()
   return (
     <div className="prose-page books-page">
-      <span className="pill">{t(ui.nav.books)}</span>
+      {/* No `pill` here: on the other prose pages it labels the page with
+          something the h1 doesn't already say (the book landing's «كتاب» above a
+          title), but here it read «الكتب» directly above «الكتب». */}
       <h1>{t({ ar: 'الكتب', en: 'Books' })}</h1>
       <p>{t({
         ar: 'كتب النادي — نبدأ بكتابٍ واحد، وتُضاف كتبٌ جديدة مع كلّ موسم. اختر كتاباً لتفتح موادّه التفاعلية.',

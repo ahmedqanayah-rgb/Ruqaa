@@ -8,8 +8,12 @@ export default function Navbar({ onMenu, onSearch }) {
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '')
   return (
     <header className="navbar">
-      <button className="icon-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.openMenu)}>
+      {/* Labelled, not a bare ☰. On a phone this is the only route to the
+          section tree, and a glyph asks the reader to guess what it opens —
+          «الأقسام» / "Sections" tells them. PLAN-onboarding.md §6. */}
+      <button className="menu-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.openMenu)}>
         <span className="hamburger" aria-hidden>☰</span>
+        <span className="menu-btn-label">{t(ui.labels.sections)}</span>
       </button>
 
       <Link to="/" className="brand">

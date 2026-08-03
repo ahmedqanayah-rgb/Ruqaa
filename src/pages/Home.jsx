@@ -4,6 +4,7 @@ import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 import { club } from '../data/club.js'
 import AskMeOne from '../components/AskMeOne.jsx'
+import HowItWorks from '../components/HowItWorks.jsx'
 
 export default function Home() {
   const { t } = useApp()
@@ -39,6 +40,8 @@ export default function Home() {
           <Link className="btn ghost" to="/about">{t(ui.nav.about)}</Link>
         </div>
       </section>
+
+      <HowItWorks />
 
       <section className="books-section">
         <div className="section-head-row">

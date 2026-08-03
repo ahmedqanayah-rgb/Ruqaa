@@ -162,10 +162,45 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-lead { max-width: 660px; margin: 0 auto var(--space-4); font-size: var(--fs-md); color: var(--text-soft); }
 .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
 
+/* "How this works" — four verbs, each a link to a live example. The minmax
+   floor is wrapped in min(…, 100%) because a bare floor cannot shrink below
+   itself and runs off the side of a 320px phone; that exact bug shipped once in
+   .img-grid and hid behind the overflow-x safety net (POLISH-PLAN §8). */
+.how-section { margin-top: var(--space-6); }
+.how-lead { color: var(--text-soft); margin: var(--space-2) 0 var(--space-4); }
+.how-grid {
+  display: grid; gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+}
+.how-card {
+  display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+  padding: var(--space-4); color: inherit; text-decoration: none;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.how-card:hover { border-color: var(--accent); text-decoration: none; transform: translateY(-2px); }
+.how-icon { font-size: 1.6rem; line-height: 1; }
+.how-verb { font-weight: 700; font-size: var(--fs-md); color: var(--accent); }
+.how-line { font-size: var(--fs-sm); color: var(--text-soft); }
+
+/* On a phone the four stacked cards cost ~620px of the first impression, which
+   is most of a screen spent on signposting. Laying each one out as a row —
+   icon beside the text — roughly halves that without dropping a word. */
+@media (max-width: 620px) {
+  .how-card {
+    display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-3);
+    align-items: center; padding: var(--space-3) var(--space-4);
+  }
+  .how-icon { grid-row: 1 / span 2; }
+  .how-verb, .how-line { grid-column: 2; }
+}
+
 .section-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
 .see-all { font-weight: 600; font-size: var(--fs-sm); }
 .books-section h2 { margin: 0; }
-.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+/* min(300px, 100%) — a bare 300px floor cannot shrink below itself, so on a
+   320px phone the cards run past the text column and the overflow-x safety net
+   hides it. Exactly the bug that shipped in .img-grid (POLISH-PLAN §8). */
+.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
 
 /* Home sliding book list — horizontal scroll-snap, RTL-aware via flex + dir. */
 .book-carousel {
@@ -227,7 +262,14 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .section-card.seen .section-card-num { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
 .book-hero-body { min-width: 0; flex: 1; }
 .book-stats { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--text-soft); }
-.book-stats span { background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; }
+.book-stats span, .book-stats a { background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; }
+/* Only the ones that go somewhere react to a pointer, so the pill shape stops
+   promising a tap the inert chips can't honour. */
+.book-stats a { color: var(--accent); font-weight: 600; }
+.book-stats a:hover { border-color: var(--accent); background: var(--accent-soft); text-decoration: none; }
+/* The landing's single primary action. Deliberately the only filled button in
+   the hero — a newcomer needs one obvious first step, not a choice. */
+.book-start { margin-top: var(--space-4); font-size: var(--fs-md); padding: 12px 22px; }
 .book-progress { display: flex; align-items: center; gap: 10px; margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--success); font-weight: 600; }
 .fact-teaser { border: 1px solid var(--border); border-inline-start: 3px solid var(--warm); border-radius: var(--radius); background: var(--bg-elev-2); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); }
 .fact-teaser-body strong { display: block; color: var(--warm); margin-bottom: 4px; }
@@ -1562,3 +1604,150 @@ html[data-presenting] img { margin-inline: auto; }
    already collapses it to one track long before a phone, because two 320px
    tracks plus the gap need ~660px of content width. Overriding it as well would
    also stack it on tablets, which have the room for two. */
+
+/* ============================================================
+   Touch targets — LAST BLOCK IN THE FILE, deliberately
+   ============================================================
+   Measured at 375px before this existed, every control in the chrome sat under
+   the 44px touch minimum: the hamburger — the one control a phone reader most
+   needs — was 30×40 (declared 40 wide, then shrunk by the flex navbar), the
+   drawer close 36×36, the group headers 250×35. The figure controls were raised
+   on 2026-07-30 but that pass was scoped to the flow section and never reached
+   the chrome. PLAN-onboarding.md §5.
+
+   Two things here are load-bearing:
+
+   1. **It must stay at the end of the file.** Every selector below duplicates
+      one declared earlier, at the same specificity, so source order is the only
+      thing that decides the winner. Placed near the navbar rules, this block was
+      silently overridden by `.drawer-close { width: 36px }` 40 lines later —
+      measured, not guessed. Adding a new control? Add it here, not up there.
+
+   2. **It is gated on the pointer, not the viewport.** A 1200px tablet is
+      touched and a 700px desktop window is not, so width answers the wrong
+      question. A mouse keeps the tighter 40px sizing.
+
+   NB for verification: the in-app preview reports `pointer: fine` even when
+   resized to a phone (`matchMedia('(pointer: coarse)').matches === false`), so
+   this block simply does not apply there. To check it, force the rule on first:
+
+     for (const ss of document.styleSheets) for (const r of ss.cssRules)
+       if (r.media?.mediaText.includes('coarse')) r.media.mediaText = 'all'
+*/
+@media (pointer: coarse) {
+  .icon-btn { width: 44px; height: 44px; flex-shrink: 0; }
+  .pill-btn { min-height: 44px; flex-shrink: 0; }
+  .search-btn { min-height: 44px; min-width: 44px; flex-shrink: 0; justify-content: center; }
+  .brand { min-height: 44px; }
+  .drawer-close { width: 44px; height: 44px; }
+  .side-link, .side-group-head { min-height: 44px; }
+  .side-link.sub { min-height: 44px; padding-block: 8px; }
+  .side-book-toggle { width: 44px; }
+  .quick-check-opt { min-height: 44px; }
+  .sp-input { min-height: 44px; }
+  .prevlink, .nextup-card { min-height: 44px; display: inline-flex; align-items: center; }
+  /* Every button, rather than a list that goes stale — .btn.ghost in the fact
+     rotator was 105×29 and would have been missed. */
+  .btn { min-height: 44px; }
+  .book-stats a, .fact-teaser-foot a { min-height: 44px; display: inline-flex; align-items: center; }
+  .see-all, .xbook-link, .season-open { min-height: 44px; display: inline-flex; align-items: center; }
+  .fl-tie a, .week-link { min-height: 44px; display: inline-flex; align-items: center; }
+  /* The site's only off-site links. They sit in a list, not in a sentence, so
+     they can take the full target height without disturbing any prose. */
+  .sources li a { min-height: 44px; display: inline-flex; align-items: center; }
+  .reach-leg { min-height: 44px; }
+  .quiz-sort-btn { min-height: 44px; }
+
+  /* The quiz progress dots are the one documented exception. There is one per
+     study — 122 in Why We Sleep — so 44px each would be a 5,400px wall on a
+     phone; the strip only works because a dot is small. Instead the visual grows
+     a little and an invisible ::after extends the tap area into the gap, giving
+     ~30px without moving anything. Below 44, deliberately, and the dots are a
+     shortcut: the same navigation exists as the ordinary next/prev buttons. */
+  .quiz-dots { gap: 10px; }
+  .quiz-dot { width: 18px; height: 18px; position: relative; }
+  .quiz-dot::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; }
+  /* The world map's pins stay at their drawn size on purpose. They are tuned to
+     the projection and verified with `path.isPointInFill` — Istanbul is nudged
+     ~2px onto its Thracian side — so growing them is a geometry change, not a
+     styling one. The country legend above is the touch interface for the map. */
+}
+
+/* Narrow phones: the navbar runs out of room and flexbox takes it out of the
+   brand, which is the one item with shrinkable content — measured at 375px it
+   was crushed to 21px wide with its text collapsed to zero, i.e. an unreadable
+   smear where the logo should be. Total need is ~448px (three 44px buttons, the
+   104px language pill, the brand text, gaps and padding), so below ~520px the
+   brand text has to go. The logo alone still reads as "home", the club's name is
+   in the hero anyway, and the language pill keeps its word — «English» is the
+   clearest thing in the bar for a visitor who can't read the rest of it. */
+@media (max-width: 520px) {
+  .navbar { gap: var(--space-2); padding: 0 var(--space-3); }
+  .brand-text { display: none; }
+  .brand, .brand-logo { width: 44px; height: 44px; flex-shrink: 0; }
+}
+
+/* Range sliders in the figures. The 2026-07-30 pass raised the figure *buttons*
+   to 44px and left these at 30px — a native range track, where the real target
+   is the thumb inside it. `touch-action: pan-x` on the input already tells the
+   browser a horizontal drag belongs to the slider and not to the page, so the
+   only thing missing was room for a thumb. */
+@media (pointer: coarse) {
+  .sf-slider input[type='range'],
+  .tp-control input[type='range'] { height: 44px; }
+}
+
+/* ---- input-device-specific hints -------------------------------------
+   Show the reader only the affordance their device actually has. Gated on
+   `pointer`, never on width: a 1200px tablet has no arrow keys and a 700px
+   desktop window does, so viewport size answers the wrong question.
+   PLAN-onboarding.md §4. */
+.nav-hint.for-touch { display: none; }
+@media (pointer: coarse) {
+  .nav-hint.for-keys { display: none; }
+  .nav-hint.for-touch { display: inline; }
+  /* The palette's key caps (↑↓ navigate, ↵ open, esc) are unreachable on a
+     phone; the result count beside them is not. The old 720px block hid only
+     .sp-hit-meta and never covered these. */
+  .sp-foot > span:not(.sp-foot-count) { display: none; }
+  .sp-esc { display: none; }
+}
+/* The swipe hint is the only navigation instruction a phone reader gets, so it
+   is normal body text rather than the muted 12px the keyboard hint uses — it
+   sat at the foot of a seven-screen page and was invisible there. */
+.nav-hint.for-touch { font-size: var(--fs-sm); color: var(--text-soft); }
+
+/* Labelled menu button (see Navbar.jsx). Shares the icon-btn look but sizes to
+   its text. The label is the first thing dropped if the bar runs out of room —
+   a cramped, unreadable navbar is worse than a bare glyph. */
+/* No `display` here on purpose. This block sits after `.only-mobile`, and at
+   equal specificity the later rule wins — declaring `display: inline-flex` made
+   the button ignore `.only-mobile { display: none }` and show up on desktop
+   beside the sidebar it duplicates. `.only-mobile` supplies the flex display at
+   ≤860px; align-items and gap simply lie dormant until it does. */
+.menu-btn {
+  align-items: center; gap: 7px; flex-shrink: 0;
+  min-height: 44px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text);
+  font-family: inherit; font-weight: 600; font-size: var(--fs-sm);
+  transition: background var(--transition);
+}
+.menu-btn:hover { background: var(--surface-hover); }
+.menu-btn .hamburger { font-size: 1.1rem; line-height: 1; }
+
+/* …and at 375px there is no room. Measured with the label in: the bar needs
+   406px of a 338px content box. The navbar fits exactly four 44px controls and
+   no text, and every candidate for eviction (home, search, language, theme) is
+   one a first-timer benefits from — so the label shows only from 521px up,
+   where the drawer is still the navigation but the room exists. Giving phones a
+   labelled route to the section list needs a surface of its own, which is what
+   PLAN-onboarding.md §6(a) proposes. */
+@media (max-width: 520px) {
+  .menu-btn { padding: 0; width: 44px; justify-content: center; }
+  .menu-btn-label { display: none; }
+}
+/* Same trap as above, one level down: `.icon-btn` declares `width: 44px` inside
+   the (pointer: coarse) block at the end of this file, which would beat the
+   40px default — that is intended. But `.menu-btn` must not re-declare display
+   anywhere below `.only-mobile`. Check with:
+   getComputedStyle(document.querySelector('.menu-btn')).display at 1280px. */

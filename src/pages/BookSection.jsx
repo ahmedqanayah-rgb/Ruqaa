@@ -211,7 +211,7 @@ function BookLanding({ book }) {
   const bySlug = useMemo(() => new Map(book.sections.map((s, i) => [s.slug, { s, i }])), [book])
   const studiesSec = book.sections.find((s) => s.kind === 'quiz')
   const experts = countExperts(book)
-  const hasLab = book.sections.some((s) => s.kind === 'focus-lab')
+  const labSec = book.sections.find((s) => s.kind === 'focus-lab')
   const seenCount = book.sections.filter((s) => visited.has(`${book.id}/${s.slug}`)).length
   const total = book.sections.length
   const ring = Math.round((seenCount / total) * 100)
@@ -222,6 +222,23 @@ function BookLanding({ book }) {
     return <SectionCard key={slug} book={book} section={hit.s} index={hit.i}
       minutes={readMinutes(hit.s, lang)} />
   }
+
+  /* The landing's one primary action. A newcomer needs a first step more than
+     anything else on this page, so it sits in the hero rather than below the
+     verdict — see PLAN-onboarding.md §2, where the first section card measured
+     two full screens down on a phone.
+
+     Reading order, not registry order: `groups` is what the page actually shows,
+     so its first slug is what "the beginning" means to a reader. Once they've
+     read something the button follows them to the first section they haven't
+     seen, which makes it useful on the second visit instead of redundant. */
+  const ordered = book.groups ? book.groups.flatMap((g) => g.slugs) : book.sections.map((s) => s.slug)
+  const startSlug = ordered.find((sl) => bySlug.has(sl))
+  const nextSlug = ordered.find((sl) => bySlug.has(sl) && !visited.has(`${book.id}/${sl}`))
+  const ctaSlug = seenCount > 0 ? (nextSlug || startSlug) : startSlug
+  const ctaLabel = seenCount > 0 && nextSlug
+    ? L('تابع القراءة', 'Continue reading')
+    : L('ابدأ من البداية', 'Start from the beginning')
 
   return (
     <div className="book-landing">
@@ -236,12 +253,30 @@ function BookLanding({ book }) {
           {book.subtitle && <p className="book-subtitle">{t(book.subtitle)}</p>}
           <p className="book-author">{t({ ar: 'تأليف', en: 'by' })} {t(book.author)}</p>
           <p>{t(book.blurb)}</p>
+          {/* The chips that describe a thing now go to it. They were plain
+              spans styled as pills, so «🔬 61 دراسة» and «🧪 7 ألعاب» — exactly
+              what a curious newcomer prods first — looked tappable and weren't.
+              Linking them turns the summary into a second way in. The section
+              count stays inert: it describes the page you're already on. */}
           <div className="book-stats" role="list">
             <span role="listitem">📚 {t({ ar: `${total} قسماً`, en: `${total} sections` })}</span>
-            {studiesSec && <span role="listitem">🔬 {t({ ar: `${studiesSec.studies.length} دراسة`, en: `${studiesSec.studies.length} studies` })}</span>}
-            {hasLab && <span role="listitem">🧪 {t({ ar: '٧ ألعاب', en: '7 games' })}</span>}
+            {studiesSec && (
+              <Link role="listitem" to={`/book/${book.id}/${studiesSec.slug}`}>
+                🔬 {t({ ar: `${studiesSec.studies.length} دراسة`, en: `${studiesSec.studies.length} studies` })}
+              </Link>
+            )}
+            {labSec && (
+              <Link role="listitem" to={`/book/${book.id}/${labSec.slug}`}>
+                🧪 {t({ ar: '٧ ألعاب', en: '7 games' })}
+              </Link>
+            )}
             {experts > 0 && <span role="listitem">👥 {t({ ar: `${experts}+ شخصية`, en: `${experts}+ people` })}</span>}
           </div>
+          {ctaSlug && (
+            <Link className="btn primary book-start" to={`/book/${book.id}/${ctaSlug}`}>
+              {t(ctaLabel)} <span aria-hidden>→</span>
+            </Link>
+          )}
           {seenCount > 0 && (
             <div className="book-progress" aria-label={t({ ar: `قرأت ${seenCount} من ${total}`, en: `Read ${seenCount} of ${total}` })}>
               <svg viewBox="0 0 36 36" width="34" height="34" aria-hidden>
@@ -256,10 +291,11 @@ function BookLanding({ book }) {
         </div>
       </header>
 
-      <VerdictCard book={book} />
-
-      <FactRotator book={book} />
-
+      {/* Sections first, then the club's opinion of them. The reverse order put
+          a ★★★½ verdict and a link to the critical reception in front of someone
+          who hadn't yet been shown where to start — two screens of it on a phone.
+          Reordered in the JSX rather than with CSS `order` so the reading order
+          a screen reader gets stays the same as the one everyone else sees. */}
       {book.groups ? (
         book.groups.map((g, gi) => (
           <section key={gi} className="landing-group">
@@ -275,6 +311,10 @@ function BookLanding({ book }) {
           </div>
         </>
       )}
+
+      <VerdictCard book={book} />
+
+      <FactRotator book={book} />
     </div>
   )
 }
@@ -423,7 +463,14 @@ export default function BookSection() {
               <span aria-hidden>‹</span> {t(ui.actions.prev)}: {t(prev.title)}
             </Link>
           ) : <span />}
-          <span className="nav-hint">{t(L('تنقّل بالأسهم ← → أو بالسحب', 'Navigate with ← → or by swiping'))}</span>
+          {/* One hint per input device. This used to be a single string naming
+              the arrow keys, shown to phones that have none — and it buried the
+              swipe gesture, the one affordance a phone reader can actually use,
+              in the second half of a sentence whose first half was noise. Both
+              are rendered and CSS shows the one that applies; the choice is made
+              on `pointer`, not width, so a touch tablet gets the touch copy. */}
+          <span className="nav-hint for-keys">{t(L('تنقّل بالأسهم ← →', 'Navigate with ← →'))}</span>
+          <span className="nav-hint for-touch">{t(L('اسحب يميناً أو يساراً للتنقّل بين الأقسام', 'Swipe left or right to move between sections'))}</span>
         </div>
       </nav>
     </article>

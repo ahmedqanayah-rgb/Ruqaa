@@ -294,6 +294,50 @@ const cw = document.querySelector('.section-content').getBoundingClientRect().wi
 
 ---
 
+## Status — implemented 2026-08-03
+
+§2, §3, §4, §5 and §7 are **done and measured**. §6 is **partly done** and its main
+decision is still open.
+
+| Item | State | Evidence at 375×812 |
+|---|---|---|
+| §2 landing reorder + CTA | ✅ | first card **1687 → 897** (stolen-focus), 736 (why-we-sleep); CTA at 702; verdict moved to 4712 |
+| §3 "how this works" strip | ✅ | 4 cards, all linking to live routes, strip ends y=1304 (budget 1624) |
+| §4 capability-gated hints | ✅ | touch copy shown, keyboard copy hidden, and the reverse on a mouse |
+| §5 tap targets | ✅ | 30 controls under 44px → **0** across 12 routes, two documented exceptions |
+| §6 labelled menu button (c) | ⚠️ partial | label fits from 521px up; **at 375px it does not** — see below |
+| §6 sticky bar (a) / FAB (b) | ⛔ open | still your call |
+| §7 duplicate title, stat links, breakpoints | ✅ / ⛔ | first two done; the breakpoint tidy-up not attempted |
+
+**Three things worth knowing, all found by measuring rather than reasoning:**
+
+1. **The navbar cannot hold a labelled menu button at 375px.** With the label in, the bar
+   needs **406px of a 338px content box**. It fits exactly four 44px controls and no text,
+   and every candidate for eviction (home, search, language, theme) is one a first-timer
+   benefits from. The label therefore shows only ≥521px. **This is the strongest argument
+   for §6(a):** a sticky bottom bar has a whole 375px row to itself and is the only place a
+   phone can be given a *labelled* route to the section list.
+2. **The 44px block must be the last thing in `components.css`.** Every selector in it
+   duplicates one declared earlier at equal specificity, so source order alone decides.
+   Placed near the navbar rules it was silently beaten by `.drawer-close { width: 36px }`
+   forty lines later. The same trap then bit `.menu-btn`: declaring `display: inline-flex`
+   *after* `.only-mobile { display: none }` leaked the hamburger onto the 1280px desktop,
+   beside the sidebar it duplicates. Both caught by measuring, neither by reading.
+3. **`(pointer: coarse)` never matches in the preview pane** — it reports `pointer: fine`
+   even at 375px, so the entire touch block is inert there and appears to do nothing. Force
+   it on before measuring; the snippet is in §9 and in a comment at the top of the block.
+
+Two exceptions are deliberate and documented in the CSS: the **122 quiz dots** (one per
+study — 44px each would be a 5,400px wall, so they get ~30px via an invisible `::after` and
+the ordinary next/prev buttons remain), and the **world-map pins**, whose positions are tuned
+to the projection and verified with `path.isPointInFill`, so resizing them is a geometry
+change; the country legend beside the map is the touch interface.
+
+Also fixed in passing: `.books-grid` had the same non-shrinkable `minmax(300px, 1fr)` floor
+that shipped in `.img-grid` — it would have run past the column on a 320px phone.
+
+---
+
 ## Suggested order
 
 §2 and §3 are the two that change whether a stranger understands the site at all; §4 and §5 are
