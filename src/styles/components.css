@@ -1606,6 +1606,38 @@ html[data-presenting] img { margin-inline: auto; }
    also stack it on tablets, which have the room for two. */
 
 /* ============================================================
+   Sticky in-book navigation bar (phones/tablets) — PLAN-onboarding §6a
+   ============================================================ */
+.section-bar { display: none; }
+@media (max-width: 860px) {
+  .section-bar {
+    position: fixed; inset-inline: 0; bottom: 0; z-index: 35;
+    display: flex; align-items: stretch; gap: 1px;
+    background: color-mix(in srgb, var(--bg-elev) 94%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-top: 1px solid var(--border);
+    /* Clear of the iOS home indicator; 0 everywhere else. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .section-bar-btn {
+    flex: 1; min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; padding: 0 8px; color: var(--text-soft); font-weight: 600; font-size: var(--fs-sm);
+    transition: background var(--transition), color var(--transition);
+  }
+  .section-bar-btn:hover { background: var(--surface-hover); color: var(--text); text-decoration: none; }
+  .section-bar-btn.mid { color: var(--accent); flex: 1.2; }
+  /* An absent prev/next keeps its slot so «الأقسام» stays centred rather than
+     sliding under the reader's thumb on the first and last sections. */
+  .section-bar-btn.is-empty { pointer-events: none; }
+
+  /* The bar is fixed, so it would sit on top of the last line of the article and
+     the footer disclaimer. Reserve its height plus the safe area. */
+  .app-main { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+}
+/* Presentation mode hides the chrome; this is chrome. */
+html[data-presenting] .section-bar { display: none; }
+
+/* ============================================================
    Touch targets — LAST BLOCK IN THE FILE, deliberately
    ============================================================
    Measured at 375px before this existed, every control in the chrome sat under

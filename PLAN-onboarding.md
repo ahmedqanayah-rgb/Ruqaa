@@ -306,7 +306,7 @@ decision is still open.
 | §4 capability-gated hints | ✅ | touch copy shown, keyboard copy hidden, and the reverse on a mouse |
 | §5 tap targets | ✅ | 30 controls under 44px → **0** across 12 routes, two documented exceptions |
 | §6 labelled menu button (c) | ⚠️ partial | label fits from 521px up; **at 375px it does not** — see below |
-| §6 sticky bar (a) / FAB (b) | ⛔ open | still your call |
+| §6(a) sticky in-book bar | ✅ | `‹ السابق · ☰ أقسام الكتاب · التالي ›`, 375×49 pinned at the viewport foot, ≤860px only |
 | §7 duplicate title, stat links, breakpoints | ✅ / ⛔ | first two done; the breakpoint tidy-up not attempted |
 
 **Three things worth knowing, all found by measuring rather than reasoning:**
@@ -314,16 +314,25 @@ decision is still open.
 1. **The navbar cannot hold a labelled menu button at 375px.** With the label in, the bar
    needs **406px of a 338px content box**. It fits exactly four 44px controls and no text,
    and every candidate for eviction (home, search, language, theme) is one a first-timer
-   benefits from. The label therefore shows only ≥521px. **This is the strongest argument
-   for §6(a):** a sticky bottom bar has a whole 375px row to itself and is the only place a
-   phone can be given a *labelled* route to the section list.
-2. **The 44px block must be the last thing in `components.css`.** Every selector in it
+   benefits from. The label therefore shows only ≥521px — which is exactly why §6(a) was
+   built: the sticky bar owns a whole 375px row and is the only place a phone can be given
+   a *labelled* route to the section list. Its «الأقسام» goes to the book landing rather
+   than opening the drawer — the landing is the real contents page, it now leads with the
+   section list (§2), and routing to it keeps the bar free of Layout's drawer state.
+2. **A fixed bottom bar cannot live inside the article.** `position: fixed` is not
+   viewport-relative inside a transformed ancestor, and a section page has two — the
+   `route-fade` article and Layout's `page fade-in` wrapper both animate a `translateY`.
+   Rendered in place the bar came out 338px wide at **y=6023**, parked at the foot of the
+   *document* rather than the screen. It is portalled to `<body>`, which also puts it last
+   in tab order, where a fixed bottom bar belongs. Its z-index is **35** — deliberately
+   under the drawer overlay's 45, so opening the menu dims it like everything else.
+3. **The 44px block must be the last thing in `components.css`.** Every selector in it
    duplicates one declared earlier at equal specificity, so source order alone decides.
    Placed near the navbar rules it was silently beaten by `.drawer-close { width: 36px }`
    forty lines later. The same trap then bit `.menu-btn`: declaring `display: inline-flex`
    *after* `.only-mobile { display: none }` leaked the hamburger onto the 1280px desktop,
    beside the sidebar it duplicates. Both caught by measuring, neither by reading.
-3. **`(pointer: coarse)` never matches in the preview pane** — it reports `pointer: fine`
+4. **`(pointer: coarse)` never matches in the preview pane** — it reports `pointer: fine`
    even at 375px, so the entire touch block is inert there and appears to do nothing. Force
    it on before measuring; the snippet is in §9 and in a comment at the top of the block.
 

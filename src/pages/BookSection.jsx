@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react'
+import { createPortal } from 'react-dom'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
@@ -473,6 +474,44 @@ export default function BookSection() {
           <span className="nav-hint for-touch">{t(L('اسحب يميناً أو يساراً للتنقّل بين الأقسام', 'Swipe left or right to move between sections'))}</span>
         </div>
       </nav>
+
+      {/* Sticky in-book navigation, phones and tablets only (PLAN-onboarding §6a).
+          A section runs to seven and a half screens, and until now the only ways
+          out were an unlabelled 44px hamburger at the top or the next-up card at
+          the very bottom. This is the one surface with room for a *labelled*
+          route to the section list — the navbar measured 406px of need in a
+          338px box, so the label could never go there.
+
+          «الأقسام» goes to the book landing rather than opening the drawer: the
+          landing is the real contents page, it now leads with the section list
+          (§2), and routing to it keeps this component free of Layout's drawer
+          state.
+
+          Portalled to <body> because `position: fixed` is not viewport-relative
+          inside a transformed ancestor, and this article has two of them — the
+          `route-fade` article and Layout's `page fade-in` wrapper both animate a
+          translateY. Rendered in place, the bar measured 338px wide sitting at
+          y=6023, i.e. parked at the foot of the document instead of the screen.
+          The portal also puts it last in tab order, which is where a fixed
+          bottom bar belongs. */}
+      {createPortal(
+        <nav className="section-bar" aria-label={t(L('تنقّل داخل الكتاب', 'Within this book'))}>
+        {prev ? (
+          <Link className="section-bar-btn" to={`/book/${book.id}/${prev.slug}`}>
+            <span aria-hidden>‹</span> {t(ui.actions.prev)}
+          </Link>
+        ) : <span className="section-bar-btn is-empty" aria-hidden />}
+        <Link className="section-bar-btn mid" to={`/book/${book.id}`}>
+          <span aria-hidden>☰</span> {t(ui.labels.sections)}
+        </Link>
+        {next ? (
+          <Link className="section-bar-btn" to={`/book/${book.id}/${next.slug}`}>
+            {t(ui.actions.next)} <span aria-hidden>›</span>
+          </Link>
+        ) : <span className="section-bar-btn is-empty" aria-hidden />}
+        </nav>,
+        document.body,
+      )}
     </article>
   )
 }
