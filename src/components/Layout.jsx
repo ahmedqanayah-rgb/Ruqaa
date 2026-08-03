@@ -1,10 +1,24 @@
-import { useState, useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useLocation, useNavigationType } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
 import SearchPalette from './SearchPalette.jsx'
+
+/*
+ * The app scrolls on <body> — `global.css` puts `overflow-y` there, so <html>
+ * has viewport height and never moves. That matters more than it sounds: it
+ * means `window.scrollTo()` (which drives `document.scrollingElement`, i.e.
+ * <html>) is a **no-op** on this site. Measured: body.scrollHeight 5792 vs
+ * clientHeight 812, while html is 812/812 and its scrollTop stays 0 however you
+ * set it. The fallback is kept in case the layout ever moves the overflow back.
+ */
+function scroller() {
+  return document.body.scrollHeight > document.body.clientHeight
+    ? document.body
+    : document.documentElement
+}
 
 export default function Layout({ children }) {
   const { t, presenting, setPresenting, togglePresenting } = useApp()
@@ -12,17 +26,73 @@ export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const loc = useLocation()
+  const navType = useNavigationType()
   const mainRef = useRef(null)
+  const positions = useRef(new Map())
+  const pathRef = useRef(loc.pathname)
 
-  // Close mobile drawer + scroll to top on navigation.
+  /* ---- scroll restoration ----------------------------------------------
+     Returning from a section to the book's list used to dump the reader at the
+     top of a six-screen page, so picking the next section meant scrolling back
+     down to where they already were. Positions are remembered per path, in
+     memory only — no storage, per the project's hard rule — so they last for
+     the sitting and reset on refresh, exactly like `visited`.
+
+     The position is captured two ways, and both are needed:
+
+     - **A capture-phase click on `document`**, which snapshots the position at
+       the instant a navigation begins. Capture runs before React's own handler
+       at the root, so the value is read while the outgoing page is still on
+       screen. This is what actually makes back-to-the-list work.
+     - **Scroll listeners on body and window**, which keep the value fresh for
+       navigations that begin without a click (the back gesture, arrow keys).
+       Listening on `document` — even in the capture phase — does *not* work:
+       measured, it receives nothing while `document.body.scrollTop` changes.
+       Body plus window is the pair `ReadingProgress` already relies on.
+
+     NB: the in-app preview dispatches **no scroll events at all**, on any
+     target — the same stalled-frame cause as rAF never firing. The click
+     snapshot is therefore the only half of this that can be verified there;
+     don't conclude from a silent scroll listener that it is broken. */
   useEffect(() => {
+    // Stop the browser also trying to restore; we place the scroll ourselves.
+    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'
+    const remember = () => { positions.current.set(pathRef.current, scroller().scrollTop) }
+    document.body.addEventListener('scroll', remember, { passive: true })
+    window.addEventListener('scroll', remember, { passive: true })
+    document.addEventListener('click', remember, { capture: true })
+    return () => {
+      document.body.removeEventListener('scroll', remember)
+      window.removeEventListener('scroll', remember)
+      document.removeEventListener('click', remember, { capture: true })
+    }
+  }, [])
+
+  /* Placed before paint so the reader never sees the top of the page flash by
+     on the way to where they were. */
+  useLayoutEffect(() => {
     setDrawerOpen(false)
-    window.scrollTo({ top: 0 })
-    // Move focus into the content region. Without this the keyboard stays on
-    // the link that was just clicked — in the sidebar, several pages back in
-    // tab order — and a screen reader never announces the new page.
-    mainRef.current?.focus()
-  }, [loc.pathname])
+
+    const from = pathRef.current
+    pathRef.current = loc.pathname
+    /* Back/forward restores, and so does going *up* from a section to its own
+       book landing — tapping «الأقسام» or the breadcrumb is a PUSH, but the
+       reader means the same thing by it as pressing Back. Everything else is a
+       fresh arrival and starts at the top: Home → a book must not land you
+       halfway down a list you have never seen. */
+    const up = from !== loc.pathname && from.startsWith(`${loc.pathname}/`)
+    const saved = positions.current.get(loc.pathname)
+    scroller().scrollTop = (navType === 'POP' || up) && saved != null ? saved : 0
+
+    /* Move focus into the content region. Without this the keyboard stays on
+       the link that was just clicked — in the sidebar, several pages back in
+       tab order — and a screen reader never announces the new page.
+       `preventScroll` matters twice over: focusing a `tabIndex={-1}` element
+       scrolls it into view, which would undo the restoration — and, since
+       `window.scrollTo` never did anything here, that side effect was in fact
+       the only thing resetting the scroll before this. */
+    mainRef.current?.focus({ preventScroll: true })
+  }, [loc.pathname, navType])
 
   /* Global shortcuts. "/" and "p" are bare keys, so they must never fire while
      the reader is typing — and "p" must not steal Ctrl/⌘-P (print). */

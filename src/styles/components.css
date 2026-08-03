@@ -162,38 +162,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-lead { max-width: 660px; margin: 0 auto var(--space-4); font-size: var(--fs-md); color: var(--text-soft); }
 .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
 
-/* "How this works" — four verbs, each a link to a live example. The minmax
-   floor is wrapped in min(…, 100%) because a bare floor cannot shrink below
-   itself and runs off the side of a 320px phone; that exact bug shipped once in
-   .img-grid and hid behind the overflow-x safety net (POLISH-PLAN §8). */
-.how-section { margin-top: var(--space-6); }
-.how-lead { color: var(--text-soft); margin: var(--space-2) 0 var(--space-4); }
-.how-grid {
-  display: grid; gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
-}
-.how-card {
-  display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
-  padding: var(--space-4); color: inherit; text-decoration: none;
-  transition: border-color var(--transition), transform var(--transition);
-}
-.how-card:hover { border-color: var(--accent); text-decoration: none; transform: translateY(-2px); }
-.how-icon { font-size: 1.6rem; line-height: 1; }
-.how-verb { font-weight: 700; font-size: var(--fs-md); color: var(--accent); }
-.how-line { font-size: var(--fs-sm); color: var(--text-soft); }
-
-/* On a phone the four stacked cards cost ~620px of the first impression, which
-   is most of a screen spent on signposting. Laying each one out as a row —
-   icon beside the text — roughly halves that without dropping a word. */
-@media (max-width: 620px) {
-  .how-card {
-    display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-3);
-    align-items: center; padding: var(--space-3) var(--space-4);
-  }
-  .how-icon { grid-row: 1 / span 2; }
-  .how-verb, .how-line { grid-column: 2; }
-}
-
 .section-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
 .see-all { font-weight: 600; font-size: var(--fs-sm); }
 .books-section h2 { margin: 0; }
@@ -1340,22 +1308,6 @@ html[data-presenting] img { margin-inline: auto; }
   .xbook-sides { grid-template-columns: 1fr; }
   .xbook-join { transform: rotate(90deg); }
 }
-
-/* ============================================================
-   "Ask me one" — random-study session opener (Home)
-   ============================================================ */
-.ask { margin-top: var(--space-6); }
-.ask-head {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: var(--space-4); flex-wrap: wrap;
-}
-.ask-head h2 { margin: 0 0 4px; }
-.ask-sub { margin: 0; color: var(--text-soft); font-size: var(--fs-sm); max-width: 60ch; }
-.ask-cta { flex-shrink: 0; }
-.ask-card { padding: var(--space-4); margin-top: var(--space-4); }
-.ask-tags { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
-.ask-book { font-size: var(--fs-xs); font-weight: 700; color: var(--accent); }
-.ask-more { display: inline-block; margin-top: var(--space-3); font-size: var(--fs-sm); font-weight: 600; }
 
 /* ============================================================
    "A week with the book" — 7-day challenge

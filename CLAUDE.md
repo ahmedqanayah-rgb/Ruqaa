@@ -260,12 +260,13 @@ keeps `base: './'` sub-path hosting working.
   like `visited`, so it survives navigation but not a refresh, and each book's week is
   tracked independently. Both books' day 7 sends the reader back to a measurement
   (assessment / Focus Lab) so the week has a before-and-after.
-- **"Ask me one"** (`components/AskMeOne.jsx`, pool in `data/studiesPool.js`) — a session
-  opener at the foot of Home that draws a random study from *any* book. Reuses the quiz's
-  own class names so a drawn study looks identical to the real quiz, and inherits
-  presentation mode for free. Study ids are only unique within a book, hence `poolId`.
-  NB: Home.jsx is also where the paused hero video gets restored — that work touches the
-  top of the page, this sits at the bottom, so they shouldn't collide.
+- **Home is deliberately two blocks: the hero and the book carousel.** Nothing else. Two
+  further sections were removed on 2026-08-03 at the user's request — "Ask me one" (a
+  random-study session opener, with `data/studiesPool.js` behind it) and a "how this works"
+  strip added earlier the same day. The brief was **simpler, not more explained**, so treat
+  Home as a front door rather than a place to put things: it is 1.4 screens on a phone, down
+  from 3.4. Both are in git history if they're ever wanted back. NB: Home.jsx is also where
+  the paused hero video gets restored — that work touches the top of the page.
 - **Cross-book connections.** `src/data/connections.js` + `components/BookConnections.jsx`
   render "where our books meet" at the foot of the Books page: per theme, what each book
   says side by side, then the club's synthesis. This is **original club analysis, not a

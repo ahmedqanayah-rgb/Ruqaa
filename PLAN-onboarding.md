@@ -302,7 +302,7 @@ decision is still open.
 | Item | State | Evidence at 375×812 |
 |---|---|---|
 | §2 landing reorder + CTA | ✅ | first card **1687 → 897** (stolen-focus), 736 (why-we-sleep); CTA at 702; verdict moved to 4712 |
-| §3 "how this works" strip | ✅ | 4 cards, all linking to live routes, strip ends y=1304 (budget 1624) |
+| §3 "how this works" strip | ↩️ **reverted** | shipped, then removed the same day — see below |
 | §4 capability-gated hints | ✅ | touch copy shown, keyboard copy hidden, and the reverse on a mouse |
 | §5 tap targets | ✅ | 30 controls under 44px → **0** across 12 routes, two documented exceptions |
 | §6 labelled menu button (c) | ⚠️ partial | label fits from 521px up; **at 375px it does not** — see below |
@@ -344,6 +344,48 @@ change; the country legend beside the map is the touch interface.
 
 Also fixed in passing: `.books-grid` had the same non-shrinkable `minmax(300px, 1fr)` floor
 that shipped in `.img-grid` — it would have run past the column on a 320px phone.
+
+### §3 was reverted the same day — read this before proposing it again
+
+The "how this works" strip was built, shipped, and removed hours later. **The user's verdict:
+«no need for the (How this works) on the home page, i said i want it simpler not more
+complex».** "Ask me one" went at the same time, for the same reason.
+
+That is worth taking as a general correction, not a one-off veto. §3 diagnosed the problem
+correctly — Home really does not say what the site is — but answered it by *adding a block*,
+and the brief was to remove friction, not to explain more. **Home is now two blocks, the hero
+and the book carousel, and is 1.4 screens on a phone instead of 3.4.** If the "what is this
+site" question is worth solving again, solve it inside what already exists — the hero's own
+lead sentence, or the book cards — not with a new section. Don't re-add a strip.
+
+### Scroll position is now restored (2026-08-03)
+
+Reported by the user: coming back from a section dumped you at the top of the list, so
+choosing the next one meant scrolling back down to where you already were.
+
+The root cause was better than it looked. `Layout` called `window.scrollTo({ top: 0 })` —
+which drives `document.scrollingElement`, i.e. `<html>` — but **this app scrolls on `<body>`**
+(measured: body 5792/812, html 812/812 and its `scrollTop` will not move). So that call had
+never done anything. The only thing resetting the scroll was `mainRef.focus()` incidentally
+scrolling a `tabIndex={-1}` element into view. Both are fixed: the scroll is now placed
+explicitly on the real scroller, and the focus call takes `preventScroll: true`.
+
+Positions are kept per path in a `useRef` Map — in memory, no storage, like `visited`.
+Restored on Back/Forward **and** on going *up* from a section to its own book landing, since
+tapping «الأقسام» or the breadcrumb means the same thing to a reader as pressing Back. A
+fresh arrival (Home → a book) still starts at the top.
+
+**The verification trap here is a new one, and it is severe: the in-app preview dispatches no
+`scroll` events at all, on any target** — not on `window`, `document`, `document.body`, nor in
+the capture phase, even while `document.body.scrollTop` is visibly changing. Same stalled-frame
+cause as rAF never firing. A scroll-listener implementation therefore looks completely broken
+there and is fine in a real browser (`ReadingProgress` has depended on exactly this for
+months). The position is consequently *also* captured by a capture-phase `click` listener on
+`document`, which fires normally and snapshots the outgoing page just as a navigation starts —
+that half is verifiable, and is what actually carries the feature.
+
+Verified: Home → landing 0 · landing(1200) → section 0 · Back → 1200 · section → next 0 ·
+breadcrumb → 1200.
 
 ---
 

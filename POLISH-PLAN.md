@@ -234,8 +234,9 @@ all; switching to English adds 3 more for **11 files / 300 kB**.
 
 After the vendor/lazy split, what's left in the entry is the books themselves — 183 studies
 with full methodology text in two languages. Splitting it means lazy-loading each book's
-sections, which touches everything reading `book.sections`, plus `searchIndex.js` and
-`studiesPool.js`, which deliberately walk *all* books at module load.
+sections, which touches everything reading `book.sections`, plus `searchIndex.js`, which
+deliberately walks *all* books at module load. (`studiesPool.js` used to be the other one;
+it went with "Ask me one" on 2026-08-03.)
 
 Real work, real risk, and worth far less than item 1. Don't start it before the images.
 

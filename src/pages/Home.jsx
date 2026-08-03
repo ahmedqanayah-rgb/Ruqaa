@@ -3,8 +3,6 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 import { club } from '../data/club.js'
-import AskMeOne from '../components/AskMeOne.jsx'
-import HowItWorks from '../components/HowItWorks.jsx'
 
 export default function Home() {
   const { t } = useApp()
@@ -41,8 +39,6 @@ export default function Home() {
         </div>
       </section>
 
-      <HowItWorks />
-
       <section className="books-section">
         <div className="section-head-row">
           <h2>{t(ui.labels.ourBooks)}</h2>
@@ -72,8 +68,6 @@ export default function Home() {
           )}
         </div>
       </section>
-
-      <AskMeOne />
     </div>
   )
 }
