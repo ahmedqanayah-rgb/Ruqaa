@@ -70,7 +70,10 @@ content you almost always edit data, not JSX.
   block renders an interactive figure via `src/components/figures/registry.jsx`, which maps
   a string id (`fig1`, `fig4_6`, `brainNetworks`, …) to a component.
 
-- **RichText.** `src/components/RichText.jsx` parses `**bold**` and wraps Latin/technical
+- **RichText.** `src/components/RichText.jsx` parses `**bold**` — **and nothing else**. Single
+  asterisks are not italics; they print literally. Any text carrying markup must be rendered
+  *through* RichText: `FigureFrame` pipes its `caption` through it, but a bare `{t(...)}`
+  elsewhere in a figure will show the asterisks on screen. It also wraps Latin/technical
   runs in `<bdi class="term-en">` for correct bidi isolation inside RTL text. Convention:
   Arabic technical terms are followed by the English term in parentheses, e.g.
   «النواة فوق التصالبية (Suprachiasmatic Nucleus)».

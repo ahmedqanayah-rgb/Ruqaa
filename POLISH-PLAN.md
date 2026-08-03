@@ -322,6 +322,44 @@ book, and the book says it. It now carries a caveat and points at §الميزا
 
 ---
 
+## 8. Flow-state deep dive — added 2026-07-28→30
+
+A new section in the Stolen Focus tab, `data/books/stolen-focus/sections-flow.js` (slug
+`flow-state`), sourced from **Csikszentmihalyi's own book *Flow*** rather than from Hari. Nine
+acts, four figures in `figures/stolen-focus/FlowFigures.jsx`, seven photos in
+`public/images/flow/`. It sits in its own sidebar group and opens by saying it is another book.
+
+Things not to undo:
+
+- **Act 1 duplicates `speed-flow` on purpose** (the user's call) so the tab holds everything on
+  flow in one page. Edit Hari's flow material in both places or they drift.
+- **Hand-rolled SVG, never recharts** in those figures — the registry is lazy-loaded precisely to
+  keep the charting library out of text sections.
+- **Fig 15's region overlays are tuned to the specific engraving** in `brain-lateral.webp`,
+  checked by compositing them onto the image. Replace the image and they need re-checking.
+- **`scripts/prep-flow-images.mjs` reproduces all seven photos byte-identically** from the club's
+  originals, which live outside the repo with the book reference material. Widths are per-file,
+  not a uniform cap — a blanket cap inflated the set ~30%.
+- The author's Arabic name is **«ميهالي تشيكزينتميهالي»**, taken from the published Saudi
+  Ministry of Media edition whose cover is on the page. Not a transliteration to "improve".
+
+### Phone-view fixes (2026-07-30) and the check that kept missing them
+
+`.img-grid` used `minmax(320px, 1fr)`, which cannot shrink below its own floor — on a 320px
+phone the covers and their captions ran **37px past the text column**. It looked fine because
+`overflow-x: hidden` in `global.css` swallowed it, and because
+**`documentElement.scrollWidth` is pinned to the viewport by that safety net**, so three
+"no overflow" verification passes reported clean. *Measure each element against the
+`.section-content` width instead.* Fixed with `minmax(min(320px,100%), 1fr)`; same for
+`.ratchet-panels`. Also raised figure controls to a 44px tap target and enlarged the SVG labels
+on phones (SVG text scales with the viewBox, not rem, so 11px landed at 9.2px on a 320px screen).
+
+**Still open:** analytics. Nothing is installed. Vercel Web Analytics would give free aggregate
+counts, cookie-less and compatible with the no-storage rule, but cannot identify individuals.
+Avoid Google Analytics — it would undo the reason the fonts were self-hosted.
+
+---
+
 ## Verifying in the in-app preview (this cost real time — read before debugging)
 
 The preview pane lies in specific ways. All three are environment artifacts, **not** bugs:
