@@ -305,7 +305,7 @@ decision is still open.
 | §3 "how this works" strip | ↩️ **reverted** | shipped, then removed the same day — see below |
 | §4 capability-gated hints | ✅ | touch copy shown, keyboard copy hidden, and the reverse on a mouse |
 | §5 tap targets | ✅ | 30 controls under 44px → **0** across 12 routes, two documented exceptions |
-| §6 labelled menu button (c) | ⚠️ partial | label fits from 521px up; **at 375px it does not** — see below |
+| §6 labelled menu button (c) | ↩️ **reverted** | superseded by §6(a); the label was wrong as well as cramped — see below |
 | §6(a) sticky in-book bar | ✅ | `‹ السابق · ☰ أقسام الكتاب · التالي ›`, 375×49 pinned at the viewport foot, ≤860px only |
 | §7 duplicate title, stat links, breakpoints | ✅ / ⛔ | first two done; the breakpoint tidy-up not attempted |
 
@@ -386,6 +386,51 @@ that half is verifiable, and is what actually carries the feature.
 
 Verified: Home → landing 0 · landing(1200) → section 0 · Back → 1200 · section → next 0 ·
 breadcrumb → 1200.
+
+### Polish pass (2026-08-03, after the above)
+
+**§6(c) is reverted — the navbar hamburger is a bare glyph again.** Not only because the
+label never fit at 375px, but because it was *wrong*: that button opens the **site** drawer —
+every book, the top-level links, the whole tree — not one book's sections, and §6(a)'s sticky
+bar already shows the identical `☰ أقسام الكتاب` for a **different destination** (the book
+landing). Two identical-looking controls leading to different places is worse than one glyph,
+and the label only ever appeared between 521 and 860px, exactly where the bar is also on
+screen. `.menu-btn` is gone; the trap it fell into is preserved as a comment.
+
+**The bar's reserved height is now scoped with `:has()`.** `.app-main` took
+`padding-bottom: 56px` at every width ≤860px, but the bar is portalled to `<body>` and only
+exists on a section — so Home, Books and About carried ~56px of dead space at the foot.
+`body:has(.section-bar) .app-main` fixes it (`CSS.supports('selector(:has(*))')` → true).
+
+**Dead CSS removed: 88.85 → 85.51 kB (15.59 → 15.10 kB gzipped).** All of it was orphaned by
+earlier redesigns, and two blocks have documented histories: the **switch-cost bar**
+(`.sf-bar*`, `.sf-zap*`) whose figure was deleted with the 23-minute claim in §7 of
+POLISH-PLAN, and the **row-based surveillance loop** (`.sf-flow-node/-row/-arrow/-loop` …)
+replaced by the circular `.sf-loop` when the user said a loop has to read as a loop
+(POLISH-PLAN §6). Only `.sf-flow-detail` survives from the latter — it is the caption inside
+the new ring. Also removed: `.feature-card`, `.nav-lbl`, `.section-nav`, `.figure-placeholder`,
+`.assess-head`, and two presentation-mode rules pointing at `.figure-frame`/`.fig-wrap`, classes
+that have not existed since the figures were reorganised. Those two were **removed, not
+repointed** — repointing changes what a projector shows, which is a design call.
+
+One live bug found and fixed on the way: the touch block listed **`.nextup-card`**, which
+matches nothing (the class is `.nextup`). Harmless — the card is far past 44px — but it meant
+the rule had never done anything.
+
+> **Auditing unused CSS here needs care, twice over.** A substring check under-reports
+> (`section-nav` looks used because `section-nav-v2` exists) and a naive quoted-string parse
+> over-reports wildly (template-literal classNames contain nested quotes, so `.side-link` and
+> `.sp-panel` came back "dead"). Both of my first two scripts were wrong in opposite
+> directions. What is reliable is `grep -rho '<prefix>[a-z-]*' src`, on raw file text: it
+> shows which variants of a prefix genuinely appear, and it exposes **dynamically built
+> names** — `zone-${step.zone}` and `season-${season.status}` are why `.zone-flow` and
+> `.season-current` look unreferenced and must be kept.
+
+**§7's breakpoint unification is deliberately not done.** Collapsing 460/620/640/700/720/860
+into three tiers would move layout at several widths to fix nothing a reader can see. The
+inconsistency worth knowing is documented instead: `.only-mobile` flips at **860px** and
+`.not-mobile` at **720px**, so between them the drawer is the navigation *and* the projector
+button shows — which is defensible, since you might present from a tablet.
 
 ---
 

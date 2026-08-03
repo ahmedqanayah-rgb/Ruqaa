@@ -8,12 +8,16 @@ export default function Navbar({ onMenu, onSearch }) {
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '')
   return (
     <header className="navbar">
-      {/* Labelled, not a bare ☰. On a phone this is the only route to the
-          section tree, and a glyph asks the reader to guess what it opens —
-          «الأقسام» / "Sections" tells them. PLAN-onboarding.md §6. */}
-      <button className="menu-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.openMenu)}>
+      {/* Deliberately unlabelled again. It briefly read «☰ أقسام الكتاب», which
+          was wrong twice over: this opens the *site* drawer — every book, the
+          top-level links, the whole tree — not one book's sections, and the
+          sticky in-book bar already carries that exact icon and wording for a
+          different destination (the book landing). Two identical-looking
+          controls that go to different places is worse than one glyph. The
+          label also only ever appeared between 521 and 860px, which is
+          precisely where the bar is on screen too. */}
+      <button className="icon-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.openMenu)}>
         <span className="hamburger" aria-hidden>☰</span>
-        <span className="menu-btn-label">{t(ui.labels.sections)}</span>
       </button>
 
       <Link to="/" className="brand">
