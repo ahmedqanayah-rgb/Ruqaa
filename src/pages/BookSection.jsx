@@ -467,12 +467,9 @@ export default function BookSection() {
     <article key={section.slug} className="section-page route-fade"
       onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <ReadingProgress />
-      <div className="section-breadcrumb">
-        <Link to={`/book/${book.id}`}>{t(book.title)}</Link>
-        <span aria-hidden>›</span>
-        <span>{t(section.title)}</span>
-      </div>
-
+      {/* The breadcrumb that used to sit here moved into `SiteNav`, which now
+          shows the same trail on every page beside the rest of the site map.
+          Two trails a few pixels apart would be worse than either alone. */}
       <header className="section-head">
         <span className="section-index">
           {idx + 1} / {book.sections.length}

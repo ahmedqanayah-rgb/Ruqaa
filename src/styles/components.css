@@ -161,6 +161,39 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-lead { max-width: 660px; margin: 0 auto var(--space-4); font-size: var(--fs-md); color: var(--text-soft); }
 .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
 
+/* ---- bilingual showcase (Home) ----
+   Two panes of the same sentence. Each carries its own dir/lang in the markup,
+   so the browser picks the right script direction and typeface per pane rather
+   than being told to by CSS. */
+.bi-panes {
+  display: grid; gap: var(--space-4); margin-top: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+}
+.bi-pane {
+  padding: var(--space-4); border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-elev);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+/* The pane you are currently reading the site in. */
+.bi-pane[data-current] { border-color: var(--accent); background: var(--accent-soft); }
+.bi-lang {
+  font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.bi-pane[data-current] .bi-lang { color: var(--accent); }
+.bi-text { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); line-height: 1.75; }
+.bilingual-lead { color: var(--text-soft); margin: var(--space-2) 0 0; }
+.bi-switch { margin-top: var(--space-4); }
+
+/* ---- vertical rhythm between the home page's blocks ----
+   They used to run together at the default margin; a full --space-6 between
+   them lets each one read as its own thing. */
+.home > section + section { margin-top: var(--space-6); }
+.home > section + section::before {
+  content: ''; display: block; width: 56px; height: 1px;
+  margin: 0 auto var(--space-6); background: var(--border);
+}
+
 .section-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
 .see-all { font-weight: 600; font-size: var(--fs-sm); }
 .books-section h2 { margin: 0; }
@@ -211,7 +244,38 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .section-card-icon { font-size: 1.2rem; }
 .section-card-title { font-weight: 600; font-size: var(--fs-sm); }
 
-.section-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--text-muted); margin-bottom: var(--space-3); flex-wrap: wrap; }
+/* ---- site map strip (every page, under the navbar) ----
+   Chips for every destination, with the current one filled in. Horizontally
+   scrollable rather than wrapping: on a phone a wrapped row of six chips eats
+   three lines before the page has said anything, and a single scrolling row
+   keeps the reader's position visible at the start of it. */
+.sitenav {
+  width: 100%; max-width: var(--maxw); margin: 0 auto;
+  padding: var(--space-3) var(--space-4) 0;
+}
+.sitenav-row {
+  display: flex; gap: var(--space-2); overflow-x: auto;
+  scrollbar-width: none; padding-bottom: var(--space-2);
+}
+.sitenav-row::-webkit-scrollbar { display: none; }
+.sitenav-chip {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  padding: 7px 14px; border-radius: 999px; white-space: nowrap;
+  border: 1px solid var(--border); background: var(--bg-elev);
+  color: var(--text-soft); font-size: var(--fs-sm); font-weight: 600;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.sitenav-chip:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.sitenav-chip.active {
+  background: var(--accent); border-color: var(--accent); color: var(--accent-contrast);
+}
+.sitenav-chip.active:hover { color: var(--accent-contrast); }
+/* The full position, spelled out, when a chip alone can't say it. */
+.sitenav-trail {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin: var(--space-2) 0 0; font-size: var(--fs-sm); color: var(--text-muted);
+}
+.sitenav-here { color: var(--text); font-weight: 600; }
 .section-head { border-bottom: 1px solid var(--border); padding-bottom: var(--space-4); margin-bottom: var(--space-4); }
 .section-index { font-size: var(--fs-sm); color: var(--accent); font-weight: 600; }
 .section-readtime { color: var(--text-muted); font-weight: 500; }
@@ -1629,6 +1693,8 @@ html[data-presenting] .section-bar { display: none; }
   .btn { min-height: 44px; }
   .book-stats a, .fact-teaser-foot a { min-height: 44px; display: inline-flex; align-items: center; }
   .see-all, .xbook-link, .season-open { min-height: 44px; display: inline-flex; align-items: center; }
+  .sitenav-chip { min-height: 44px; }
+  .sitenav-trail a { min-height: 44px; display: inline-flex; align-items: center; }
   .fl-tie a, .week-link { min-height: 44px; display: inline-flex; align-items: center; }
   /* The site's only off-site links. They sit in a list, not in a sentence, so
      they can take the full target height without disturbing any prose. */

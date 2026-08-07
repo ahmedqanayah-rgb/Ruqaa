@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
+import SiteNav from './SiteNav.jsx'
 import SearchPalette from './SearchPalette.jsx'
 
 /*
@@ -140,6 +141,10 @@ export default function Layout({ children }) {
           onToggleCollapse={() => setCollapsed((c) => !c)}
         />
         <main className="app-main" id="main" ref={mainRef} tabIndex={-1}>
+          {/* Outside the keyed `.page` on purpose: that div remounts on every
+              route change to run `route-fade`, and the map should stay put
+              rather than flicker under the reader each time they navigate. */}
+          <SiteNav />
           <div className="page fade-in" key={loc.pathname}>{children}</div>
           <footer className="site-footer">
             <p>{t(ui.footer.built)}</p>
