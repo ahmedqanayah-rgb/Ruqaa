@@ -132,7 +132,14 @@ export default function Layout({ children }) {
       <a className="skip-link" href="#main">
         {t(ui.actions.skipToContent)}
       </a>
+      {/* The navbar and the site map are one header block, not two bars. They
+          can't share a *line*: measured at 375px the navbar is already 8px
+          over-full (346 used against 338 available) and the chips need 562px.
+          So they stack, but share a surface and a single bottom border, and
+          only the top row is sticky — the chips scroll away rather than pin a
+          second bar over every screen of reading. */}
       <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} />
+      <SiteNav />
       <div className="app-body">
         <Sidebar
           open={drawerOpen}
@@ -141,10 +148,6 @@ export default function Layout({ children }) {
           onToggleCollapse={() => setCollapsed((c) => !c)}
         />
         <main className="app-main" id="main" ref={mainRef} tabIndex={-1}>
-          {/* Outside the keyed `.page` on purpose: that div remounts on every
-              route change to run `route-fade`, and the map should stay put
-              rather than flicker under the reader each time they navigate. */}
-          <SiteNav />
           <div className="page fade-in" key={loc.pathname}>{children}</div>
           <footer className="site-footer">
             <p>{t(ui.footer.built)}</p>

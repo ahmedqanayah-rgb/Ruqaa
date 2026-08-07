@@ -9,7 +9,11 @@
   padding: 0 var(--space-4); height: 62px;
   background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
   backdrop-filter: saturate(140%) blur(10px);
-  border-bottom: 1px solid var(--border);
+  /* No bottom border: the site-map row directly below closes the header block,
+     so the two read as one bar rather than two. Once that row has scrolled
+     away the navbar's own translucent, blurred background is what separates it
+     from the text underneath — which is the boundary, deliberately, rather
+     than a hard rule reappearing mid-scroll. */
 }
 .brand { display: flex; align-items: center; gap: 11px; color: var(--text); }
 .brand:hover { text-decoration: none; }
@@ -250,12 +254,19 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    three lines before the page has said anything, and a single scrolling row
    keeps the reader's position visible at the start of it. */
 .sitenav {
-  width: 100%; max-width: var(--maxw); margin: 0 auto;
-  padding: var(--space-3) var(--space-4) 0;
+  /* The lower half of the header: same surface as the navbar, no gap between
+     them, and the border that used to close the navbar now closes this. The
+     two read as one block rather than two stacked bars.
+     Only the navbar is sticky — this scrolls away, because pinning it too
+     would cost 66px of every screen on a phone, on top of the navbar's 62. */
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--space-4) var(--space-2);
 }
 .sitenav-row {
+  width: 100%; max-width: var(--maxw); margin: 0 auto;
   display: flex; gap: var(--space-2); overflow-x: auto;
-  scrollbar-width: none; padding-bottom: var(--space-2);
+  scrollbar-width: none; padding-top: var(--space-3);
 }
 .sitenav-row::-webkit-scrollbar { display: none; }
 .sitenav-chip {
@@ -270,12 +281,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
   background: var(--accent); border-color: var(--accent); color: var(--accent-contrast);
 }
 .sitenav-chip.active:hover { color: var(--accent-contrast); }
-/* The full position, spelled out, when a chip alone can't say it. */
-.sitenav-trail {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  margin: var(--space-2) 0 0; font-size: var(--fs-sm); color: var(--text-muted);
-}
-.sitenav-here { color: var(--text); font-weight: 600; }
 .section-head { border-bottom: 1px solid var(--border); padding-bottom: var(--space-4); margin-bottom: var(--space-4); }
 .section-index { font-size: var(--fs-sm); color: var(--accent); font-weight: 600; }
 .section-readtime { color: var(--text-muted); font-weight: 500; }
@@ -1694,7 +1699,6 @@ html[data-presenting] .section-bar { display: none; }
   .book-stats a, .fact-teaser-foot a { min-height: 44px; display: inline-flex; align-items: center; }
   .see-all, .xbook-link, .season-open { min-height: 44px; display: inline-flex; align-items: center; }
   .sitenav-chip { min-height: 44px; }
-  .sitenav-trail a { min-height: 44px; display: inline-flex; align-items: center; }
   .fl-tie a, .week-link { min-height: 44px; display: inline-flex; align-items: center; }
   /* The site's only off-site links. They sit in a list, not in a sentence, so
      they can take the full target height without disturbing any prose. */

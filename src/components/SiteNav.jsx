@@ -1,4 +1,4 @@
-import { NavLink, Link, useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
@@ -6,36 +6,29 @@ import { books } from '../data/books.js'
 const L = (ar, en) => ({ ar, en })
 
 /*
- * The site map, on every page, with the reader's own position marked.
+ * The site map — the lower half of the header, on every page.
  *
- * Two jobs in one strip, which is why it is one component and not two:
+ * Every top-level destination is a chip: home, each book, all books, the club.
+ * Nothing is behind a menu, so a visitor never has to open the drawer to find
+ * out the site has a second book. The chip for wherever they are is filled in
+ * and carries `aria-current`, which is the "you are here" mark on the map.
  *
- *  - **Where can I go.** Every top-level destination is a chip: home, each
- *    book, all books, the club. Nothing is behind a menu, so a visitor never
- *    has to open the drawer to discover that the site has a second book.
- *  - **Where am I.** The chip for the current place is marked (`aria-current`
- *    plus a filled style), and inside a book a second line spells the position
- *    out in full — book › section.
+ * **One chip is the whole indicator, deliberately.** An earlier version added a
+ * second line under the chips spelling out `book › section`. It was pure
+ * duplication and cost 52px of every section page: its book half is the
+ * highlighted chip directly above it, and its section half is repeated word for
+ * word by the `<h1>` directly below. The old `.section-breadcrumb` in
+ * `BookSection` is gone for the same reason — the chips replace it.
  *
- * That second line **replaces** the old `.section-breadcrumb` rather than
- * joining it. Two trails saying the same thing a few pixels apart would be
- * worse than either alone, so the breadcrumb was deleted from `BookSection`
- * when this arrived.
- *
- * Deliberately not sticky. It sits under the navbar and scrolls away with the
- * page: pinning a second bar to the top would cost a phone ~50px of reading
- * height on every screen, and the navbar and the in-book bar already hold the
- * two edges.
+ * Not sticky. It sits under the navbar as one block with it, and scrolls away:
+ * pinning a second row would cost a phone 67px of *every* screen of reading on
+ * top of the navbar's 62, and the navbar and in-book bar already hold both
+ * edges. They can't share a single line either — measured at 375px the navbar
+ * is 8px over-full before any chip is added, and the chips need 562px.
  */
 export default function SiteNav() {
   const { t } = useApp()
-  const loc = useLocation()
-
-  const match = loc.pathname.match(/^\/book\/([^/]+)(?:\/([^/]+))?/)
-  const activeBook = match ? books.find((b) => b.id === match[1]) : null
-  const activeSection = activeBook && match[2]
-    ? activeBook.sections.find((s) => s.slug === match[2])
-    : null
+  useLocation() // re-render on navigation so NavLink recomputes its active chip
 
   const chip = ({ isActive }) => `sitenav-chip ${isActive ? 'active' : ''}`
 
@@ -58,18 +51,6 @@ export default function SiteNav() {
         </NavLink>
       </div>
 
-      {/* Only inside a book, and only when it adds something the chips above
-          don't already show. On a book landing the chip is already marked, so
-          the trail would just repeat the title. */}
-      {activeSection && (
-        <p className="sitenav-trail">
-          <Link to={`/book/${activeBook.id}`}>{t(activeBook.title)}</Link>
-          <span aria-hidden>›</span>
-          <span className="sitenav-here" aria-current="page">
-            <span aria-hidden>{activeSection.icon}</span> {t(activeSection.title)}
-          </span>
-        </p>
-      )}
     </nav>
   )
 }
