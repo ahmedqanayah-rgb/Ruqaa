@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { searchAll } from '../data/searchIndex.js'
+import Icon from './Icon.jsx'
 
 /*
  * ⌘K / Ctrl-K search over every section and study in every book.
@@ -120,7 +121,7 @@ export default function SearchPalette({ open, onClose }) {
                 onMouseMove={() => setActive(i)}
                 onClick={() => go(r)}
               >
-                <span className="sp-hit-icon" aria-hidden>{r.icon}</span>
+                <Icon name={r.icon} className="sp-hit-icon" />
                 <span className="sp-hit-text">
                   <span className="sp-hit-title">{t(r.title)}</span>
                   <span className="sp-hit-sub">{t(r.subtitle)}</span>

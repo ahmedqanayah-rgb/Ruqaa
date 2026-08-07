@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
+import Icon from './Icon.jsx'
 
 export default function Navbar({ onMenu, onSearch }) {
   const { t, theme, toggleLang, toggleTheme, togglePresenting } = useApp()
@@ -17,7 +18,7 @@ export default function Navbar({ onMenu, onSearch }) {
           label also only ever appeared between 521 and 860px, which is
           precisely where the bar is on screen too. */}
       <button className="icon-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.openMenu)}>
-        <span className="hamburger" aria-hidden>☰</span>
+        <Icon name="☰" className="hamburger" />
       </button>
 
       <Link to="/" className="brand">
@@ -31,21 +32,21 @@ export default function Navbar({ onMenu, onSearch }) {
       <div className="navbar-spacer" />
 
       <button className="search-btn" onClick={onSearch} aria-label={t(ui.actions.search)}>
-        <span aria-hidden>🔍</span>
+        <Icon name="🔍" />
         <span className="search-btn-label">{t(ui.actions.search)}</span>
         <kbd aria-hidden>{isMac ? '⌘' : 'Ctrl '}K</kbd>
       </button>
 
       <button className="pill-btn" onClick={toggleLang} aria-label={t(ui.actions.switchLangAria)}>
-        <span aria-hidden>🌐</span> {t(ui.actions.switchLang)}
+        <Icon name="🌐" /> {t(ui.actions.switchLang)}
       </button>
       <button className="icon-btn" onClick={toggleTheme}
         aria-label={t(theme === 'light' ? ui.actions.darkMode : ui.actions.lightMode)}>
-        {theme === 'light' ? '🌜' : '☀️'}
+        <Icon name={theme === 'light' ? '🌜' : '☀️'} />
       </button>
       <button className="icon-btn not-mobile" onClick={togglePresenting}
         aria-label={t(ui.actions.present)} title={t(ui.actions.present)}>
-        <span aria-hidden>📽️</span>
+        <Icon name="📽️" />
       </button>
     </header>
   )

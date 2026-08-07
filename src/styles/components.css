@@ -93,7 +93,21 @@
 }
 .side-book-toggle:hover { background: var(--surface-hover); color: var(--text); }
 .sidebar.collapsed .side-book-toggle { display: none; }
-.side-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
+/* ---- line icons (components/Icon.jsx) ----
+   Sized in `em` so each one follows the type of whatever it sits beside, and
+   nudged down a hair: an SVG box aligns to the text baseline differently from
+   the emoji it replaced, which sat slightly lower by nature.
+   `currentColor` in the markup is what makes them black on the light theme and
+   white on the dark one — there is no second set and no media query. */
+.icon {
+  width: 1.15em; height: 1.15em; flex-shrink: 0;
+  vertical-align: -0.19em; display: inline-block;
+}
+/* Emoji still shown for anything not yet drawn — keep it the same size so a
+   gap in the set doesn't change the line height around it. */
+.icon-fallback { font-size: 1em; line-height: 1; }
+
+.side-icon { width: 22px; height: 1.15em; text-align: center; flex-shrink: 0; }
 .side-text { flex: 1; }
 .side-link.sub { padding: 7px 10px; font-size: var(--fs-sm); }
 .side-seen { color: var(--success); font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }

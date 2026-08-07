@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
+import Icon from './Icon.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -36,18 +37,18 @@ export default function SiteNav() {
     <nav className="sitenav" aria-label={t(L('خريطة الموقع', 'Site map'))}>
       <div className="sitenav-row">
         <NavLink to="/" end className={chip}>
-          <span aria-hidden>🏠</span> {t(ui.nav.home)}
+          <Icon name="🏠" /> {t(ui.nav.home)}
         </NavLink>
         {books.map((b) => (
           <NavLink key={b.id} to={`/book/${b.id}`} className={chip}>
-            <span aria-hidden>📖</span> {t(b.title)}
+            <Icon name="📖" /> {t(b.title)}
           </NavLink>
         ))}
         <NavLink to="/books" end className={chip}>
-          <span aria-hidden>📚</span> {t(ui.labels.allBooks)}
+          <Icon name="📚" /> {t(ui.labels.allBooks)}
         </NavLink>
         <NavLink to="/about" className={chip}>
-          <span aria-hidden>ℹ️</span> {t(ui.nav.about)}
+          <Icon name="ℹ️" /> {t(ui.nav.about)}
         </NavLink>
       </div>
 

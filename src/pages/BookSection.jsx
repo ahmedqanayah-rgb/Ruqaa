@@ -12,6 +12,7 @@ import WeekChallenge from '../components/WeekChallenge.jsx'
 /* Seven games' worth of logic for a single section — loaded on arrival. */
 const FocusLab = lazy(() => import('../components/FocusLab.jsx'))
 import RichText from '../components/RichText.jsx'
+import Icon from '../components/Icon.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -162,7 +163,7 @@ function SectionCard({ book, section, index, minutes }) {
       style={accent ? { '--card-accent': accent } : undefined}>
       <div className="section-card-top">
         <span className="section-card-num">{seen ? '✓' : index + 1}</span>
-        <span className="section-card-icon" aria-hidden>{section.icon}</span>
+        <Icon name={section.icon} className="section-card-icon" />
         <span className="section-card-title">{t(section.title)}</span>
       </div>
       {section.lead && <span className="section-card-lead">{t(section.lead)}</span>}
@@ -475,7 +476,7 @@ export default function BookSection() {
           {idx + 1} / {book.sections.length}
           {minutes && <span className="section-readtime"> · ⏱ {t({ ar: `~${minutes} د قراءة`, en: `~${minutes} min read` })}</span>}
         </span>
-        <h1><span className="section-emoji" aria-hidden>{section.icon}</span> {t(section.title)}</h1>
+        <h1><Icon name={section.icon} className="section-emoji" /> {t(section.title)}</h1>
         {section.lead && <p className="section-lead">{t(section.lead)}</p>}
       </header>
 
@@ -504,7 +505,7 @@ export default function BookSection() {
         {next ? (
           <Link className="nextup card" to={`/book/${book.id}/${next.slug}`}>
             <span className="nextup-label">{t(ui.actions.next)} <span aria-hidden>›</span></span>
-            <span className="nextup-title"><span aria-hidden>{next.icon}</span> {t(next.title)}</span>
+            <span className="nextup-title"><Icon name={next.icon} /> {t(next.title)}</span>
             {next.lead && <span className="nextup-lead">{t(next.lead)}</span>}
           </Link>
         ) : (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
+import Icon from './Icon.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 
@@ -55,7 +56,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
     return (
       <NavLink key={s.slug} to={`/book/${book.id}/${s.slug}`} onClick={onClose}
         className={({ isActive }) => `side-link sub ${isActive ? 'active' : ''}`}>
-        <span className="side-icon" aria-hidden>{s.icon}</span>
+        <Icon name={s.icon} className="side-icon" />
         <span className="side-text">{t(s.title)}</span>
         {seen && <span className="side-seen" aria-label={t({ ar: 'مقروء', en: 'read' })}>✓</span>}
       </NavLink>
@@ -80,7 +81,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
             {topLinks.map((l) => (
               <NavLink key={l.to} to={l.to} end={l.end} onClick={onClose}
                 className={({ isActive }) => `side-link ${isActive ? 'active' : ''}`}>
-                <span className="side-icon" aria-hidden>{l.icon}</span>
+                <Icon name={l.icon} className="side-icon" />
                 <span className="side-text">{t(l.label)}</span>
               </NavLink>
             ))}
