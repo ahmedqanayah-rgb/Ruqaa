@@ -204,6 +204,17 @@ export const flowState = {
       'هنا الفكرة التي تغيب عن كلّ تلخيصٍ سريع للتدفّق — وعن «تركيزنا المسلوب» أيضاً. التدفّق ليس مكاناً تصل إليه فتستقرّ فيه؛ إنه **حالةٌ تدمّر شروطها بنفسها**. لأنك حين تتدفّق تتحسّن، وحين تتحسّن يصير التحدّي الذي كان يناسبك بالأمس أقلّ من مهارتك اليوم — فيسقط بك إلى الملل.',
       'Here is the idea missing from every quick summary of flow — and from Stolen Focus as well. Flow is not a place you reach and settle into; it is **a state that destroys its own conditions**. Because while you are in flow you improve, and once you improve, the challenge that fitted you yesterday sits below your skill today — and drops you into boredom.'
     ) },
+    /* The flow channel (fig 3) again, deliberately. It already appears in
+       `speed-flow`, but the ratchet below is drawn on exactly this plane —
+       handing the reader the plane to move around in first is what makes the
+       four-stage story readable rather than abstract. Same reasoning as Act 1
+       duplicating `speed-flow`: this tab holds everything on flow in one page
+       (POLISH-PLAN §8). */
+    { type: 'p', text: L(
+      'قبل ذلك، أعِد إلى ذهنك المستوى نفسه الذي رأيناه في قسم «السرعة والتشتّت والتدفّق» — تحدٍّ في مقابل مهارة. حرّك النقطة بنفسك: كلّ ما يلي مرسومٌ على هذا المستوى بالضبط.',
+      'First, bring back the same plane we saw in “Speed, switching and flow” — challenge against skill. Move the dot yourself: everything that follows is drawn on precisely this plane.'
+    ) },
+    { type: 'figure', id: 'sfFlowChannel' },
     { type: 'figure', id: 'sfFlowRatchet' },
     { type: 'p', text: L(
       'ولهذا يصف تشيكزينتميهالي التدفّق بأنه محرّك نموّ لا وصفة راحة: الملل والقلق ليسا أعطالاً في الطريق، بل **إشارتا توجيه**. الملل يقول: ارفع التحدّي. والقلق يقول: ارفع مهارتك أو اخفض التحدّي مؤقّتاً. من يقرأ الإشارتين يصعد سلّماً؛ ومن يتجاهلهما يتوقّف.',
