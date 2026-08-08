@@ -179,30 +179,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-lead { max-width: 660px; margin: 0 auto var(--space-4); font-size: var(--fs-md); color: var(--text-soft); }
 .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
 
-/* ---- bilingual showcase (Home) ----
-   Two panes of the same sentence. Each carries its own dir/lang in the markup,
-   so the browser picks the right script direction and typeface per pane rather
-   than being told to by CSS. */
-.bi-panes {
-  display: grid; gap: var(--space-4); margin-top: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-}
-.bi-pane {
-  padding: var(--space-4); border-radius: var(--radius);
-  border: 1px solid var(--border); background: var(--bg-elev);
-  display: flex; flex-direction: column; gap: var(--space-2);
-}
-/* The pane you are currently reading the site in. */
-.bi-pane[data-current] { border-color: var(--accent); background: var(--accent-soft); }
-.bi-lang {
-  font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--text-muted);
-}
-.bi-pane[data-current] .bi-lang { color: var(--accent); }
-.bi-text { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); line-height: 1.75; }
-.bilingual-lead { color: var(--text-soft); margin: var(--space-2) 0 0; }
-.bi-switch { margin-top: var(--space-4); }
-
 /* ---- vertical rhythm between the home page's blocks ----
    They used to run together at the default margin; a full --space-6 between
    them lets each one read as its own thing. */
@@ -1590,7 +1566,32 @@ html[data-presenting] img { margin-inline: auto; }
 .rt-lbl { font-size: 11px; font-weight: 800; }
 .rt-lbl2 { font-size: 12px; font-weight: 800; fill: var(--text); }
 .rt-pt circle { transition: r var(--transition), fill var(--transition); }
+/* The four stages, named rather than numbered. A row on a wide screen, a
+   stacked list on a phone — four Arabic phrases will not sit side by side in
+   375px, and shrinking them to fit is how you get back to «A1». */
 .ratchet-steps { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: var(--space-4) 0 0; }
+.ratchet-step {
+  display: inline-flex; align-items: center; gap: 8px; min-block-size: 44px;
+  padding: 6px 14px 6px 8px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--bg-elev);
+  color: var(--text-soft); font-family: inherit; font-size: var(--fs-xs);
+  font-weight: 600; text-align: start; transition: all var(--transition);
+}
+.ratchet-step:hover { border-color: var(--accent); color: var(--text); }
+.ratchet-step.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.ratchet-step-n {
+  inline-size: 22px; block-size: 22px; flex-shrink: 0; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-elev-2); color: var(--text-muted); font-size: 0.72rem; font-weight: 700;
+}
+.ratchet-step.active .ratchet-step-n { background: var(--accent); color: var(--accent-contrast); }
+@media (max-width: 640px) {
+  /* `align-self` as well as `align-items`: the parent `.ratchet` centres its
+     children, which shrank this row to its content width (150px of a 296px
+     column) and left the named steps in a narrow stripe down the middle. */
+  .ratchet-steps { flex-direction: column; align-items: stretch; align-self: stretch; }
+  .ratchet-step { justify-content: flex-start; }
+}
 .ratchet-note { margin: var(--space-3) 0 0; padding: var(--space-3); inline-size: 100%; background: var(--bg-elev-2); border-radius: var(--radius); border-inline-start: 3px solid var(--border-strong); }
 .ratchet-note strong { display: block; font-size: var(--fs-sm); margin-bottom: 4px; }
 .ratchet-note p { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }

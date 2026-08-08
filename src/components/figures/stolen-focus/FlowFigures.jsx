@@ -12,6 +12,7 @@
 import { useState } from 'react'
 import { useApp } from '../../../context/AppContext.jsx'
 import FigureFrame from '../FigureFrame.jsx'
+import Icon from '../../Icon.jsx'
 /* Every body text below goes through RichText, not a bare {t(...)}. Two reasons:
    FigureFrame already renders `caption` that way so **bold** works there and
    would silently print literal asterisks anywhere else, and RichText also wraps
@@ -74,7 +75,7 @@ export function SfFlowParadox() {
           {Object.values(PARADOX).map((p) => (
             <button key={p.key} className={`sf-preset ${side === p.key ? 'active' : ''}`}
               onClick={() => setSide(p.key)}>
-              <span aria-hidden>{p.icon}</span> {t(p.label)}
+              <Icon name={p.icon} /> {t(p.label)}
             </button>
           ))}
         </div>
@@ -157,7 +158,7 @@ export function SfFlowNine() {
             <button key={c.k} className={`gate-cond ${on[c.k] ? 'on' : 'off'}`}
               onClick={() => setOn((s) => ({ ...s, [c.k]: !s[c.k] }))}
               aria-pressed={on[c.k]}>
-              <span className="gate-ic" aria-hidden>{c.icon}</span>
+              <Icon name={c.icon} className="gate-ic" />
               <span className="gate-nm">{t(c.name)}</span>
               <span className="gate-sw" aria-hidden><i /></span>
             </button>
@@ -173,7 +174,7 @@ export function SfFlowNine() {
         <div className="gate-symptoms">
           {SYMPTOMS.map((s, i) => (
             <span key={i} className={`gate-symp ${open ? 'lit' : ''}`}>
-              <span aria-hidden>{s.icon}</span> {t(s.name)}
+              <Icon name={s.icon} /> {t(s.name)}
             </span>
           ))}
         </div>
@@ -238,7 +239,7 @@ export function SfFlowBrain() {
         <div className="brain-modes" role="group">
           {Object.entries(BRAIN_MODES).map(([k, v]) => (
             <button key={k} className={`sf-preset ${mode === k ? 'active' : ''}`} onClick={() => setMode(k)}>
-              <span aria-hidden>{v.icon}</span> {t(v.label)}
+              <Icon name={v.icon} /> {t(v.label)}
             </button>
           ))}
         </div>
@@ -407,10 +408,18 @@ export function SfFlowRatchet() {
           </figure>
         </div>
 
+        {/* The steps used to be four buttons reading «A1 A2 A3 A4», which told
+            the reader nothing — you had to press each one to discover what it
+            was, on a figure whose whole point is a sequence. They now carry the
+            stage's own name, so the four-step story is readable before you
+            touch anything. The number stays as a small marker, because the
+            plotted points are labelled with it. */}
         <div className="ratchet-steps" role="group">
           {STEPS.map((p, j) => (
-            <button key={p.lbl} className={`sf-preset ${i === j ? 'active' : ''}`} onClick={() => setI(j)}>
-              {p.lbl}
+            <button key={p.lbl} className={`ratchet-step ${i === j ? 'active' : ''}`}
+              aria-current={i === j ? 'step' : undefined} onClick={() => setI(j)}>
+              <span className="ratchet-step-n" aria-hidden>{p.lbl.slice(1)}</span>
+              <span className="ratchet-step-t">{t(p.head)}</span>
             </button>
           ))}
         </div>

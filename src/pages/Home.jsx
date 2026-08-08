@@ -3,59 +3,7 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 import { club } from '../data/club.js'
-
-/*
- * The bilingual feature, shown rather than described.
- *
- * The hero already claims the site is «ثنائية اللغة», which a visitor has no
- * reason to believe and no way to picture. This puts the *same real sentence*
- * — the featured book's blurb, straight out of the book data — side by side in
- * both languages, each pane carrying its own `dir` and `lang` so it renders in
- * its true script, direction and typeface. The pane matching the current view
- * is lit; the other is the one you'd get by pressing the button, and the button
- * under it is the real site-wide toggle, not a demo of one.
- *
- * Known cost, accepted deliberately: an Arabic reader's Home now pulls the
- * Inter webfont (~48 kB) that `unicode-range` had been sparing them, because
- * the page finally contains Latin text. That is the price of the feature being
- * real rather than a claim — see CLAUDE.md § Fonts.
- */
-function BilingualPreview({ book }) {
-  const { t, lang, toggleLang } = useApp()
-  if (!book?.blurb?.ar || !book?.blurb?.en) return null
-
-  const panes = [
-    { code: 'ar', dir: 'rtl', label: 'العربية', text: book.blurb.ar },
-    { code: 'en', dir: 'ltr', label: 'English', text: book.blurb.en },
-  ]
-
-  return (
-    <section className="bilingual">
-      <h2>{t({ ar: 'كلّ حرفٍ هنا بلغتين', en: 'Every word here, in two languages' })}</h2>
-      <p className="bilingual-lead">
-        {t({
-          ar: 'ليست ترجمةً آلية — كلّ قسمٍ ودراسةٍ وشكلٍ تفاعلي مكتوبٌ بالعربية والإنجليزية معاً. هذه فقرةٌ واحدة من الموقع، كما تظهر في كلٍّ منهما:',
-          en: 'Not machine translation — every section, study and interactive figure is written in both Arabic and English. Here is one real paragraph from the site, as it appears in each:',
-        })}
-      </p>
-
-      <div className="bi-panes">
-        {panes.map((p) => (
-          <div key={p.code} className="bi-pane" dir={p.dir} lang={p.code}
-            data-current={p.code === lang ? '' : undefined}>
-            <span className="bi-lang">{p.label}</span>
-            <p className="bi-text">{p.text}</p>
-          </div>
-        ))}
-      </div>
-
-      <button className="btn bi-switch" onClick={toggleLang}>
-        <span aria-hidden>🌐</span>{' '}
-        {t({ ar: 'اقرأ الموقع كلّه بالإنجليزية', en: 'Read the whole site in Arabic' })}
-      </button>
-    </section>
-  )
-}
+import Icon from '../components/Icon.jsx'
 
 export default function Home() {
   const { t } = useApp()
@@ -85,14 +33,12 @@ export default function Home() {
         </p>
         <div className="hero-actions">
           <Link className="btn primary" to={`/book/${featured.id}`}>
-            📖 {t(featured.title)} →
+            <Icon name="📖" /> {t(featured.title)} →
           </Link>
           <Link className="btn" to="/books">{t(ui.nav.books)}</Link>
           <Link className="btn ghost" to="/about">{t(ui.nav.about)}</Link>
         </div>
       </section>
-
-      <BilingualPreview book={featured} />
 
       <section className="books-section">
         <div className="section-head-row">
