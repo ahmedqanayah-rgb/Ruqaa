@@ -338,7 +338,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 }
 .section-card.rich { flex-direction: column; align-items: stretch; gap: 8px; border-top: 3px solid var(--card-accent, var(--border)); }
 .section-card-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.section-card-lead { font-size: var(--fs-xs); color: var(--text-soft); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .section-card-meta { font-size: var(--fs-xs); color: var(--text-muted); }
 .section-card.seen .section-card-num { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
 .book-hero-body { min-width: 0; flex: 1; }

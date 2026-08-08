@@ -166,7 +166,10 @@ function SectionCard({ book, section, index, minutes }) {
         <Icon name={section.icon} className="section-card-icon" />
         <span className="section-card-title">{t(section.title)}</span>
       </div>
-      {section.lead && <span className="section-card-lead">{t(section.lead)}</span>}
+      {/* No lead here. The user's call: on the index, the title and the read
+          time are enough to choose by, and a two-line summary on each of 23
+          cards turned the list into something to read rather than scan. The
+          lead still opens the section itself and still previews the next one. */}
       <span className="section-card-meta">{t(sectionMeta(section, minutes))}</span>
     </Link>
   )
