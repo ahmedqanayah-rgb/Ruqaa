@@ -16,8 +16,10 @@ There is **no test runner and no linter configured** — don't reference `npm te
 Verify changes by running the app (`npm run dev`) and checking the affected section in the
 browser. `.claude/launch.json` defines a preview server named `ruqaa`.
 
-**Windows/PowerShell gotcha:** Node was installed via winget and may not be on PATH in a
-fresh PowerShell. If `npm` isn't found, refresh PATH first:
+**Windows/PowerShell gotcha:** tools installed by winget — Node, and `ffmpeg` (9.0, for the
+hero video) — are often **absent from PATH in a fresh PowerShell**, so `Get-Command` reports
+them missing when they are perfectly well installed. Refresh PATH before concluding anything
+is not there; `winget list --id <pkg>` is the check that doesn't lie.
 ```powershell
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 ```

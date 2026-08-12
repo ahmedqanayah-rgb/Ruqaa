@@ -462,6 +462,32 @@ Three details worth keeping:
 > `.landing-group .section-cards[hidden] { display: none }`, and the desktop override must sit
 > below it because they have equal specificity.
 
+### Later the same week (2026-08-08)
+
+- **Every emoji beside a title is now a hand-drawn line icon** — 54 of them in
+  `src/components/Icon.jsx`, keyed by the emoji so the book data still reads `icon: '⚡'`.
+  See the `line-icons` memory for the set's rules and the `getBBox`-in-`display:none` trap.
+- **A site map on every page** (`SiteNav.jsx`), merged into the top bar as **one header block**
+  after the user pointed out it was a second stacked bar. They cannot share a *line* — measured,
+  the 375px navbar is 8px over-full before a chip is added and the chips need 562px — so they
+  stack, share a surface, and only the navbar is sticky. It replaced both the old
+  `.section-breadcrumb` and an initial `book › section` trail, which duplicated the chip above
+  it and the `<h1>` below it for 52px a page.
+- **Landing groups fold on phones** (7.1 → 3.3 screens), open on the group the reader is up to.
+- **Section cards lost their summary line** — title and read time only, 156px → 87px, and every
+  card is now the same height.
+- **The bilingual card on Home was built and then removed** at the user's request, along with
+  "how this works" and "Ask me one" earlier. **Home is the hero and the book carousel. Do not
+  add blocks to it.**
+- Figure 16's stages are named rather than `A1–A4`, and figure 3 (the flow channel) is shown
+  again in act 7 ahead of it.
+
+**Emoji still to convert, if asked:** `StolenFocusCharts`, `StolenFocusSims`, `Hypnogram`, and
+book data (`assessment.js`, `sections-1.js`, `sections-4.js`). **Two places are deliberate and
+need an explicit yes before touching:** the mood emoji on the flow-channel marker and the
+notification emoji in the distraction game — both are tuned decisions in §6, and dull-but-
+realistic notification copy was tried and rejected because it doesn't distract.
+
 **§7's breakpoint unification is deliberately not done.** Collapsing 460/620/640/700/720/860
 into three tiers would move layout at several widths to fix nothing a reader can see. The
 inconsistency worth knowing is documented instead: `.only-mobile` flips at **860px** and
