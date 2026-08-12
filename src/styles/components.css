@@ -171,6 +171,45 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .center { text-align: center; }
 
 /* ============================================================
+   Home — cinematic hero (toppling-books video, see data/heroScene.js)
+   ============================================================ */
+.hero-cinema { margin: calc(-1 * var(--space-5)) calc(-1 * var(--space-4)) var(--space-5); }
+.hero-cinema-box { position: relative; height: min(74vh, 640px); overflow: hidden; }
+@media (orientation: portrait) { .hero-cinema-box { height: min(78vh, 760px); } }
+.hero-cinema-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-cinema-overlays { position: absolute; inset: 0; pointer-events: none; }
+.hero-cover-warp { position: absolute; top: 0; left: 0; transform-origin: 0 0; object-fit: cover; }
+.hero-cover-shade {
+  position: absolute; top: 0; left: 0; transform-origin: 0 0;
+  background: linear-gradient(112deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.28) 100%);
+}
+.hero-page-title {
+  position: absolute; text-align: center; line-height: 1.25;
+  color: #3a3128; font-family: 'Aref Ruqaa', var(--font-ar), serif; font-weight: 700;
+  text-shadow: 0 0 1px rgba(58, 49, 40, 0.35);
+}
+.hero-page-title:lang(en), html[lang='en'] .hero-page-title { font-family: 'Caveat', cursive; }
+.hero-cinema-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, transparent 28%, transparent 55%, var(--bg) 100%);
+}
+.hero-cinema.is-dark .hero-cinema-scrim {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.25) 55%, var(--bg) 100%);
+}
+.hero-cinema-content {
+  position: absolute; inset-inline: 0; bottom: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 0 var(--space-4) var(--space-4); text-align: center;
+}
+.hero-cinema-content h1 { margin: 0; font-size: var(--fs-xl); text-shadow: 0 1px 12px var(--bg); }
+/* The logo carries both .hero-logo and .hero-cinema-logo. This block sits
+   ABOVE the Home section, so at equal specificity .hero-logo's 84px and its
+   bottom margin would win on source order alone — qualifying the selector is
+   what makes the smaller cinema logo stick regardless of where the block sits. */
+.hero-cinema .hero-cinema-logo { margin: 0; width: 64px; height: 64px; }
+.hero-cinema-content .hero-actions { margin-top: var(--space-2); }
+
+/* ============================================================
    Home
    ============================================================ */
 .hero { padding: var(--space-5) 0 var(--space-6); text-align: center; }

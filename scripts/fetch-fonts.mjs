@@ -48,9 +48,20 @@ const cssFile = path.resolve(__dirname, '../src/styles/fonts.css')
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 const WEIGHTS = [400, 500, 600, 700]
 const SUBSETS = ['arabic', 'latin']
+/* `weights`/`subsets` are per-family overrides of the two defaults above.
+ * They exist for the two "ink" faces used by the homepage hero, which are not
+ * UI fonts: they render the featured book's title as handwriting on the open
+ * page of the still (see components/HeroCinema.jsx). Both are needed at 700
+ * only — the single weight .hero-page-title asks for — and asking for more
+ * would not merely waste bytes: Aref Ruqaa ships no 500 or 600 at all, and
+ * Google rejects the whole css2 request if one unavailable weight is in it.
+ * Caveat is Latin-only by design (the Arabic view uses Aref Ruqaa), so its
+ * arabic subset request would find nothing. */
 const FAMILIES = [
   { name: 'IBM Plex Sans Arabic', slug: 'plex-arabic' },
   { name: 'Inter', slug: 'inter' },
+  { name: 'Aref Ruqaa', slug: 'aref-ruqaa', weights: [700], subsets: ['arabic'] },
+  { name: 'Caveat', slug: 'caveat', weights: [700], subsets: ['latin'] },
 ]
 /* Characters needed from outside SUBSETS, cut individually via `&text=`.
  *
@@ -64,8 +75,14 @@ const FAMILIES = [
  */
 const GLYPHS = [{ chars: 'ʿ', range: 'U+02BF', tag: 'ayn', note: 'the ʿ in "Ruqʿa"', only: ['Inter'] }]
 
-fs.rmSync(outDir, { recursive: true, force: true })
+/* Clear out stale .woff2 files (weights/subsets change between runs) but keep
+ * everything else — LICENSE.md lives here and is NOT generated; an earlier
+ * rmSync of the whole directory silently deleted it, taking the OFL attribution
+ * that has to travel with these files. */
 fs.mkdirSync(outDir, { recursive: true })
+for (const f of fs.readdirSync(outDir)) {
+  if (f.endsWith('.woff2')) fs.rmSync(path.join(outDir, f))
+}
 
 const faces = []
 let total = 0
@@ -86,7 +103,9 @@ const write = (preferredName, buf) => {
 }
 
 for (const family of FAMILIES) {
-  const url = `https://fonts.googleapis.com/css2?family=${family.name.replace(/ /g, '+')}:wght@${WEIGHTS.join(';')}&display=swap`
+  const weights = family.weights || WEIGHTS
+  const subsets = family.subsets || SUBSETS
+  const url = `https://fonts.googleapis.com/css2?family=${family.name.replace(/ /g, '+')}:wght@${weights.join(';')}&display=swap`
   const css = await (await fetch(url, { headers: { 'User-Agent': UA } })).text()
 
   // Google emits a `/* subset */` comment immediately before each @font-face.
@@ -94,7 +113,7 @@ for (const family of FAMILIES) {
   let m
   while ((m = re.exec(css))) {
     const [, subset, body] = m
-    if (!SUBSETS.includes(subset)) continue
+    if (!subsets.includes(subset)) continue
     const weight = body.match(/font-weight:\s*(\d+)/)[1]
     const range = body.match(/unicode-range:\s*([^;]+);/)[1].trim()
     const src = body.match(/url\((https:\/\/fonts\.gstatic\.com[^)]+\.woff2)\)/)?.[1]
@@ -111,7 +130,7 @@ for (const family of FAMILIES) {
   // The single-glyph cuts.
   for (const g of GLYPHS) {
     if (g.only && !g.only.includes(family.name)) continue
-    for (const weight of WEIGHTS) {
+    for (const weight of weights) {
       const gUrl = `https://fonts.googleapis.com/css2?family=${family.name.replace(/ /g, '+')}:wght@${weight}&text=${encodeURIComponent(g.chars)}`
       const gCss = await (await fetch(gUrl, { headers: { 'User-Agent': UA } })).text()
       // `&text=` cuts are served from an extensionless /l/font?kit=… endpoint,

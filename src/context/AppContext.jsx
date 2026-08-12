@@ -42,6 +42,11 @@ export function AppProvider({ children }) {
   // Ticked days of a book's 7-day challenge, as "bookId/n". Same deal: in
   // memory, so it survives navigation within a sitting but not a refresh.
   const [challengeDone, setChallengeDone] = useState(() => new Set())
+  // Whether the homepage hero video has already played this sitting. It plays
+  // once and then the hero freezes on its final still; coming back to Home
+  // must not replay it. In memory like everything else — a refresh is a new
+  // sitting, which is the intended behaviour.
+  const [heroPlayed, setHeroPlayed] = useState(false)
 
   const dir = lang === 'ar' ? 'rtl' : 'ltr'
 
@@ -94,10 +99,10 @@ export function AppProvider({ children }) {
     () => ({
       lang, dir, theme, isAr: lang === 'ar', setLang, setTheme, toggleLang, toggleTheme,
       presenting, setPresenting, togglePresenting, t, visited, markVisited,
-      challengeDone, toggleChallengeDay,
+      challengeDone, toggleChallengeDay, heroPlayed, setHeroPlayed,
     }),
     [lang, dir, theme, toggleLang, toggleTheme, presenting, togglePresenting, t, visited, markVisited,
-     challengeDone, toggleChallengeDay]
+     challengeDone, toggleChallengeDay, heroPlayed]
   )
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

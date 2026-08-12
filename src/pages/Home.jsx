@@ -3,7 +3,9 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 import { club } from '../data/club.js'
+import { heroScene } from '../data/heroScene.js'
 import Icon from '../components/Icon.jsx'
+import HeroCinema from '../components/HeroCinema.jsx'
 
 export default function Home() {
   const { t } = useApp()
@@ -21,6 +23,9 @@ export default function Home() {
 
   return (
     <div className="home">
+      {/* The cinematic hero replaces the text hero when heroScene.enabled is
+          true; `enabled: false` is the kill switch back to this one. */}
+      {heroScene.enabled ? <HeroCinema /> : (
       <section className="hero">
         <img className="hero-logo" src="./images/logo.png" alt={t(ui.siteTitle)} />
         <span className="pill">{t(ui.siteTagline)}</span>
@@ -39,6 +44,7 @@ export default function Home() {
           <Link className="btn ghost" to="/about">{t(ui.nav.about)}</Link>
         </div>
       </section>
+      )}
 
       <section className="books-section">
         <div className="section-head-row">
