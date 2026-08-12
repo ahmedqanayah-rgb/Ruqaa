@@ -899,6 +899,12 @@ button.sf-toast:hover { border-color: var(--danger); }
   .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
   .collapse-btn { display: none; }
   .page { padding: var(--space-4) var(--space-3); }
+  /* The hero bleeds edge-to-edge by cancelling .page's padding, so it has to
+     track the line above — with the desktop values it over-cancelled by 6.4px
+     a side and ran off the right edge, invisibly, because html/body carry
+     overflow-x:hidden (which also pins scrollWidth, so the usual overflow
+     check reports clean — compare against .page's box instead). */
+  .hero-cinema { margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-3)) var(--space-4); }
   .spider-wrap { grid-template-columns: 1fr; }
   .section-nav { flex-direction: column; }
   .section-nav .btn { max-width: none; }

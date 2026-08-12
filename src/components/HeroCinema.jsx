@@ -72,7 +72,18 @@ export default function HeroCinema() {
     // the portrait quads, which puts the overlays outside the box entirely.
     onChange()
     mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
+    // …and re-check on resize/orientationchange rather than trusting the media
+    // query's own event, which does not fire reliably everywhere: measured, a
+    // 375×812 → 1280×800 resize moved the query to landscape while 'change'
+    // stayed silent, leaving the portrait frame and its quads in a landscape
+    // box. These listeners are idempotent — setPortrait bails on equal state.
+    window.addEventListener('resize', onChange)
+    window.addEventListener('orientationchange', onChange)
+    return () => {
+      mq.removeEventListener('change', onChange)
+      window.removeEventListener('resize', onChange)
+      window.removeEventListener('orientationchange', onChange)
+    }
   }, [])
 
   const orient = portrait ? 'portrait' : 'landscape'
