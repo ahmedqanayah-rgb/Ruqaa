@@ -7,3 +7,6 @@ dist
 
 .keys/
 hero-video-wip/
+
+# Annotated frames from scripts/hero-calibrate.mjs — a look-and-adjust aid, not an asset
+hero-calibrate-out/

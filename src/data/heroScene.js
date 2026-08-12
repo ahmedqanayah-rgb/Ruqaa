@@ -43,22 +43,35 @@ export const heroScene = {
     landscape: './videos/hero-landscape.mp4',
     portrait: './videos/hero-portrait.mp4',
   },
+  // WebP, like every other display image on the site — the full-resolution
+  // JPEG masters these come from live outside the repo in
+  // hero-video-wip/frames/, because they are pipeline inputs (the video model
+  // uploads them, the pixel coordinates below are read off them) and shipping
+  // them would cost 3.1 MB instead of 0.76 MB.
   stills: {
-    landscape: { frame1: './images/hero/frame1-landscape.jpg', frame2: './images/hero/frame2-landscape.jpg' },
-    portrait: { frame1: './images/hero/frame1-portrait.jpg', frame2: './images/hero/frame2-portrait.jpg' },
+    landscape: { frame1: './images/hero/frame1-landscape.webp', frame2: './images/hero/frame2-landscape.webp' },
+    portrait: { frame1: './images/hero/frame1-portrait.webp', frame2: './images/hero/frame2-portrait.webp' },
   },
 
   /* ---- calibration (image-space pixels on frame2) ---- */
   landscape: {
-    imageW: 1920, imageH: 1080,
-    // 4 corners of the blank front cover: TL, TR, BR, BL
-    coverQuad: [[700, 640], [985, 668], [962, 952], [668, 918]],
-    // ink title on the open right-hand page: centre point, rotation, max width
-    title: { x: 1497, y: 800, rotate: -4.5, maxWidth: 195, fontSize: 44 },
+    // 1088, not 1080: FLUX wants multiples of 32, so that is the real frame
+    // height. Every number below is read in this pixel space.
+    imageW: 1920, imageH: 1088,
+    // 4 corners of the blank front cover: TL, TR, BR, BL — the big beige book
+    // leaning against the fallen pile on the right.
+    coverQuad: [[1112, 52], [1700, 122], [1668, 752], [978, 648]],
+    // ink title on the open right-hand page: centre point, rotation, max width.
+    // rotate matches the page's own slope, so the text sits ON the paper
+    // rather than floating across it.
+    title: { x: 1205, y: 855, rotate: 7, maxWidth: 520, fontSize: 88 },
   },
   portrait: {
-    imageW: 1080, imageH: 1920,
-    coverQuad: [[155, 1245], [445, 1275], [425, 1565], [130, 1528]],
-    title: { x: 697, y: 1420, rotate: -4, maxWidth: 210, fontSize: 42 },
+    imageW: 1088, imageH: 1920,
+    // the olive book standing upright behind the open one
+    coverQuad: [[630, 240], [1050, 262], [1035, 920], [622, 900]],
+    // the open book's LEFT page — the right one runs off the frame edge.
+    // Negative rotate: this page rises to the right, the mirror of landscape's.
+    title: { x: 400, y: 950, rotate: -5, maxWidth: 480, fontSize: 78 },
   },
 }

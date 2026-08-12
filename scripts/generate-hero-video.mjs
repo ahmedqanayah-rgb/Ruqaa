@@ -19,7 +19,9 @@ import { fileURLToPath } from 'node:url'
 import { apiKey, upload, run, download, confirmSpend } from './fal-client.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const FRAMES = path.resolve(__dirname, '../public/images/hero')
+// The full-resolution JPEG masters, not the WebP that public/ ships — feed the
+// video model the best pixels available, and it wants a plain jpeg URL.
+const FRAMES = path.resolve(__dirname, '../../hero-video-wip/frames')
 const OUT = path.resolve(__dirname, '../../hero-video-wip/renders')
 
 const MODEL = 'fal-ai/veo3.1/fast/first-last-frame-to-video'
