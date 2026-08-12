@@ -5,6 +5,8 @@ import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 import { club } from '../data/club.js'
 import { heroScene } from '../data/heroScene.js'
+import { coverArt } from '../data/coverArt.js'
+import HeroCoverArt from './HeroCoverArt.jsx'
 
 /*
  * Cinematic homepage hero: the "toppling books" video plays once per session,
@@ -55,7 +57,7 @@ function coverMap(imgW, imgH, boxW, boxH) {
 }
 
 export default function HeroCinema() {
-  const { t, theme, heroPlayed, setHeroPlayed } = useApp()
+  const { t, lang, theme, heroPlayed, setHeroPlayed } = useApp()
   const boxRef = useRef(null)
   const [boxSize, setBoxSize] = useState(null)
   const [portrait, setPortrait] = useState(() => window.matchMedia('(orientation: portrait)').matches)
@@ -97,6 +99,9 @@ export default function HeroCinema() {
   const wantedId = heroScene.featuredBookId
     || club.seasons?.find((s) => s.status === 'current')?.bookId
   const book = books.find((b) => b.id === wantedId) || books[0]
+  const art = coverArt[book.id]
+  // Each language is its own cover layout, with its own source dimensions.
+  const artView = (art && (art[lang] || art.en)?.view) || [200, 280]
   const title = heroScene.pageTitle || book.title
 
   const toStill = useCallback(() => { setStage('still'); setHeroPlayed(true) }, [setHeroPlayed])
@@ -111,6 +116,12 @@ export default function HeroCinema() {
     const measure = () => {
       const r = el.getBoundingClientRect()
       setBoxSize((prev) => (prev && prev[0] === r.width && prev[1] === r.height ? prev : [r.width, r.height]))
+      // Re-read orientation on the SAME schedule as the box. The media query's
+      // own 'change' event is not dependable — observed twice: a tab that
+      // changed size before this component mounted kept serving the portrait
+      // frame into a landscape box, with no event to correct it. Both facts
+      // come from the viewport, so they should be sampled together.
+      setPortrait(window.matchMedia('(orientation: portrait)').matches)
     }
     measure()
     // …but that synchronous read can land before the box has its final layout,
@@ -135,8 +146,14 @@ export default function HeroCinema() {
     const map = coverMap(cal.imageW, cal.imageH, boxSize[0], boxSize[1])
     scale = Math.max(boxSize[0] / cal.imageW, boxSize[1] / cal.imageH)
     const q = cal.coverQuad.map(map)
-    // Cover overlays are laid out at a fixed 200×280 and warped onto the quad.
-    coverStyle = { width: 200, height: 280, transform: quadTransform(200, 280, q) }
+    // The cover overlay is laid out at the source cover's own aspect ratio and
+    // warped onto the quad. It has to be the cover's ratio, not a fixed one: the
+    // artwork fills this box with preserveAspectRatio="none", so a mismatch here
+    // stretches the cover a second time on top of the perspective, and the
+    // browser stops agreeing with scripts/hero-preview.mjs.
+    const cw = 200
+    const ch = Math.round(cw * (artView[1] / artView[0]))
+    coverStyle = { width: cw, height: ch, transform: quadTransform(cw, ch, q) }
     const [tx, ty] = map([cal.title.x, cal.title.y])
     titleStyle = {
       left: tx, top: ty,
@@ -165,9 +182,22 @@ export default function HeroCinema() {
 
         {stage === 'still' && boxSize && (
           <div className="hero-cinema-overlays fade-in">
-            {/* real cover, perspective-warped onto the blank book */}
-            <img className="hero-cover-warp" style={coverStyle} src={t(book.cover)} alt=""
-              onError={(e) => { e.currentTarget.style.display = 'none' }} />
+            {/* The cover, rebuilt as parts and perspective-warped onto the blank
+                book: the cloth is tinted to roughly the real cover's colour and
+                the shapes, drawings and type are printed on top. A flat photo of
+                the cover here read as a sticker — it brought its own lighting and
+                paper. Books with no recipe in coverArt.js fall back to the image. */}
+            <div className="hero-cover-warp" style={coverStyle} aria-hidden>
+              {art ? (
+                <>
+                  <span className="hero-cover-tint" style={{ background: art.base, opacity: art.tint }} />
+                  <HeroCoverArt bookId={book.id} lang={lang} />
+                </>
+              ) : (
+                <img className="hero-cover-fallback" src={t(book.cover)} alt=""
+                  onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              )}
+            </div>
             <span className="hero-cover-shade" style={coverStyle} aria-hidden />
             {/* ink title on the open page */}
             <div className="hero-page-title" style={titleStyle} dir="auto">{t(title)}</div>

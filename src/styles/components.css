@@ -178,7 +178,14 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 @media (orientation: portrait) { .hero-cinema-box { height: min(78vh, 760px); } }
 .hero-cinema-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cinema-overlays { position: absolute; inset: 0; pointer-events: none; }
-.hero-cover-warp { position: absolute; top: 0; left: 0; transform-origin: 0 0; object-fit: cover; }
+.hero-cover-warp { position: absolute; top: 0; left: 0; transform-origin: 0 0; overflow: hidden; }
+/* Tints the photographed cloth to roughly the real cover's colour. Opacity is
+   deliberately below 1 (set per book in data/coverArt.js) so the linen weave and
+   the photo's own lighting still read through — a flat 100% fill looks like a
+   painted rectangle, which is the problem this whole approach exists to fix. */
+.hero-cover-tint { position: absolute; inset: 0; }
+.hero-cover-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-cover-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cover-shade {
   position: absolute; top: 0; left: 0; transform-origin: 0 0;
   background: linear-gradient(112deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.28) 100%);
