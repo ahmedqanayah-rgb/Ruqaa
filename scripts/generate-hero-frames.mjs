@@ -45,7 +45,13 @@ const OUT = MASTERS
 
 const GEN = 'fal-ai/flux-2-pro'
 const EDIT = 'fal-ai/flux-2-pro/edit'
-const PRICE = 0.046 // USD per image, fal's FLUX.2 [pro] rate at time of writing
+/* USD per image. The list rate works out at $0.046 for a 1920x1088 output
+ * ($0.03 first megapixel + $0.015/extra), but MEASURED across a 6-frame run the
+ * account was billed $0.42, i.e. ~$0.07 each — the /edit endpoint appears to
+ * bill the input image's megapixels too, and most frames here are edits. Using
+ * the measured figure so the estimate printed before spending is not an
+ * undercount. */
+const PRICE = 0.07
 
 // 1920x1088 rather than 1920x1080: FLUX wants multiples of 32. heroScene.js
 // carries the same numbers as imageW/imageH, so the overlay maths matches.
