@@ -189,10 +189,16 @@ export default function HeroCinema() {
                 paper. Books with no recipe in coverArt.js fall back to the image. */}
             <div className="hero-cover-warp" style={coverStyle} aria-hidden>
               {art ? (
-                <>
-                  <span className="hero-cover-tint" style={{ background: art.base, opacity: art.tint }} />
+                <div className="hero-cover-plate" style={{ '--cover-mask': `url(${art.cloth[orient]})` }}>
+                  {/* The photographed cloth, recoloured offline by
+                      scripts/gen-cover-cloth.mjs. Baked rather than tinted in
+                      CSS because turning light beige cloth black while keeping
+                      its weave needs the photo's contrast expanded, which is a
+                      curve, not a blend — see that script's header. */}
+                  <img className="hero-cover-cloth" src={art.cloth[orient]} alt=""
+                    onError={(e) => { e.currentTarget.style.background = art.base }} />
                   <HeroCoverArt bookId={book.id} lang={lang} />
-                </>
+                </div>
               ) : (
                 <img className="hero-cover-fallback" src={t(book.cover)} alt=""
                   onError={(e) => { e.currentTarget.style.display = 'none' }} />

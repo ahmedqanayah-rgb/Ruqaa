@@ -113,6 +113,18 @@ async function render(orient, lang) {
   const art = await sharp(Buffer.from(await coverSvg(recipe)))
     .resize(CW, CH).ensureAlpha().raw().toBuffer()
 
+  // The same baked cloth patch the browser uses, resampled into cover space so
+  // preview and browser cannot drift. Missing patch = fall back to the flat
+  // base colour and say so, rather than silently previewing something else.
+  const clothFile = entry.cloth?.[orient]
+    && path.resolve(__dirname, '../public', entry.cloth[orient].replace(/^\.\//, ''))
+  let cloth = null
+  if (fs.existsSync(clothFile)) {
+    cloth = await sharp(clothFile).resize(CW, CH, { fit: 'fill' }).ensureAlpha().raw().toBuffer()
+  } else {
+    console.warn(`  ⚠ no cloth patch for ${book.id}/${orient} — run scripts/gen-cover-cloth.mjs`)
+  }
+
   const { data: photo, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
   const { width: W, height: H } = info
 
@@ -125,7 +137,6 @@ async function render(orient, lang) {
   const Hi = adj(Hm)
 
   const [br_, bg_, bb_] = hex(entry.base)
-  const tint = entry.tint
 
   const xs = cal.coverQuad.map((p) => p[0]), ys = cal.coverQuad.map((p) => p[1])
   const x0 = Math.max(0, Math.floor(Math.min(...xs))), x1 = Math.min(W, Math.ceil(Math.max(...xs)))
@@ -139,13 +150,20 @@ async function render(orient, lang) {
       if (u < 0 || u >= 1 || v < 0 || v >= 1) continue
 
       const p = (y * W + x) * 4
-      // 1. tint the cloth, keeping (1 - tint) of the photo so the weave shows
-      photo[p]     = photo[p]     * (1 - tint) + br_ * tint
-      photo[p + 1] = photo[p + 1] * (1 - tint) + bg_ * tint
-      photo[p + 2] = photo[p + 2] * (1 - tint) + bb_ * tint
+      const cx = Math.min(CW - 1, (u * CW) | 0), cy = Math.min(CH - 1, (v * CH) | 0)
+
+      // 1. the recoloured cloth replaces the photographed board outright —
+      //    except where its alpha says the board is hidden behind something,
+      //    which also masks the artwork, exactly as the browser does.
+      if (cloth) {
+        const c = (cy * CW + cx) * 4
+        if (cloth[c + 3] < 128) continue
+        photo[p] = cloth[c]; photo[p + 1] = cloth[c + 1]; photo[p + 2] = cloth[c + 2]
+      } else {
+        photo[p] = br_; photo[p + 1] = bg_; photo[p + 2] = bb_
+      }
 
       // 2. print the artwork over it
-      const cx = Math.min(CW - 1, (u * CW) | 0), cy = Math.min(CH - 1, (v * CH) | 0)
       const q = (cy * CW + cx) * 4
       const a = art[q + 3] / 255
       if (a > 0) {

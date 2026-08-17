@@ -59,8 +59,14 @@ export const heroScene = {
     // height. Every number below is read in this pixel space.
     imageW: 1920, imageH: 1088,
     // 4 corners of the blank front cover: TL, TR, BR, BL — the big beige book
-    // leaning against the fallen pile on the right.
-    coverQuad: [[1112, 52], [1700, 122], [1668, 752], [978, 648]],
+    // leaning against the fallen pile on the right. Read off the frame with
+    // `node scripts/hero-calibrate.mjs --zoom landscape <x0,y0,x1,y1>`; reading
+    // them off the full-frame grid is only good to ±30px, which left a tan rim
+    // of bare book showing down the right side and along the bottom.
+    // These trace the OUTER edge of the board, including the rolled cloth hem,
+    // because real cloth wraps the board — stopping at the flat face leaves a
+    // beige frame around the artwork, which is what made it look stuck on.
+    coverQuad: [[1125, 58], [1710, 102], [1599, 740], [972, 628]],
     // ink title on the open right-hand page: centre point, rotation, max width.
     // rotate matches the page's own slope, so the text sits ON the paper
     // rather than floating across it.
@@ -69,7 +75,26 @@ export const heroScene = {
   portrait: {
     imageW: 1088, imageH: 1920,
     // the olive book standing upright behind the open one
-    coverQuad: [[630, 240], [1050, 262], [1035, 920], [622, 900]],
+    coverQuad: [[626, 246], [1050, 271], [1026, 962], [620, 952]],
+    /* The open book's page laps over this book's bottom-left corner, so part of
+     * the quad is not board at all. Without this the overlay painted the cover
+     * straight over the page — a grey wedge sitting in front of something that
+     * is physically in front of IT.
+     *
+     * This is the outline of the VISIBLE board, in the same image pixels as
+     * coverQuad: the four corners, but with the bottom-left cut back along the
+     * page's edge. gen-cover-cloth.mjs bakes it into the cloth patch's alpha,
+     * and the hero uses that same patch as a mask, so the artwork is clipped
+     * by it too. Omit it (landscape does) when nothing occludes the board.
+     *
+     * Measured, not eyeballed — the page's edge is a curve, and reading it by
+     * eye gave three different answers. Scan each row of the frame and record
+     * where the dark board first appears; those readings are the middle points
+     * below. */
+    coverClip: [
+      [626, 246], [1050, 271], [1026, 942],
+      [800, 902], [778, 880], [748, 860], [698, 840], [626, 828],
+    ],
     // the open book's LEFT page — the right one runs off the frame edge.
     // Negative rotate: this page rises to the right, the mirror of landscape's.
     title: { x: 400, y: 950, rotate: -5, maxWidth: 480, fontSize: 78 },

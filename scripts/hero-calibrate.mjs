@@ -66,6 +66,42 @@ function annotate(orient) {
   return { svg, W, H }
 }
 
+/*
+ * --zoom <orientation> <x0,y0,x1,y1> crops that region of the frame and blows it
+ * up with a fine labelled grid. Corner-reading off the full-frame grid is only
+ * good to ±30px, which is enough to put the cover quad visibly off the book's
+ * edges; this is how to get it right.
+ */
+if (process.argv[2] === '--zoom') {
+  const orient = process.argv[3]
+  const [zx0, zy0, zx1, zy1] = process.argv[4].split(',').map(Number)
+  const src = path.join(FRAMES, `frame2-${orient}.jpg`)
+  const w = zx1 - zx0, h = zy1 - zy0
+  const scale = Math.min(3, Math.max(1, Math.round(1600 / w)))
+  const SW = w * scale, SH = h * scale
+  const step = 25
+  const g = []
+  for (let x = Math.ceil(zx0 / step) * step; x <= zx1; x += step) {
+    const px = (x - zx0) * scale
+    const major = x % 100 === 0
+    g.push(`<line x1="${px}" y1="0" x2="${px}" y2="${SH}" stroke="${major ? 'rgba(0,200,255,.75)' : 'rgba(0,200,255,.3)'}" stroke-width="${major ? 2 : 1}"/>`)
+    if (major) g.push(`<text x="${px + 3}" y="18" font-family="monospace" font-size="16" fill="#0ff" stroke="#000" stroke-width="3" paint-order="stroke">${x}</text>`)
+  }
+  for (let y = Math.ceil(zy0 / step) * step; y <= zy1; y += step) {
+    const py = (y - zy0) * scale
+    const major = y % 100 === 0
+    g.push(`<line x1="0" y1="${py}" x2="${SW}" y2="${py}" stroke="${major ? 'rgba(0,200,255,.75)' : 'rgba(0,200,255,.3)'}" stroke-width="${major ? 2 : 1}"/>`)
+    if (major) g.push(`<text x="3" y="${py - 4}" font-family="monospace" font-size="16" fill="#0ff" stroke="#000" stroke-width="3" paint-order="stroke">${y}</text>`)
+  }
+  fs.mkdirSync(OUT, { recursive: true })
+  const out = path.join(OUT, `zoom-${orient}.jpg`)
+  await sharp(src).extract({ left: zx0, top: zy0, width: w, height: h }).resize(SW, SH)
+    .composite([{ input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${SW}" height="${SH}">${g.join('')}</svg>`), top: 0, left: 0 }])
+    .jpeg({ quality: 92 }).toFile(out)
+  console.log(`wrote ${path.relative(process.cwd(), out)} — region ${zx0},${zy0} → ${zx1},${zy1} at ${scale}x, 25px grid`)
+  process.exit(0)
+}
+
 const only = process.argv[2]
 fs.mkdirSync(OUT, { recursive: true })
 

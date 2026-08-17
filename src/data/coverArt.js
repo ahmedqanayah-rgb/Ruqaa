@@ -41,7 +41,15 @@ const ORB = [[0, '#2f6fd0'], [0.5, '#7b4bb0'], [1, '#e0629a']]
 export const coverArt = {
   'stolen-focus': {
     base: '#0a0a12',
-    tint: 0.93,
+    // Written by scripts/gen-cover-cloth.mjs, which recolours the photographed
+    // board. Spelled out rather than derived from the book id: check-image-refs
+    // finds assets by looking for their basename in the source, so a path built
+    // by template literal reads as an unreferenced file — one `rm` away from
+    // being tidied out of the repo.
+    cloth: {
+      landscape: './images/hero/cloth/stolen-focus-landscape.webp',
+      portrait: './images/hero/cloth/stolen-focus-portrait.webp',
+    },
 
     ar: {
       view: [452, 678],
@@ -88,7 +96,10 @@ export const coverArt = {
 
   'why-we-sleep': {
     base: '#12294f',
-    tint: 0.9,
+    cloth: {
+      landscape: './images/hero/cloth/why-we-sleep-landscape.webp',
+      portrait: './images/hero/cloth/why-we-sleep-portrait.webp',
+    },
 
     ar: {
       view: [268, 400],

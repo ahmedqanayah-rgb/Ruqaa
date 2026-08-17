@@ -179,11 +179,21 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-cinema-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cinema-overlays { position: absolute; inset: 0; pointer-events: none; }
 .hero-cover-warp { position: absolute; top: 0; left: 0; transform-origin: 0 0; overflow: hidden; }
-/* Tints the photographed cloth to roughly the real cover's colour. Opacity is
-   deliberately below 1 (set per book in data/coverArt.js) so the linen weave and
-   the photo's own lighting still read through — a flat 100% fill looks like a
-   painted rectangle, which is the problem this whole approach exists to fix. */
-.hero-cover-tint { position: absolute; inset: 0; }
+/* The recoloured cloth, baked per book+orientation by gen-cover-cloth.mjs. It
+   fills the same box as the artwork above it, so the two align by construction
+   rather than by matching numbers. */
+/* The cloth patch doubles as the mask for everything printed on it. Its alpha
+   is 0 wherever the board is hidden behind something in the photo (the open
+   book's page laps over the standing book's corner in the portrait frame), so
+   masking the plate stops the artwork painting over an object that is
+   physically in front of it. */
+.hero-cover-plate {
+  position: absolute; inset: 0;
+  -webkit-mask-image: var(--cover-mask); mask-image: var(--cover-mask);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.hero-cover-cloth { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hero-cover-art { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-cover-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cover-shade {
