@@ -49,19 +49,16 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const WEIGHTS = [400, 500, 600, 700]
 const SUBSETS = ['arabic', 'latin']
 /* `weights`/`subsets` are per-family overrides of the two defaults above.
- * They exist for the two "ink" faces used by the homepage hero, which are not
- * UI fonts: they render the featured book's title as handwriting on the open
- * page of the still (see components/HeroCinema.jsx). Both are needed at 700
- * only — the single weight .hero-page-title asks for — and asking for more
- * would not merely waste bytes: Aref Ruqaa ships no 500 or 600 at all, and
- * Google rejects the whole css2 request if one unavailable weight is in it.
- * Caveat is Latin-only by design (the Arabic view uses Aref Ruqaa), so its
- * arabic subset request would find nothing. */
+ * Nothing uses them at the moment. They were added for two "ink" faces — Aref
+ * Ruqaa and Caveat — that set the book's title as handwriting on the open page
+ * of the hero still; the club asked for that text to go, so the faces went with
+ * it rather than sitting in the bundle at 95 kB for nothing. The override
+ * mechanism is worth keeping: Aref Ruqaa ships no 500 or 600 at all, and Google
+ * rejects the whole css2 request if one unavailable weight is in it, so any
+ * future display face is likely to need its own weight list. */
 const FAMILIES = [
   { name: 'IBM Plex Sans Arabic', slug: 'plex-arabic' },
   { name: 'Inter', slug: 'inter' },
-  { name: 'Aref Ruqaa', slug: 'aref-ruqaa', weights: [700], subsets: ['arabic'] },
-  { name: 'Caveat', slug: 'caveat', weights: [700], subsets: ['latin'] },
 ]
 /* Characters needed from outside SUBSETS, cut individually via `&text=`.
  *

@@ -1,26 +1,25 @@
 /* ============================================================================
    HOMEPAGE HERO SCENE — the "toppling books" video + composited overlays.
    ----------------------------------------------------------------------------
-   THIS IS THE FILE TO EDIT when the club says:
-     • "change the featured book to X"  → set `featuredBookId` below
-     • "change the title on the open page" → set `pageTitle` (or leave null to
-        use the featured book's own title automatically)
+   THIS IS THE FILE TO EDIT when the club says "change the featured book to X"
+   → set `featuredBookId` below. The cover ARTWORK lives in data/coverArt.js.
 
    HOW IT WORKS (for future sessions):
    - Home.jsx renders <HeroCinema/> (src/components/HeroCinema.jsx) when
      `enabled` is true; otherwise the old text hero is shown.
    - A background video (public/videos/) plays ONCE per browser session
      (in-memory flag in AppContext — never localStorage), then the hero swaps
-     to the crisp final still (public/images/hero/frame2-*.jpg).
-   - On the final still we composite, in image-space pixel coordinates:
-       • the featured book's real cover, perspective-warped onto the blank
-         leaning book (quad = its 4 corners: TL, TR, BR, BL), and
-       • the book title as real HTML "ink" text on the open blank page —
-         it follows the site's Arabic/English toggle automatically.
-   - The quads/positions below are calibrated against the CURRENT frame2
-     images. If the frames are regenerated (scripts/generate-hero-frames.mjs),
-     re-calibrate: open the still, read the pixel corners of the blank front
-     cover and the open right-hand page, and update the numbers.
+     to the crisp final still (public/images/hero/frame2-*.webp).
+   - On that still, the featured book's cover is rebuilt from parts and
+     perspective-warped onto the blank leaning book. `coverQuad` is its four
+     corners (TL, TR, BR, BL) in the frame's own pixels.
+   - The open page is left BLANK. It used to carry the book's title as "ink"
+     text; the club asked for it gone, and with it went the two handwriting
+     webfonts that existed only to set it.
+   - The quads below are calibrated against the CURRENT frame2 images. If the
+     frames are regenerated (scripts/generate-hero-frames.mjs), re-calibrate
+     with scripts/hero-calibrate.mjs — its --zoom mode is what makes the corners
+     accurate enough.
    - `landscape` is used on desktop, `portrait` on portrait-oriented screens.
    ========================================================================== */
 
@@ -33,10 +32,6 @@ export const heroScene = {
   // carousel underneath it. Set an id from src/data/books.js
   // ('why-we-sleep' | 'stolen-focus' | future ids) only to override that.
   featuredBookId: null,
-
-  // Title shown in "ink" on the open page. null = use the featured book's
-  // own bilingual title. To override: { ar: '...', en: '...' }.
-  pageTitle: null,
 
   // Assets (relative to public/). Poster = frame1 so there is no flash.
   video: {
@@ -67,10 +62,6 @@ export const heroScene = {
     // because real cloth wraps the board — stopping at the flat face leaves a
     // beige frame around the artwork, which is what made it look stuck on.
     coverQuad: [[1125, 58], [1710, 102], [1599, 740], [972, 628]],
-    // ink title on the open right-hand page: centre point, rotation, max width.
-    // rotate matches the page's own slope, so the text sits ON the paper
-    // rather than floating across it.
-    title: { x: 1205, y: 855, rotate: 7, maxWidth: 520, fontSize: 88 },
   },
   portrait: {
     imageW: 1088, imageH: 1920,
@@ -83,9 +74,10 @@ export const heroScene = {
      *
      * This is the outline of the VISIBLE board, in the same image pixels as
      * coverQuad: the four corners, but with the bottom-left cut back along the
-     * page's edge. gen-cover-cloth.mjs bakes it into the cloth patch's alpha,
-     * and the hero uses that same patch as a mask, so the artwork is clipped
-     * by it too. Omit it (landscape does) when nothing occludes the board.
+     * page's edge. HeroCinema maps it through the inverse of the cover's
+     * homography and emits it as a CSS clip-path, and hero-preview.mjs tests
+     * the same polygon per pixel. Omit it (landscape does) when nothing
+     * occludes the board.
      *
      * Measured, not eyeballed — the page's edge is a curve, and reading it by
      * eye gave three different answers. Scan each row of the frame and record
@@ -95,8 +87,5 @@ export const heroScene = {
       [626, 246], [1050, 271], [1026, 942],
       [800, 902], [778, 880], [748, 860], [698, 840], [626, 828],
     ],
-    // the open book's LEFT page — the right one runs off the frame edge.
-    // Negative rotate: this page rises to the right, the mirror of landscape's.
-    title: { x: 400, y: 950, rotate: -5, maxWidth: 480, fontSize: 78 },
   },
 }

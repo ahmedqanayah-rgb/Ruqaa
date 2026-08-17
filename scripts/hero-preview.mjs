@@ -96,7 +96,15 @@ async function coverSvg(recipe) {
     + `<defs>${defs.join('')}</defs>${body.join('')}</svg>`
 }
 
-const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
+/** Ray-crossing point-in-polygon, for the visible-board outline. */
+function inPolygon(x, y, poly) {
+  let inside = false
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j]
+    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside
+  }
+  return inside
+}
 
 async function render(orient, lang) {
   const cal = heroScene[orient]
@@ -113,17 +121,6 @@ async function render(orient, lang) {
   const art = await sharp(Buffer.from(await coverSvg(recipe)))
     .resize(CW, CH).ensureAlpha().raw().toBuffer()
 
-  // The same baked cloth patch the browser uses, resampled into cover space so
-  // preview and browser cannot drift. Missing patch = fall back to the flat
-  // base colour and say so, rather than silently previewing something else.
-  const clothFile = entry.cloth?.[orient]
-    && path.resolve(__dirname, '../public', entry.cloth[orient].replace(/^\.\//, ''))
-  let cloth = null
-  if (fs.existsSync(clothFile)) {
-    cloth = await sharp(clothFile).resize(CW, CH, { fit: 'fill' }).ensureAlpha().raw().toBuffer()
-  } else {
-    console.warn(`  ⚠ no cloth patch for ${book.id}/${orient} — run scripts/gen-cover-cloth.mjs`)
-  }
 
   const { data: photo, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
   const { width: W, height: H } = info
@@ -136,8 +133,7 @@ async function render(orient, lang) {
   const Hm = mul(d, adj(s))
   const Hi = adj(Hm)
 
-  const [br_, bg_, bb_] = hex(entry.base)
-
+  const clip = cal.coverClip
   const xs = cal.coverQuad.map((p) => p[0]), ys = cal.coverQuad.map((p) => p[1])
   const x0 = Math.max(0, Math.floor(Math.min(...xs))), x1 = Math.min(W, Math.ceil(Math.max(...xs)))
   const y0 = Math.max(0, Math.floor(Math.min(...ys))), y1 = Math.min(H, Math.ceil(Math.max(...ys)))
@@ -149,21 +145,13 @@ async function render(orient, lang) {
       const v = (Hi[3] * x + Hi[4] * y + Hi[5]) / w
       if (u < 0 || u >= 1 || v < 0 || v >= 1) continue
 
+      // Nothing recolours the board — the photographed cloth shows through.
+      // Where something in the photo laps over it, skip entirely, so the
+      // artwork can't paint over an object that is in front of the book.
+      if (clip && !inPolygon(x, y, clip)) continue
+
       const p = (y * W + x) * 4
       const cx = Math.min(CW - 1, (u * CW) | 0), cy = Math.min(CH - 1, (v * CH) | 0)
-
-      // 1. the recoloured cloth replaces the photographed board outright —
-      //    except where its alpha says the board is hidden behind something,
-      //    which also masks the artwork, exactly as the browser does.
-      if (cloth) {
-        const c = (cy * CW + cx) * 4
-        if (cloth[c + 3] < 128) continue
-        photo[p] = cloth[c]; photo[p + 1] = cloth[c + 1]; photo[p + 2] = cloth[c + 2]
-      } else {
-        photo[p] = br_; photo[p + 1] = bg_; photo[p + 2] = bb_
-      }
-
-      // 2. print the artwork over it
       const q = (cy * CW + cx) * 4
       const a = art[q + 3] / 255
       if (a > 0) {
@@ -174,18 +162,9 @@ async function render(orient, lang) {
     }
   }
 
-  // The ink title on the open page, so the preview shows the whole composite.
-  const ttl = cal.title
-  const label = lang === 'ar' ? book.title.ar : book.title.en
-  const overlay = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">`
-    + `<g transform="translate(${ttl.x},${ttl.y}) rotate(${ttl.rotate})">`
-    + `<text x="0" y="${ttl.fontSize * 0.35}" text-anchor="middle" fill="#3a3128"`
-    + ` font-family="serif" font-size="${ttl.fontSize}" font-weight="700">${label}</text></g></svg>`
-
   fs.mkdirSync(OUT, { recursive: true })
   const out = path.join(OUT, `preview-${orient}-${lang}.jpg`)
   await sharp(photo, { raw: { width: W, height: H, channels: 4 } })
-    .composite([{ input: Buffer.from(overlay), top: 0, left: 0 }])
     .jpeg({ quality: 90 }).toFile(out)
   console.log(`wrote ${path.relative(process.cwd(), out)}`)
 }

@@ -48,6 +48,19 @@ function quadTransform(w, h, [tl, tr, br, bl]) {
   return `matrix3d(${t[0]},${t[3]},0,${t[6]},${t[1]},${t[4]},0,${t[7]},0,0,1,0,${t[2]},${t[5]},0,1)`
 }
 
+/* An outline given in the frame's own pixels → a CSS clip-path on the cover
+ * element, by inverting the unit-square→quad homography. */
+function clipPolygon([tl, tr, br, bl], outline) {
+  const Hi = adj(mul(basisToPoints(tl, tr, bl, br), adj(basisToPoints([0, 0], [1, 0], [0, 1], [1, 1]))))
+  const pts = outline.map(([x, y]) => {
+    const w = Hi[6] * x + Hi[7] * y + Hi[8]
+    const u = (Hi[0] * x + Hi[1] * y + Hi[2]) / w
+    const v = (Hi[3] * x + Hi[4] * y + Hi[5]) / w
+    return `${(u * 100).toFixed(2)}% ${(v * 100).toFixed(2)}%`
+  })
+  return `polygon(${pts.join(', ')})`
+}
+
 /* Map image-space px → on-screen px for an object-fit:cover image/video. */
 function coverMap(imgW, imgH, boxW, boxH) {
   const s = Math.max(boxW / imgW, boxH / imgH)
@@ -102,7 +115,6 @@ export default function HeroCinema() {
   const art = coverArt[book.id]
   // Each language is its own cover layout, with its own source dimensions.
   const artView = (art && (art[lang] || art.en)?.view) || [200, 280]
-  const title = heroScene.pageTitle || book.title
 
   const toStill = useCallback(() => { setStage('still'); setHeroPlayed(true) }, [setHeroPlayed])
 
@@ -141,10 +153,9 @@ export default function HeroCinema() {
     }
   }, [])
 
-  let coverStyle = null, titleStyle = null, scale = 1
+  let coverStyle = null
   if (boxSize) {
     const map = coverMap(cal.imageW, cal.imageH, boxSize[0], boxSize[1])
-    scale = Math.max(boxSize[0] / cal.imageW, boxSize[1] / cal.imageH)
     const q = cal.coverQuad.map(map)
     // The cover overlay is laid out at the source cover's own aspect ratio and
     // warped onto the quad. It has to be the cover's ratio, not a fixed one: the
@@ -154,13 +165,11 @@ export default function HeroCinema() {
     const cw = 200
     const ch = Math.round(cw * (artView[1] / artView[0]))
     coverStyle = { width: cw, height: ch, transform: quadTransform(cw, ch, q) }
-    const [tx, ty] = map([cal.title.x, cal.title.y])
-    titleStyle = {
-      left: tx, top: ty,
-      maxWidth: cal.title.maxWidth * scale,
-      fontSize: cal.title.fontSize * scale,
-      transform: `translate(-50%, -50%) rotate(${cal.title.rotate}deg)`,
-    }
+    // Where something in the photo laps over the board, clip it away. clip-path
+    // is applied in the element's own box and only then transformed, so the
+    // percentages are the cover's own space — hence mapping the outline's image
+    // pixels back through the inverse of the same homography.
+    if (cal.coverClip) coverStyle.clipPath = clipPolygon(cal.coverQuad, cal.coverClip)
   }
 
   return (
@@ -183,30 +192,20 @@ export default function HeroCinema() {
         {stage === 'still' && boxSize && (
           <div className="hero-cinema-overlays fade-in">
             {/* The cover, rebuilt as parts and perspective-warped onto the blank
-                book: the cloth is tinted to roughly the real cover's colour and
-                the shapes, drawings and type are printed on top. A flat photo of
-                the cover here read as a sticker — it brought its own lighting and
-                paper. Books with no recipe in coverArt.js fall back to the image. */}
+                book. Nothing recolours the board: the photographed cloth keeps
+                its own beige, its own weave and its own light, and the artwork
+                is printed on top in black. A flat photo of the cover here read
+                as a sticker — it brought its own lighting and paper. Books with
+                no recipe in coverArt.js fall back to the image. */}
             <div className="hero-cover-warp" style={coverStyle} aria-hidden>
               {art ? (
-                <div className="hero-cover-plate" style={{ '--cover-mask': `url(${art.cloth[orient]})` }}>
-                  {/* The photographed cloth, recoloured offline by
-                      scripts/gen-cover-cloth.mjs. Baked rather than tinted in
-                      CSS because turning light beige cloth black while keeping
-                      its weave needs the photo's contrast expanded, which is a
-                      curve, not a blend — see that script's header. */}
-                  <img className="hero-cover-cloth" src={art.cloth[orient]} alt=""
-                    onError={(e) => { e.currentTarget.style.background = art.base }} />
-                  <HeroCoverArt bookId={book.id} lang={lang} />
-                </div>
+                <HeroCoverArt bookId={book.id} lang={lang} />
               ) : (
                 <img className="hero-cover-fallback" src={t(book.cover)} alt=""
                   onError={(e) => { e.currentTarget.style.display = 'none' }} />
               )}
             </div>
             <span className="hero-cover-shade" style={coverStyle} aria-hidden />
-            {/* ink title on the open page */}
-            <div className="hero-page-title" style={titleStyle} dir="auto">{t(title)}</div>
           </div>
         )}
 

@@ -68,7 +68,7 @@ export default function HeroCoverArt({ bookId, lang }) {
       {behind.map(renderText)}
 
       {recipe.art.map((a, i) => {
-        if (a.type === 'orb') return <circle key={i} cx={a.cx} cy={a.cy} r={a.r} fill={`url(#${uid}-orb${i})`} />
+        if (a.type === 'orb') return <circle key={i} cx={a.cx} cy={a.cy} r={a.r} fill={`url(#${uid}-orb${i})`} opacity={a.opacity ?? 1} />
         if (a.type === 'moon') return (
           // Crescent by subtraction: a filled disc with a second disc punched
           // out of it, offset. Cheaper and cleaner than hand-fitting a path.

@@ -32,7 +32,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
 
 function annotate(orient) {
   const cal = heroScene[orient]
-  const { imageW: W, imageH: H, coverQuad: q, title } = cal
+  const { imageW: W, imageH: H, coverQuad: q, coverClip: clip } = cal
   const step = 100
   const parts = []
 
@@ -53,14 +53,10 @@ function annotate(orient) {
     parts.push(`<text x="${x + 22}" y="${y - 16}" font-family="monospace" font-size="34" fill="#fff" stroke="#000" stroke-width="6" paint-order="stroke">${['TL', 'TR', 'BR', 'BL'][i]} ${x},${y}</text>`)
   })
 
-  // the current title box, at its own rotation
-  const tw = title.maxWidth, th = title.fontSize * 1.3
-  parts.push(`<g transform="translate(${title.x},${title.y}) rotate(${title.rotate})">
-    <rect x="${-tw / 2}" y="${-th / 2}" width="${tw}" height="${th}" fill="rgba(60,220,130,.22)" stroke="#3cdc82" stroke-width="5"/>
-    <text x="0" y="${th / 2 - 6}" text-anchor="middle" font-family="serif" font-size="${title.fontSize}" fill="#1a1a1a" stroke="#fff" stroke-width="3" paint-order="stroke">${esc(heroScene.pageTitle?.ar || 'عنوان الكتاب')}</text>
-  </g>`)
-  parts.push(`<circle cx="${title.x}" cy="${title.y}" r="10" fill="#3cdc82" stroke="#fff" stroke-width="3"/>`)
-  parts.push(`<text x="${title.x + 18}" y="${title.y + 46}" font-family="monospace" font-size="30" fill="#fff" stroke="#000" stroke-width="6" paint-order="stroke">title ${title.x},${title.y} rot ${title.rotate} w${title.maxWidth} fs${title.fontSize}</text>`)
+  // the visible-board outline, where something in the photo laps over the book
+  if (clip) {
+    parts.push(`<polygon points="${clip.map((p) => p.join(',')).join(' ')}" fill="none" stroke="#3cdc82" stroke-width="6" stroke-dasharray="18 12"/>`)
+  }
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${parts.join('')}</svg>`
   return { svg, W, H }

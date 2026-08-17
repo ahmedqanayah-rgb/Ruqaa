@@ -9,12 +9,6 @@ their own and this notice travels with them.
 |---|---|---|
 | **IBM Plex Sans Arabic** | Copyright © 2017 IBM Corp. | [OFL-1.1](https://github.com/IBM/plex/blob/master/LICENSE.txt) |
 | **Inter** | Copyright © 2016 The Inter Project Authors | [OFL-1.1](https://github.com/rsms/inter/blob/master/LICENSE.txt) |
-| **Aref Ruqaa** | Copyright © 2015 The Aref Ruqaa Project Authors | [OFL-1.1](https://github.com/aref/ArefRuqaa/blob/master/OFL.txt) |
-| **Caveat** | Copyright © 2015 The Caveat Project Authors | [OFL-1.1](https://github.com/googlefonts/caveat/blob/main/OFL.txt) |
-
-The last two are the homepage hero's "ink" faces — the featured book's title
-handwritten on the open page of the still, Arabic and English respectively.
-They are UI-invisible everywhere else.
 
 Full licence text: <https://openfontlicense.org/>
 

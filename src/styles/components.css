@@ -179,33 +179,15 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-cinema-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cinema-overlays { position: absolute; inset: 0; pointer-events: none; }
 .hero-cover-warp { position: absolute; top: 0; left: 0; transform-origin: 0 0; overflow: hidden; }
-/* The recoloured cloth, baked per book+orientation by gen-cover-cloth.mjs. It
-   fills the same box as the artwork above it, so the two align by construction
-   rather than by matching numbers. */
-/* The cloth patch doubles as the mask for everything printed on it. Its alpha
-   is 0 wherever the board is hidden behind something in the photo (the open
-   book's page laps over the standing book's corner in the portrait frame), so
-   masking the plate stops the artwork painting over an object that is
-   physically in front of it. */
-.hero-cover-plate {
-  position: absolute; inset: 0;
-  -webkit-mask-image: var(--cover-mask); mask-image: var(--cover-mask);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-}
-.hero-cover-cloth { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* The artwork prints straight onto the photographed board — nothing recolours
+   the cloth, so the book keeps its own weave and its own light. HeroCinema also
+   sets a clip-path here where something in the photo laps over the board. */
 .hero-cover-art { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-cover-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cover-shade {
   position: absolute; top: 0; left: 0; transform-origin: 0 0;
   background: linear-gradient(112deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.28) 100%);
 }
-.hero-page-title {
-  position: absolute; text-align: center; line-height: 1.25;
-  color: #3a3128; font-family: 'Aref Ruqaa', var(--font-ar), serif; font-weight: 700;
-  text-shadow: 0 0 1px rgba(58, 49, 40, 0.35);
-}
-.hero-page-title:lang(en), html[lang='en'] .hero-page-title { font-family: 'Caveat', cursive; }
 .hero-cinema-scrim {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, transparent 28%, transparent 55%, var(--bg) 100%);
