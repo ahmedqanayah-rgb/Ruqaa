@@ -50,18 +50,33 @@ export const heroScene = {
 
   /* ---- calibration (image-space pixels on frame2) ---- */
   landscape: {
-    // 1088, not 1080: FLUX wants multiples of 32, so that is the real frame
-    // height. Every number below is read in this pixel space.
-    imageW: 1920, imageH: 1088,
-    // 4 corners of the blank front cover: TL, TR, BR, BL — the big beige book
-    // leaning against the fallen pile on the right. Read off the frame with
-    // `node scripts/hero-calibrate.mjs --zoom landscape <x0,y0,x1,y1>`; reading
-    // them off the full-frame grid is only good to ±30px, which left a tan rim
-    // of bare book showing down the right side and along the bottom.
-    // These trace the OUTER edge of the board, including the rolled cloth hem,
-    // because real cloth wraps the board — stopping at the flat face leaves a
-    // beige frame around the artwork, which is what made it look stuck on.
-    coverQuad: [[1125, 58], [1710, 102], [1599, 740], [972, 628]],
+    // 1080, not FLUX's 1088: frame2-landscape is no longer a FLUX still. It is
+    // the LAST FRAME OF THE VIDEO, pulled out of the encoded mp4, so the freeze
+    // matches the final rendered frame exactly instead of merely resembling it.
+    // Every number below is read in that pixel space.
+    imageW: 1920, imageH: 1080,
+    /* 4 corners of the blank front cover: TL, TR, BR, BL — the pale book
+     * standing upright at the right. Read off the frame with
+     * `node scripts/hero-calibrate.mjs --zoom landscape <x0,y0,x1,y1>`; the
+     * full-frame grid is only good to ±30px, which once left a tan rim of bare
+     * book showing down two sides.
+     *
+     * They trace the OUTER edge of the board, including the rolled cloth hem,
+     * because real cloth wraps the board — stopping at the flat face leaves a
+     * beige frame around the artwork, which reads as stuck on.
+     *
+     * The bottom two are estimates: the book's base is hidden behind the open
+     * book, so they sit deliberately BELOW the occlusion line and coverClip
+     * does the actual cutting. Only the blank bottom margin of the cover falls
+     * in the guessed region, so being a little out costs nothing. */
+    coverQuad: [[1090, 8], [1630, 12], [1618, 742], [1092, 715]],
+    /* The open book's page laps across the base of the standing book. Measured
+     * by scanning each column for the brightness step from cloth into page,
+     * not read by eye. */
+    coverClip: [
+      [1090, 8], [1630, 12], [1620, 717], [1540, 702], [1460, 685], [1380, 667],
+      [1300, 648], [1220, 638], [1100, 634], [1090, 632],
+    ],
   },
   portrait: {
     imageW: 1088, imageH: 1920,

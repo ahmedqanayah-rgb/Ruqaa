@@ -27,9 +27,26 @@ const OUT = path.resolve(__dirname, '../../hero-video-wip/renders')
 const MODEL = 'fal-ai/veo3.1/fast/first-last-frame-to-video'
 const PRICE_PER_SEC = 0.10 // USD, Veo 3.1 Fast at time of writing, audio off
 
-const MOTION = 'The stack of books topples over naturally under its own weight, books sliding and falling flat across the table, and the topmost book lands face up and falls open. Static locked-off camera, no camera movement, no zoom. Natural physics, soft indoor light. No text, no captions, no people.'
+/*
+ * THE MOTION PROMPT MUST DESCRIBE THE END STATE THE LAST FRAME ACTUALLY SHOWS.
+ *
+ * The first version said the stack "topples over… books sliding and falling
+ * FLAT across the table". But frame2 ends with the pale book standing upright,
+ * propped against the pile, cover to camera — that is the flat surface the hero
+ * composites the real cover onto, so it cannot change. Given a motion that ends
+ * flat and a target frame that ends upright, the model did both in sequence:
+ * the books fell flat, and then one rose back up off the table to meet the
+ * final frame. Books do not stand up after they fall, and it read as exactly
+ * that mistake.
+ *
+ * A book sliding off a stack and coming to rest leaning against it is perfectly
+ * natural. The prompt just has to say so — describe the settle, not a collapse.
+ */
+const MOTION = 'The stack of books tips and slides apart on the table. The pale book on top slides off to the right and comes to rest leaning upright against the side of the remaining pile, its front cover facing the camera. A book slides forward out of the stack and flops open face up on the table in front. The books settle and stop moving. Locked-off static camera, no camera movement, no zoom, no pan. Natural physics and weight, soft indoor light. No text, no captions, no people, no hands.'
 
-const NEGATIVE = 'camera movement, zoom, pan, people, hands, text, captions, watermark, subtitles'
+// The last three exist because of the failure above: whatever happens, nothing
+// should rise off the table or run backwards.
+const NEGATIVE = 'camera movement, zoom, pan, people, hands, text, captions, watermark, subtitles, books rising off the table, objects floating upward, reversed motion'
 
 const args = process.argv.slice(2)
 const arg = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback)
