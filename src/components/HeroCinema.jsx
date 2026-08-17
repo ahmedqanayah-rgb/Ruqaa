@@ -74,7 +74,10 @@ export default function HeroCinema() {
   const boxRef = useRef(null)
   const [boxSize, setBoxSize] = useState(null)
   const [portrait, setPortrait] = useState(() => window.matchMedia('(orientation: portrait)').matches)
-  const [stage, setStage] = useState(heroPlayed ? 'still' : 'video') // 'video' | 'still'
+  // This orientation has no playable video. Not the same thing as "played":
+  // a missing file must not burn the once-per-session play, or rotating the
+  // phone into an orientation that *does* have one would show nothing.
+  const [videoFailed, setVideoFailed] = useState(false)
 
   // Track orientation live (a mount-time snapshot goes stale on rotate/resize).
   useEffect(() => {
@@ -116,7 +119,23 @@ export default function HeroCinema() {
   // Each language is its own cover layout, with its own source dimensions.
   const artView = (art && (art[lang] || art.en)?.view) || [200, 280]
 
-  const toStill = useCallback(() => { setStage('still'); setHeroPlayed(true) }, [setHeroPlayed])
+  /* The video is only mounted once the box has been measured, because that is
+   * also when the orientation is known to be right. Mounting it on the first
+   * render requested the wrong orientation's file — and Vite's dev server
+   * answers a missing path with index.html and a 200, so the element decoded
+   * HTML, fired `error`, and the hero fell to the still before the correct
+   * source was ever tried. */
+  const showVideo = !!boxSize && !heroPlayed && !videoFailed
+  // Until then, show frame1 — the video's own poster, i.e. the "before" state.
+  // Showing frame2 there would flash the ending before the topple plays.
+  const stillSrc = showVideo || heroPlayed || videoFailed ? stills.frame2 : stills.frame1
+
+  const onEnded = useCallback(() => setHeroPlayed(true), [setHeroPlayed])
+  // A source that will not play is a missing asset, not a performance — leave
+  // heroPlayed alone so the other orientation still gets its turn.
+  const onVideoError = useCallback(() => setVideoFailed(true), [])
+  // A new orientation is a new source; give it a chance.
+  useEffect(() => { setVideoFailed(false) }, [orient])
 
   // Track the hero box size so overlays stay glued to the image through the
   // object-fit:cover crop at any viewport size. Measure synchronously on mount
@@ -175,21 +194,22 @@ export default function HeroCinema() {
   return (
     <section className={`hero-cinema ${theme === 'dark' ? 'is-dark' : ''}`} dir="ltr">
       <div className="hero-cinema-box" ref={boxRef}>
-        {stage === 'video' ? (
+        {showVideo ? (
           <video
+            key={orient}
             className="hero-cinema-media"
             src={videoSrc}
             poster={stills.frame1}
             autoPlay muted playsInline preload="auto"
-            onEnded={toStill}
-            onError={toStill}
+            onEnded={onEnded}
+            onError={onVideoError}
           />
         ) : (
-          <img className="hero-cinema-media" src={stills.frame2} alt=""
+          <img className="hero-cinema-media" src={stillSrc} alt=""
             onError={(e) => { e.currentTarget.style.display = 'none' }} />
         )}
 
-        {stage === 'still' && boxSize && (
+        {!showVideo && boxSize && (
           <div className="hero-cinema-overlays fade-in">
             {/* The cover, rebuilt as parts and perspective-warped onto the blank
                 book. Nothing recolours the board: the photographed cloth keeps
@@ -216,7 +236,7 @@ export default function HeroCinema() {
           <img className="hero-logo hero-cinema-logo" src="./images/logo.png" alt={t(ui.siteTitle)} />
           <span className="pill">{t(ui.siteTagline)}</span>
           <h1>{t({ ar: 'نقرأ الكتاب… ثم نعيشه', en: 'We read the book… then we live it' })}</h1>
-          {stage === 'still' && (
+          {!showVideo && (
             <div className="hero-actions fade-in">
               <Link className="btn primary" to={`/book/${book.id}`}>{t(ui.actions.openBook)} →</Link>
               <Link className="btn" to="/books">{t(ui.nav.books)}</Link>
