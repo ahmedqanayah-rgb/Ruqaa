@@ -21,11 +21,21 @@ import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const RENDERS = path.resolve(__dirname, '../../hero-video-wip/renders')
-const OUT = path.resolve(__dirname, '../public/videos')
+// Scene-scoped, like the frames: two hero treatments are kept side by side.
+const sceneArg = process.argv.indexOf('--scene')
+const SCENE = sceneArg > -1 ? process.argv[sceneArg + 1] : 'toppling'
+const RENDERS = path.resolve(__dirname, `../../hero-video-wip/renders/${SCENE}`)
+const OUT = path.resolve(__dirname, `../public/videos/${SCENE}`)
 
 const MAX_MB = 6
 const MAX_SECONDS = 6
+/* Quality. 23 is visually transparent, but how many bytes that costs depends
+ * entirely on the scene: the toppling shot has a soft out-of-focus wall behind
+ * it and lands at 4.3 MB, while the overhead flat-lay is wall-to-wall sharp
+ * wood grain — the worst case for an encoder — and blew past the budget at the
+ * same setting. Override per scene rather than lowering it for everything. */
+const crfArg = process.argv.indexOf('--crf')
+const CRF = crfArg > -1 ? process.argv[crfArg + 1] : '23'
 
 function ffmpeg(args) {
   try {
@@ -54,7 +64,7 @@ function encode(input, outName) {
     '-y', '-i', src,
     '-t', String(MAX_SECONDS),
     '-an',                                   // drop audio entirely
-    '-c:v', 'libx264', '-preset', 'slow', '-crf', '23',
+    '-c:v', 'libx264', '-preset', 'slow', '-crf', CRF,
     '-pix_fmt', 'yuv420p',                   // required by Safari/older Android
     '-vf', "scale='min(1920,iw)':-2",        // never upscale; keep even dimensions
     '-movflags', '+faststart',               // moov atom first, so it starts on first bytes
@@ -67,7 +77,8 @@ function encode(input, outName) {
     : `  ✓ within the ${MAX_MB} MB budget`))
 }
 
-const [landscape, portrait] = process.argv.slice(2)
+const flagged = new Set(['--scene', SCENE, '--crf', CRF])
+const [landscape, portrait] = process.argv.slice(2).filter((a) => !flagged.has(a))
 if (!landscape) {
   console.error('Usage: node scripts/encode-hero-video.mjs <landscape.mp4> [portrait.mp4]')
   const takes = fs.existsSync(RENDERS) ? fs.readdirSync(RENDERS).filter((f) => f.endsWith('.mp4')) : []

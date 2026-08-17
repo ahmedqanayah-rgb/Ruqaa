@@ -1,14 +1,15 @@
 import { useId } from 'react'
-import { coverArt } from '../data/coverArt.js'
 
 /*
- * Draws a book cover as vector parts, to be warped onto the photographed cloth
- * book in the hero. See src/data/coverArt.js for the recipes and for why the
- * cover image itself is deliberately not used here.
+ * Draws a recipe of vector parts, to be warped onto a surface in the hero photo.
+ * Both heroes use it: the `toppling` one passes a cover recipe from
+ * src/data/coverArt.js (warped onto the standing book's board), the `overhead`
+ * one a title-page recipe from src/data/pageArt.js (set on the open page).
+ * See those files for why the cover IMAGE is deliberately not used.
  *
- * Everything is one inline SVG in the source cover's pixel space, stretched to
+ * Everything is one inline SVG in the recipe's own pixel space, stretched to
  * fill the quad (preserveAspectRatio="none"). Being vector rather than a bitmap
- * is what keeps the title legible: the book renders about 390px wide on a
+ * is what keeps the title legible: the surface renders about 390px wide on a
  * desktop and 110px on a phone, and text stays sharp at both.
  */
 
@@ -22,13 +23,8 @@ function stars(count, seed, w, h) {
   }))
 }
 
-export default function HeroCoverArt({ bookId, lang }) {
+export default function HeroArt({ recipe }) {
   const uid = useId().replace(/:/g, '')
-  const book = coverArt[bookId]
-  // Each language is its own layout — the editions are different covers, not
-  // translations of one design. Fall back to English for a language with no
-  // layout of its own rather than rendering nothing.
-  const recipe = book && (book[lang] || book.en)
   if (!recipe) return null
 
   const [W, H] = recipe.view
@@ -56,7 +52,7 @@ export default function HeroCoverArt({ bookId, lang }) {
   )
 
   return (
-    <svg className="hero-cover-art" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden focusable="false">
+    <svg className="hero-art" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden focusable="false">
       <defs>
         {recipe.art.filter((a) => a.type === 'orb').map((a, i) => (
           <linearGradient key={i} id={`${uid}-orb${i}`} gradientTransform={`rotate(${a.angle || 0} 0.5 0.5)`}>

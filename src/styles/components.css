@@ -177,12 +177,16 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .hero-cinema-box { position: relative; height: min(74vh, 640px); overflow: hidden; }
 @media (orientation: portrait) { .hero-cinema-box { height: min(78vh, 760px); } }
 .hero-cinema-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Stand-in for a treatment that has not been rendered in this orientation yet:
+   show the whole frame rather than a narrow crop of its middle. HeroCinema
+   switches its overlay maths to match. */
+.hero-cinema-media.is-letterboxed { object-fit: contain; }
 .hero-cinema-overlays { position: absolute; inset: 0; pointer-events: none; }
 .hero-cover-warp { position: absolute; top: 0; left: 0; transform-origin: 0 0; overflow: hidden; }
 /* The artwork prints straight onto the photographed board — nothing recolours
    the cloth, so the book keeps its own weave and its own light. HeroCinema also
    sets a clip-path here where something in the photo laps over the board. */
-.hero-cover-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-art { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-cover-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-cover-shade {
   position: absolute; top: 0; left: 0; transform-origin: 0 0;

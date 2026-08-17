@@ -1,5 +1,5 @@
 /*
- * Renders what the frozen hero actually looks like: the rebuilt cover warped
+ * Renders what the frozen hero actually looks like: the artwork warped
  * onto the photographed book, plus the ink title on the open page.
  *
  *   node scripts/hero-preview.mjs            → both orientations
@@ -12,8 +12,8 @@
  * and this change is entirely about whether the cover reads as printed on cloth
  * rather than stuck on. This reproduces the composite offline.
  *
- * It shares the RECIPES with the app (both import src/data/coverArt.js), but
- * the SVG markup is built separately here from the JSX in HeroCoverArt.jsx.
+ * It shares the RECIPES with the app (both import src/data/coverArt.js and pageArt.js), but
+ * the SVG markup is built separately here from the JSX in HeroArt.jsx.
  * Keep the two in step, or trust the browser over this preview when they
  * disagree. Text also renders in whatever system fonts are installed, NOT the
  * site's self-hosted webfonts — so judge layout, colour and composition here,
@@ -25,11 +25,19 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'node:url'
 import { heroScene } from '../src/data/heroScene.js'
 import { coverArt } from '../src/data/coverArt.js'
+import { pageArt } from '../src/data/pageArt.js'
 import { books } from '../src/data/books.js'
 import { club } from '../src/data/club.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const FRAMES = path.resolve(__dirname, '../../hero-video-wip/frames')
+const sceneArg = process.argv.indexOf('--scene')
+const SCENE = sceneArg > -1 ? process.argv[sceneArg + 1] : heroScene.active
+const cfg = heroScene.scenes[SCENE]
+if (!cfg) {
+  console.error(`Unknown scene "${SCENE}". Known: ${Object.keys(heroScene.scenes).join(', ')}`)
+  process.exit(1)
+}
+const FRAMES = path.resolve(__dirname, `../../hero-video-wip/frames/${SCENE}`)
 const IMAGES = path.resolve(__dirname, '../public/images')
 const OUT = path.resolve(__dirname, '../hero-calibrate-out')
 
@@ -52,7 +60,7 @@ function basisToPoints(p1, p2, p3, p4) {
   return mul(m, [v[0], 0, 0, 0, v[1], 0, 0, 0, v[2]])
 }
 
-/** Build the cover SVG from a recipe — mirrors HeroCoverArt.jsx. */
+/** Build the cover SVG from a recipe — mirrors HeroArt.jsx. */
 async function coverSvg(recipe) {
   const [W, H] = recipe.view
   const lines = recipe.text
@@ -107,15 +115,17 @@ function inPolygon(x, y, poly) {
 }
 
 async function render(orient, lang) {
-  const cal = heroScene[orient]
+  const cal = cfg[orient]
+  if (!cal) return
   const src = path.join(FRAMES, `frame2-${orient}.jpg`)
   if (!fs.existsSync(src)) { console.warn(`skip ${orient}: no frame`); return }
 
   const bookId = heroScene.featuredBookId || club.seasons?.find((s) => s.status === 'current')?.bookId
   const book = books.find((b) => b.id === bookId) || books[0]
-  const entry = coverArt[book.id]
+  const source = cfg.kind === 'page' ? pageArt : coverArt
+  const entry = source[book.id]
   const recipe = entry && (entry[lang] || entry.en)
-  if (!recipe) { console.warn(`skip: no cover recipe for ${book.id}`); return }
+  if (!recipe) { console.warn(`skip: no ${cfg.kind} recipe for ${book.id}`); return }
 
   const [CW, CH] = recipe.view
   const art = await sharp(Buffer.from(await coverSvg(recipe)))
@@ -128,13 +138,13 @@ async function render(orient, lang) {
   // Forward: unit square → quad, in the frame's own pixel space. Invert it so
   // each output pixel can ask "which point of the cover falls here?".
   const s = basisToPoints([0, 0], [1, 0], [0, 1], [1, 1])
-  const [tl, tr, br, bl] = cal.coverQuad
+  const [tl, tr, br, bl] = cal.quad
   const d = basisToPoints(tl, tr, bl, br)
   const Hm = mul(d, adj(s))
   const Hi = adj(Hm)
 
-  const clip = cal.coverClip
-  const xs = cal.coverQuad.map((p) => p[0]), ys = cal.coverQuad.map((p) => p[1])
+  const clip = cal.clip
+  const xs = cal.quad.map((p) => p[0]), ys = cal.quad.map((p) => p[1])
   const x0 = Math.max(0, Math.floor(Math.min(...xs))), x1 = Math.min(W, Math.ceil(Math.max(...xs)))
   const y0 = Math.max(0, Math.floor(Math.min(...ys))), y1 = Math.min(H, Math.ceil(Math.max(...ys)))
 
@@ -163,13 +173,13 @@ async function render(orient, lang) {
   }
 
   fs.mkdirSync(OUT, { recursive: true })
-  const out = path.join(OUT, `preview-${orient}-${lang}.jpg`)
+  const out = path.join(OUT, `preview-${SCENE}-${orient}-${lang}.jpg`)
   await sharp(photo, { raw: { width: W, height: H, channels: 4 } })
     .jpeg({ quality: 90 }).toFile(out)
   console.log(`wrote ${path.relative(process.cwd(), out)}`)
 }
 
-const only = process.argv[2]
+const only = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : null
 for (const orient of ['landscape', 'portrait']) {
   if (only && only !== orient) continue
   for (const lang of ['ar', 'en']) await render(orient, lang)

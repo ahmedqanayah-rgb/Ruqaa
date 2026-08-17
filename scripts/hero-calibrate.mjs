@@ -1,21 +1,26 @@
 // Calibration aid for the homepage hero overlays.
 //
-//   node scripts/hero-calibrate.mjs                 → both orientations
-//   node scripts/hero-calibrate.mjs landscape
+//   node scripts/hero-calibrate.mjs                        → the active scene
+//   node scripts/hero-calibrate.mjs landscape --scene overhead
+//   node scripts/hero-calibrate.mjs --zoom landscape 940,120,1560,960 --scene overhead
 //
-// The hero composites two things onto frame2 in IMAGE-SPACE PIXELS, set in
-// src/data/heroScene.js: the featured book's cover, perspective-warped onto the
-// blank leaning book (`coverQuad`, corners TL→TR→BR→BL), and the book title as
-// ink text on the open page (`title`). Those numbers are read off the frame by
-// eye, and they have to be redone every time the frames are regenerated.
+// The hero warps artwork onto a surface in frame2, positioned in IMAGE-SPACE
+// PIXELS set in src/data/heroScene.js: `quad` is the surface's four corners
+// (TL→TR→BR→BL) and `clip` the outline of the part actually visible. Those
+// numbers are read off the frame, and have to be redone every time the frames
+// are regenerated.
 //
-// This writes an annotated copy of each frame next to it:
+// This writes an annotated copy of frame2 for each orientation:
 //   • a 100px grid with labelled axes, so corners can be read off directly;
-//   • the CURRENT coverQuad drawn on top, corners numbered, so a wrong number
+//   • the CURRENT quad drawn on top, corners numbered, so a wrong number
 //     is obvious rather than something you discover in the browser;
-//   • the CURRENT title box at its rotation, width and font size.
+//   • the CURRENT clip outline, dashed, where the scene has one.
 // Look at the output, adjust heroScene.js, run again. Nothing here ships — the
 // annotated files go to hero-calibrate-out/ which is git-ignored.
+//
+// --zoom is the one that matters for accuracy: reading corners off the
+// full-frame grid is only good to about ±30px, which is enough to leave a rim
+// of bare book showing around the artwork.
 import fs from 'node:fs'
 import path from 'node:path'
 import sharp from 'sharp'
@@ -23,16 +28,24 @@ import { fileURLToPath } from 'node:url'
 import { heroScene } from '../src/data/heroScene.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-// The full-resolution masters outside the repo — the quads are pixel
-// coordinates in that space, and public/ only has the smaller WebP.
-const FRAMES = path.resolve(__dirname, '../../hero-video-wip/frames')
+/* Scene-scoped: `--scene <name>` (default: whatever heroScene.active is).
+ * The full-resolution masters live outside the repo — the quads are pixel
+ * coordinates in that space, and public/ only has the smaller WebP. */
+const sceneArg = process.argv.indexOf('--scene')
+const SCENE = sceneArg > -1 ? process.argv[sceneArg + 1] : heroScene.active
+const cfg = heroScene.scenes[SCENE]
+if (!cfg) {
+  console.error(`Unknown scene "${SCENE}". Known: ${Object.keys(heroScene.scenes).join(', ')}`)
+  process.exit(1)
+}
+const FRAMES = path.resolve(__dirname, `../../hero-video-wip/frames/${SCENE}`)
 const OUT = path.resolve(__dirname, '../hero-calibrate-out')
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
 
 function annotate(orient) {
-  const cal = heroScene[orient]
-  const { imageW: W, imageH: H, coverQuad: q, coverClip: clip } = cal
+  const cal = cfg[orient]
+  const { imageW: W, imageH: H, quad: q, clip } = cal
   const step = 100
   const parts = []
 
@@ -90,7 +103,7 @@ if (process.argv[2] === '--zoom') {
     if (major) g.push(`<text x="3" y="${py - 4}" font-family="monospace" font-size="16" fill="#0ff" stroke="#000" stroke-width="3" paint-order="stroke">${y}</text>`)
   }
   fs.mkdirSync(OUT, { recursive: true })
-  const out = path.join(OUT, `zoom-${orient}.jpg`)
+  const out = path.join(OUT, `zoom-${SCENE}-${orient}.jpg`)
   await sharp(src).extract({ left: zx0, top: zy0, width: w, height: h }).resize(SW, SH)
     .composite([{ input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${SW}" height="${SH}">${g.join('')}</svg>`), top: 0, left: 0 }])
     .jpeg({ quality: 92 }).toFile(out)
@@ -98,11 +111,12 @@ if (process.argv[2] === '--zoom') {
   process.exit(0)
 }
 
-const only = process.argv[2]
+const only = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : null
 fs.mkdirSync(OUT, { recursive: true })
 
 for (const orient of ['landscape', 'portrait']) {
   if (only && only !== orient) continue
+  if (!cfg[orient]) continue   // a scene may not have both orientations yet
   const src = path.join(FRAMES, `frame2-${orient}.jpg`)
   if (!fs.existsSync(src)) { console.warn(`skip ${orient}: no ${path.basename(src)}`); continue }
 
@@ -112,7 +126,7 @@ for (const orient of ['landscape', 'portrait']) {
     console.warn(`  ⚠ ${orient}: heroScene says ${W}x${H} but the frame is ${meta.width}x${meta.height}.`)
     console.warn(`    Fix imageW/imageH first — every other number is read in that space.`)
   }
-  const out = path.join(OUT, `calibrate-${orient}.jpg`)
+  const out = path.join(OUT, `calibrate-${SCENE}-${orient}.jpg`)
   await sharp(src).resize(W, H, { fit: 'fill' })
     .composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
     .jpeg({ quality: 88 }).toFile(out)

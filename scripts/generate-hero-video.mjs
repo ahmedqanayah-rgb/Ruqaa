@@ -19,10 +19,7 @@ import { fileURLToPath } from 'node:url'
 import { apiKey, upload, run, download, confirmSpend } from './fal-client.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-// The full-resolution JPEG masters, not the WebP that public/ ships — feed the
-// video model the best pixels available, and it wants a plain jpeg URL.
-const FRAMES = path.resolve(__dirname, '../../hero-video-wip/frames')
-const OUT = path.resolve(__dirname, '../../hero-video-wip/renders')
+const WIP = path.resolve(__dirname, '../../hero-video-wip')
 
 const MODEL = 'fal-ai/veo3.1/fast/first-last-frame-to-video'
 const PRICE_PER_SEC = 0.10 // USD, Veo 3.1 Fast at time of writing, audio off
@@ -42,11 +39,23 @@ const PRICE_PER_SEC = 0.10 // USD, Veo 3.1 Fast at time of writing, audio off
  * A book sliding off a stack and coming to rest leaning against it is perfectly
  * natural. The prompt just has to say so — describe the settle, not a collapse.
  */
-const MOTION = 'The stack of books tips and slides apart on the table. The pale book on top slides off to the right and comes to rest leaning upright against the side of the remaining pile, its front cover facing the camera. A book slides forward out of the stack and flops open face up on the table in front. The books settle and stop moving. Locked-off static camera, no camera movement, no zoom, no pan. Natural physics and weight, soft indoor light. No text, no captions, no people, no hands.'
+const TOPPLING_MOTION = 'The stack of books tips and slides apart on the table. The pale book on top slides off to the right and comes to rest leaning upright against the side of the remaining pile, its front cover facing the camera. A book slides forward out of the stack and flops open face up on the table in front. The books settle and stop moving. Locked-off static camera, no camera movement, no zoom, no pan. Natural physics and weight, soft indoor light. No text, no captions, no people, no hands.'
 
-// The last three exist because of the failure above: whatever happens, nothing
-// should rise off the table or run backwards.
-const NEGATIVE = 'camera movement, zoom, pan, people, hands, text, captions, watermark, subtitles, books rising off the table, objects floating upward, reversed motion'
+/* The overhead ("Übersicht") treatment: one closed book falls open beside a cup
+ * of coffee, seen straight down. Two things are called out explicitly because
+ * they are the obvious ways this goes wrong — a book does not open itself, so
+ * the model is inclined to add a hand; and the cup is the one object that must
+ * not drift, since it is in both frames and the eye locks onto it. */
+const OVERHEAD_MOTION = 'Seen from directly above, the closed book\'s front cover lifts and swings open to the left, the pages fanning over and settling flat, until the book lies fully open showing two blank cream pages. The book comes to rest and stops moving. The cup of coffee stays completely still and does not move at any point. Locked-off overhead camera looking straight down, no camera movement, no zoom, no pan. Natural physics and weight, soft indoor light. No hands, no people, no text, no captions.'
+
+const SCENES = {
+  toppling: { motion: TOPPLING_MOTION },
+  overhead: { motion: OVERHEAD_MOTION },
+}
+
+// The tail exists because of a real failure: take 1 of the toppling scene let a
+// book rise back off the table to reach the target frame.
+const NEGATIVE = 'camera movement, zoom, pan, people, hands, fingers, arms, text, captions, watermark, subtitles, books rising off the table, objects floating upward, reversed motion'
 
 const args = process.argv.slice(2)
 const arg = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback)
@@ -54,6 +63,15 @@ const only = arg('--only', null)
 const duration = arg('--duration', '6s')      // enum: 4s | 6s | 8s — NOT free-form
 const resolution = arg('--resolution', '1080p') // 720p | 1080p | 4k
 const seed = args.includes('--seed') ? +args[args.indexOf('--seed') + 1] : null
+const scene = arg('--scene', 'toppling')
+if (!SCENES[scene]) {
+  console.error(`Unknown --scene "${scene}". Known: ${Object.keys(SCENES).join(', ')}`)
+  process.exit(1)
+}
+// The full-resolution JPEG masters, not the WebP that public/ ships — feed the
+// video model the best pixels available, and it wants a plain jpeg URL.
+const FRAMES = path.join(WIP, 'frames', scene)
+const OUT = path.join(WIP, 'renders', scene)
 
 const takes = [
   { name: 'landscape', aspect: '16:9' },
@@ -67,7 +85,7 @@ async function render({ name, aspect }) {
     upload(key, path.join(FRAMES, `frame2-${name}.jpg`)),
   ])
   const body = {
-    prompt: MOTION,
+    prompt: SCENES[scene].motion,
     negative_prompt: NEGATIVE,
     first_frame_url: first,
     last_frame_url: last,
@@ -92,7 +110,7 @@ async function render({ name, aspect }) {
 const key = apiKey()
 const secs = parseInt(duration, 10) * takes.length
 await confirmSpend(key, {
-  what: `Hero video — ${takes.map((t) => t.name).join(' + ')} @ ${duration} ${resolution}, audio off`,
+  what: `Hero video [${scene}] — ${takes.map((t) => t.name).join(' + ')} @ ${duration} ${resolution}, audio off`,
   estimate: secs * PRICE_PER_SEC,
 })
 

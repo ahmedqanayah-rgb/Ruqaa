@@ -6,13 +6,17 @@ import { books } from '../data/books.js'
 import { club } from '../data/club.js'
 import { heroScene } from '../data/heroScene.js'
 import { coverArt } from '../data/coverArt.js'
-import HeroCoverArt from './HeroCoverArt.jsx'
+import { pageArt } from '../data/pageArt.js'
+import HeroArt from './HeroArt.jsx'
 
 /*
- * Cinematic homepage hero: the "toppling books" video plays once per session,
- * then freezes on the final still, where we composite the featured book's real
- * cover (perspective-warped onto the blank book) and its title as ink text on
- * the open page. All per-book settings live in src/data/heroScene.js.
+ * Cinematic homepage hero: a short video plays once per session, then freezes
+ * on its own final frame, onto which the featured book's artwork is
+ * perspective-warped.
+ *
+ * Which treatment runs — and every coordinate — lives in src/data/heroScene.js.
+ * Its `kind` decides what gets warped: 'cover' takes the rebuilt book cover from
+ * coverArt.js, 'page' the title page from pageArt.js.
  */
 
 /* ---- perspective math: unit square → arbitrary quad, as CSS matrix3d ---- */
@@ -62,8 +66,10 @@ function clipPolygon([tl, tr, br, bl], outline) {
 }
 
 /* Map image-space px → on-screen px for an object-fit:cover image/video. */
-function coverMap(imgW, imgH, boxW, boxH) {
-  const s = Math.max(boxW / imgW, boxH / imgH)
+function coverMap(imgW, imgH, boxW, boxH, contain = false) {
+  // `contain` mirrors object-fit: contain — the overlays have to follow whichever
+  // fit the media element is using, or they detach from the picture.
+  const s = contain ? Math.min(boxW / imgW, boxH / imgH) : Math.max(boxW / imgW, boxH / imgH)
   const ox = (boxW - imgW * s) / 2
   const oy = (boxH - imgH * s) / 2
   return ([x, y]) => [x * s + ox, y * s + oy]
@@ -104,10 +110,19 @@ export default function HeroCinema() {
     }
   }, [])
 
-  const orient = portrait ? 'portrait' : 'landscape'
-  const cal = heroScene[orient]
-  const stills = heroScene.stills[orient]
-  const videoSrc = heroScene.video[orient]
+  const scene = heroScene.scenes[heroScene.active]
+  // A scene may only have been rendered in one orientation so far; fall back to
+  // landscape rather than pointing at assets that do not exist.
+  const orient = portrait && scene.portrait ? 'portrait' : 'landscape'
+  // …but a 16:9 frame cropped into a tall phone box shows a narrow vertical
+  // slice — on the overhead flat-lay that loses the cup entirely and cuts
+  // through the title. Letterbox that case instead: the whole frame stays
+  // visible, which is what a treatment being compared needs. Not a substitute
+  // for rendering the orientation properly, just an honest stand-in.
+  const letterbox = portrait && !scene.portrait
+  const cal = scene[orient]
+  const stills = scene.stills[orient]
+  const videoSrc = scene.video[orient]
 
   // Default to the season the club is actually reading — the same source of
   // truth Home uses for the carousel — so the two can't disagree. heroScene
@@ -115,9 +130,14 @@ export default function HeroCinema() {
   const wantedId = heroScene.featuredBookId
     || club.seasons?.find((s) => s.status === 'current')?.bookId
   const book = books.find((b) => b.id === wantedId) || books[0]
-  const art = coverArt[book.id]
-  // Each language is its own cover layout, with its own source dimensions.
-  const artView = (art && (art[lang] || art.en)?.view) || [200, 280]
+
+  // What gets warped onto the quad depends on the scene: the book's cover, or
+  // its title page. Each language is its own layout with its own dimensions —
+  // the editions are different artefacts, not translations of one design.
+  const source = scene.kind === 'page' ? pageArt : coverArt
+  const entry = source[book.id]
+  const art = entry && (entry[lang] || entry.en)
+  const artView = art?.view || [200, 280]
 
   /* The video is only mounted once the box has been measured, because that is
    * also when the orientation is known to be right. Mounting it on the first
@@ -174,8 +194,8 @@ export default function HeroCinema() {
 
   let coverStyle = null
   if (boxSize) {
-    const map = coverMap(cal.imageW, cal.imageH, boxSize[0], boxSize[1])
-    const q = cal.coverQuad.map(map)
+    const map = coverMap(cal.imageW, cal.imageH, boxSize[0], boxSize[1], letterbox)
+    const q = cal.quad.map(map)
     // The cover overlay is laid out at the source cover's own aspect ratio and
     // warped onto the quad. It has to be the cover's ratio, not a fixed one: the
     // artwork fills this box with preserveAspectRatio="none", so a mismatch here
@@ -188,7 +208,7 @@ export default function HeroCinema() {
     // is applied in the element's own box and only then transformed, so the
     // percentages are the cover's own space — hence mapping the outline's image
     // pixels back through the inverse of the same homography.
-    if (cal.coverClip) coverStyle.clipPath = clipPolygon(cal.coverQuad, cal.coverClip)
+    if (cal.clip) coverStyle.clipPath = clipPolygon(cal.quad, cal.clip)
   }
 
   return (
@@ -197,7 +217,7 @@ export default function HeroCinema() {
         {showVideo ? (
           <video
             key={orient}
-            className="hero-cinema-media"
+            className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`}
             src={videoSrc}
             poster={stills.frame1}
             autoPlay muted playsInline preload="auto"
@@ -205,7 +225,7 @@ export default function HeroCinema() {
             onError={onVideoError}
           />
         ) : (
-          <img className="hero-cinema-media" src={stillSrc} alt=""
+          <img className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`} src={stillSrc} alt=""
             onError={(e) => { e.currentTarget.style.display = 'none' }} />
         )}
 
@@ -219,7 +239,7 @@ export default function HeroCinema() {
                 no recipe in coverArt.js fall back to the image. */}
             <div className="hero-cover-warp" style={coverStyle} aria-hidden>
               {art ? (
-                <HeroCoverArt bookId={book.id} lang={lang} />
+                <HeroArt recipe={art} />
               ) : (
                 <img className="hero-cover-fallback" src={t(book.cover)} alt=""
                   onError={(e) => { e.currentTarget.style.display = 'none' }} />
