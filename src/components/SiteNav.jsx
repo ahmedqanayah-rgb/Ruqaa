@@ -21,11 +21,15 @@ const L = (ar, en) => ({ ar, en })
  * word by the `<h1>` directly below. The old `.section-breadcrumb` in
  * `BookSection` is gone for the same reason — the chips replace it.
  *
- * Not sticky. It sits under the navbar as one block with it, and scrolls away:
- * pinning a second row would cost a phone 67px of *every* screen of reading on
- * top of the navbar's 62, and the navbar and in-book bar already hold both
- * edges. They can't share a single line either — measured at 375px the navbar
- * is 8px over-full before any chip is added, and the chips need 562px.
+ * IT NOW RIDES INSIDE THE NAVBAR — one bar, merged at the club's request.
+ * Below 1024px it hides itself: the navbar alone needs ~448px and these chips
+ * ~562px, so a phone cannot carry both on one line (measured at 375px, the
+ * navbar is already 8px over-full before a single chip is added). The drawer
+ * lists the same destinations there, which does cost this component's original
+ * point on small screens — a visitor on a phone has to open the menu to
+ * discover the second book. That is the trade the merge makes; if it matters
+ * more than the single bar, the honest fix is a second row again on phones
+ * only, not squeezing these into 36px of leftover space.
  */
 export default function SiteNav() {
   const { t } = useApp()

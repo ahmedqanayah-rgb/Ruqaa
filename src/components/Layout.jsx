@@ -4,7 +4,6 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
-import SiteNav from './SiteNav.jsx'
 import SearchPalette from './SearchPalette.jsx'
 
 /*
@@ -132,14 +131,13 @@ export default function Layout({ children }) {
       <a className="skip-link" href="#main">
         {t(ui.actions.skipToContent)}
       </a>
-      {/* The navbar and the site map are one header block, not two bars. They
-          can't share a *line*: measured at 375px the navbar is already 8px
-          over-full (346 used against 338 available) and the chips need 562px.
-          So they stack, but share a surface and a single bottom border, and
-          only the top row is sticky — the chips scroll away rather than pin a
-          second bar over every screen of reading. */}
+      {/* ONE bar. The site map used to sit on a second row beneath this one;
+          the club asked for them merged, so the chips now ride inside the
+          navbar itself. They cannot share a line on a phone — measured at
+          375px the navbar is already 8px over-full before a single chip — so
+          below 1024px the chips hide and the drawer carries those same
+          destinations. See SiteNav for what that trades away. */}
       <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} />
-      <SiteNav />
       <div className="app-body">
         <Sidebar
           open={drawerOpen}

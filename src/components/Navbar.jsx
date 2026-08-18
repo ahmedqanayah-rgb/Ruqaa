@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Icon from './Icon.jsx'
+import SiteNav from './SiteNav.jsx'
 
 export default function Navbar({ onMenu, onSearch }) {
   const { t, theme, toggleLang, toggleTheme, togglePresenting } = useApp()
@@ -29,7 +30,10 @@ export default function Navbar({ onMenu, onSearch }) {
         </span>
       </Link>
 
-      <div className="navbar-spacer" />
+      {/* The site map lives INSIDE the bar, not on a second row under it.
+          It hides itself on narrow screens — see SiteNav — where the drawer
+          carries the same destinations. */}
+      <SiteNav />
 
       <button className="search-btn" onClick={onSearch} aria-label={t(ui.actions.search)}>
         <Icon name="🔍" />

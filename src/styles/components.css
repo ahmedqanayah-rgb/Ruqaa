@@ -9,12 +9,13 @@
   padding: 0 var(--space-4); height: 62px;
   background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
   backdrop-filter: saturate(140%) blur(10px);
-  /* No bottom border: the site-map row directly below closes the header block,
-     so the two read as one bar rather than two. Once that row has scrolled
-     away the navbar's own translucent, blurred background is what separates it
-     from the text underneath — which is the boundary, deliberately, rather
-     than a hard rule reappearing mid-scroll. */
+  /* It closes itself now. The site-map row used to sit underneath and carry the
+     border for both; the two were merged into this one bar, so the rule comes
+     back here. */
+  border-bottom: 1px solid var(--border);
 }
+/* Pushes the controls to the far end whether or not the site map is showing. */
+.navbar .search-btn { margin-inline-start: auto; }
 .brand { display: flex; align-items: center; gap: 11px; color: var(--text); }
 .brand:hover { text-decoration: none; }
 .brand-logo { width: 40px; height: 40px; border-radius: 11px; object-fit: cover; box-shadow: var(--shadow-sm); }
@@ -173,9 +174,21 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 /* ============================================================
    Home — cinematic hero (toppling-books video, see data/heroScene.js)
    ============================================================ */
-.hero-cinema { margin: calc(-1 * var(--space-5)) calc(-1 * var(--space-4)) var(--space-5); }
-.hero-cinema-box { position: relative; height: min(74vh, 640px); overflow: hidden; }
-@media (orientation: portrait) { .hero-cinema-box { height: min(78vh, 760px); } }
+/* FULL BLEED, AND NOTHING CROPPED OFF THE SIDES.
+   The hero used to live inside .page's 900px measure and be given a fixed
+   height, so a 16:9 film was poured into a 900x592 box — 1.52:1 — and
+   object-fit:cover ate the left and right of every frame. Two changes fix that
+   together, and both are needed: the page drops its measure and its side
+   padding so the hero spans the whole content column, and the box takes the
+   film's own aspect ratio so there is nothing left to crop.
+   The rest of Home re-applies the measure for itself, below. */
+.page:has(.hero-cinema) { max-width: none; padding-inline: 0; padding-top: 0; }
+.page:has(.hero-cinema) > .home > :not(.hero-cinema) {
+  max-width: var(--maxw); margin-inline: auto; padding-inline: var(--space-4);
+}
+.hero-cinema { margin: 0 0 var(--space-5); }
+.hero-cinema-box { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
+@media (orientation: portrait) { .hero-cinema-box { aspect-ratio: 9 / 16; } }
 .hero-cinema-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* Stand-in for a treatment that has not been rendered in this orientation yet:
    show the whole frame rather than a narrow crop of its middle. HeroCinema
@@ -285,21 +298,17 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    scrollable rather than wrapping: on a phone a wrapped row of six chips eats
    three lines before the page has said anything, and a single scrolling row
    keeps the reader's position visible at the start of it. */
-.sitenav {
-  /* The lower half of the header: same surface as the navbar, no gap between
-     them, and the border that used to close the navbar now closes this. The
-     two read as one block rather than two stacked bars.
-     Only the navbar is sticky — this scrolls away, because pinning it too
-     would cost 66px of every screen on a phone, on top of the navbar's 62. */
-  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
-  border-bottom: 1px solid var(--border);
-  padding: 0 var(--space-4) var(--space-2);
-}
+/* The site map rides INSIDE the navbar — one bar, not two. It brings no
+   surface or border of its own any more; the bar around it supplies both.
+   Below 1024px it hides: the navbar alone already needs ~448px and the chips
+   ~562px, so a phone cannot show both on one line, and the drawer carries the
+   same destinations there. */
+.sitenav { flex: 1; min-width: 0; }
 .sitenav-row {
-  width: 100%; max-width: var(--maxw); margin: 0 auto;
-  display: flex; gap: var(--space-2); overflow-x: auto;
-  scrollbar-width: none; padding-top: var(--space-3);
+  display: flex; gap: var(--space-2); justify-content: center;
+  overflow-x: auto; scrollbar-width: none;
 }
+@media (max-width: 1023px) { .sitenav { display: none; } }
 .sitenav-row::-webkit-scrollbar { display: none; }
 .sitenav-chip {
   display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
@@ -907,7 +916,7 @@ button.sf-toast:hover { border-color: var(--danger); }
      a side and ran off the right edge, invisibly, because html/body carry
      overflow-x:hidden (which also pins scrollWidth, so the usual overflow
      check reports clean — compare against .page's box instead). */
-  .hero-cinema { margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-3)) var(--space-4); }
+  .hero-cinema { margin: 0 0 var(--space-4); }
   /* Drop the hero's own logo on phones. The navbar already shows it two
      centimetres above, and the block it sits in — logo, tagline, headline,
      three buttons — is 236px of a 633px hero, tall enough to cover the bottom
