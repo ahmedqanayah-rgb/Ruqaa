@@ -5,6 +5,7 @@
  * appended to each article section (rendered by BookSection after the blocks).
  */
 import { author } from './author.js'
+import { translatorSection } from '../../translator.js'
 import { summary, causesMap, speedFlow, exhaustion } from './sections-1.js'
 import { readingMindwandering, bigTech, cruelOptimism } from './sections-2.js'
 import { stressVigilance, dietPollution, adhd, childhood, rebellion } from './sections-3.js'
@@ -128,7 +129,7 @@ export const stolenFocus = {
   verdict,
   accent: 'var(--accent)',
   groups: [
-    { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'summary', 'causes-map'] },
+    { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'translator', 'summary', 'causes-map'] },
     { title: L('الأسباب الاثنا عشر', 'The twelve causes'),
       slugs: ['speed-flow', 'exhaustion', 'reading-mindwandering', 'big-tech', 'cruel-optimism',
               'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
@@ -140,6 +141,9 @@ export const stolenFocus = {
   ],
   sections: [
     author,
+    // Same translator as the other book, so the biography lives in one shared
+    // module and each book passes only its own edition details.
+    translatorSection({ titleAr: 'تركيزنا المسلوب', titleEn: 'Stolen Focus', yearAr: '٢٠٢٣' }),
     enrich(summary),
     enrich(causesMap),
     enrich(speedFlow),

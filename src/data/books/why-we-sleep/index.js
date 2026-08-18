@@ -4,6 +4,7 @@
  * register it in ../../books.js.
  */
 import { author } from './author.js'
+import { translatorSection } from '../../translator.js'
 import { summary, mechanism } from './sections-1.js'
 import { rem, nrem, memory } from './sections-2.js'
 import { health, lifespan, dreams, animal, characters } from './sections-3.js'
@@ -29,7 +30,7 @@ export const whyWeSleep = {
   accent: 'var(--accent)',
   verdict,
   groups: [
-    { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'summary'] },
+    { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'translator', 'summary'] },
     { title: L('علم النوم', 'The science of sleep'), slugs: ['mechanism', 'rem', 'nrem', 'memory'] },
     { title: L('النوم وحياتك', 'Sleep and your life'), slugs: ['health', 'lifespan', 'dreams', 'animal'] },
     { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['assessment', 'challenge', 'studies'] },
@@ -37,6 +38,9 @@ export const whyWeSleep = {
   ],
   sections: [
     author,
+    // Same translator as the other book, so the biography lives in one shared
+    // module and each book passes only its own edition details.
+    translatorSection({ titleAr: 'لماذا ننام', titleEn: 'Why We Sleep', yearAr: '٢٠١٩' }),
     summary,
     mechanism,
     rem,
