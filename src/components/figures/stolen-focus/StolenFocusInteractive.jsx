@@ -150,8 +150,12 @@ export function SfFlowChannel() {
           <text x={cx} y={cy < 52 ? cy + 36 : cy - 22} textAnchor="middle" fontSize="26"
             style={{ pointerEvents: 'none' }}>{mood}</text>
         </svg>
+        {/* Both axes get named. The plane named only Skill: the vertical axis
+            was left to be inferred from the slider below it, which is exactly
+            the sort of gap that makes a chart unreadable at a glance. */}
         <div className="sf-axislabels">
           <span>{t(L('← المهارة →', '← Skill →'))}</span>
+          <span>{t(L('↑ التحدّي ↑', '↑ Challenge ↑'))}</span>
           <span className="sf-zone" data-zone={zone.key}>{mood} {isAr ? zone.ar : zone.en}</span>
         </div>
         <label className="sf-slider">
@@ -194,7 +198,9 @@ const ADHD_PRESETS = [
 ]
 export function SfAdhdThreshold() {
   const { t } = useApp()
-  const [z, setZ] = useState(1.2) // threshold in SD above the mean
+  // Opens on the ~5% reference, not an arbitrary value: the first number the
+  // reader sees should be one that exists in the world.
+  const [z, setZ] = useState(1.645) // threshold in SD above the mean
   const [hovering, setHovering] = useState(false)
   const pct = Math.round(normalRightTail(z) * 100)
 
@@ -218,10 +224,10 @@ export function SfAdhdThreshold() {
   return (
     <FigureFrame number={11}
       title={L('أين نرسم الخطّ؟ (نقاش فرط الحركة)', 'Where do we draw the line? (the ADHD debate)')}
-      caption={L('التململ والحركة طيفٌ متّصل في أيّ مجموعة بشرية. كم منهم «مصاب بفرط الحركة»؟ يعتمد على مكان خطّ التشخيص. **مرّر المؤشّر عبر المنحنى** — أو استخدم المنزلق أو انقر نقطة مرجعية حقيقية — لترى كيف تتغيّر النسبة: هذا جوهر نقاش نيغ والتميمي.',
-                 'Restlessness is a smooth spectrum in any population. How many “have ADHD”? It depends where the diagnostic line sits. **Sweep the pointer across the curve** — or use the slider, or tap a real-world reference — and watch the share change: the heart of the Nigg–Timimi debate.')}>
+      caption={L('**كيف تقرأ الشكل:** المحور الأفقي درجة التململ وقلّة الانتباه — الأهدأ في طرف والأشدّ في الطرف الآخر — والارتفاع عدد الأطفال عند كلّ درجة؛ فمعظمهم في الوسط والأطراف قليلة، لأن التململ صفةٌ متدرّجة لا خانتان. والخطّ الأحمر هو حدّ التشخيص: من يقع خلفه يُعدّ «مشخّصاً». **والمقصد أن موضع الخطّ ليس أمراً تفرضه الطبيعة** — حرّكه قليلاً تتغيّر النسبة كثيراً: ٥٪ أو ٣٠٪ من المنحنى نفسه. وهذا جوهر نقاش نيغ والتميمي: هل تغيّر الأطفال أم تغيّر مكان الخطّ؟ **مرّر المؤشّر عبر المنحنى** أو استخدم المنزلق أو انقر نقطة مرجعية. (المنحنى توضيحيّ لا بيانات مقيسة: شكلٌ جرسيّ يمثّل تدرّج الصفة، والنسب محسوبة منه رياضياً.)',
+                 '**How to read this:** the horizontal axis is degree of restlessness and inattention — calmest at one end, most restless at the other — and the height is how many children sit at each degree; most cluster in the middle and the extremes are few, because restlessness is a graded trait, not two boxes. The red line is the diagnostic threshold: everyone beyond it counts as “diagnosed”. **The point is that nature does not fix where that line goes** — move it a little and the share moves a lot: 5% or 30% from the very same curve. That is the heart of the Nigg–Timimi debate: did the children change, or did the line move? **Sweep the pointer across the curve**, use the slider, or tap a reference point. (The curve is illustrative, not measured data: a bell shape standing for how the trait is spread, with the percentages computed from it.)')}>
       <div className="sf-adhd">
-        <svg viewBox="0 0 300 170" className="sf-adhd-svg" role="img"
+        <svg viewBox="0 0 300 196" className="sf-adhd-svg" role="img"
           onPointerMove={(e) => { setHovering(true); setFromPointer(e) }}
           onPointerDown={setFromPointer}
           onPointerLeave={() => setHovering(false)}
@@ -241,9 +247,28 @@ export function SfAdhdThreshold() {
           {/* threshold line */}
           <line x1={thX} y1="20" x2={thX} y2="150" stroke="var(--danger)" strokeWidth="2.5" />
           <text x={thX} y="15" textAnchor="middle" fontSize="12" fill="var(--danger)">{t(L('خطّ التشخيص', 'diagnostic line'))}</text>
+
+          {/* AXES. Without these the figure is a bell curve with a red line
+              through it and no stated meaning — which is exactly how it read
+              before. The horizontal axis is the trait; the vertical is how many
+              children sit at each point on it. */}
+          <text x="20" y="164" textAnchor="start" fontSize="9.5" fill="var(--text-muted)">{t(L('هادئ', 'calm'))}</text>
+          <text x="280" y="164" textAnchor="end" fontSize="9.5" fill="var(--text-muted)">{t(L('شديد التململ', 'very restless'))}</text>
+          <text x="150" y="182" textAnchor="middle" fontSize="10.5" fill="var(--text-soft)">
+            {t(L('درجة التململ وقلّة الانتباه ←', 'degree of restlessness / inattention →'))}
+          </text>
+          <text x="11" y="85" textAnchor="middle" fontSize="10.5" fill="var(--text-soft)"
+            transform="rotate(-90 11 85)">{t(L('عدد الأطفال', 'number of children'))}</text>
+          {/* names the red area rather than leaving the reader to infer it */}
+          {pct >= 8 && (
+            <text x={(thX + 280) / 2} y="140" textAnchor="middle" fontSize="9.5" fill="var(--danger)">
+              {t(L('يُشخَّصون', 'diagnosed'))}
+            </text>
+          )}
         </svg>
         <div className="sf-adhd-readout" aria-live="polite">
-          {t({ ar: 'المُشخَّصون:', en: 'Diagnosed:' })} <b>{t({ ar: `${pct}٪`, en: `${pct}%` })}</b>
+          {t({ ar: 'يقع فوق الخطّ', en: 'Above the line:' })} <b>{t({ ar: `${pct}٪`, en: `${pct}%` })}</b>
+          {' '}{t(L('من الأطفال — أي يُشخَّصون بفرط الحركة', 'of children — i.e. would be diagnosed with ADHD'))}
           {hovering && <span className="sf-slider-hint"> · {t(L('تتبع المؤشّر', 'following the pointer'))}</span>}
         </div>
         <label className="sf-slider">
