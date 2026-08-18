@@ -103,7 +103,7 @@ const OVERHEAD_OPEN = 'A photorealistic overhead flat-lay photograph looking str
 
 const OVERHEAD_CLOSE_AGAIN = 'Edit this exact scene, keeping the same straight-down overhead camera, framing, table, lighting, and the cup of coffee and saucer in exactly the same position untouched: the book is now closed. A single plain unmarked hardcover book with a warm sand cloth cover lies flat, face up, covering only the right-hand half of the area the open book occupied — the left half is now bare table. The book still does not touch the cup. Same shadows, same light. No text anywhere.'
 
-const OVERHEAD_PORTRAIT = 'Recompose this exact overhead flat-lay as a vertical portrait photograph: same straight-down camera, same table, same open book with two blank cream pages, same cup of coffee. Arrange it so the open book fills the upper two thirds of the frame and the bottom third is empty table surface. No text anywhere.'
+const OVERHEAD_PORTRAIT = 'Recompose this exact overhead flat-lay as a vertical portrait photograph, same straight-down camera, same dark wooden table, same soft light: the same book lies open and flat with two clean blank cream pages, filling the width of the upper part of the frame. The white ceramic cup of black coffee on its saucer sits on the bare table just above the book, near the top edge, standing clear of it with visible empty wood between the saucer and the pages - it must not touch, overlap or rest on the book. The bottom third of the frame is empty, uncluttered table surface falling into soft shadow. No text anywhere.'
 
 /*
  * --restack regenerates frame1 as an edit OF frame2, i.e. backwards.

@@ -89,6 +89,8 @@ async function coverSvg(recipe) {
         const x = rnd() * W, y = rnd() * H, r = 0.4 + rnd() * 1.2, o = 0.25 + rnd() * 0.7
         body.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" fill="${a.fill}" opacity="${o.toFixed(2)}"/>`)
       }
+    } else if (a.type === 'rule') {
+      body.push(`<line x1="${a.x1}" y1="${a.y}" x2="${a.x2}" y2="${a.y}" stroke="${a.fill}" stroke-width="${a.w}" stroke-linecap="square"/>`)
     } else if (a.type === 'cutout') {
       // Inline as a PNG data URI: the SVG renderer resolves neither relative
       // hrefs nor WebP here.

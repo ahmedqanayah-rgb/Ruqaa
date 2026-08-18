@@ -30,26 +30,37 @@ const SERIF = "Georgia, 'Times New Roman', serif"
 // Printed on cream paper, so: black.
 const INK = '#000000'
 
-// The page is ~492×748px in the landscape frame; this is that, rounded.
+/* The page is ~492x748px in the landscape frame and ~468x780 in the portrait
+ * one; this is that, rounded. Both map onto the same recipe.
+ *
+ * TYPE IS SET LARGER THAN A REAL TITLE PAGE WOULD BE, on purpose. On a phone
+ * the whole page renders about 162px wide, so a book's genuine proportions put
+ * the title at roughly 15px and the translator line below legibility. These
+ * sizes trade a little bibliographic realism for a title you can actually read
+ * at arm's length, which is the entire job of a hero. */
 const VIEW = [500, 760]
+
+// A short centred rule under the title, the way a title page separates the
+// work from its author. Drawn, not typed, so it scales with the page.
+const RULE = (y) => ({ type: 'rule', x1: 175, x2: 325, y, w: 2.5, fill: INK })
 
 export const pageArt = {
   'stolen-focus': {
     ar: {
       view: VIEW,
-      art: [],
+      art: [RULE(352)],
       text: [
-        { s: 'تركيزنا المسلوب', x: 250, y: 268, size: 46, font: AR, weight: 700, fill: INK },
-        { s: 'يوهان هاري', x: 250, y: 350, size: 26, font: AR, weight: 500, fill: INK },
-        { s: 'ترجمة: الحارث النبهان', x: 250, y: 612, size: 18, font: AR, weight: 500, fill: INK },
+        { s: 'تركيزنا المسلوب', x: 250, y: 300, size: 60, font: AR, weight: 700, fill: INK },
+        { s: 'يوهان هاري', x: 250, y: 424, size: 36, font: AR, weight: 500, fill: INK },
+        { s: 'ترجمة: الحارث النبهان', x: 250, y: 648, size: 26, font: AR, weight: 500, fill: INK },
       ],
     },
     en: {
       view: VIEW,
-      art: [],
+      art: [RULE(352)],
       text: [
-        { s: 'Stolen Focus', x: 250, y: 268, size: 46, font: SERIF, weight: 600, fill: INK },
-        { s: 'Johann Hari', x: 250, y: 350, size: 26, font: EN, weight: 500, fill: INK },
+        { s: 'Stolen Focus', x: 250, y: 300, size: 58, font: SERIF, weight: 600, fill: INK },
+        { s: 'Johann Hari', x: 250, y: 424, size: 34, font: EN, weight: 500, track: 1, fill: INK },
       ],
     },
   },
@@ -57,19 +68,19 @@ export const pageArt = {
   'why-we-sleep': {
     ar: {
       view: VIEW,
-      art: [],
+      art: [RULE(352)],
       text: [
-        { s: 'لماذا ننام', x: 250, y: 268, size: 46, font: AR, weight: 700, fill: INK },
-        { s: 'ماثيو ووكر', x: 250, y: 350, size: 26, font: AR, weight: 500, fill: INK },
-        { s: 'ترجمة: الحارث النبهان', x: 250, y: 612, size: 18, font: AR, weight: 500, fill: INK },
+        { s: 'لماذا ننام', x: 250, y: 300, size: 64, font: AR, weight: 700, fill: INK },
+        { s: 'ماثيو ووكر', x: 250, y: 424, size: 36, font: AR, weight: 500, fill: INK },
+        { s: 'ترجمة: الحارث النبهان', x: 250, y: 648, size: 26, font: AR, weight: 500, fill: INK },
       ],
     },
     en: {
       view: VIEW,
-      art: [],
+      art: [RULE(352)],
       text: [
-        { s: 'Why We Sleep', x: 250, y: 268, size: 46, font: SERIF, weight: 600, fill: INK },
-        { s: 'Matthew Walker', x: 250, y: 350, size: 26, font: EN, weight: 500, fill: INK },
+        { s: 'Why We Sleep', x: 250, y: 300, size: 58, font: SERIF, weight: 600, fill: INK },
+        { s: 'Matthew Walker', x: 250, y: 424, size: 34, font: EN, weight: 500, track: 1, fill: INK },
       ],
     },
   },

@@ -908,6 +908,12 @@ button.sf-toast:hover { border-color: var(--danger); }
      overflow-x:hidden (which also pins scrollWidth, so the usual overflow
      check reports clean — compare against .page's box instead). */
   .hero-cinema { margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-3)) var(--space-4); }
+  /* Drop the hero's own logo on phones. The navbar already shows it two
+     centimetres above, and the block it sits in — logo, tagline, headline,
+     three buttons — is 236px of a 633px hero, tall enough to cover the bottom
+     of the open page and with it the translator credit. Losing the duplicate
+     buys back ~74px and clears the page. */
+  .hero-cinema .hero-cinema-logo { display: none; }
   .spider-wrap { grid-template-columns: 1fr; }
   .section-nav { flex-direction: column; }
   .section-nav .btn { max-width: none; }

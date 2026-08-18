@@ -127,6 +127,10 @@ export const heroScene = {
           frame1: './images/hero/overhead/frame1-landscape.webp',
           frame2: './images/hero/overhead/frame2-landscape.webp',
         },
+        portrait: {
+          frame1: './images/hero/overhead/frame1-portrait.webp',
+          frame2: './images/hero/overhead/frame2-portrait.webp',
+        },
       },
       landscape: {
         imageW: 1920, imageH: 1080,
@@ -134,6 +138,15 @@ export const heroScene = {
         // edge. The right page on purpose: it is the recto, which is where a
         // title page falls in a real book, in either language.
         quad: [[990, 186], [1482, 180], [1481, 926], [988, 934]],
+      },
+      portrait: {
+        // 1080x1920 — the video's own frames, not FLUX's 1088-wide stills.
+        imageW: 1080, imageH: 1920,
+        // Same recto. The phone framing puts the cup above the book and leaves
+        // the bottom third of the picture as bare table, which is where the
+        // hero's own logo, tagline and buttons sit — so the type on the page
+        // never collides with them.
+        quad: [[547, 550], [1015, 545], [1013, 1322], [546, 1329]],
       },
     },
   },

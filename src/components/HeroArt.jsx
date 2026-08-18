@@ -83,6 +83,10 @@ export default function HeroArt({ recipe }) {
             ))}
           </g>
         )
+        if (a.type === 'rule') return (
+          <line key={i} x1={a.x1} y1={a.y} x2={a.x2} y2={a.y}
+            stroke={a.fill} strokeWidth={a.w} strokeLinecap="square" />
+        )
         if (a.type === 'cutout') return (
           <image key={i} href={a.src} x={a.x} y={a.y} width={a.w} height={a.h} preserveAspectRatio="none" />
         )
