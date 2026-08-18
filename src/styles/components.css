@@ -298,6 +298,24 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    scrollable rather than wrapping: on a phone a wrapped row of six chips eats
    three lines before the page has said anything, and a single scrolling row
    keeps the reader's position visible at the start of it. */
+/* The path, one line under the header. Deliberately NOT sticky — see
+   Breadcrumb.jsx for the measured reason. Muted and small so it reads as chrome
+   rather than as a heading competing with the <h1> below it. */
+.crumbs { border-bottom: 1px solid var(--border); background: var(--bg-elev); }
+.crumbs-row {
+  max-width: var(--maxw); margin: 0 auto; padding: 9px var(--space-4);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  list-style: none; font-size: var(--fs-sm); color: var(--text-muted);
+}
+.crumbs-row li { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.crumbs-row a { color: var(--text-soft); }
+.crumbs-row a:hover { color: var(--accent); }
+.crumb-current { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crumb-sep { color: var(--text-muted); }
+/* The chevron is a glyph and does not mirror itself. */
+html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
+@media (max-width: 520px) { .crumbs-row { padding: 8px var(--space-3); } }
+
 /* The site map rides INSIDE the navbar — one bar, not two. It brings no
    surface or border of its own any more; the bar around it supplies both.
    Below 1024px it hides: the navbar alone already needs ~448px and the chips

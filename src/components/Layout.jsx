@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
+import Breadcrumb from './Breadcrumb.jsx'
 import SearchPalette from './SearchPalette.jsx'
 
 /*
@@ -23,7 +24,13 @@ function scroller() {
 export default function Layout({ children }) {
   const { t, presenting, setPresenting, togglePresenting } = useApp()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
+  /* The sidebar starts COLLAPSED to a 64px icon rail. The top-level
+     destinations moved into the navbar, so what the rail hides is the active
+     book's section tree — one click away on the rail's own toggle, and listed
+     in full on the book landing. This state lives in Layout and Layout never
+     unmounts, so a reader who opens it keeps it open for the sitting; on phones
+     the sidebar is a drawer and ignores this entirely. */
+  const [collapsed, setCollapsed] = useState(true)
   const [searchOpen, setSearchOpen] = useState(false)
   const loc = useLocation()
   const navType = useNavigationType()
@@ -138,6 +145,7 @@ export default function Layout({ children }) {
           below 1024px the chips hide and the drawer carries those same
           destinations. See SiteNav for what that trades away. */}
       <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} />
+      <Breadcrumb />
       <div className="app-body">
         <Sidebar
           open={drawerOpen}
