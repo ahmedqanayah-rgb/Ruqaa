@@ -245,7 +245,14 @@ export default function HeroCinema() {
                   onError={(e) => { e.currentTarget.style.display = 'none' }} />
               )}
             </div>
-            <span className="hero-cover-shade" style={coverStyle} aria-hidden />
+            {/* A raking light gradient across the artwork. It belongs to the
+                `cover` scene, where the board stands up and catches the light
+                from one side. On the overhead flat-lay the light falls evenly
+                from above, so the same gradient just dirties one corner of a
+                clean page — and scripts/hero-preview.mjs never drew it, so
+                leaving it on that scene also made the offline preview disagree
+                with the browser. */}
+            {scene.kind !== 'page' && <span className="hero-cover-shade" style={coverStyle} aria-hidden />}
           </div>
         )}
 

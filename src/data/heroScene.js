@@ -59,6 +59,10 @@ export const heroScene = {
       kind: 'cover',
       video: {
         landscape: './videos/toppling/hero-landscape.mp4',
+        // Never rendered — this treatment was set aside before its portrait
+        // take. Nothing requests it while `active` is 'overhead', and if this
+        // scene were switched back on a phone the missing file degrades to the
+        // still without consuming the once-per-session play (see HeroCinema).
         portrait: './videos/toppling/hero-portrait.mp4',
       },
       // WebP, like every other display image on the site. The full-resolution

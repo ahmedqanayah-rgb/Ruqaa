@@ -22,7 +22,6 @@
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand-text strong { font-size: var(--fs-md); }
 .brand-text small { color: var(--text-muted); font-size: var(--fs-xs); }
-.navbar-spacer { flex: 1; }
 
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center;

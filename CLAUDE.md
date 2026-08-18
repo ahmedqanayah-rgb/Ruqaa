@@ -314,7 +314,47 @@ keeps `base: './'` sub-path hosting working.
   CSS hides the chrome and scales the *root font-size* (21px), which lifts every rem-based
   token at once. Toggle: navbar 📽️ button or bare `p`; Esc exits. The palette's Esc handler
   uses `stopImmediatePropagation` because both it and Layout listen on `window`.
-- **Paused side-project (do NOT mention on the member-facing site — it's a surprise):**
-  a homepage intro video. All work, assets, and a full resume guide are stashed OUTSIDE
-  the repo in `C:\Users\aq\Desktop\Ruqaa\hero-video-wip\RESUME.md`. Read that file when
-  the user asks to continue "the video".
+- **The homepage hero is a video** (shipped 2026-08-18; it was a surprise for members
+  until then, and no longer is). `src/data/heroScene.js` is the control panel: `enabled`
+  is a kill switch back to the old text hero, `active` picks between two complete
+  treatments, and `featuredBookId: null` means "follow the club's current season".
+  - **`overhead` is live** — a flat-lay: a book falls open beside a cup of coffee, and the
+    book's title/author/translator are set on the open right-hand page (`data/pageArt.js`).
+    **`toppling` is kept whole beside it** — a stack slides apart and the rebuilt book
+    cover (`data/coverArt.js`) is warped onto the standing book. One word switches them.
+  - **The video plays once per session** (in-memory flag in `AppContext`, never storage)
+    then freezes. **frame1/frame2 are the video's own first and last frames**, extracted
+    from the encoded mp4 — an earlier version froze on the FLUX stills the video was
+    generated *from* and the freeze visibly jumped, because generation drifts.
+  - **Nothing uses the cover IMAGE.** Warping a photo of a cover onto a photographed book
+    reads as a sticker: it brings its own lighting and paper. The artwork is rebuilt from
+    parts — vector shapes, type in the site's own fonts, and illustrations cut out of the
+    real cover by `scripts/extract-cover-art.mjs`. Type is **black**, because it prints
+    onto the book's own pale cloth; nothing recolours the board.
+  - **`quad`/`clip` are pixel coordinates in the frame** and must be recalibrated whenever
+    frames change. Use `scripts/hero-calibrate.mjs` — its `--zoom` mode is what makes
+    corners accurate; the full-frame grid is only good to ±30px, which once left a visible
+    rim of bare book around the artwork. `scripts/hero-preview.mjs` renders the composite
+    offline, which is the only way to judge it: the embedded browser pane cannot
+    screenshot, and it also freezes CSS animations and serves stale HMR stylesheets.
+  - **Generation costs real money** and every script gates on `--yes`, printing the
+    estimate and live balance first. Key in `../.keys/fal.txt`, outside the repo. Total
+    spend was ~$3. Full pipeline notes, including the failures worth not repeating, are in
+    `C:\Users\aq\Desktop\Ruqaa\hero-video-wip\RESUME.md`.
+  - **Full-resolution masters stay OUTSIDE the repo** in `hero-video-wip/frames/<scene>/`;
+    `public/` ships only WebP. The four landscape JPEGs alone are 3.1 MB against 0.76 MB
+    as WebP, and `public/` is copied verbatim into `dist`.
+
+- **The header is ONE bar.** The site map used to sit on a second row beneath the navbar;
+  the chips now ride inside it. Below 1024px they hide — the navbar alone needs ~448px and
+  the chips ~562px — and the drawer carries those destinations there. A **breadcrumb**
+  (`components/Breadcrumb.jsx`) sits under the bar and is **deliberately not sticky**:
+  pinning a second row costs a phone 67px of *every* screen of reading, and section pages
+  already carry a fixed bar at the bottom. **The sidebar starts collapsed** to a 64px rail;
+  its state lives in `Layout` and survives navigation for the sitting.
+
+- **Each book has an «عن المترجم» tab** beside «عن المؤلّف» (`src/data/translator.js`).
+  Both Arabic editions are Dar Al-Tanweer and share one translator, so the biography is
+  written once and each book passes only its title and edition year. Everything factual
+  there is carried by the four linked sources, the first of which is his own televised
+  account.
