@@ -14,9 +14,12 @@
    publisher's own author page, and his interview with Asharq Al-Awsat; the
    `sources` block at the foot links all three. Two deliberate omissions:
 
-   - **No portrait.** The author tabs open with one; there is no photograph of
-     him the club has any right to use, and inventing or scraping one is worse
-     than going without. The layout reads fine without it.
+   - **The portrait came from the club**, not from a search. Three photographs
+     were supplied; the one used is the head-and-shoulders shot, because that is
+     the house framing the author tabs already use — the alternative was a much
+     sharper file but cropped so tight the crown touched the frame. It is the
+     smallest original of the three (235px), so it is upscaled with a light
+     sharpen and nothing else: no retouching, nothing that changes how he looks.
    - **The prison years are in, and here is the evidence behind them.** Arabic
      Wikipedia does not mention them and his Asharq Al-Awsat interview does not
      either, so this was first drafted without them. The club confirmed the
@@ -29,6 +32,12 @@
      It is written plainly and without embellishment: what happened, and what
      it produced. No speculation about why he was held, and no politics — this
      is a reading club's page about a translator, not a verdict on a state.
+     (Some reporting does give a reason for his detention. It is left out on
+     purpose; it is not this page's business and it is not the club's to assert.)
+
+     The strongest source is his own: he tells the story on camera in «للحديث
+     صلة» on العربي, linked at the foot. That episode is what the club's third
+     photograph was a promo card for.
 
    It renders in both languages like every other section — the site has no
    Arabic-only sections and adding that machinery for one tab would be a poor
@@ -36,6 +45,8 @@
    ========================================================================== */
 
 const L = (ar, en) => ({ ar, en })
+// portraits are WebP now; callers still pass the old .jpg name.
+const port = (f) => `./images/characters/${f.replace(/\.\w+$/, '')}.webp`
 
 /**
  * @param {object} edition  what differs per book
@@ -52,6 +63,11 @@ export function translatorSection({ titleAr, titleEn, yearAr }) {
       'Al-Harith Al-Nabhan — a Syrian translator living in Bulgaria who has brought dozens of books into Arabic, including the Arabic edition of this one.'
     ),
     blocks: [
+      { type: 'image', src: port('harith-al-nabhan.jpg'), wide: true,
+        alt: L('الحارث النبهان', 'Al-Harith Al-Nabhan'),
+        caption: L('المترجم الحارث النبهان (Al-Harith Al-Nabhan).',
+                   'The translator Al-Harith Al-Nabhan.') },
+
       { type: 'callout', variant: 'note', title: L('لماذا هذا القسم؟', 'Why this section?'), text: L(
         'الكتاب الذي نقرأه في النادي ليس النصّ الإنجليزيّ، بل **الترجمة العربية**. وكلّ جملةٍ نناقشها مرّت بيد مترجم، واختار لها كلماتها. فمن العدل أن نعرف من هو.',
         'The book the club actually reads is not the English text but the **Arabic translation**. Every sentence we discuss passed through a translator’s hands, and he chose its words. It is only fair to know who he is.'
@@ -72,6 +88,10 @@ export function translatorSection({ titleAr, titleEn, yearAr }) {
       { type: 'p', text: L(
         'اعتُقل النبهان سياسياً، وأمضى في السجن **أربعة عشر عاماً**، أُفرج عنه بعدها عام **١٩٩٨**. وفي تلك السنوات تحديداً تعلّم الإنجليزية وتعمّق فيها: شكّل مع معتقلَين آخرين حلقةً لدراسة اللغة داخل السجن. ومن هناك بدأت الترجمة — تؤرّخ سيرته لبدايته عام **١٩٩١**، أي وهو ما يزال في الداخل.',
         'Al-Nabhan was detained for political reasons and spent **fourteen years** in prison, released in **1998**. It was in those years that he learned English and went deep into it: inside, he formed a language study circle with two fellow detainees. And it was there that the translating began — his biography dates his first work to **1991**, while he was still inside.'
+      ) },
+      { type: 'p', text: L(
+        'ويروي القصة بنفسه — لا بلسان غيره — في لقاءٍ تلفزيونيّ ضمن برنامج «للحديث صلة»، بعنوان «حين تصبح الترجمة شغفاً». الرابط في آخر الصفحة، ويستحقّ المشاهدة.',
+        'And he tells it himself — not at second hand — in a television interview on the programme “Lil-Hadith Silah,” titled “When translation becomes a passion.” The link is at the foot of this page, and it is worth watching.'
       ) },
       { type: 'p', text: L(
         'بعد الإفراج واصل الطريق نفسه: اتّخذ الترجمة مهنةً كاملة عام **٢٠٠٥**، ثم تفرّغ منذ **٢٠١٣** لترجمة الكتب، والروايات خاصّةً. ما يقرؤه النادي اليوم بالعربية هو، في جانبٍ منه، ثمرة لغةٍ تعلّمها رجلٌ خلف قضبان.',
@@ -121,6 +141,11 @@ export function translatorSection({ titleAr, titleEn, yearAr }) {
       ) },
 
       { type: 'sources', title: L('المصادر', 'Sources'), items: [
+        // First, because it is first-person: he tells the prison story on camera.
+        { label: L('«حين تصبح الترجمة شغفاً» — لقاء ضمن برنامج «للحديث صلة»',
+                   '“When translation becomes a passion” — interview on “Lil-Hadith Silah”'),
+          publisher: L('العربي تيوب', 'AlarabyTube'),
+          url: 'https://www.youtube.com/watch?v=kXpR9OxpnXw' },
         { label: L('الحارث النبهان — ويكيبيديا العربية', 'Al-Harith Al-Nabhan — Arabic Wikipedia'),
           publisher: L('ويكيبيديا', 'Wikipedia'),
           url: 'https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%AD%D8%A7%D8%B1%D8%AB_%D8%A7%D9%84%D9%86%D8%A8%D9%87%D8%A7%D9%86' },

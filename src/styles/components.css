@@ -458,7 +458,17 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 }
 
 .img-block { margin: var(--space-5) 0; text-align: center; }
-.img-block img { border-radius: var(--radius); border: 1px solid var(--border); max-width: 100%; width: auto; max-height: 460px; margin: 0 auto; object-fit: contain; background: var(--bg-elev-2); }
+/* `height: auto` is load-bearing, not tidiness. ImageBlock emits the intrinsic
+   width/height as ATTRIBUTES so the browser can reserve the box before the
+   bytes land — and in HTML those attributes are presentational hints that map
+   to the CSS width/height properties. `width: auto` overrode the width hint,
+   but nothing overrode the height one, so every content image got a box as tall
+   as its intrinsic pixel height (clamped by max-height) while its width was
+   constrained to the column. object-fit:contain then letterboxed the picture
+   inside that box: the author portrait sat in a 338x520 box painting 338x422,
+   ~98px of dead space. With both auto, the attributes do what the comment in
+   ImageBlock says they do — supply the aspect ratio, nothing more. */
+.img-block img { border-radius: var(--radius); border: 1px solid var(--border); max-width: 100%; width: auto; height: auto; max-height: 460px; margin: 0 auto; object-fit: contain; background: var(--bg-elev-2); }
 .img-block.wide img { max-height: 520px; }
 /* Cleaned images: no card frame, so in the light theme they still blend into
    the page. They are no longer transparent — each carries its own paper backing

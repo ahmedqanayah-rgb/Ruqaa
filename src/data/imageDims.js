@@ -8,6 +8,7 @@ export const imageDims = {
   './images/anatomical/half-sleeping-bird.webp': [1280, 912],
   './images/anatomical/natural-killer-cells.webp': [1000, 779],
   './images/anatomical/rem-vs-nrem.webp': [1200, 675],
+  './images/characters/harith-al-nabhan.webp': [500, 500],
   './images/characters/johann-hari.webp': [500, 625],
   './images/characters/matthew-walker.webp': [500, 500],
   './images/clean/adenosine-1.webp': [1291, 977],
