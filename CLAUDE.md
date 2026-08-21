@@ -178,6 +178,26 @@ keeps `base: './'` sub-path hosting working.
   path: the script already appends `location.hash` to the `path` we gave it, so folding
   double-applies and yields `/book/why-we-sleep/book/why-we-sleep`. Verify changes in `npm run
   dev`, where the debug script logs every event to the console instead of sending it.
+- **The page has NO native scrollbar, on purpose.** `body::-webkit-scrollbar` is
+  zero-width and `scrollbar-width: none`; `components/ScrollOverlay.jsx` draws a fixed,
+  translucent thumb over the content instead, fading in while scrolling and out ~900ms
+  after. The reason is layout, not looks: a native bar reserves its ~10px track for the
+  whole life of the page, so it narrowed the hero video and every page beside it even
+  while invisible. Removing the track is only safe because nothing replaces it in layout —
+  the width is zero *always*, so there is no appear/disappear reflow. It is still a real
+  scrollbar: the strip takes no pointer events, the thumb does, so it drags. **Under
+  `hover: none` the thumb is indicator-only** — an `opacity: 0` element still takes pointer
+  events, and a grabbable thumb leaves an invisible strip along the screen edge exactly
+  where the phone back-swipe lives. **The INNER scrollers keep their native bars** (sidebar,
+  search results, book carousel) and fade via `.is-scrolling`, set on `<html>` by `Layout`
+  — including a **capture-phase** listener, the only way to hear an inner scroller, since
+  `scroll` does not bubble from an element.
+- **`collapsed` is set regardless of viewport, so the mobile drawer carries it too.**
+  Below 861px the drawer is a full 288px wide, so every icon-rail rule must stay inside
+  `@media (min-width: 861px)` — outside it they land on the drawer, which is how it once
+  ended up a full-width list of unlabelled icons. The rail itself shows a caption under
+  each icon (it was bare icons, two of them the same book glyph), and a book is marked by
+  its own cover rather than an emoji.
 - **Study `method` fields are deliberately verbose** (2–3 sentences with setup and the
   researchers' reasoning) so each quiz question is self-explanatory before the answer is
   revealed. Keep that style if you add or edit studies; don't shorten them back to
@@ -332,6 +352,12 @@ keeps `base: './'` sub-path hosting working.
     then freezes. **frame1/frame2 are the video's own first and last frames**, extracted
     from the encoded mp4 — an earlier version froze on the FLUX stills the video was
     generated *from* and the freeze visibly jumped, because generation drifts.
+  - **The still is always mounted UNDER the video** — don't collapse that back into a
+    ternary that renders one or the other. It used to, and the still then mounted with a
+    ~0.5 MB frame2 the browser had never fetched, requested at the exact moment of the cut,
+    so the hero blinked between the video ending and the artwork appearing. It holds frame1
+    until the video is genuinely `playing`: with the ending underneath, a transparent first
+    paint of the `<video>` would flash the finish before the motion ran.
   - **Nothing uses the cover IMAGE.** Warping a photo of a cover onto a photographed book
     reads as a sticker: it brings its own lighting and paper. The artwork is rebuilt from
     parts — vector shapes, type in the site's own fonts, and illustrations cut out of the
