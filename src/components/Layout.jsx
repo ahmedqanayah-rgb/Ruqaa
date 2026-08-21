@@ -6,6 +6,7 @@ import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
 import Breadcrumb from './Breadcrumb.jsx'
 import SearchPalette from './SearchPalette.jsx'
+import ScrollOverlay from './ScrollOverlay.jsx'
 
 /*
  * The app scrolls on <body> — `global.css` puts `overflow-y` there, so <html>
@@ -196,6 +197,7 @@ export default function Layout({ children }) {
         </main>
       </div>
       <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <ScrollOverlay />
       {presenting && (
         <button className="present-exit" onClick={() => setPresenting(false)}>
           ✕ {t(ui.actions.exitPresent)} <kbd>esc</kbd>

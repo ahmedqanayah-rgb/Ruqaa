@@ -53,15 +53,21 @@ bdi, .isolate { unicode-bidi: isolate; }
 /* Focus */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
-/* Scrollbar — there only while the page is actually moving.
-   `.is-scrolling` is put on <html> by Layout for a beat after each scroll and
-   removed when it stops (it also catches inner scrollers — the sidebar, the
-   search results — via a capture-phase listener).
+/* Scrollbars.
+   THE PAGE HAS NO NATIVE SCROLLBAR — components/ScrollOverlay.jsx draws it over
+   the content instead. Fading only the thumb still reserved the 10px track for
+   the whole life of the page, which narrowed the hero video and every page
+   beside it for a scrollbar that is invisible most of the time. Removing the
+   track is safe precisely because nothing replaces it in the layout: the width
+   is zero always, so there is no appear/disappear reflow to avoid.
 
-   Only the THUMB's colour changes, never the track's width. Hiding a scrollbar
-   by collapsing its width reflows everything beside it, so the page would jog
-   sideways each time it appeared; keeping the 10px gutter and fading only the
-   thumb costs nothing and moves nothing. */
+   The INNER scrollers keep their native bars and the fade below. They sit
+   inside their own boxes — the sidebar, the search results, the book carousel —
+   so they never pushed the page around, and `.is-scrolling` (set on <html> by
+   Layout, including a capture-phase listener so inner scrollers are heard)
+   fades them the cheap way. */
+body { scrollbar-width: none; }
+body::-webkit-scrollbar { width: 0; height: 0; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {

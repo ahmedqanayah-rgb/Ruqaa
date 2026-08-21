@@ -440,6 +440,36 @@ html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
 
 /* ---- reading progress bar ---- */
 .read-progress { position: fixed; top: 0; inset-inline: 0; height: 3px; z-index: 60; background: transparent; pointer-events: none; }
+
+/* ---- overlay scrollbar (components/ScrollOverlay.jsx) ----
+   Costs NO layout: a fixed strip over the page, not a gutter beside it. The
+   strip itself never eats clicks — only the thumb does, so it can be dragged
+   the way a real scrollbar is. `inset-inline-end` puts it on the right in LTR
+   and the left in RTL, which is where each browser puts its own. */
+.scroll-overlay {
+  position: fixed; inset-block: 0; inset-inline-end: 3px;
+  width: 8px; z-index: 55; pointer-events: none;
+}
+.scroll-overlay-thumb {
+  position: absolute; inset-inline: 0;
+  border-radius: 999px; background: var(--text-muted);
+  opacity: 0; transition: opacity 260ms ease;
+  pointer-events: auto; touch-action: none;
+}
+.scroll-overlay.is-active .scroll-overlay-thumb { opacity: 0.38; }
+/* Reaching for it brings it up solid, at rest or not. Both selectors are
+   spelled out because `.scroll-overlay.is-active .scroll-overlay-thumb` outranks
+   a bare `:hover` — the active state would otherwise win over the hover. */
+.scroll-overlay-thumb:hover,
+.scroll-overlay.is-active .scroll-overlay-thumb:hover { opacity: 0.7; }
+@media (prefers-reduced-motion: reduce) { .scroll-overlay-thumb { transition: none; } }
+/* On touch it is an INDICATOR ONLY. An opacity:0 element still takes pointer
+   events, so a grabbable thumb leaves an invisible 8px strip along the screen
+   edge — exactly where the back-swipe gesture lives. Nobody drags a scrollbar
+   on a phone anyway. Keyed to `hover: none` rather than a width, so a
+   touchscreen laptop keeps the drag it can actually use. */
+@media (hover: none) { .scroll-overlay-thumb { pointer-events: none; } }
+
 .read-progress-fill { height: 100%; width: 0; background: var(--accent); transition: width 80ms linear; }
 
 /* ---- route transition ---- */
@@ -1266,7 +1296,8 @@ html[data-presenting] { font-size: 21px; }
 html[data-presenting] .navbar,
 html[data-presenting] .sidebar,
 html[data-presenting] .site-footer,
-html[data-presenting] .read-progress { display: none; }
+html[data-presenting] .read-progress,
+html[data-presenting] .scroll-overlay { display: none; }
 
 html[data-presenting] .app-body { padding: 0; }
 html[data-presenting] .app-main { margin: 0; width: 100%; }
