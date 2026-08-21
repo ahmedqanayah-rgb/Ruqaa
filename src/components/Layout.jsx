@@ -75,6 +75,40 @@ export default function Layout({ children }) {
     }
   }, [])
 
+  /* ---- the scrollbar shows only while scrolling -------------------------
+     `global.css` paints the thumb transparent and keys its colour to
+     `html.is-scrolling`; this is what puts that class on and takes it off. The
+     track keeps its width throughout, so nothing reflows either way.
+
+     Three listeners, and each earns its place. Body and window are the pair the
+     scroll-restoration above already relies on, because the app scrolls on
+     <body>. The third is a CAPTURE-phase listener on `document`, which is the
+     only one that hears the inner scrollers — the sidebar, the search results,
+     the book carousel — since scroll events do not bubble up from an element.
+     Without it those scrollbars would never appear at all.
+
+     NB: the in-app preview pane dispatches NO scroll events on any target, so
+     this cannot be exercised there; add the class by hand to check the CSS. */
+  useEffect(() => {
+    let timer
+    const root = document.documentElement
+    const onScroll = () => {
+      root.classList.add('is-scrolling')
+      clearTimeout(timer)
+      timer = setTimeout(() => root.classList.remove('is-scrolling'), 700)
+    }
+    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    document.body.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('scroll', onScroll, { capture: true })
+      document.body.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', onScroll)
+      root.classList.remove('is-scrolling')
+    }
+  }, [])
+
   /* Placed before paint so the reader never sees the top of the page flash by
      on the way to where they were. */
   useLayoutEffect(() => {

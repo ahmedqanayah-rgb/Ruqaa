@@ -57,9 +57,42 @@
   width: 28px; height: 28px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--bg-elev-2); color: var(--text-soft);
 }
-.sidebar.collapsed .side-heading,
-.sidebar.collapsed .side-text { display: none; }
-.sidebar.collapsed .side-link { justify-content: center; }
+/* ---- icon rail (collapsed) -------------------------------------------------
+   EVERY RULE HERE IS SCOPED TO DESKTOP, and that is not tidiness — it is the
+   bug this block was written to fix. `collapsed` lives in Layout and is set
+   regardless of viewport, so the MOBILE DRAWER carries the class as well. Below
+   861px the drawer is a full 288px wide, and these rail rules were landing on
+   it: it was showing `.side-text { display: none }`, i.e. a full-width drawer of
+   unlabelled icons. Anything that styles the 64px rail belongs inside this
+   query, never outside it.
+
+   The rail itself was icons alone: five bare buttons, two of them the same book
+   glyph, so nothing in it could be identified — and since the sidebar starts
+   collapsed, that is what a reader meets first. Each entry now stacks its icon
+   over a small caption. The captions are the point; don't strip them back out
+   to save the height. Only the group HEADINGS stay hidden — «التصفّح» over three
+   items it already describes is the one label the rail can do without. */
+@media (min-width: 861px) {
+  .sidebar.collapsed .side-heading { display: none; }
+  /* The section tree would be pure noise at this width. */
+  .sidebar.collapsed .side-sections { display: none; }
+  .sidebar.collapsed .side-book-toggle { display: none; }
+  /* 0.85rem of side padding left ~37px of a 64px rail for text. */
+  .sidebar.collapsed .sidebar-inner { padding-inline: var(--space-1); }
+  .sidebar.collapsed .side-link {
+    flex-direction: column; justify-content: center; gap: 5px;
+    padding: 8px 3px; text-align: center;
+  }
+  .sidebar.collapsed .side-text {
+    flex: none; width: 100%;
+    font-size: 0.62rem; line-height: 1.25; font-weight: 600;
+    /* One clipped line. The rail cannot hold «تركيزنا المسلوب» whole, and
+       letting it wrap would give every entry a different height — the titles
+       are here to tell two books apart, which the first word already does. */
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sidebar.collapsed .side-book-cover { width: 22px; height: 29px; }
+}
 
 .drawer-close {
   position: absolute; inset-inline-end: 8px; top: 8px; z-index: 2;
@@ -92,7 +125,6 @@
   transition: background var(--transition), color var(--transition);
 }
 .side-book-toggle:hover { background: var(--surface-hover); color: var(--text); }
-.sidebar.collapsed .side-book-toggle { display: none; }
 /* ---- line icons (components/Icon.jsx) ----
    Sized in `em` so each one follows the type of whatever it sits beside, and
    nudged down a hair: an SVG box aligns to the text baseline differently from
@@ -108,6 +140,13 @@
 .icon-fallback { font-size: 1em; line-height: 1; }
 
 .side-icon { width: 22px; height: 1.15em; text-align: center; flex-shrink: 0; }
+/* A book's mark is its own cover, shaped like one. Fixed box so a missing or
+   slow image never changes the row's height. */
+.side-book-cover {
+  width: 18px; height: 24px; border-radius: 3px; overflow: hidden;
+  background: var(--bg-elev-2); box-shadow: var(--shadow-sm);
+}
+.side-book-cover img { width: 100%; height: 100%; object-fit: cover; }
 .side-text { flex: 1; }
 .side-link.sub { padding: 7px 10px; font-size: var(--fs-sm); }
 .side-seen { color: var(--success); font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
@@ -141,8 +180,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 }
 @keyframes sideGroupIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 
-/* Icon-rail (collapsed) mode: the section tree would be pure noise — hide it. */
-.sidebar.collapsed .side-sections { display: none; }
 
 .sidebar-overlay {
   position: fixed; inset: 0; background: rgba(10, 12, 24, 0.5);

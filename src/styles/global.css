@@ -53,10 +53,28 @@ bdi, .isolate { unicode-bidi: isolate; }
 /* Focus */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
-/* Scrollbar */
+/* Scrollbar — there only while the page is actually moving.
+   `.is-scrolling` is put on <html> by Layout for a beat after each scroll and
+   removed when it stops (it also catches inner scrollers — the sidebar, the
+   search results — via a capture-phase listener).
+
+   Only the THUMB's colour changes, never the track's width. Hiding a scrollbar
+   by collapsing its width reflows everything beside it, so the page would jog
+   sideways each time it appeared; keeping the 10px gutter and fading only the
+   thumb costs nothing and moves nothing. */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: transparent; border-radius: 6px;
+  transition: background-color 240ms ease;
+}
+html.is-scrolling ::-webkit-scrollbar-thumb { background: var(--border-strong); }
+/* Reaching for it with the mouse should also bring it back, even at rest. */
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+/* Firefox exposes no pseudo-elements for this; `scrollbar-color` is the whole
+   API, and it inherits, so setting it on <html> reaches every scroller. */
+html { scrollbar-color: transparent transparent; }
+html.is-scrolling { scrollbar-color: var(--border-strong) transparent; }
 
 /* ---------- Reusable pieces ---------- */
 .card {

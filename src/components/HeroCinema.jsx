@@ -84,6 +84,9 @@ export default function HeroCinema() {
   // a missing file must not burn the once-per-session play, or rotating the
   // phone into an orientation that *does* have one would show nothing.
   const [videoFailed, setVideoFailed] = useState(false)
+  // Whether the video has actually started painting frames. Used to decide when
+  // it is safe to put the ENDING still underneath it — see `stillSrc` below.
+  const [playing, setPlaying] = useState(false)
 
   // Track orientation live (a mount-time snapshot goes stale on rotate/resize).
   useEffect(() => {
@@ -146,16 +149,37 @@ export default function HeroCinema() {
    * HTML, fired `error`, and the hero fell to the still before the correct
    * source was ever tried. */
   const showVideo = !!boxSize && !heroPlayed && !videoFailed
-  // Until then, show frame1 — the video's own poster, i.e. the "before" state.
-  // Showing frame2 there would flash the ending before the topple plays.
-  const stillSrc = showVideo || heroPlayed || videoFailed ? stills.frame2 : stills.frame1
+
+  /* THE STILL IS ALWAYS MOUNTED, UNDERNEATH THE VIDEO. Don't "simplify" this
+   * back into a ternary that swaps one element for the other.
+   *
+   * It used to render the <video> OR the <img>, never both. When the video
+   * ended, the img mounted with a frame2 the browser had never fetched — half a
+   * megabyte, requested at the exact moment of the cut — so the hero went blank
+   * for a fraction of a second between the video finishing and the artwork
+   * appearing. Measured in the network log: frame2 was requested *after* the
+   * mp4 finished, not alongside it.
+   *
+   * Keeping the still mounted under the video means the end of the video is a
+   * pure removal: the frame underneath is already fetched, decoded and painted.
+   *
+   * Which frame it holds still matters. frame1 (the "before" state) until the
+   * video is genuinely playing — if the ending sat there while the poster was
+   * still loading, a transparent first paint of the <video> would flash the
+   * finish before the motion ran. Once frames are painting, the video is opaque
+   * and covers the box, so swapping to frame2 is invisible and gives it the
+   * whole four seconds to load. */
+  const ended = heroPlayed || videoFailed
+  const stillSrc = ended || playing ? stills.frame2 : stills.frame1
 
   const onEnded = useCallback(() => setHeroPlayed(true), [setHeroPlayed])
   // A source that will not play is a missing asset, not a performance — leave
   // heroPlayed alone so the other orientation still gets its turn.
   const onVideoError = useCallback(() => setVideoFailed(true), [])
-  // A new orientation is a new source; give it a chance.
-  useEffect(() => { setVideoFailed(false) }, [orient])
+  const onPlaying = useCallback(() => setPlaying(true), [])
+  // A new orientation is a new source; give it a chance, and make it earn the
+  // ending still again rather than inheriting the previous source's.
+  useEffect(() => { setVideoFailed(false); setPlaying(false) }, [orient])
 
   // Track the hero box size so overlays stay glued to the image through the
   // object-fit:cover crop at any viewport size. Measure synchronously on mount
@@ -214,19 +238,19 @@ export default function HeroCinema() {
   return (
     <section className={`hero-cinema ${theme === 'dark' ? 'is-dark' : ''}`} dir="ltr">
       <div className="hero-cinema-box" ref={boxRef}>
-        {showVideo ? (
+        <img className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`} src={stillSrc} alt=""
+          onError={(e) => { e.currentTarget.style.display = 'none' }} />
+        {showVideo && (
           <video
             key={orient}
             className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`}
             src={videoSrc}
             poster={stills.frame1}
             autoPlay muted playsInline preload="auto"
+            onPlaying={onPlaying}
             onEnded={onEnded}
             onError={onVideoError}
           />
-        ) : (
-          <img className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`} src={stillSrc} alt=""
-            onError={(e) => { e.currentTarget.style.display = 'none' }} />
         )}
 
         {!showVideo && boxSize && (

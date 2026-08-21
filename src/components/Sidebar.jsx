@@ -96,7 +96,20 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
                   <div className="side-book-row">
                     <NavLink to={`/book/${book.id}`} onClick={onClose}
                       className={`side-link book-entry ${isActiveBook && !activeSlug ? 'active' : ''}`}>
-                      <span className="side-icon" aria-hidden>📖</span>
+                      {/* The book's own cover, not a generic book glyph. Two
+                          entries both marked 📖 were indistinguishable in the
+                          collapsed rail, and it was also the last raw emoji left
+                          in the sidebar. A failed load hides itself rather than
+                          leaving a broken box (the ClubBanner pattern). */}
+                      <span className="side-icon side-book-cover" aria-hidden>
+                        {/* Eager, not lazy: the rail sits at the top of the
+                            page and is on screen the moment it renders, so lazy
+                            only delays 16-29 kB that Home fetches anyway. It
+                            also never fired at all in the embedded preview,
+                            whose document reports itself hidden. */}
+                        <img src={t(book.cover)} alt=""
+                          onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                      </span>
                       <span className="side-text">{t(book.title)}</span>
                     </NavLink>
                     <button className="side-book-toggle" onClick={() => toggleBook(book.id)}
