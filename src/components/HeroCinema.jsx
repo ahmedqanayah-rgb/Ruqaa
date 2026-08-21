@@ -148,7 +148,12 @@ export default function HeroCinema() {
    * answers a missing path with index.html and a 200, so the element decoded
    * HTML, fired `error`, and the hero fell to the still before the correct
    * source was ever tried. */
-  const showVideo = !!boxSize && !heroPlayed && !videoFailed
+  // "Done with the video", however it got there: it played out, or it never ran
+  // because the source would not load. Named once and used for both decisions
+  // below, so a future third way of being done only has to be added here.
+  const ended = heroPlayed || videoFailed
+  const showVideo = !!boxSize && !ended
+  const mediaClass = `hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`
 
   /* THE STILL IS ALWAYS MOUNTED, UNDERNEATH THE VIDEO. Don't "simplify" this
    * back into a ternary that swaps one element for the other.
@@ -169,7 +174,6 @@ export default function HeroCinema() {
    * finish before the motion ran. Once frames are painting, the video is opaque
    * and covers the box, so swapping to frame2 is invisible and gives it the
    * whole four seconds to load. */
-  const ended = heroPlayed || videoFailed
   const stillSrc = ended || playing ? stills.frame2 : stills.frame1
 
   const onEnded = useCallback(() => setHeroPlayed(true), [setHeroPlayed])
@@ -238,12 +242,15 @@ export default function HeroCinema() {
   return (
     <section className={`hero-cinema ${theme === 'dark' ? 'is-dark' : ''}`} dir="ltr">
       <div className="hero-cinema-box" ref={boxRef}>
-        <img className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`} src={stillSrc} alt=""
+        {/* async decode: this is a 1920x1080 still that now decodes WHILE the
+            video streams, and a sync decode there would block the main thread
+            during the one animation on the page. */}
+        <img className={mediaClass} src={stillSrc} alt="" decoding="async"
           onError={(e) => { e.currentTarget.style.display = 'none' }} />
         {showVideo && (
           <video
             key={orient}
-            className={`hero-cinema-media ${letterbox ? 'is-letterboxed' : ''}`}
+            className={mediaClass}
             src={videoSrc}
             poster={stills.frame1}
             autoPlay muted playsInline preload="auto"
@@ -253,7 +260,7 @@ export default function HeroCinema() {
           />
         )}
 
-        {!showVideo && boxSize && (
+        {boxSize && ended && (
           <div className="hero-cinema-overlays fade-in">
             {/* The cover, rebuilt as parts and perspective-warped onto the blank
                 book. Nothing recolours the board: the photographed cloth keeps

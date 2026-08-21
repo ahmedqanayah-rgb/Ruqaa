@@ -13,6 +13,7 @@ import WeekChallenge from '../components/WeekChallenge.jsx'
 const FocusLab = lazy(() => import('../components/FocusLab.jsx'))
 import RichText from '../components/RichText.jsx'
 import Icon from '../components/Icon.jsx'
+import { scroller, onPageScroll } from '../lib/scroll.js'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -48,22 +49,14 @@ function readMinutes(section, lang) {
 function ReadingProgress() {
   const barRef = useRef(null)
   useEffect(() => {
-    // The app scrolls on <body> (overflow-y: auto), not on the window — so
-    // listen there, with a window fallback in case the layout ever changes.
     const onScroll = () => {
-      const scroller = document.body.scrollHeight > document.body.clientHeight
-        ? document.body : document.documentElement
-      const max = scroller.scrollHeight - scroller.clientHeight
-      const pct = max > 0 ? Math.min(100, (scroller.scrollTop / max) * 100) : 0
+      const el = scroller()
+      const max = el.scrollHeight - el.clientHeight
+      const pct = max > 0 ? Math.min(100, (el.scrollTop / max) * 100) : 0
       if (barRef.current) barRef.current.style.width = `${pct}%`
     }
     onScroll()
-    document.body.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      document.body.removeEventListener('scroll', onScroll)
-      window.removeEventListener('scroll', onScroll)
-    }
+    return onPageScroll(onScroll)
   }, [])
   return <div className="read-progress" aria-hidden><div ref={barRef} className="read-progress-fill" /></div>
 }

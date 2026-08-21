@@ -189,9 +189,25 @@ keeps `base: './'` sub-path hosting working.
   `hover: none` the thumb is indicator-only** — an `opacity: 0` element still takes pointer
   events, and a grabbable thumb leaves an invisible strip along the screen edge exactly
   where the phone back-swipe lives. **The INNER scrollers keep their native bars** (sidebar,
-  search results, book carousel) and fade via `.is-scrolling`, set on `<html>` by `Layout`
-  — including a **capture-phase** listener, the only way to hear an inner scroller, since
-  `scroll` does not bubble from an element.
+  search results, book carousel).
+  **`html.is-scrolling` is the one visibility signal for all of them**, set by `Layout` and
+  keyed by both `global.css` (native thumbs) and the overlay thumb, so one gesture fades
+  everything on one timer — they were briefly two implementations at 700ms and 900ms.
+  `Layout` subscribes with a **single capture-phase** listener: `scroll` does not bubble
+  from an element, so capture is the only way to hear an inner scroller — and it is on the
+  path of the page's own scroll too, so no body/window pair is needed for it.
+  ScrollOverlay owns only the thumb's **geometry**, written straight to the DOM as a
+  `transform` and coalesced to one measurement per frame with `requestAnimationFrame`
+  (measured: two listeners and a ten-event burst each collapse to one). It
+  **cancels-and-reschedules** rather than skipping while one is pending — a pending id is
+  only cleared by the callback, so a frame that never runs would latch the guard on and
+  freeze the thumb, which is exactly what happens in the preview pane.
+- **`src/lib/scroll.js` is the only place that knows the app scrolls on `<body>`.**
+  `scroller()`, `onPageScroll()` (body **and** window — neither alone is dependable) and
+  `onAnyScroll()` (capture). It exists because that fact was written out three times —
+  `Layout`, `ScrollOverlay`, and inlined inside `BookSection`'s `ReadingProgress` where a
+  grep for `scroller` missed it. The subscribe helpers return their own cleanup so an
+  `addEventListener` can't be paired with a mismatched `remove`.
 - **`collapsed` is set regardless of viewport, so the mobile drawer carries it too.**
   Below 861px the drawer is a full 288px wide, so every icon-rail rule must stay inside
   `@media (min-width: 861px)` — outside it they land on the drawer, which is how it once

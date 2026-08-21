@@ -99,15 +99,26 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
                       {/* The book's own cover, not a generic book glyph. Two
                           entries both marked 📖 were indistinguishable in the
                           collapsed rail, and it was also the last raw emoji left
-                          in the sidebar. A failed load hides itself rather than
-                          leaving a broken box (the ClubBanner pattern). */}
+                          in the sidebar. A failed load hides the <img> and
+                          leaves the tinted box behind it — NOT ClubBanner's
+                          reveal-on-load, which is for a figure that must vanish
+                          entirely; here the box is the icon's fixed slot and
+                          collapsing it would shift the row. */}
                       <span className="side-icon side-book-cover" aria-hidden>
                         {/* Eager, not lazy: the rail sits at the top of the
                             page and is on screen the moment it renders, so lazy
                             only delays 16-29 kB that Home fetches anyway. It
                             also never fired at all in the embedded preview,
                             whose document reports itself hidden. */}
-                        <img src={t(book.cover)} alt=""
+                        {/* width/height so the box is reserved before the
+                            bytes land, and low priority + async decode because
+                            a ~450x680 cover decoding into a 22px slot must not
+                            compete with the fonts on a deep-linked page.
+                            `fetchpriority` stays lowercase: React 18 does not
+                            know the camelCase prop and drops it with a warning
+                            (the camelCase form is React 19+). */}
+                        <img src={t(book.cover)} alt="" width="22" height="29"
+                          decoding="async" fetchpriority="low"
                           onError={(e) => { e.currentTarget.style.display = 'none' }} />
                       </span>
                       <span className="side-text">{t(book.title)}</span>

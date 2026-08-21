@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { scroller, onPageScroll } from '../lib/scroll.js'
 
 /*
  * The page's scrollbar, drawn OVER the content instead of beside it.
@@ -11,119 +11,123 @@ import { useLocation } from 'react-router-dom'
  * the strip is position:fixed and the thumb is translucent on top of the page.
  *
  * Only the PAGE scrollbar is replaced. The inner scrollers — sidebar, search
- * results, the book carousel — keep their native ones, which fade via the
- * `is-scrolling` class Layout sets; they sit inside their own boxes and never
- * pushed the page around.
+ * results, the book carousel — keep their native ones; they sit inside their
+ * own boxes and never pushed the page around.
  *
- * Same scroller reasoning as Layout and BookSection, and duplicated the same
- * way they duplicate it: the app scrolls on <body>, so read `body.scrollTop`,
- * never `window.scrollY`, and listen on body AND window because neither alone
- * is dependable here.
+ * WHETHER IT IS VISIBLE IS NOT DECIDED HERE. Layout owns `html.is-scrolling`
+ * and the CSS keys the thumb's opacity to it, so the page thumb and the inner
+ * scrollbars fade on one timer, at one duration (lib/scroll.js). This component
+ * owns only the thumb's GEOMETRY, plus `.is-dragging` to hold it open while the
+ * reader keeps hold of it without moving.
  */
-function scroller() {
-  return document.body.scrollHeight > document.body.clientHeight
-    ? document.body
-    : document.documentElement
-}
 
 /* Below this the thumb stops meaning anything and just looks like grit. */
 const MIN_THUMB = 32
-/* How long it stays up after the last scroll. Long enough to see where you
-   landed, short enough not to sit over the reading. */
-const IDLE_MS = 900
 
 export default function ScrollOverlay() {
-  // null while the page is too short to scroll — then nothing renders at all.
-  const [geom, setGeom] = useState(null)
-  const [active, setActive] = useState(false)
-  const idle = useRef(null)
+  // The only thing that needs a render: whether the page scrolls at all.
+  const [scrollable, setScrollable] = useState(false)
+  const wrapRef = useRef(null)
+  const thumbRef = useRef(null)
+  const frame = useRef(0)
   const drag = useRef(null)
-  const loc = useLocation()
+  // Last measurement, kept out of state so scrolling never re-renders. The drag
+  // maths needs `height` and `range`, and reading them back off the DOM would
+  // be a layout read per pointermove.
+  const dims = useRef({ height: 0, range: 0 })
 
-  const measure = useCallback(() => {
+  /* Write the thumb straight to the DOM rather than through state.
+   *
+   * `top` changes on nearly every frame of a real scroll, so a state-driven
+   * thumb is a React render + reconcile per frame, and an inline `top` is a
+   * layout property — writing it and then reading scrollTop next frame forces a
+   * synchronous reflow. A `transform` is a compositor property and skips both. */
+  const apply = useCallback(() => {
+    frame.current = 0
     const el = scroller()
     const { scrollTop, scrollHeight, clientHeight } = el
     const range = scrollHeight - clientHeight
-    if (range < 2) { setGeom(null); return }
+    if (range < 2) { dims.current = { height: 0, range: 0 }; setScrollable(false); return }
     const height = Math.max(MIN_THUMB, Math.round(clientHeight * (clientHeight / scrollHeight)))
     const top = Math.round((clientHeight - height) * (scrollTop / range))
-    // Bail out of the state update when nothing moved: this runs on every
-    // scroll event, and a fresh object each time would re-render the whole
-    // overlay for no reason.
-    setGeom((prev) => (prev && prev.top === top && prev.height === height ? prev : { top, height }))
+    dims.current = { height, range }
+    setScrollable(true)
+    const t = thumbRef.current
+    if (t) { t.style.height = `${height}px`; t.style.transform = `translateY(${top}px)` }
   }, [])
 
+  /* Coalesce to one measurement per frame. `onPageScroll` listens on body AND
+     window, so without this every scroll event measures twice — six geometry
+     reads a frame for one thumb.
+     Cancel-and-reschedule rather than "skip if one is pending": the pending id
+     is only cleared by `apply`, so a scheduled frame that never runs would latch
+     the guard on and freeze the thumb for good. Rescheduling cannot get stuck,
+     and still collapses to one `apply` per frame because each cancels the last.
+     (Seen for real in the embedded preview, where rAF never fires at all.) */
+  const measure = useCallback(() => {
+    if (frame.current) cancelAnimationFrame(frame.current)
+    frame.current = requestAnimationFrame(apply)
+  }, [apply])
+
+  // The thumb only exists once `scrollable` is true, so its first geometry has
+  // to be written after that render, not during the measure that discovered it.
+  useLayoutEffect(() => { if (scrollable) apply() }, [scrollable, apply])
+
   useEffect(() => {
-    const hideSoon = () => {
-      clearTimeout(idle.current)
-      // A drag holds it open however long the reader takes.
-      idle.current = setTimeout(() => { if (!drag.current) setActive(false) }, IDLE_MS)
-    }
-    const onScroll = () => { measure(); setActive(true); hideSoon() }
-
-    measure()
-    // The pane this is developed in throttles ResizeObserver and fires no
-    // scroll events at all, and mobile viewports settle late as the URL bar
-    // collapses — so re-measure on the next frame and once more after a beat,
-    // the same belt-and-braces HeroCinema needs for its box.
-    const raf = requestAnimationFrame(measure)
-    const settle = setTimeout(measure, 300)
-
-    document.body.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', measure)
-    // Content can change height without anyone scrolling (a figure loading, a
-    // group unfolding), which changes the thumb's size but fires no scroll.
+    apply()
+    // Mobile viewports settle late as the URL bar collapses, and the preview
+    // pane throttles ResizeObserver — one late re-measure covers both.
+    const settle = setTimeout(apply, 300)
+    const offScroll = onPageScroll(measure)
+    /* Content changes height without anyone scrolling — a figure loading, a
+       group unfolding, a route swap. Because <body> IS the viewport-height
+       scroller, this also fires on window resize, so no separate resize
+       listener is needed. */
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
     ro?.observe(document.body)
 
     return () => {
-      cancelAnimationFrame(raf); clearTimeout(settle); clearTimeout(idle.current)
-      document.body.removeEventListener('scroll', onScroll)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', measure)
+      clearTimeout(settle)
+      if (frame.current) cancelAnimationFrame(frame.current)
+      offScroll()
       ro?.disconnect()
     }
-  }, [measure])
+  }, [apply, measure])
 
-  // A new route is new content of a new height. Layout sets scrollTop itself on
-  // navigation, which usually fires a scroll — but not when it was already 0
-  // and stays 0, which is exactly the common case of moving between two pages
-  // that both start at the top.
-  useEffect(() => { measure() }, [loc.pathname, measure])
-
+  // The thumb is only in the DOM when the page scrolls, so these can take
+  // `dims.current` as populated.
   const onPointerDown = (e) => {
-    if (!geom) return
     drag.current = { y: e.clientY, top: scroller().scrollTop }
-    e.currentTarget.setPointerCapture(e.pointerId)
-    setActive(true)
+    wrapRef.current?.classList.add('is-dragging')
     e.preventDefault()
+    // Last, and guarded: setPointerCapture throws if the pointer is already
+    // gone, and it must not take the drag down with it — capture only decides
+    // whether the pointer keeps tracking once it leaves the 8px thumb.
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* pointer already released */ }
   }
   const onPointerMove = (e) => {
-    if (!drag.current || !geom) return
-    const el = scroller()
-    const range = el.scrollHeight - el.clientHeight
-    const usable = el.clientHeight - geom.height
+    if (!drag.current) return
+    const { height, range } = dims.current
+    const usable = scroller().clientHeight - height
     if (usable <= 0) return
-    // Travel of the thumb → travel of the page, which is the inverse of the
-    // ratio that sized the thumb in the first place.
-    el.scrollTop = drag.current.top + (e.clientY - drag.current.y) * (range / usable)
+    // Travel of the thumb → travel of the page, the inverse of the ratio that
+    // sized the thumb in the first place.
+    scroller().scrollTop = drag.current.top + (e.clientY - drag.current.y) * (range / usable)
   }
   const endDrag = (e) => {
     if (!drag.current) return
     drag.current = null
-    e.currentTarget.releasePointerCapture?.(e.pointerId)
-    clearTimeout(idle.current)
-    idle.current = setTimeout(() => setActive(false), IDLE_MS)
+    wrapRef.current?.classList.remove('is-dragging')
+    try { e.currentTarget.releasePointerCapture?.(e.pointerId) } catch { /* never captured */ }
   }
 
-  if (!geom) return null
+  if (!scrollable) return null
 
   return (
-    <div className={`scroll-overlay ${active ? 'is-active' : ''}`} aria-hidden>
+    <div className="scroll-overlay" ref={wrapRef} aria-hidden>
       <div
         className="scroll-overlay-thumb"
-        style={{ top: geom.top, height: geom.height }}
+        ref={thumbRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}

@@ -7,20 +7,7 @@ import Sidebar from './Sidebar.jsx'
 import Breadcrumb from './Breadcrumb.jsx'
 import SearchPalette from './SearchPalette.jsx'
 import ScrollOverlay from './ScrollOverlay.jsx'
-
-/*
- * The app scrolls on <body> — `global.css` puts `overflow-y` there, so <html>
- * has viewport height and never moves. That matters more than it sounds: it
- * means `window.scrollTo()` (which drives `document.scrollingElement`, i.e.
- * <html>) is a **no-op** on this site. Measured: body.scrollHeight 5792 vs
- * clientHeight 812, while html is 812/812 and its scrollTop stays 0 however you
- * set it. The fallback is kept in case the layout ever moves the overflow back.
- */
-function scroller() {
-  return document.body.scrollHeight > document.body.clientHeight
-    ? document.body
-    : document.documentElement
-}
+import { scroller, onPageScroll, onAnyScroll, SCROLL_IDLE_MS } from '../lib/scroll.js'
 
 export default function Layout({ children }) {
   const { t, presenting, setPresenting, togglePresenting } = useApp()
@@ -66,48 +53,35 @@ export default function Layout({ children }) {
     // Stop the browser also trying to restore; we place the scroll ourselves.
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'
     const remember = () => { positions.current.set(pathRef.current, scroller().scrollTop) }
-    document.body.addEventListener('scroll', remember, { passive: true })
-    window.addEventListener('scroll', remember, { passive: true })
+    const offScroll = onPageScroll(remember)
     document.addEventListener('click', remember, { capture: true })
     return () => {
-      document.body.removeEventListener('scroll', remember)
-      window.removeEventListener('scroll', remember)
+      offScroll()
       document.removeEventListener('click', remember, { capture: true })
     }
   }, [])
 
-  /* ---- the scrollbar shows only while scrolling -------------------------
-     `global.css` paints the thumb transparent and keys its colour to
-     `html.is-scrolling`; this is what puts that class on and takes it off. The
-     track keeps its width throughout, so nothing reflows either way.
+  /* ---- "the reader is scrolling", for every scrollbar on the page ----------
+     THE SINGLE OWNER OF THAT SIGNAL. `html.is-scrolling` drives both the inner
+     scrollers' native thumbs (global.css) and the page's overlay thumb
+     (ScrollOverlay), so one gesture fades everything on one timer. They were
+     briefly two implementations on 700ms and 900ms — the same flick fading two
+     scrollbars at visibly different rates, which nobody chose.
 
-     Three listeners, and each earns its place. Body and window are the pair the
-     scroll-restoration above already relies on, because the app scrolls on
-     <body>. The third is a CAPTURE-phase listener on `document`, which is the
-     only one that hears the inner scrollers — the sidebar, the search results,
-     the book carousel — since scroll events do not bubble up from an element.
-     Without it those scrollbars would never appear at all.
+     One capture-phase listener is the whole subscription: it is on the path of
+     the inner scrollers, whose events do not bubble, AND of the page's own.
 
      NB: the in-app preview pane dispatches NO scroll events on any target, so
      this cannot be exercised there; add the class by hand to check the CSS. */
   useEffect(() => {
     let timer
     const root = document.documentElement
-    const onScroll = () => {
+    const off = onAnyScroll(() => {
       root.classList.add('is-scrolling')
       clearTimeout(timer)
-      timer = setTimeout(() => root.classList.remove('is-scrolling'), 700)
-    }
-    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
-    document.body.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      clearTimeout(timer)
-      document.removeEventListener('scroll', onScroll, { capture: true })
-      document.body.removeEventListener('scroll', onScroll)
-      window.removeEventListener('scroll', onScroll)
-      root.classList.remove('is-scrolling')
-    }
+      timer = setTimeout(() => root.classList.remove('is-scrolling'), SCROLL_IDLE_MS)
+    })
+    return () => { clearTimeout(timer); off(); root.classList.remove('is-scrolling') }
   }, [])
 
   /* Placed before paint so the reader never sees the top of the page flash by

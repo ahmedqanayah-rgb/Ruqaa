@@ -50,7 +50,6 @@
   background: var(--bg-elev); border-inline-end: 1px solid var(--border);
   transition: width var(--transition);
 }
-.sidebar.collapsed { width: 64px; }
 .sidebar-inner { padding: var(--space-4) var(--space-3); position: relative; }
 .collapse-btn {
   position: absolute; inset-inline-end: 8px; top: 6px;
@@ -73,6 +72,10 @@
    to save the height. Only the group HEADINGS stay hidden — «التصفّح» over three
    items it already describes is the one label the rail can do without. */
 @media (min-width: 861px) {
+  /* The rail's defining property lives in here with the rest of it. It used to
+     sit outside and be undone by a counter-rule 950 lines away, which is the
+     same leak the scoping was written to stop. */
+  .sidebar.collapsed { width: 64px; }
   .sidebar.collapsed .side-heading { display: none; }
   /* The section tree would be pure noise at this width. */
   .sidebar.collapsed .side-sections { display: none; }
@@ -179,7 +182,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
   animation: sideGroupIn 160ms ease both;
 }
 @keyframes sideGroupIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
-
 
 .sidebar-overlay {
   position: fixed; inset: 0; background: rgba(10, 12, 24, 0.5);
@@ -450,18 +452,26 @@ html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
   position: fixed; inset-block: 0; inset-inline-end: 3px;
   width: 8px; z-index: 55; pointer-events: none;
 }
+/* Positioned by `transform`, not `top` — ScrollOverlay writes it on every
+   scrolled frame, and a compositor property avoids both a reflow and a React
+   render there. `top: 0` is the origin that translate moves from. */
 .scroll-overlay-thumb {
-  position: absolute; inset-inline: 0;
+  position: absolute; inset-inline: 0; top: 0;
   border-radius: 999px; background: var(--text-muted);
   opacity: 0; transition: opacity 260ms ease;
-  pointer-events: auto; touch-action: none;
+  pointer-events: auto; touch-action: none; will-change: transform;
 }
-.scroll-overlay.is-active .scroll-overlay-thumb { opacity: 0.38; }
-/* Reaching for it brings it up solid, at rest or not. Both selectors are
-   spelled out because `.scroll-overlay.is-active .scroll-overlay-thumb` outranks
-   a bare `:hover` — the active state would otherwise win over the hover. */
+/* Visible on the SAME signal as the native inner scrollbars — one class, one
+   timer, set by Layout — plus while the thumb is actually held, which is the
+   one case the idle timer would cut short. */
+html.is-scrolling .scroll-overlay-thumb,
+.scroll-overlay.is-dragging .scroll-overlay-thumb { opacity: 0.38; }
+/* Reaching for it brings it up solid, at rest or not. The qualified copies are
+   needed because `html.is-scrolling .scroll-overlay-thumb` (0,2,1) outranks a
+   bare `:hover` (0,2,0), so the visible state would otherwise beat the hover. */
 .scroll-overlay-thumb:hover,
-.scroll-overlay.is-active .scroll-overlay-thumb:hover { opacity: 0.7; }
+html.is-scrolling .scroll-overlay-thumb:hover,
+.scroll-overlay.is-dragging .scroll-overlay-thumb:hover { opacity: 0.7; }
 @media (prefers-reduced-motion: reduce) { .scroll-overlay-thumb { transition: none; } }
 /* On touch it is an INDICATOR ONLY. An opacity:0 element still takes pointer
    events, so a grabbable thumb leaves an invisible 8px strip along the screen
@@ -999,7 +1009,6 @@ button.sf-toast:hover { border-color: var(--danger); }
   html[dir='rtl'] .sidebar { transform: translateX(110%); }
   /* .open must beat the dir-specific closed rule (equal-or-higher specificity) */
   .sidebar.open, html[dir='rtl'] .sidebar.open { transform: translateX(0); }
-  .sidebar.collapsed { width: var(--sidebar-w); }
   .sidebar-inner { padding-top: 54px; padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px)); }
   .side-nav { margin-top: 0; }
   .sidebar-overlay.show { opacity: 1; pointer-events: auto; }

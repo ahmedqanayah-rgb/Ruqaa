@@ -74,8 +74,9 @@ body::-webkit-scrollbar { width: 0; height: 0; }
   background: transparent; border-radius: 6px;
   transition: background-color 240ms ease;
 }
-html.is-scrolling ::-webkit-scrollbar-thumb { background: var(--border-strong); }
-/* Reaching for it with the mouse should also bring it back, even at rest. */
+/* Visible while that scroller is moving — and whenever the mouse is on the
+   thumb, so reaching for it at rest brings it back. */
+html.is-scrolling ::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
 /* Firefox exposes no pseudo-elements for this; `scrollbar-color` is the whole
    API, and it inherits, so setting it on <html> reaches every scroller. */
