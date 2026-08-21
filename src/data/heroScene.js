@@ -2,17 +2,19 @@
    HOMEPAGE HERO SCENE — the intro video + the artwork composited on its still.
    ----------------------------------------------------------------------------
    THIS IS THE FILE TO EDIT when the club says:
-     • "use the other hero"        → set `active` below
+     • "turn the hero off"         → set `enabled` below
      • "change the featured book"  → set `featuredBookId` below
-   The artwork itself lives in data/coverArt.js (the book's cover) and
-   data/pageArt.js (the title page).
+   The artwork itself lives in data/pageArt.js (the title page). data/coverArt.js
+   holds the other recipe shape — a rebuilt book cover, for a scene whose `kind`
+   is 'cover'. See the note under `scenes` before reaching for it.
 
-   TWO TREATMENTS ARE KEPT SIDE BY SIDE so they can be compared. `active` picks
-   the one the site uses; the other stays whole, assets and all.
+   ONE TREATMENT SHIPS: `overhead`. A second, `toppling`, was built and kept
+   beside it for comparison through August 2026 and was deleted on 2026-08-21 —
+   it was never switched on, and its assets were ~5.4 MB of the repo that no
+   visitor ever downloaded. It is recoverable: the scene definition is in git
+   history (before that date), and its masters and frames were always outside
+   the repo in hero-video-wip/{renders,frames}/toppling/.
 
-     toppling  A three-quarter view of a table. A stack of books slides apart,
-               one book settles upright with its blank cover to camera, and the
-               real cover artwork is perspective-warped onto that face.
      overhead  ("Übersicht") A flat-lay looking straight down. A closed book
                falls open beside a cup of coffee, and the book's title, author
                and translator are set on the open right-hand page, like a title
@@ -27,21 +29,29 @@
      the encoded mp4. That is deliberate: an earlier version used the FLUX
      stills the video was generated *from*, and the video drifted away from them
      during generation, so the freeze jumped. Taking both ends from the encoded
-     file makes drift impossible.
+     file makes drift impossible. Re-extract them whenever the TAKE changes —
+     merely re-encoding a chosen take does not move anything in the frame (see
+     the measurements in scripts/encode-hero-video.mjs).
    - `quad` is the four corners (TL, TR, BR, BL) of the surface the artwork is
      warped onto, in that frame's own pixels. `clip` is the outline of the part
      of that surface actually VISIBLE — used where something in the photo laps
-     over it. Both are recalibrated with scripts/hero-calibrate.mjs, whose
-     --zoom mode is what makes the corners accurate enough.
+     over it; the overhead scene needs none, since nothing laps over a page seen
+     from straight above. Both are recalibrated with scripts/hero-calibrate.mjs,
+     whose --zoom mode is what makes the corners accurate enough.
+   - `imageW`/`imageH` describe the COORDINATE SPACE the quad is written in, not
+     the size of the file that ships. The videos are encoded down to 720p on the
+     short side; because that keeps the aspect ratio, the 1920×1080 coordinates
+     below stay correct and need no rescaling.
    - `portrait` is optional. A scene without one uses its landscape assets on
-     portrait screens (cropped by object-fit), which is fine for comparing a
-     treatment before committing to a second render.
+     portrait screens (letterboxed by HeroCinema), which is enough to judge a
+     new treatment before committing to a second render.
    ========================================================================== */
 
 export const heroScene = {
   enabled: true,
 
-  // Which hero treatment to show: 'toppling' | 'overhead'.
+  // Which hero treatment to show. One scene ships today; `active` is the switch
+  // that a second one would be added against.
   active: 'overhead',
 
   // Which book the hero features. Leave null and it follows the club's current
@@ -51,74 +61,17 @@ export const heroScene = {
   // ('why-we-sleep' | 'stolen-focus' | future ids) only to override that.
   featuredBookId: null,
 
+  /* A scene's `kind` picks which recipe file its artwork comes from:
+   *   'page'   → data/pageArt.js   (a title page set on an open page)
+   *   'cover'  → data/coverArt.js  (a rebuilt book cover warped onto a board)
+   * Only 'page' is in use since the toppling scene was deleted. The 'cover'
+   * path is kept because the artwork behind it is real work — the Stolen Focus
+   * cover rebuilt from vector parts, type in the site's own fonts, and
+   * illustrations cut out by scripts/extract-cover-art.mjs — and a future
+   * treatment that stands a book up would want it again. */
   scenes: {
     /* ---------------------------------------------------------------------
-       OPTION 1 — the toppling stack, cover warped onto the standing book.
-       --------------------------------------------------------------------- */
-    toppling: {
-      kind: 'cover',
-      video: {
-        landscape: './videos/toppling/hero-landscape.mp4',
-        // Never rendered — this treatment was set aside before its portrait
-        // take. Nothing requests it while `active` is 'overhead', and if this
-        // scene were switched back on a phone the missing file degrades to the
-        // still without consuming the once-per-session play (see HeroCinema).
-        portrait: './videos/toppling/hero-portrait.mp4',
-      },
-      // WebP, like every other display image on the site. The full-resolution
-      // JPEG masters live outside the repo in hero-video-wip/frames/toppling/,
-      // because they are pipeline inputs (the video model uploads them, and the
-      // pixel coordinates below are read off them).
-      stills: {
-        landscape: {
-          frame1: './images/hero/toppling/frame1-landscape.webp',
-          frame2: './images/hero/toppling/frame2-landscape.webp',
-        },
-        portrait: {
-          frame1: './images/hero/toppling/frame1-portrait.webp',
-          frame2: './images/hero/toppling/frame2-portrait.webp',
-        },
-      },
-      landscape: {
-        // 1080, not FLUX's 1088: frame2 here is the video's last frame.
-        imageW: 1920, imageH: 1080,
-        /* The pale book standing upright at the right. These trace the OUTER
-         * edge of the board, including the rolled cloth hem, because real cloth
-         * wraps the board — stopping at the flat face leaves a beige frame
-         * around the artwork, which reads as stuck on.
-         *
-         * The bottom two are estimates: the book's base is hidden behind the
-         * open book, so they sit deliberately BELOW the occlusion line and
-         * `clip` does the actual cutting. Only the blank bottom margin of the
-         * cover falls in the guessed region. */
-        quad: [[1090, 8], [1630, 12], [1618, 742], [1092, 715]],
-        /* The open book's page laps across the base of the standing book.
-         * Measured by scanning each column for the brightness step from cloth
-         * into page, not read by eye. */
-        clip: [
-          [1090, 8], [1630, 12], [1620, 717], [1540, 702], [1460, 685], [1380, 667],
-          [1300, 648], [1220, 638], [1100, 634], [1090, 632],
-        ],
-      },
-      portrait: {
-        imageW: 1088, imageH: 1920,
-        // the olive book standing upright behind the open one
-        quad: [[626, 246], [1050, 271], [1026, 962], [620, 952]],
-        /* The open book's page laps over this book's bottom-left corner, so
-         * part of the quad is not board at all. Measured, not eyeballed — the
-         * page's edge is a curve, and reading it by eye gave three different
-         * answers. Scan each row of the frame and record where the dark board
-         * first appears; those readings are the middle points here. */
-        clip: [
-          [626, 246], [1050, 271], [1026, 942],
-          [800, 902], [778, 880], [748, 860], [698, 840], [626, 828],
-        ],
-      },
-    },
-
-    /* ---------------------------------------------------------------------
-       OPTION 2 — the overhead flat-lay, title page set on the open page.
-       No `clip`: seen from straight above, nothing laps over the page.
+       The overhead flat-lay, title page set on the open page.
        --------------------------------------------------------------------- */
     overhead: {
       kind: 'page',
@@ -126,6 +79,10 @@ export const heroScene = {
         landscape: './videos/overhead/hero-landscape.mp4',
         portrait: './videos/overhead/hero-portrait.mp4',
       },
+      // WebP, like every other display image on the site. The full-resolution
+      // JPEG masters live outside the repo in hero-video-wip/frames/overhead/,
+      // because they are pipeline inputs (the video model uploads them, and the
+      // pixel coordinates below are read off them).
       stills: {
         landscape: {
           frame1: './images/hero/overhead/frame1-landscape.webp',

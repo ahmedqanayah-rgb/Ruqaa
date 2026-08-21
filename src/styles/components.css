@@ -171,7 +171,7 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .center { text-align: center; }
 
 /* ============================================================
-   Home — cinematic hero (toppling-books video, see data/heroScene.js)
+   Home — cinematic hero (the overhead flat-lay, see data/heroScene.js)
    ============================================================ */
 /* FULL BLEED, AND NOTHING CROPPED OFF THE SIDES.
    The hero used to live inside .page's 900px measure and be given a fixed

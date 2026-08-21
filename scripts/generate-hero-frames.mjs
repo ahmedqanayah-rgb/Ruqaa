@@ -77,16 +77,19 @@ const REFRAME = 'Recompose this exact scene as a vertical portrait photograph: s
 const TOPPLE_PORTRAIT = `${TOPPLE} Keep every book within the upper two thirds of the vertical frame, leaving the bottom third as empty table surface.`
 
 /* ---------------------------------------------------------------------------
- * SCENES. Two hero treatments are kept side by side so the club can compare;
- * `heroScene.active` picks which one the site uses. Frames live per scene, in
- * hero-video-wip/frames/<scene>/ and public/images/hero/<scene>/.
+ * SCENES. Frames live per scene, in hero-video-wip/frames/<scene>/ and
+ * public/images/hero/<scene>/; `heroScene.active` picks which scene the site
+ * uses.
  *
- *   toppling  a three-quarter view: a stack slides apart, one book settles
- *             upright with its cover to camera, and the real cover artwork is
- *             warped onto that face.
  *   overhead  ("Übersicht") a flat-lay looking straight down: a closed book
  *             falls open beside a cup of coffee, and the title, author and
  *             translator are set on the open page like a title page.
+ *             THE ONLY SCENE THAT SHIPS.
+ *   toppling  a three-quarter view: a stack slides apart, one book settles
+ *             upright with its cover to camera, and the real cover artwork is
+ *             warped onto that face. Deleted from the site on 2026-08-21; the
+ *             prompts stay because they are the only record of how those
+ *             frames were produced, and scripts/ ships to nobody.
  *
  * Both chains end on the frame the hero freezes on, and both are re-derived
  * BACKWARDS with --restack so frame1 shares frame2's camera. See RESUME.md.
@@ -142,7 +145,7 @@ const args = process.argv.slice(2)
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : null
 const seed = args.includes('--seed') ? +args[args.indexOf('--seed') + 1] : null
 const restack = args.includes('--restack')
-const scene = args.includes('--scene') ? args[args.indexOf('--scene') + 1] : 'toppling'
+const scene = args.includes('--scene') ? args[args.indexOf('--scene') + 1] : 'overhead'
 if (!SCENES[scene]) {
   console.error(`Unknown --scene "${scene}". Known: ${Object.keys(SCENES).join(', ')}`)
   process.exit(1)

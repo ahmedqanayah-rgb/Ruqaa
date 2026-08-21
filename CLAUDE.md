@@ -316,12 +316,18 @@ keeps `base: './'` sub-path hosting working.
   uses `stopImmediatePropagation` because both it and Layout listen on `window`.
 - **The homepage hero is a video** (shipped 2026-08-18; it was a surprise for members
   until then, and no longer is). `src/data/heroScene.js` is the control panel: `enabled`
-  is a kill switch back to the old text hero, `active` picks between two complete
-  treatments, and `featuredBookId: null` means "follow the club's current season".
-  - **`overhead` is live** — a flat-lay: a book falls open beside a cup of coffee, and the
-    book's title/author/translator are set on the open right-hand page (`data/pageArt.js`).
-    **`toppling` is kept whole beside it** — a stack slides apart and the rebuilt book
-    cover (`data/coverArt.js`) is warped onto the standing book. One word switches them.
+  is a kill switch back to the old text hero, `active` picks the scene, and
+  `featuredBookId: null` means "follow the club's current season".
+  - **`overhead` is the only scene** — a flat-lay: a book falls open beside a cup of
+    coffee, and the book's title/author/translator are set on the open right-hand page
+    (`data/pageArt.js`). A second treatment, **`toppling`** (a stack slides apart, the
+    rebuilt cover from `data/coverArt.js` warped onto the standing book), was kept beside
+    it for comparison and **deleted on 2026-08-21** — it was never switched on and its
+    assets were ~5.4 MB nobody downloaded. Recoverable: the scene definition is in git
+    history, and its masters/frames were always outside the repo in
+    `hero-video-wip/{renders,frames}/toppling/`. `coverArt.js` and the `kind: 'cover'`
+    path in `HeroCinema` are deliberately kept — that artwork is real work, and a future
+    stand-a-book-up treatment would want it — so **that branch is currently unreachable**.
   - **The video plays once per session** (in-memory flag in `AppContext`, never storage)
     then freezes. **frame1/frame2 are the video's own first and last frames**, extracted
     from the encoded mp4 — an earlier version froze on the FLUX stills the video was
@@ -337,6 +343,19 @@ keeps `base: './'` sub-path hosting working.
     rim of bare book around the artwork. `scripts/hero-preview.mjs` renders the composite
     offline, which is the only way to judge it: the embedded browser pane cannot
     screenshot, and it also freezes CSS animations and serves stale HMR stylesheets.
+  - **The shipped mp4s are denoised and 720p, and that is not a detail to "fix".** The
+    first cut was raw 1080p generative output at 7.6 Mbps — 3.8 MB for four seconds, which
+    made a first visit to Home ~5.8 MB, about 90% of it that one file. Raising CRF barely
+    helps (1080p CRF 28 was still 2.9 MB), because the frames are full of model grain and
+    grain is the most expensive thing an encoder can be asked to keep. `hqdn3d` in front of
+    the encoder plus a 720p short side does the work: **3.82 → 1.34 MB landscape, 3.92 →
+    1.48 MB portrait**; the budget in `scripts/encode-hero-video.mjs` is now ≤2 MB a file.
+    The video carries only the motion — the title artwork is a vector overlay on the
+    *still*, so its legibility is untouched by the video's resolution. `imageW`/`imageH` in
+    `heroScene.js` describe the **coordinate space**, not the shipped file, so the
+    1920×1080 quads stayed correct with no recalibration, and the stills were left alone
+    because re-encoding a chosen take moves nothing in the frame. **Don't judge this with
+    SSIM** — it scores removed grain as error and rated a visually identical file at 0.87.
   - **Generation costs real money** and every script gates on `--yes`, printing the
     estimate and live balance first. Key in `../.keys/fal.txt`, outside the repo. Total
     spend was ~$3. Full pipeline notes, including the failures worth not repeating, are in

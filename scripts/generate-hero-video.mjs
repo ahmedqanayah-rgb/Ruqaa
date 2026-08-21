@@ -48,6 +48,10 @@ const TOPPLING_MOTION = 'The stack of books tips and slides apart on the table. 
  * not drift, since it is in both frames and the eye locks onto it. */
 const OVERHEAD_MOTION = 'Seen from directly above, the closed book\'s front cover lifts and swings open to the left, the pages fanning over and settling flat, until the book lies fully open showing two blank cream pages. The book comes to rest and stops moving. The cup of coffee stays completely still and does not move at any point. Locked-off overhead camera looking straight down, no camera movement, no zoom, no pan. Natural physics and weight, soft indoor light. No hands, no people, no text, no captions.'
 
+/* `toppling` no longer ships — the scene was deleted on 2026-08-21 (see
+ * data/heroScene.js). Its motion prompt is kept because this script spends real
+ * money and the prompt is the only record of how that take was produced; it
+ * costs nothing here, since nothing in scripts/ is shipped to visitors. */
 const SCENES = {
   toppling: { motion: TOPPLING_MOTION },
   overhead: { motion: OVERHEAD_MOTION },
@@ -63,7 +67,7 @@ const only = arg('--only', null)
 const duration = arg('--duration', '6s')      // enum: 4s | 6s | 8s — NOT free-form
 const resolution = arg('--resolution', '1080p') // 720p | 1080p | 4k
 const seed = args.includes('--seed') ? +args[args.indexOf('--seed') + 1] : null
-const scene = arg('--scene', 'toppling')
+const scene = arg('--scene', 'overhead')
 if (!SCENES[scene]) {
   console.error(`Unknown --scene "${scene}". Known: ${Object.keys(SCENES).join(', ')}`)
   process.exit(1)

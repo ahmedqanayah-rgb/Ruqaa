@@ -2,9 +2,10 @@ import { useId } from 'react'
 
 /*
  * Draws a recipe of vector parts, to be warped onto a surface in the hero photo.
- * Both heroes use it: the `toppling` one passes a cover recipe from
- * src/data/coverArt.js (warped onto the standing book's board), the `overhead`
- * one a title-page recipe from src/data/pageArt.js (set on the open page).
+ * The shipping `overhead` hero passes a title-page recipe from
+ * src/data/pageArt.js (set on the open page). The same renderer takes a cover
+ * recipe from src/data/coverArt.js, for a scene that stands a book up and warps
+ * artwork onto its board — no such scene ships today (see data/heroScene.js).
  * See those files for why the cover IMAGE is deliberately not used.
  *
  * Everything is one inline SVG in the recipe's own pixel space, stretched to
