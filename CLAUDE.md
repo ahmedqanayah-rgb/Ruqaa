@@ -262,8 +262,15 @@ keeps `base: './'` sub-path hosting working.
   tab id as well as the slug, because a wrong one fails exactly like a wrong slug — the
   reader silently gets panel 1. **`searchIndex` emits one entry per panel** for the same
   reason; indexing only sections would have cost search most of its entries.
-  NB `check-links` walks **data only** — links hardcoded in components (`FocusLab.jsx`) are
-  invisible to it, so grep for `/book/<id>/` after any slug change.
+  **A panel is the unit of reading**, not the section: `readingUnits()` in `data/books.js`
+  drives the progress ring and the «تابع القراءة» CTA, and `TabbedBlocks` marks the active
+  panel visited itself. Counting sections made one chapter of ten tick the whole book off
+  and sent the CTA past 90% of it. `blockWords` recurses into panels for the same reason —
+  without that the review card advertised «~1 min read» for an entire book.
+  NB `check-links` walks the whole book object now (a bare slug on `verdict` once pointed at
+  a deleted section while the script reported clean), but it still sees **data only** —
+  links hardcoded in components (`FocusLab.jsx`) are invisible to it, so grep for
+  `/book/<id>/` after any slug change.
   Stolen Focus in Arabic is **«تركيزنا المسلوب»** by **«يوهان هاري»** (the published
   Dar Al-Tanweer edition) — not «التركيز المسروق»/«جوهان هاري». Same rule for
   Csikszentmihalyi: **«ميهالي تشيكزينتميهالي»**, the spelling his Arabic translations use —

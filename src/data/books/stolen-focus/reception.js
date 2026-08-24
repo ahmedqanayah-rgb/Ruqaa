@@ -24,7 +24,6 @@ export const verdict = {
     'فصول فرط الحركة وتشتّت الانتباه (ADHD) تحديداً — ولمن يهمّه الأمر شخصياً، راجع «الكتاب في الميزان» أولاً.',
     'The ADHD chapters in particular — if that touches you personally, read “The book under scrutiny” first.'
   ),
-  reception: 'reception',
 }
 
 /* NOT A SECTION ANY MORE. «الكتاب في الميزان» was its own tab until 2026-08-24;

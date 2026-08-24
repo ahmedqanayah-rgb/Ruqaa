@@ -6,57 +6,6 @@ import FigureFrame from '../FigureFrame.jsx'
 const L = (ar, en) => ({ ar, en })
 const slug = (s) => `/book/stolen-focus/${s}`
 
-/* ---------------- Fig 1 — Map of the twelve causes ----------------
-   Twelve clickable causes grouped into four families; each links to its
-   section. Not a data chart — an interactive index. */
-const CAUSE_GROUPS = [
-  { key: 'mind', name: L('العقل', 'Mind'), cls: 'sf-fam-mind', causes: [
-    { n: 1, to: 'speed-flow', label: L('السرعة والتبديل', 'Speed & switching') },
-    { n: 2, to: 'speed-flow', label: L('تعطيل التدفّق', 'Crippled flow') },
-    { n: 4, to: 'reading-mindwandering', label: L('انهيار القراءة', 'Collapse of reading') },
-    { n: 5, to: 'reading-mindwandering', label: L('كبت شرود الذهن', 'Suppressed wandering') },
-  ] },
-  { key: 'tech', name: L('التقنية', 'Technology'), cls: 'sf-fam-tech', causes: [
-    { n: 6, to: 'big-tech', label: L('تقنية تتلاعب بك', 'Manipulative tech') },
-  ] },
-  { key: 'body', name: L('الجسد', 'Body'), cls: 'sf-fam-body', causes: [
-    { n: 3, to: 'exhaustion', label: L('الإنهاك وقلّة النوم', 'Exhaustion & sleep') },
-    { n: 9, to: 'diet-pollution', label: L('تدهور الغذاء', 'Poor diet') },
-    { n: 10, to: 'diet-pollution', label: L('التلوّث', 'Pollution') },
-  ] },
-  { key: 'society', name: L('المجتمع', 'Society'), cls: 'sf-fam-society', causes: [
-    { n: 7, to: 'cruel-optimism', label: L('التفاؤل القاسي', 'Cruel optimism') },
-    { n: 8, to: 'stress-vigilance', label: L('التوتّر واليقظة', 'Stress & vigilance') },
-    { n: 11, to: 'adhd', label: L('تشخيص فرط الحركة', 'ADHD diagnosis') },
-    { n: 12, to: 'childhood', label: L('حبس الأطفال', 'Confined children') },
-  ] },
-]
-export function SfCausesMap() {
-  const { t } = useApp()
-  return (
-    <FigureFrame number={1}
-      title={L('خريطة الأسباب الاثني عشر', 'Map of the twelve causes')}
-      caption={L('الأسباب الاثنا عشر في أربع عائلات. انقر أيّ سببٍ للانتقال إلى قسمه.',
-                 'The twelve causes in four families. Click any cause to jump to its section.')}>
-      <div className="sf-causes-map">
-        {CAUSE_GROUPS.map((g) => (
-          <div key={g.key} className={`sf-fam ${g.cls}`}>
-            <span className="sf-fam-name">{t(g.name)}</span>
-            <div className="sf-fam-causes">
-              {g.causes.map((c) => (
-                <Link key={c.n} to={slug(c.to)} className="sf-cause">
-                  <span className="sf-cause-n">{t({ ar: String(c.n), en: String(c.n) })}</span>
-                  <span className="sf-cause-lbl">{t(c.label)}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </FigureFrame>
-  )
-}
-
 /* The "cost of interruption" figure lived here and was REMOVED (2026-07-28).
    It modelled an hour eaten by 23-minute refocus "shadows", but that 23-minute
    figure does not hold up: the book attributes it to Michael Posner, it is

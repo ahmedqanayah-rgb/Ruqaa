@@ -62,6 +62,11 @@ for (const b of books) {
     }
     Object.values(v).forEach((x) => walk(x, where))
   }
+  /* Walk the WHOLE book, not just section blocks. `verdict.reception` was a
+     bare slug on a top-level field and pointed at a deleted section on both
+     landings while this script reported clean — the walk simply never went
+     there. Anything with a `to` is now checked wherever it lives. */
+  walk(b, `${b.id} · book data`)
   for (const s of b.sections) walk(s.blocks, `${b.id}/${s.slug} · content link`)
 }
 

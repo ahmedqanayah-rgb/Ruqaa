@@ -48,7 +48,6 @@ function buildIndex() {
          have quietly cost the search most of its entries. */
       ;(section.blocks || []).forEach((b) => {
         if (b.type !== 'tabs') return
-        const key = b.param || 'tab'
         ;(b.panels || []).forEach((panel) => {
           if (!panel.id) return
           out.push({
@@ -59,7 +58,7 @@ function buildIndex() {
             title: panel.title,
             subtitle: section.title,
             bookTitle: book.title,
-            to: `/book/${book.id}/${section.slug}?${key}=${encodeURIComponent(panel.id)}`,
+            to: `/book/${book.id}/${section.slug}?tab=${encodeURIComponent(panel.id)}`,
             text: hay(panel.title, section.title, book.title),
           })
         })

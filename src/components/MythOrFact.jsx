@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext.jsx'
 import RichText from './RichText.jsx'
 import ResultCard from './ResultCard.jsx'
+import { shuffle } from '../lib/shuffle.js'
 
 /*
  * «خرافة أم حقيقة؟» — the merged myths + shocking-facts section, as a game.
@@ -23,17 +24,6 @@ import ResultCard from './ResultCard.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
-/* Fisher–Yates on a copy. Seeded from nothing on purpose: this is for variety,
-   not reproducibility, and Math.random needs no state kept anywhere. */
-function shuffled(list) {
-  const a = [...list]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
-
 const BANDS = [
   { min: 0.9, icon: '🥇', label: L('كاشف خرافات', 'Myth-buster'), col: 'var(--success)' },
   { min: 0.7, icon: '🥈', label: L('حسٌّ نقديّ جيّد', 'Good instincts'), col: 'var(--accent)' },
@@ -43,7 +33,7 @@ const BANDS = [
 
 export default function MythOrFact({ items, sectionTitle, bookTitle }) {
   const { t } = useApp()
-  const deck = useMemo(() => shuffled(items || []), [items])
+  const deck = useMemo(() => shuffle(items || []), [items])
   const [at, setAt] = useState(0)
   // null until answered; then the boolean the reader chose for `isMyth`.
   const [choice, setChoice] = useState(null)
@@ -118,7 +108,7 @@ export default function MythOrFact({ items, sectionTitle, bookTitle }) {
             </button>
           </div>
         ) : (
-          <div className="mof-reveal">
+          <div className="mof-reveal fade-in">
             <p className="mof-verdict">
               <span className="mof-mark" aria-hidden>{right ? '✓' : '✕'}</span>
               {t(right ? L('صحيح', 'Correct') : L('غير صحيح', 'Not quite'))}

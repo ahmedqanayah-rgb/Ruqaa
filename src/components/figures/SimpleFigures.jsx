@@ -84,34 +84,6 @@ const carData = [
   { r: '<4h', mult: 11.5 }, { r: '4–5h', mult: 4.3 },
   { r: '5–6h', mult: 1.9 }, { r: '6–7h', mult: 1.3 },
 ]
-export function Fig12CarAccidents() {
-  const { t } = useApp()
-  return (
-    <FigureFrame number={12} interactive={false}
-      title={L('نقص النوم وحوادث السيارات', 'Sleep loss vs. car accidents')}
-      caption={L('خطر الحادث يتصاعد بصورة غير خطّية مع نقص النوم — النوم أقلّ من ٤ ساعات يضاعف الخطر ×١١٫٥.',
-                 'Crash risk rises non-linearly as sleep drops — under 4 hours multiplies risk ×11.5.')}>
-      <div style={{ width: '100%', height: 280 }} dir="ltr">
-        <ResponsiveContainer>
-          <BarChart data={carData} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
-            <CartesianGrid stroke="var(--chart-grid)" strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="r" tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
-              label={{ value: t(L('ساعات النوم', 'Hours of sleep')), position: 'insideBottom', offset: -8, fill: 'var(--text-muted)', fontSize: 12 }} />
-            <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12 }} width={44}
-              label={{ value: t(L('مضاعف الخطر', 'Risk multiplier')), angle: -90, position: 'insideLeft', fill: 'var(--text-muted)', fontSize: 12 }} />
-            <Tooltip formatter={(v) => `×${v}`} />
-            <Bar dataKey="mult" radius={[6, 6, 0, 0]}>
-              {carData.map((d, i) => (
-                <Cell key={i} fill={d.mult > 5 ? 'var(--danger)' : d.mult > 2 ? 'var(--warm)' : 'var(--blue)'} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </FigureFrame>
-  )
-}
-
 /* ---------------- Fig 13 — Obesity vs sleep over decades (hover both lines) ---------------- */
 const obesityData = [
   { year: 1960, sleep: 8.1, obesity: 13 }, { year: 1970, sleep: 7.7, obesity: 15 },

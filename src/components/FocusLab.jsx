@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext.jsx'
 import RichText from './RichText.jsx'
 import ResultCard from './ResultCard.jsx'
 import { SfDistractedReading } from './figures/stolen-focus/DistractedReading.jsx'
+import { shuffle } from '../lib/shuffle.js'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -21,13 +22,6 @@ const stdev = (a) => {
   return Math.round(Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / a.length))
 }
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x))
-const shuffle = (a) => {
-  const r = [...a]
-  for (let i = r.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]
-  }
-  return r
-}
 
 /* ============================================================
    Test 1 — Stroop (selective attention / interference)
@@ -847,8 +841,8 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
               : L('تقارَبت نتيجتا القراءة هذه المرّة؛ جرّبها ثانيةً في وقتٍ آخر.', 'Your two reading scores were close this time; try again another time.'))}</li>}
           </ul>
           <div className="fl-summary-actions">
-            <Link className="btn primary" to="/book/stolen-focus/focus-assessment">{t(L('قيّم عاداتك الآن', 'Now assess your habits'))}</Link>
-            <Link className="btn" to="/book/stolen-focus/rebellion">{t(L('كيف أستعيد تركيزي؟', 'How do I reclaim my focus?'))}</Link>
+            <Link className="btn primary" to="/book/stolen-focus/focus-lab?tab=assessment">{t(L('قيّم عاداتك الآن', 'Now assess your habits'))}</Link>
+            <Link className="btn" to="/book/stolen-focus/review?tab=rebellion">{t(L('كيف أستعيد تركيزي؟', 'How do I reclaim my focus?'))}</Link>
             <button className="btn ghost" onClick={reset}>↺ {t(L('أعِد كلّ الاختبارات', 'Redo all tests'))}</button>
           </div>
 

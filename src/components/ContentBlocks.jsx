@@ -1,10 +1,10 @@
-import { useState, lazy, Suspense } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
+import { scroller } from '../lib/scroll.js'
 import RichText from './RichText.jsx'
-import Icon from './Icon.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -30,31 +30,6 @@ function LinkCards({ block }) {
         ))}
       </div>
     </nav>
-  )
-}
-
-function MythCard({ block }) {
-  const { t } = useApp()
-  const [open, setOpen] = useState(false)
-  return (
-    <div className={`myth-card card ${open ? 'open' : ''}`}>
-      <div className="myth-claim">
-        <span className="pill warm">{t({ ar: 'مغالطة', en: 'Myth' })}</span>
-        <RichText as="strong" value={block.claim} />
-      </div>
-      {open ? (
-        <div className="myth-reply fade-in">
-          <span className="pill" style={{ background: 'var(--accent-soft)', color: 'var(--success)' }}>
-            {t({ ar: 'الردّ العلمي', en: 'The science' })}
-          </span>
-          <RichText as="p" value={block.reply} />
-        </div>
-      ) : (
-        <button className="btn primary" onClick={() => setOpen(true)}>
-          {t({ ar: 'صح أم خطأ؟ اكشف', en: 'True or false? Reveal' })}
-        </button>
-      )}
-    </div>
   )
 }
 
@@ -204,7 +179,7 @@ function PeopleGroups({ block }) {
 /* End-of-article check. Lives here rather than in BookSection because a
    chapter folded into a `tabs` panel has to carry its own — see the `quick`
    block type below. */
-export function QuickCheck({ quick }) {
+function QuickCheck({ quick }) {
   const { t } = useApp()
   const [picked, setPicked] = useState(null)
   const done = picked != null
@@ -235,10 +210,9 @@ export function QuickCheck({ quick }) {
 }
 
 function TabbedBlocks({ block }) {
-  const { t } = useApp()
+  const { t, markVisited } = useApp()
   const [params, setParams] = useSearchParams()
   const panels = block.panels || []
-  const key = block.param || 'tab'
 
   /* WHICH PANEL IS OPEN LIVES IN THE URL, not in state.
      Chapters that used to be their own routes are panels now, so without this
@@ -246,13 +220,33 @@ function TabbedBlocks({ block }) {
      search hit — would land on the parent and leave the reader to find it. Same
      idiom the studies quiz already uses for `?study=`. `replace` so clicking
      through tabs does not bury the previous page under history entries. */
-  const found = panels.findIndex((p) => p.id && p.id === params.get(key))
+  const found = panels.findIndex((p) => p.id === params.get('tab'))
   const active = found >= 0 ? found : 0
   const select = (i) => {
     const next = new URLSearchParams(params)
-    if (panels[i].id) next.set(key, panels[i].id); else next.delete(key)
+    next.set('tab', panels[i].id)
     setParams(next, { replace: true })
   }
+
+  /* A panel is the unit of reading now (readingUnits in data/books.js), so it
+     marks ITSELF read. Leaving this to BookSection meant opening one chapter of
+     ten ticked the whole book off. */
+  const { bookId, slug } = useParams()
+  const activeId = panels[active]?.id
+  useEffect(() => {
+    if (!bookId || !slug || !activeId) return
+    const id = setTimeout(() => markVisited(bookId, `${slug}?tab=${activeId}`), 1200)
+    return () => clearTimeout(id)
+  }, [bookId, slug, activeId, markVisited])
+
+  /* Switching chapter should start that chapter, not drop you at the scroll
+     depth of the last one. The page-level reset is keyed on the section, which
+     no longer changes when the reader moves between chapters. */
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) { first.current = false; return }
+    scroller().scrollTop = 0
+  }, [activeId])
 
   if (!panels.length) return null
   return (
@@ -262,7 +256,6 @@ function TabbedBlocks({ block }) {
           <button key={p.id || i} type="button" role="tab" aria-selected={i === active}
             className={`block-tab ${i === active ? 'active' : ''}`}
             onClick={() => select(i)}>
-            {p.icon && <Icon name={p.icon} className="block-tab-icon" />}
             {t(p.title)}
           </button>
         ))}
@@ -323,7 +316,6 @@ export default function ContentBlocks({ blocks }) {
           case 'tabs': return <TabbedBlocks key={i} block={b} />
           // A chapter folded into a panel brings its end-of-article check with it.
           case 'quick': return <QuickCheck key={i} quick={b.quick} />
-          case 'myth': return <MythCard key={i} block={b} />
           case 'debate': return <DebateCard key={i} block={b} />
           case 'sources': return <SourceList key={i} block={b} />
           default: return null

@@ -20,8 +20,10 @@
    ========================================================================== */
 
 const L = (ar, en) => ({ ar, en })
-const myth = (statement, explain) => ({ statement, isMyth: true, explain })
-const fact = (statement, explain) => ({ statement, isMyth: false, explain })
+/* Same signature as the other book's file — the two had already drifted (this
+   one lacked `source`), so adding a citation here meant noticing that first. */
+const myth = (statement, explain, source) => ({ statement, isMyth: true, explain, source })
+const fact = (statement, explain, source) => ({ statement, isMyth: false, explain, source })
 
 export const mythOrFact = [
   /* ---------------------------- the myths ---------------------------- */

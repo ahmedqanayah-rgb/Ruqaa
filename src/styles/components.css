@@ -213,14 +213,23 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    Tabs inside a section (ContentBlocks `tabs` block, and the focus lab's
    two panels). One switching idiom on the site, used by both.
    ============================================================ */
+/* ONE ROW, ALWAYS — it scrolls rather than wraps.
+   Wrapping looked fine for the two-panel author tab and fell apart at ten: the
+   Stolen Focus bar was 151px tall on a 375px phone, 19% of the screen spent
+   before a word of reading, with labels crushed to 34px. `flex: 1 0 auto` does
+   both jobs from one rule — two tabs still grow to fill the bar, ten size to
+   their labels and overflow into a swipe. Same shape as .sitenav-row, scrollbar
+   hidden the same way. */
 .block-tabs-bar {
-  display: flex; gap: 4px; flex-wrap: wrap;
+  display: flex; gap: 4px; flex-wrap: nowrap;
+  overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
   padding: 4px; margin-bottom: var(--space-4);
   background: var(--bg-elev-2); border: 1px solid var(--border);
   border-radius: 999px;
 }
+.block-tabs-bar::-webkit-scrollbar { display: none; }
 .block-tab {
-  flex: 1; min-width: 0;
+  flex: 1 0 auto; white-space: nowrap;
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   padding: 8px 16px; border: none; border-radius: 999px;
   background: none; color: var(--text-soft);
@@ -267,7 +276,6 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    the two buttons is a hint, and this game only works if neither is inviting. */
 .mof-btn { flex: 1; justify-content: center; font-weight: 700; }
 
-.mof-reveal { animation: fadeIn 240ms ease both; }
 .mof-verdict { margin: 0 0 var(--space-3); font-weight: 600; }
 .mof-mark {
   display: inline-flex; align-items: center; justify-content: center;
@@ -495,7 +503,7 @@ html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
   .landing-group-toggle { cursor: default; pointer-events: none; min-height: 0; }
   .landing-group-toggle .side-chev { display: none; }
 }
-.section-card.rich { flex-direction: column; align-items: stretch; gap: 8px; border-top: 3px solid var(--card-accent, var(--border)); }
+.section-card.rich { flex-direction: column; align-items: stretch; gap: 8px; border-top: 3px solid var(--border); }
 .section-card-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .section-card-meta { font-size: var(--fs-xs); color: var(--text-muted); }
 .section-card.seen .section-card-num { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
@@ -671,12 +679,6 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 .person-tag { display: inline-block; font-size: var(--fs-xs); color: var(--accent); font-weight: 600; margin-bottom: 4px; }
 .person-body p { font-size: var(--fs-sm); margin: 0; }
 
-.myth-card { padding: var(--space-4); margin: var(--space-3) 0; }
-.myth-claim { display: flex; gap: 10px; align-items: flex-start; margin-bottom: var(--space-3); }
-.myth-claim strong { font-size: var(--fs-md); }
-.myth-reply { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
-.myth-reply p { margin: 0; }
-.myth-reply .pill { align-self: flex-start; }
 
 /* ============================================================
    Figures
@@ -784,18 +786,6 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 .sf-readout { font-size: var(--fs-sm); color: var(--text-soft); margin: var(--space-3) 0 0; }
 
 /* Fig 1 — causes map */
-.sf-causes-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); }
-.sf-fam { border: 1px solid var(--border); border-top: 3px solid var(--fam-col, var(--accent)); border-radius: var(--radius); padding: var(--space-3); background: var(--bg-elev-2); }
-.sf-fam-mind { --fam-col: var(--violet); }
-.sf-fam-tech { --fam-col: var(--blue); }
-.sf-fam-body { --fam-col: var(--cool); }
-.sf-fam-society { --fam-col: var(--warm); }
-.sf-fam-name { display: block; font-weight: 700; font-size: var(--fs-sm); color: var(--fam-col); margin-bottom: var(--space-2); }
-.sf-fam-causes { display: flex; flex-direction: column; gap: 6px; }
-.sf-cause { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: var(--radius-sm); background: var(--bg-elev); border: 1px solid var(--border); color: var(--text); font-size: var(--fs-sm); transition: background var(--transition); }
-.sf-cause:hover { background: var(--surface-hover); text-decoration: none; }
-.sf-cause-n { width: 20px; height: 20px; flex-shrink: 0; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: var(--fam-col); color: #fff; font-size: 0.7rem; font-weight: 700; }
-.sf-cause-lbl { min-width: 0; }
 
 /* Fig 4 — flow channel */
 .sf-flow { display: flex; flex-direction: column; align-items: center; }
@@ -1605,33 +1595,9 @@ html[data-presenting] img { margin-inline: auto; }
 /* ============================================================
    "A week with the book" — 7-day challenge
    ============================================================ */
-.week-intro { color: var(--text-soft); }
-.week-progress { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-4) 0; flex-wrap: wrap; }
-.week-bar { flex: 1 1 200px; height: 8px; border-radius: 999px; background: var(--bg-elev-2); overflow: hidden; }
-.week-bar span { display: block; height: 100%; background: var(--success); border-radius: 999px; transition: width var(--transition); }
-.week-count { font-size: var(--fs-sm); font-weight: 600; color: var(--text-soft); }
 
-.week-days { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
-.week-day { display: flex; gap: var(--space-3); padding: var(--space-4); align-items: flex-start; transition: opacity var(--transition); }
-.week-day.done { border-color: var(--success); }
-.week-day.done .week-title { text-decoration: line-through; text-decoration-color: var(--border-strong); }
 
-.week-check { position: relative; flex-shrink: 0; cursor: pointer; line-height: 1; }
-.week-check input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
-.week-num {
-  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-  background: var(--bg-elev-2); border: 2px solid var(--border-strong);
-  font-weight: 700; color: var(--text-soft); transition: all var(--transition);
-}
-.week-check input:focus-visible + .week-num { outline: 2px solid var(--accent); outline-offset: 2px; }
-.week-day.done .week-num { background: var(--success); border-color: var(--success); color: #fff; }
 
-.week-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.week-title { font-size: var(--fs-md); }
-.week-task { margin: 0; }
-.week-why { margin: 0; font-size: var(--fs-sm); color: var(--text-muted); }
-.week-link { font-size: var(--fs-xs); font-weight: 600; align-self: flex-start; margin-top: 2px; }
-.week-closing { margin-top: var(--space-5); }
 
 /* Placeholder while a lazily-loaded figure or the Focus Lab arrives. Reserves
    height so the page doesn't jump when the real component swaps in. */

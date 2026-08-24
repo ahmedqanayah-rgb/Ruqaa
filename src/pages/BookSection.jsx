@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react'
 import { createPortal } from 'react-dom'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
-import { getBook, entrySlugs } from '../data/books.js'
-import ContentBlocks, { QuickCheck } from '../components/ContentBlocks.jsx'
+import { getBook, entrySlugs, readingUnits } from '../data/books.js'
+import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
 import MythOrFact from '../components/MythOrFact.jsx'
@@ -17,11 +17,6 @@ import { scroller, onPageScroll } from '../lib/scroll.js'
 
 const L = (ar, en) => ({ ar, en })
 
-/* Family colour accents for cause-section cards (matches the causes-map figure). */
-const FAM_COLORS = {
-  mind: 'var(--violet)', tech: 'var(--blue)', body: 'var(--cool)', society: 'var(--warm)',
-}
-
 /* ---- reading-time estimate from a section's blocks (per language) ---- */
 function blockWords(b, lang) {
   const pick = (v) => (v == null ? '' : typeof v === 'string' ? v : (v[lang] ?? v.en ?? v.ar ?? ''))
@@ -30,11 +25,15 @@ function blockWords(b, lang) {
     case 'h': case 'h4': case 'p': case 'quote': s = pick(b.text); break
     case 'callout': s = `${pick(b.title)} ${pick(b.text)}`; break
     case 'ul': case 'ol': s = (b.items || []).map(pick).join(' '); break
-    case 'myth': s = `${pick(b.claim)} ${pick(b.reply)}`; break
     // `sources` is a link list, not prose — deliberately left at 0.
     case 'debate': s = `${pick(b.topic)} ${pick(b.claim)} ${pick(b.critique)} ${pick(b.response)}`; break
     case 'people': s = (b.people || []).map((p) => pick(p.story)).join(' '); break
     case 'peoplegroups': s = (b.groups || []).flatMap((g) => g.people).map((p) => pick(p.story)).join(' '); break
+    /* Panels are prose too, and most of the book's prose is inside them now.
+       Without this the whole review section counted zero words and every card
+       advertised «~1 min read» for an entire book. */
+    case 'tabs': return (b.panels || []).flatMap((p) => p.blocks || [])
+      .reduce((n, x) => n + blockWords(x, lang), 0)
     default: return 0
   }
   return s.split(/\s+/).filter(Boolean).length
@@ -72,9 +71,7 @@ function FactRotator({ book }) {
      the reader something untrue in the book's own voice. */
   const facts = useMemo(() => {
     const sec = book.sections.find((s) => s.kind === 'myth-game')
-    return (sec?.items || [])
-      .filter((it) => !it.isMyth)
-      .map((it) => ({ title: null, text: it.statement }))
+    return (sec?.items || []).filter((it) => !it.isMyth).map((it) => it.statement)
   }, [book])
   const [i, setI] = useState(() => Math.floor(Math.random() * Math.max(1, facts.length)))
   if (!facts.length) return null
@@ -88,14 +85,15 @@ function FactRotator({ book }) {
   return (
     <div className="fact-teaser">
       <div className="fact-teaser-body">
-        {f.title && <strong>{t(f.title)}</strong>}
-        <RichText as="p" value={f.text} />
+        <RichText as="p" value={f} />
       </div>
       <div className="fact-teaser-foot">
         <button className="btn ghost fact-teaser-btn" onClick={reroll}>
           🎲 {t(L('حقيقة أخرى', 'Another fact'))}
         </button>
-        <Link to={`/book/${book.id}/shocking`}>{t(L('كلّ الحقائق ←', 'All the facts →'))}</Link>
+        {/* «الحقائق الصادمة» is not a section any more — the facts live in the
+            game, which is also where this teaser's text comes from. */}
+        <Link to={`/book/${book.id}/myth-or-fact`}>{t(L('العب بها كلّها ←', 'Play them all →'))}</Link>
       </div>
     </div>
   )
@@ -121,22 +119,30 @@ function countExperts(book) {
    switching idiom on the site, not two. */
 function FocusLabPanels({ book, section }) {
   const { t } = useApp()
-  const [tab, setTab] = useState('lab')
+  /* Same `?tab=` contract as TabbedBlocks, and for the same reason: a panel
+     nothing can link to is a panel nothing can send a reader to. This held
+     local state at first, which is exactly why the lab's own «قيّم عاداتك الآن»
+     button still pointed at a section that no longer existed — there was no
+     address to repoint it to. `…/focus-lab?tab=assessment` works now. */
+  const [params, setParams] = useSearchParams()
   const panels = [
     { id: 'lab', title: L('الألعاب', 'The games') },
-    ...(section.assessment ? [{ id: 'assessment', title: L('تقييم عاداتك', 'Your habits') }] : []),
+    { id: 'assessment', title: L('تقييم عاداتك', 'Your habits') },
   ]
+  const tab = params.get('tab') === 'assessment' ? 'assessment' : 'lab'
+  const select = (id) => {
+    const next = new URLSearchParams(params); next.set('tab', id)
+    setParams(next, { replace: true })
+  }
   return (
     <div className="block-tabs">
-      {panels.length > 1 && (
-        <div className="block-tabs-bar" role="tablist">
-          {panels.map((p) => (
-            <button key={p.id} type="button" role="tab" aria-selected={tab === p.id}
-              className={`block-tab ${tab === p.id ? 'active' : ''}`}
-              onClick={() => setTab(p.id)}>{t(p.title)}</button>
-          ))}
-        </div>
-      )}
+      <div className="block-tabs-bar" role="tablist">
+        {panels.map((p) => (
+          <button key={p.id} type="button" role="tab" aria-selected={tab === p.id}
+            className={`block-tab ${tab === p.id ? 'active' : ''}`}
+            onClick={() => select(p.id)}>{t(p.title)}</button>
+        ))}
+      </div>
       <div className="block-tabs-panel" role="tabpanel">
         {tab === 'lab' ? (
           <Suspense fallback={<div className="figure-loading" aria-hidden />}>
@@ -167,11 +173,9 @@ function sectionMeta(section, minutes) {
 function SectionCard({ book, section, index, minutes }) {
   const { t, visited } = useApp()
   const seen = visited.has(`${book.id}/${section.slug}`)
-  const accent = FAM_COLORS[section.fam]
   return (
     <Link to={`/book/${book.id}/${section.slug}`}
-      className={`section-card card rich ${seen ? 'seen' : ''}`}
-      style={accent ? { '--card-accent': accent } : undefined}>
+      className={`section-card card rich ${seen ? 'seen' : ''}`}>
       <div className="section-card-top">
         <span className="section-card-num">{seen ? '✓' : index + 1}</span>
         <Icon name={section.icon} className="section-card-icon" />
@@ -213,11 +217,6 @@ function VerdictCard({ book }) {
           <RichText as="p" value={v.caveat} />
         </div>
       </div>
-      {v.reception && (
-        <Link className="btn verdict-more" to={`/book/${book.id}/${v.reception}`}>
-          ⚖️ {t(L('الكتاب في الميزان', 'The book under scrutiny'))} →
-        </Link>
-      )}
     </section>
   )
 }
@@ -242,8 +241,11 @@ function BookLanding({ book }) {
   const studiesSec = book.sections.find((s) => s.kind === 'quiz')
   const experts = countExperts(book)
   const labSec = book.sections.find((s) => s.kind === 'focus-lab')
-  const seenCount = book.sections.filter((s) => visited.has(`${book.id}/${s.slug}`)).length
-  const total = book.sections.length
+  // Panels, not sections — see readingUnits. Counting sections made one panel
+  // of ten read like a whole chapter of the book.
+  const units = useMemo(() => readingUnits(book), [book])
+  const seenCount = units.filter((u) => visited.has(`${book.id}/${u}`)).length
+  const total = units.length
   const ring = Math.round((seenCount / total) * 100)
 
   const renderCard = (slug) => {
@@ -264,7 +266,12 @@ function BookLanding({ book }) {
      seen, which makes it useful on the second visit instead of redundant. */
   const ordered = book.groups ? book.groups.flatMap(entrySlugs) : book.sections.map((s) => s.slug)
   const startSlug = ordered.find((sl) => bySlug.has(sl))
-  const nextSlug = ordered.find((sl) => bySlug.has(sl) && !visited.has(`${book.id}/${sl}`))
+  /* In group order, but at panel granularity: the first unread unit inside a
+     section counts, so «تابع القراءة» lands on the chapter you stopped at
+     rather than on the next section along. */
+  const nextSlug = ordered
+    .flatMap((sl) => units.filter((u) => u === sl || u.startsWith(`${sl}?`)))
+    .find((u) => !visited.has(`${book.id}/${u}`))
   const ctaSlug = seenCount > 0 ? (nextSlug || startSlug) : startSlug
   const ctaLabel = seenCount > 0 && nextSlug
     ? L('تابع القراءة', 'Continue reading')
@@ -281,7 +288,7 @@ function BookLanding({ book }) {
      its cards on screen, so this doesn't undo the reordering win. State is in
      memory like `visited` — no storage — and re-seeds on remount, which is what
      makes it follow the reader's progress instead of going stale. */
-  const ctaGroup = book.groups ? book.groups.findIndex((g) => entrySlugs(g).includes(ctaSlug)) : -1
+  const ctaGroup = book.groups ? book.groups.findIndex((g) => entrySlugs(g).includes(String(ctaSlug).split('?')[0])) : -1
   const [openGroups, setOpenGroups] = useState(() => {
     const saved = landingGroups.get(book.id)
     return saved?.touched ? saved.open : new Set([ctaGroup >= 0 ? ctaGroup : 0])
@@ -520,7 +527,6 @@ export default function BookSection() {
         </div>
       )}
 
-      {section.quick && <QuickCheck key={`${section.slug}-quick`} quick={section.quick} />}
 
       <nav className="section-nav-v2">
         {next ? (

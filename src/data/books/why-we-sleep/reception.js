@@ -23,7 +23,6 @@ export const verdict = {
     'الأرقام المفردة — خاصّةً ما يتعلّق بالسرطان وطول العمر. خذ الاتّجاه العامّ، لا الرقم الدقيق.',
     'The individual statistics — especially those about cancer and lifespan. Take the direction of travel, not the precise figure.'
   ),
-  reception: 'reception',
 }
 
 /* NOT A SECTION ANY MORE — these blocks are appended to «النوم والصحّة والمناعة

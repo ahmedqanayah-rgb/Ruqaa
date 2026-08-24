@@ -1,5 +1,5 @@
 import {
-  Fig1Temperature, Fig2Melatonin, Fig10Injuries, Fig12CarAccidents, Fig13Obesity, Fig11Basketball,
+  Fig1Temperature, Fig2Melatonin, Fig10Injuries, Fig13Obesity, Fig11Basketball,
 } from './SimpleFigures.jsx'
 import { TwoProcessModel, SleepDeprivation } from './TwoProcessModel.jsx'
 import Hypnogram from './Hypnogram.jsx'
@@ -10,7 +10,7 @@ import {
   SfCollectiveAttention, SfReadingDecline, SfFourDayWeek, SfBloodSugar,
 } from './stolen-focus/StolenFocusCharts.jsx'
 import {
-  SfCausesMap, SfFlowChannel, SfAdhdThreshold, SfSurveillanceFlow,
+  SfFlowChannel, SfAdhdThreshold, SfSurveillanceFlow,
 } from './stolen-focus/StolenFocusInteractive.jsx'
 import {
   SfInfiniteScroll, SfOutrageAlgorithm, SfRoamingRadius,
@@ -31,11 +31,9 @@ export const FIGURES = {
   brainNetworks: BrainNetworks,
   fig10: Fig10Injuries,
   fig11: Fig11Basketball,
-  fig12: Fig12CarAccidents,
   fig13: Fig13Obesity,
 
   // ----- Stolen Focus -----
-  sfCausesMap: SfCausesMap,
   sfCollectiveAttention: SfCollectiveAttention,
   sfFlowChannel: SfFlowChannel,
   sfDistractedReading: SfDistractedReading,

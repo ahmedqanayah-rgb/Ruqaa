@@ -107,14 +107,13 @@ const QUICK = {
 }
 
 /* Family tag per cause section — drives the coloured card accents. */
-const FAM = {
-  'speed-flow': 'mind', 'reading-mindwandering': 'mind',
-  'big-tech': 'tech',
-  exhaustion: 'body', 'diet-pollution': 'body',
-  'cruel-optimism': 'society', 'stress-vigilance': 'society', adhd: 'society', childhood: 'society',
-}
-
-const enrich = (s) => ({ ...s, fam: FAM[s.slug], quick: QUICK[s.slug] })
+/* One surviving caller — «داخل حالة التدفّق», the only chapter still a section.
+   Its check goes in as a block, the same way `panel()` does it, so there is one
+   delivery path for a quick check and not two. */
+const enrich = (s) => ({
+  ...s,
+  blocks: QUICK[s.slug] ? [...s.blocks, { type: 'quick', quick: QUICK[s.slug] }] : s.blocks,
+})
 
 /* A cause is a PANEL now, not a route, so its end-of-article check can no
    longer be rendered by BookSection from `section.quick` — there is only one
@@ -193,8 +192,6 @@ export const stolenFocus = {
   ),
   verdict,
   accent: 'var(--accent)',
-  /* `{ slug }` is a solo entry — a top-level tab with no group header. See
-     entrySlugs in data/books.js. */
   /* `{ slug }` is a solo entry — a top-level tab with no group header. See
      entrySlugs in data/books.js. */
   groups: [
