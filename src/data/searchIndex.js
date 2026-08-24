@@ -42,6 +42,29 @@ function buildIndex() {
         text: hay(section.title, section.lead, book.title),
       })
 
+      /* Chapters folded into a `tabs` block are panels, not routes — but they
+         are still what a reader searches for by name. Index each one against
+         its own `?tab=` address, or collapsing chapters into one section would
+         have quietly cost the search most of its entries. */
+      ;(section.blocks || []).forEach((b) => {
+        if (b.type !== 'tabs') return
+        const key = b.param || 'tab'
+        ;(b.panels || []).forEach((panel) => {
+          if (!panel.id) return
+          out.push({
+            id: `${book.id}/${section.slug}/${panel.id}`,
+            kind: 'section',
+            kindLabel: KIND_LABEL.section,
+            icon: panel.icon || section.icon || '📄',
+            title: panel.title,
+            subtitle: section.title,
+            bookTitle: book.title,
+            to: `/book/${book.id}/${section.slug}?${key}=${encodeURIComponent(panel.id)}`,
+            text: hay(panel.title, section.title, book.title),
+          })
+        })
+      })
+
       // Index the studies themselves — they're the most-searched content and
       // they all live behind a single quiz route.
       ;(section.studies || []).forEach((study) => {

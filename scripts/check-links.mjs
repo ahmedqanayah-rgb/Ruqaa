@@ -13,17 +13,35 @@ const { books, entrySlugs } = await import('../src/data/books.js')
 const { connections } = await import('../src/data/connections.js')
 
 const slugs = new Map(books.map((b) => [b.id, new Set(b.sections.map((s) => s.slug))]))
+
+/* Chapters folded into a `tabs` block are reached as `…/<slug>?tab=<panel>`.
+   A wrong panel id fails EXACTLY like a wrong slug — TabbedBlocks falls back to
+   the first panel and the reader lands on the wrong chapter with no error — so
+   it gets checked the same way. bookId/slug -> Set(panel ids). */
+const panels = new Map()
+for (const b of books)
+  for (const s of b.sections)
+    for (const blk of s.blocks ?? [])
+      if (blk.type === 'tabs')
+        panels.set(`${b.id}/${s.slug}`, new Set((blk.panels ?? []).map((p) => p.id).filter(Boolean)))
 let bad = 0
-const check = (bookId, slug, where) => {
+const check = (bookId, slug, where, tab) => {
   if (!slugs.has(bookId)) { console.log(`  BAD BOOK  "${bookId}"           ${where}`); bad++; return }
-  if (!slugs.get(bookId).has(slug)) { console.log(`  BAD SLUG  ${bookId}/${slug}   ${where}`); bad++ }
+  if (!slugs.get(bookId).has(slug)) { console.log(`  BAD SLUG  ${bookId}/${slug}   ${where}`); bad++; return }
+  if (!tab) return
+  const known = panels.get(`${bookId}/${slug}`)
+  if (!known) { console.log(`  NO TABS   ${bookId}/${slug}?tab=${tab}   ${where}`); bad++; return }
+  if (!known.has(tab)) { console.log(`  BAD TAB   ${bookId}/${slug}?tab=${tab}   ${where}`); bad++ }
 }
 
 for (const item of connections.items ?? []) {
   const theme = item.theme?.en ?? ''
   for (const key of ['a', 'b']) {
     const side = item[key]
-    if (side?.slug) check(side.bookId, side.slug, `connections · ${theme} · ${key}`)
+    if (!side?.slug) continue
+    // a connections slug may carry its panel: "review?tab=big-tech"
+    const [sl, q] = side.slug.split('?')
+    check(side.bookId, sl, `connections · ${theme} · ${key}`, new URLSearchParams(q || '').get('tab'))
   }
 }
 
@@ -34,17 +52,13 @@ for (const b of books) {
   for (const g of b.groups ?? [])
     for (const s of entrySlugs(g)) check(b.id, s, `${b.id} · ${g.slug ? 'solo entry' : `group "${g.title?.en ?? ''}"`}`)
 
-  const challenge = b.sections.find((s) => s.kind === 'challenge')
-  for (const d of challenge?.days ?? [])
-    if (d.to) check(b.id, d.to, `${b.id} · challenge day ${d.n ?? '?'}`)
-
   // Internal links inside section content: `to: '/book/<id>/<slug>'` or a bare slug.
   const walk = (v, where) => {
     if (!v || typeof v !== 'object') return
     if (Array.isArray(v)) return v.forEach((x) => walk(x, where))
     if (typeof v.to === 'string') {
-      const m = v.to.match(/^\/book\/([^/]+)\/([^/?#]+)/)
-      if (m) check(m[1], m[2], where)
+      const m = v.to.match(/^\/book\/([^/]+)\/([^/?#]+)(?:\?tab=([^&#]+))?/)
+      if (m) check(m[1], m[2], where, m[3])
     }
     Object.values(v).forEach((x) => walk(x, where))
   }

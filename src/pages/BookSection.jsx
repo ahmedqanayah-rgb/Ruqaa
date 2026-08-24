@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { getBook, entrySlugs } from '../data/books.js'
-import ContentBlocks from '../components/ContentBlocks.jsx'
+import ContentBlocks, { QuickCheck } from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
 import MythOrFact from '../components/MythOrFact.jsx'
@@ -62,42 +62,19 @@ function ReadingProgress() {
 }
 
 /* ---- one-question comprehension check at the end of an article ---- */
-function QuickCheck({ quick }) {
-  const { t } = useApp()
-  const [picked, setPicked] = useState(null)
-  const done = picked != null
-  const right = done && picked === quick.correct
-  return (
-    <aside className={`quick-check card ${done ? (right ? 'right' : 'wrong') : ''}`}>
-      <strong className="quick-check-title">
-        {t(L('سؤالٌ سريع قبل أن تغادر', 'A quick question before you go'))}
-      </strong>
-      <RichText as="p" className="quick-check-q" value={quick.q} />
-      <div className="quick-check-opts">
-        {quick.opts.map((o, i) => {
-          const cls = !done ? '' : i === quick.correct ? 'correct' : i === picked ? 'picked-wrong' : 'dim'
-          return (
-            <button key={i} className={`quick-check-opt ${cls}`} disabled={done} onClick={() => setPicked(i)}>
-              {t(o)}
-            </button>
-          )
-        })}
-      </div>
-      {done && (
-        <p className="quick-check-note fade-in">
-          {right ? '✅ ' : '💡 '}<RichText value={quick.note} />
-        </p>
-      )}
-    </aside>
-  )
-}
 
 /* ---- rotating shocking-fact teaser on the landing hero ---- */
 function FactRotator({ book }) {
   const { t } = useApp()
+  /* The facts come from the myth-or-fact deck now — «الحقائق الصادمة» stopped
+     being a section, and this quietly rendered nothing until it was repointed.
+     Only the FACT half: teasing the landing page with a myth would be telling
+     the reader something untrue in the book's own voice. */
   const facts = useMemo(() => {
-    const sec = book.sections.find((s) => s.slug === 'shocking')
-    return sec ? sec.blocks.filter((b) => b.type === 'callout') : []
+    const sec = book.sections.find((s) => s.kind === 'myth-game')
+    return (sec?.items || [])
+      .filter((it) => !it.isMyth)
+      .map((it) => ({ title: null, text: it.statement }))
   }, [book])
   const [i, setI] = useState(() => Math.floor(Math.random() * Math.max(1, facts.length)))
   if (!facts.length) return null
@@ -111,7 +88,7 @@ function FactRotator({ book }) {
   return (
     <div className="fact-teaser">
       <div className="fact-teaser-body">
-        <strong>{t(f.title)}</strong>
+        {f.title && <strong>{t(f.title)}</strong>}
         <RichText as="p" value={f.text} />
       </div>
       <div className="fact-teaser-foot">

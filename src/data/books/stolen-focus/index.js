@@ -116,14 +116,23 @@ const FAM = {
 
 const enrich = (s) => ({ ...s, fam: FAM[s.slug], quick: QUICK[s.slug] })
 
-/* The author and the translator in one tab, switched inside it — same shape as
-   the other book. The translator is the reason this club can read the book at
-   all; pairing them says so, and it costs one sidebar entry instead of two. */
+/* A cause is a PANEL now, not a route, so its end-of-article check can no
+   longer be rendered by BookSection from `section.quick` — there is only one
+   section. It travels inside the panel as a `quick` block instead. */
+const panel = (s) => ({
+  id: s.slug,
+  title: s.title,
+  blocks: QUICK[s.slug] ? [...s.blocks, { type: 'quick', quick: QUICK[s.slug] }] : s.blocks,
+})
+
 /* The ADHD chapters carry their own critique now. It goes against the chapters
    rather than on a separate page because it has practical stakes — someone with
    ADHD could read them and stop their treatment. */
 const adhdChecked = { ...adhd, blocks: [...adhd.blocks, ...adhdCaveat] }
 
+/* The author and the translator in one tab, switched inside it — same shape as
+   the other book. The translator is the reason this club can read the book at
+   all; pairing them says so, and it costs one sidebar entry instead of two. */
 const translator = translatorSection({ titleAr: 'تركيزنا المسلوب', titleEn: 'Stolen Focus', yearAr: '٢٠٢٣' })
 const people = {
   slug: 'author',
@@ -138,9 +147,33 @@ const people = {
       /* How much weight the book's reporting deserves, and Hari's own
          professional record, are questions about the author — so the scrutiny
          that «الكتاب في الميزان» used to carry sits in his panel. */
-      { title: L('المؤلّف', 'The author'), blocks: [...author.blocks, ...authorScrutiny] },
-      { title: L('المترجم', 'The translator'), blocks: translator.blocks },
+      { id: 'author', title: L('المؤلّف', 'The author'), blocks: [...author.blocks, ...authorScrutiny] },
+      { id: 'translator', title: L('المترجم', 'The translator'), blocks: translator.blocks },
     ] },
+  ],
+}
+
+/* THE WHOLE BOOK IN ONE TAB. Ten cause-chapters, in the book's own order, as
+   panels rather than ten sidebar entries.
+
+   Every panel keeps an `id`, and TabbedBlocks holds the open one in `?tab=`.
+   These were routes until today, so without that every link to a cause — the
+   cross-book connections, the in-content cards in the other book, a search hit
+   — would land on the parent and leave the reader hunting. Deep links are
+   `…/review?tab=big-tech`. */
+const review = {
+  slug: 'review',
+  icon: '📖',
+  title: L('مراجعة الكتاب', 'The Book'),
+  lead: L(
+    'أسباب الكتاب كلّها بترتيبها، لوحةً بعد لوحة — من السرعة والتشتّت إلى تمرّد الانتباه.',
+    'The book’s causes in its own order, panel by panel — from speed and distraction to attention rebellion.'
+  ),
+  blocks: [
+    { type: 'tabs', panels: [
+      speedFlow, exhaustion, readingMindwandering, bigTech, cruelOptimism,
+      stressVigilance, dietPollution, adhdChecked, childhood, rebellion,
+    ].map(panel) },
   ],
 }
 
@@ -162,34 +195,21 @@ export const stolenFocus = {
   accent: 'var(--accent)',
   /* `{ slug }` is a solo entry — a top-level tab with no group header. See
      entrySlugs in data/books.js. */
+  /* `{ slug }` is a solo entry — a top-level tab with no group header. See
+     entrySlugs in data/books.js. */
   groups: [
     { slug: 'author' },
-    { title: L('الأسباب الاثنا عشر', 'The twelve causes'),
-      slugs: ['speed-flow', 'exhaustion', 'reading-mindwandering', 'big-tech', 'cruel-optimism',
-              'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
-    // Drawn from another book. It used to sit in a titled group of its own so it
-    // never read as Hari's — but a group of one only buried it, and the section
-    // opens with a callout saying whose book it is, which does that job better.
+    { slug: 'review' },
     { slug: 'flow-state' },
-    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-lab', 'studies', 'myth-or-fact'] },
-    { title: L('مراجع النادي', 'Club reference'), slugs: ['characters'] },
+    { title: L('أنشطة إضافية', 'Extra activities'),
+      slugs: ['focus-lab', 'studies', 'myth-or-fact', 'characters'] },
   ],
   sections: [
     people,
     // Same translator as the other book, so the biography lives in one shared
     // module and each book passes only its own edition details.
-    enrich(speedFlow),
-    enrich(exhaustion),
-    enrich(readingMindwandering),
-    enrich(bigTech),
-    enrich(cruelOptimism),
-    enrich(stressVigilance),
-    enrich(dietPollution),
-    enrich(adhdChecked),
-    enrich(childhood),
-    enrich(rebellion),
+    review,
     enrich(flowState),
-    characters,
     {
       slug: 'focus-lab',
       kind: 'focus-lab',
@@ -231,5 +251,6 @@ export const stolenFocus = {
       ),
       items: mythOrFact,
     },
+    characters,
   ],
 }

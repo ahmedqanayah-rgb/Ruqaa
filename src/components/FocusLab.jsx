@@ -713,7 +713,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="1" icon="🎨" done={!!res.stroop}
         title={L('اختبار ستروب', 'The Stroop test')}
         desc={L('اضغط لون الحبر لا الكلمة، خلال ثانيتين — يقيس كبح التشتيت.', 'Tap the ink colour, not the word, within 2 seconds — measures suppressing distraction.')}
-        tie={{ to: '/book/stolen-focus/speed-flow', label: L('لماذا يهمّ؟ السرعة والتبديل', 'Why it matters: speed & switching') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=speed-flow', label: L('لماذا يهمّ؟ السرعة والتبديل', 'Why it matters: speed & switching') }}>
         {res.stroop ? (
           <div className="fl-result">
             <div className="fl-metrics">
@@ -730,7 +730,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="2" icon="🔀" done={!!res.switch}
         title={L('اختبار التبديل', 'The task-switching test')}
         desc={L('جولتان بقاعدةٍ ثابتة ثم جولةٌ تتقلّب — يقيس كلفتَي التبديل والخلط.', 'Two single-rule rounds, then a flip-flopping one — measures switch and mixing costs.')}
-        tie={{ to: '/book/stolen-focus/speed-flow', label: L('لماذا يهمّ؟ خرافة تعدّد المهامّ', 'Why it matters: the multitasking myth') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=speed-flow', label: L('لماذا يهمّ؟ خرافة تعدّد المهامّ', 'Why it matters: the multitasking myth') }}>
         {res.switch ? (
           <div className="fl-result">
             <div className="fl-metrics">
@@ -749,7 +749,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="3" icon="⏱️" done={!!res.sart}
         title={L('اختبار الانتباه المستمرّ', 'The sustained-attention test')}
         desc={L('اضغط عند كلّ رقم إلّا ٣ — يقيس ثبات اليقظة وانجرافها مع الوقت.', 'Tap every digit except 3 — measures steady vigilance and its drift over time.')}
-        tie={{ to: '/book/stolen-focus/reading-mindwandering', label: L('لماذا يهمّ؟ شرود الذهن', 'Why it matters: mind-wandering') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=reading-mindwandering', label: L('لماذا يهمّ؟ شرود الذهن', 'Why it matters: mind-wandering') }}>
         {res.sart ? (
           <div className="fl-result">
             <div className="fl-metrics">
@@ -770,7 +770,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="4" icon="🔎" done={!!res.search}
         title={L('لعبة التصفية', 'The filtering game')}
         desc={L('اعثر على الهدف وسط ضجيجٍ يتضاعف — يقيس كلفة فيض المعلومات.', 'Find the target amid doubling noise — measures the cost of information overload.')}
-        tie={{ to: '/book/stolen-focus/speed-flow', label: L('لماذا يهمّ؟ التصفية وفيض المعلومات', 'Why it matters: filtering & overload') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=speed-flow', label: L('لماذا يهمّ؟ التصفية وفيض المعلومات', 'Why it matters: filtering & overload') }}>
         {res.search ? (
           <div className="fl-result">
             <div className="fl-metrics">
@@ -788,7 +788,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="5" icon="🧠" done={!!res.nback}
         title={L('اختبار الذاكرة العاملة (2-back)', 'The working-memory test (2-back)')}
         desc={L('هل الرمز الحالي هو نفسه قبل خطوتين؟ — يقيس كم فكرةً تُمسك معاً.', 'Is this symbol the same as two steps back? — measures how much you hold at once.')}
-        tie={{ to: '/book/stolen-focus/speed-flow', label: L('لماذا يهمّ؟ الدماغ يحمل فكرةً أو فكرتين فقط', 'Why it matters: the brain holds one or two thoughts') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=speed-flow', label: L('لماذا يهمّ؟ الدماغ يحمل فكرةً أو فكرتين فقط', 'Why it matters: the brain holds one or two thoughts') }}>
         {res.nback ? (
           <div className="fl-result">
             <div className="fl-metrics">
@@ -805,7 +805,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="6" icon="🔢" done={!!res.span}
         title={L('سعة الذاكرة الرقمية', 'Digit span')}
         desc={L('سلاسل أرقامٍ تطول ما دمت تصيب — يقيس عرض نطاقك الذهني.', 'Digit runs that grow as long as you succeed — measures your mental bandwidth.')}
-        tie={{ to: '/book/stolen-focus/stress-vigilance', label: L('لماذا يهمّ؟ عرض النطاق الذهني وضريبة القلق', 'Why it matters: mental bandwidth & the worry tax') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=stress-vigilance', label: L('لماذا يهمّ؟ عرض النطاق الذهني وضريبة القلق', 'Why it matters: mental bandwidth & the worry tax') }}>
         {res.span ? (
           <div className="fl-result">
             <div className="fl-metrics">
@@ -820,7 +820,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
       <TestCard n="7" icon="📖" done={!!res.reading}
         title={L('القراءة وسط التشتيت', 'Reading amid distraction')}
         desc={L('اقرأ مع إشعاراتٍ تُغريك بالنقر ثم بدونها، وقارن فهمك وزمنك.', 'Read with clickable, tempting notifications then without, and compare comprehension and time.')}
-        tie={{ to: '/book/stolen-focus/reading-mindwandering', label: L('لماذا يهمّ؟ القراءة العميقة', 'Why it matters: deep reading') }}>
+        tie={{ to: '/book/stolen-focus/review?tab=reading-mindwandering', label: L('لماذا يهمّ؟ القراءة العميقة', 'Why it matters: deep reading') }}>
         <SfDistractedReading embedded onDone={setters.reading} />
       </TestCard>
 

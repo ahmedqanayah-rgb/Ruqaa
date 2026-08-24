@@ -68,7 +68,9 @@ content you almost always edit data, not JSX.
 
 - **Section blocks.** A normal section is `{ slug, title, lead, blocks:[…] }`. Each block
   is `{ type, … }`; `ContentBlocks.jsx` switches on `type` (`h`/`h4`/`p`/`ul`/`ol`/
-  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`myth`). A `{ type:'tabs',
+  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`quick`/`myth`).
+  `quick` is the end-of-article check; it lives in `ContentBlocks` (not `BookSection`)
+  because a chapter folded into a panel has to carry its own. A `{ type:'tabs',
   panels:[{title,blocks}] }` renders whole sub-documents behind a segmented bar and recurses
   into `ContentBlocks` — it is what puts the author and the translator in one tab. Only the
   active panel is mounted, so a hidden panel's portraits are never fetched.
@@ -244,12 +246,24 @@ keeps `base: './'` sub-path hosting working.
   (**public**). The parent `Ruqaa/` is intentionally not a repo. **Never commit the book
   reference material** (`Ruqaa/Why we Sleep/`, `Ruqaa/Stolen focus/` — epub, raw book
   text, figure PDFs); history was rewritten on 2026-07-20 to purge exactly those.
-- **Two books are live**: `why-we-sleep` (13 sections, 122-study quiz) and `stolen-focus`
-  (16 sections, 61-study quiz, built per `PLAN-stolen-focus.md` — kept for reference).
-  **Both were cut down on 2026-08-24** — see the header comment in each book's `index.js`
-  for exactly what went and where anything worth keeping went with it. Removed outright:
-  the summary/«خلاصة الكتاب», «خريطة الأسباب», the 7-day challenge, and the session-materials
-  section. Merged: author+translator into one tab, and myths+shocking-facts into a game.
+- **Two books are live**: `why-we-sleep` (6 sections) and `stolen-focus` (7), down from 19
+  and 24 on **2026-08-24**. Each book's `index.js` header lists exactly what went where.
+  The shape is now **three or four top-level tabs**: «المؤلّف والمترجم», «مراجعة الكتاب»,
+  («داخل حالة التدفّق» for Stolen Focus), and a group «أنشطة إضافية».
+- **THE CHAPTERS ARE PANELS, NOT ROUTES.** «مراجعة الكتاب» (slug `review`) is one section
+  whose `tabs` block holds every chapter: four panels for Why We Sleep (mechanism folds in
+  lifespan + animal sleep, REM folds in dreams, NREM folds in memory, plus health) and ten
+  for Stolen Focus, in the book's own order. A folded-in chapter keeps an `h` heading of its
+  own title, so the seam stays visible.
+  **Every panel has an `id` and the open one lives in `?tab=`** — `…/review?tab=rem`. That
+  is not decoration: these were routes until that date, so without it every link to a
+  chapter (cross-book `connections`, in-content link cards, `FocusLab`'s links, a search
+  hit) would land on the parent and leave the reader hunting. `check-links` validates the
+  tab id as well as the slug, because a wrong one fails exactly like a wrong slug — the
+  reader silently gets panel 1. **`searchIndex` emits one entry per panel** for the same
+  reason; indexing only sections would have cost search most of its entries.
+  NB `check-links` walks **data only** — links hardcoded in components (`FocusLab.jsx`) are
+  invisible to it, so grep for `/book/<id>/` after any slug change.
   Stolen Focus in Arabic is **«تركيزنا المسلوب»** by **«يوهان هاري»** (the published
   Dar Al-Tanweer edition) — not «التركيز المسروق»/«جوهان هاري». Same rule for
   Csikszentmihalyi: **«ميهالي تشيكزينتميهالي»**, the spelling his Arabic translations use —
@@ -273,8 +287,10 @@ keeps `base: './'` sub-path hosting working.
   for a grouped card layout; section cards show lead + computed read-time; a `fam` tag on
   sections colours cards (stolen-focus injects `fam` + a one-question `quick` check per
   article via `enrich()` in its index.js). Landing hero shows stats + a shocking-fact
-  rotator. `AppContext` tracks `visited` sections in memory (session ticks + progress
-  ring). Section pages: scroll-progress bar (NB: the app scrolls on `<body>`, not the
+  rotator — **fed from the myth-or-fact deck's FACT half**, since «الحقائق الصادمة» stopped
+  being a section; teasing the landing with a myth would state something untrue in the
+  book's own voice. `AppContext` tracks `visited` sections in memory (session ticks +
+  progress ring). Section pages: scroll-progress bar (NB: the app scrolls on `<body>`, not the
   window), next-up card, arrow-key + swipe navigation, `route-fade` transition.
 - `ContentBlocks` supports `peoplegroups` (people in titled groups with filter chips) —
   used by the stolen-focus characters section; the plain `people` block still works.

@@ -1,10 +1,12 @@
 import { useState, lazy, Suspense } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
 import RichText from './RichText.jsx'
 import Icon from './Icon.jsx'
+
+const L = (ar, en) => ({ ar, en })
 
 /* The figure registry pulls in every chart component and, through them, all of
    recharts — the heaviest dependency in the app. Loading it lazily keeps it off
@@ -199,18 +201,67 @@ function PeopleGroups({ block }) {
    anything a section can. Only the active panel is mounted: these panels carry
    portraits and source lists, and mounting both would fetch two sets of images
    for one visible one. */
+/* End-of-article check. Lives here rather than in BookSection because a
+   chapter folded into a `tabs` panel has to carry its own — see the `quick`
+   block type below. */
+export function QuickCheck({ quick }) {
+  const { t } = useApp()
+  const [picked, setPicked] = useState(null)
+  const done = picked != null
+  const right = done && picked === quick.correct
+  return (
+    <aside className={`quick-check card ${done ? (right ? 'right' : 'wrong') : ''}`}>
+      <strong className="quick-check-title">
+        {t(L('سؤالٌ سريع قبل أن تغادر', 'A quick question before you go'))}
+      </strong>
+      <RichText as="p" className="quick-check-q" value={quick.q} />
+      <div className="quick-check-opts">
+        {quick.opts.map((o, i) => {
+          const cls = !done ? '' : i === quick.correct ? 'correct' : i === picked ? 'picked-wrong' : 'dim'
+          return (
+            <button key={i} className={`quick-check-opt ${cls}`} disabled={done} onClick={() => setPicked(i)}>
+              {t(o)}
+            </button>
+          )
+        })}
+      </div>
+      {done && (
+        <p className="quick-check-note fade-in">
+          {right ? '✅ ' : '💡 '}<RichText value={quick.note} />
+        </p>
+      )}
+    </aside>
+  )
+}
+
 function TabbedBlocks({ block }) {
   const { t } = useApp()
-  const [active, setActive] = useState(0)
+  const [params, setParams] = useSearchParams()
   const panels = block.panels || []
+  const key = block.param || 'tab'
+
+  /* WHICH PANEL IS OPEN LIVES IN THE URL, not in state.
+     Chapters that used to be their own routes are panels now, so without this
+     every link to one — the cross-book connections, the in-content cards, a
+     search hit — would land on the parent and leave the reader to find it. Same
+     idiom the studies quiz already uses for `?study=`. `replace` so clicking
+     through tabs does not bury the previous page under history entries. */
+  const found = panels.findIndex((p) => p.id && p.id === params.get(key))
+  const active = found >= 0 ? found : 0
+  const select = (i) => {
+    const next = new URLSearchParams(params)
+    if (panels[i].id) next.set(key, panels[i].id); else next.delete(key)
+    setParams(next, { replace: true })
+  }
+
   if (!panels.length) return null
   return (
     <div className="block-tabs">
       <div className="block-tabs-bar" role="tablist">
         {panels.map((p, i) => (
-          <button key={i} type="button" role="tab" aria-selected={i === active}
+          <button key={p.id || i} type="button" role="tab" aria-selected={i === active}
             className={`block-tab ${i === active ? 'active' : ''}`}
-            onClick={() => setActive(i)}>
+            onClick={() => select(i)}>
             {p.icon && <Icon name={p.icon} className="block-tab-icon" />}
             {t(p.title)}
           </button>
@@ -270,6 +321,8 @@ export default function ContentBlocks({ blocks }) {
           case 'peoplegroups': return <PeopleGroups key={i} block={b} />
           case 'linkcards': return <LinkCards key={i} block={b} />
           case 'tabs': return <TabbedBlocks key={i} block={b} />
+          // A chapter folded into a panel brings its end-of-article check with it.
+          case 'quick': return <QuickCheck key={i} quick={b.quick} />
           case 'myth': return <MythCard key={i} block={b} />
           case 'debate': return <DebateCard key={i} block={b} />
           case 'sources': return <SourceList key={i} block={b} />

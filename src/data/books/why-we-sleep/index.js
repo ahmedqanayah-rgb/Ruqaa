@@ -3,22 +3,31 @@
  * create a sibling folder under data/books/<slug>/ with the same shape and
  * register it in ../../books.js.
  *
- * SIMPLIFIED 2026-08-24. Five sections were removed outright and two pairs were
- * merged; the whole book is now nine tabs instead of nineteen. What went, and
- * where anything worth keeping went with it:
+ * THREE TOP-LEVEL TABS (2026-08-24). The book was nineteen sidebar entries; it
+ * is now «المؤلّف والمترجم», «مراجعة الكتاب», and «أنشطة إضافية».
  *
- *   «عن المؤلّف» + «عن المترجم»  → one tab, two panels inside it (`tabs` block).
- *   «الملخّص العام»               → removed. It restated the sections after it.
- *   «المغالطات» + «الحقائق»       → «خرافة أم حقيقة؟», a game (mythOrFact.js).
- *   «أسبوعٌ مع الكتاب»            → removed.
- *   «مواد الجلسة والنقاش»         → removed; the site itself is that material.
- *   «الكتاب في الميزان»           → removed as a section, but its substance is
- *     NOT gone: Guzey's four corrections and Walker's reply now sit in «النوم
- *     والصحّة» as a `debate` block with its sources, because that is the section
- *     making the claims they correct. Deleting them outright would have left the
- *     site asserting contested claims as settled. See sections-3.js.
+ * The nine chapters live INSIDE «مراجعة الكتاب» as four panels of a `tabs`
+ * block, folded by topic rather than left one-per-panel:
  *
- * Everything removed is recoverable from git history (before 2026-08-24).
+ *   آلية النوم            ← mechanism + النوم عبر مراحل العمر + نوم الحيوانات
+ *   REM والأحلام          ← rem + الأحلام
+ *   النوم العميق والذاكرة  ← nrem + النوم والذاكرة
+ *   النوم والصحّة          ← health, and the Guzey fact-check appended to it
+ *
+ * Each folded-in chapter keeps its own `h` heading inside the panel, so nothing
+ * is silently welded together — you can still see where one ends.
+ *
+ * WHY A PANEL STILL HAS AN ADDRESS. Every panel carries an `id`, and
+ * TabbedBlocks keeps the open one in `?tab=`. These chapters were routes until
+ * today; without that, every link to one — the cross-book connections, the
+ * in-content cards in the other book, a search hit — would land on the parent
+ * and leave the reader hunting. Deep links are `…/review?tab=rem`.
+ *
+ * Removed earlier the same day: the summary, the 7-day challenge, the
+ * session-materials section, and «الكتاب في الميزان» as a section (its
+ * corrections live in the health panel, against the claims they correct).
+ * Myths + shocking facts became the «خرافة أم حقيقة؟» game. Everything is
+ * recoverable from git history.
  */
 import { author } from './author.js'
 import { translatorSection } from '../../translator.js'
@@ -32,12 +41,39 @@ import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 
 const L = (ar, en) => ({ ar, en })
 
-/* «النوم والصحّة» carries the fact-check that «الكتاب في الميزان» used to hold.
-   It goes HERE and not somewhere neutral because this is the section that makes
-   the two claims Guzey corrects — the cancer line and the linear
-   sleep-and-lifespan claim. A correction filed away from the claim it corrects
-   is a correction nobody reads. */
-const healthChecked = { ...health, blocks: [...health.blocks, ...scrutiny] }
+/* Fold chapters into one panel, each keeping a heading of its own title so the
+   seam stays visible. `base` leads; the rest follow in the order given. */
+const fold = (base, ...rest) => [
+  ...base.blocks,
+  ...rest.flatMap((s) => [{ type: 'h', text: s.title }, ...s.blocks]),
+]
+
+const review = {
+  slug: 'review',
+  icon: '📖',
+  title: L('مراجعة الكتاب', 'The Book'),
+  lead: L(
+    'الكتاب كلّه في أربع لوحات: كيف يعمل النوم، ونوم الأحلام، والنوم العميق والذاكرة، وما يفعله النوم بصحّتك.',
+    'The whole book in four panels: how sleep works, dreaming sleep, deep sleep and memory, and what sleep does to your health.'
+  ),
+  blocks: [
+    { type: 'tabs', panels: [
+      { id: 'mechanism', title: L('آلية النوم', 'How sleep works'),
+        blocks: fold(mechanism, lifespan, animal) },
+      { id: 'rem', title: L('نوم الأحلام (REM)', 'Dreaming sleep (REM)'),
+        blocks: fold(rem, dreams) },
+      { id: 'nrem', title: L('النوم العميق والذاكرة', 'Deep sleep & memory'),
+        blocks: fold(nrem, memory) },
+      /* The fact-check that «الكتاب في الميزان» used to hold goes on the END of
+         this panel and nowhere else: this is the panel that makes the two
+         claims Guzey corrects — the cancer line and the linear
+         sleep-and-lifespan claim. A correction filed away from the claim it
+         corrects is a correction nobody reads. */
+      { id: 'health', title: L('النوم والصحّة', 'Sleep & health'),
+        blocks: [...health.blocks, ...scrutiny] },
+    ] },
+  ],
+}
 
 /* The author and the translator in one tab, switched inside it. Two sidebar
    entries for "who made this book" was one more than the idea deserves, and the
@@ -54,8 +90,8 @@ const people = {
   ),
   blocks: [
     { type: 'tabs', panels: [
-      { title: L('المؤلّف', 'The author'), blocks: author.blocks },
-      { title: L('المترجم', 'The translator'), blocks: translator.blocks },
+      { id: 'author', title: L('المؤلّف', 'The author'), blocks: author.blocks },
+      { id: 'translator', title: L('المترجم', 'The translator'), blocks: translator.blocks },
     ] },
   ],
 }
@@ -77,22 +113,13 @@ export const whyWeSleep = {
      entrySlugs in data/books.js. */
   groups: [
     { slug: 'author' },
-    { title: L('علم النوم', 'The science of sleep'), slugs: ['mechanism', 'rem', 'nrem', 'memory'] },
-    { title: L('النوم وحياتك', 'Sleep and your life'), slugs: ['health', 'lifespan', 'dreams', 'animal'] },
-    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['assessment', 'studies', 'myth-or-fact'] },
-    { title: L('مراجع النادي', 'Club reference'), slugs: ['characters'] },
+    { slug: 'review' },
+    { title: L('أنشطة إضافية', 'Extra activities'),
+      slugs: ['assessment', 'studies', 'myth-or-fact', 'characters'] },
   ],
   sections: [
     people,
-    mechanism,
-    rem,
-    nrem,
-    memory,
-    healthChecked,
-    lifespan,
-    dreams,
-    animal,
-    characters,
+    review,
     {
       slug: 'assessment',
       kind: 'assessment',
@@ -127,5 +154,6 @@ export const whyWeSleep = {
       ),
       items: mythOrFact,
     },
+    characters,
   ],
 }
