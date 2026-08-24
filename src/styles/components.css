@@ -195,8 +195,8 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 
 /* Flex text children must be able to shrink below their content so long
    strings wrap instead of forcing horizontal overflow. */
-.callout > div, .book-info, .person-body, .myth-card, .quiz-card,
-.myth-claim > *, .quiz-opt, .quiz-opt > *, .brand, .brand-text { min-width: 0; }
+.callout > div, .book-info, .person-body, .quiz-card,
+.quiz-opt, .quiz-opt > *, .brand, .brand-text, .mof-card { min-width: 0; }
 .brand-text strong, .brand-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
 /* figure scroll wrappers never push the page wider than the viewport */
 .figure-body > div, .section-content > figure { max-width: 100%; }
