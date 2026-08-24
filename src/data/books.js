@@ -41,3 +41,19 @@ export function readingUnits(book) {
       : [s.slug]
   })
 }
+
+/* Find an activity by its kind, wherever it lives.
+   The quiz, the game, the lab and the assessment stopped being sections when
+   they moved into the one «أنشطة إضافية» tab — they are `parts` of it now. The
+   landing's stat chips, the fact rotator and anything else that used to do
+   `sections.find(s => s.kind === 'quiz')` goes through this instead, and gets
+   back both the part (for its data) and the section (for its URL). */
+export function findByKind(book, kind) {
+  for (const section of book.sections) {
+    if (section.kind === kind) return { section, part: section }
+    for (const part of section.parts || []) {
+      if (part.kind === kind) return { section, part }
+    }
+  }
+  return null
+}

@@ -121,7 +121,7 @@ export const exhaustion = {
       // card actually promised — how sleep resets the brain.
       { to: '/book/why-we-sleep/review?tab=mechanism', icon: '🌙', label: L('آلية النوم الكاملة', 'How sleep works') },
       { to: '/book/why-we-sleep/review?tab=health', icon: '❤️', label: L('النوم والصحّة', 'Sleep and health') },
-      { to: '/book/why-we-sleep/assessment', icon: '📝', label: L('قيّم نومك', 'Assess your sleep') },
+      { to: '/book/why-we-sleep/activities', icon: '📝', label: L('قيّم نومك', 'Assess your sleep') },
     ] },
     { type: 'p', text: L(
       'الخلاصة بسيطة: قبل أن تلوم إرادتك على تشتّتك، اسأل كم تنام. جرّب أسبوعاً واحداً بثماني ساعاتٍ منتظمة، ولاحظ ماذا يحدث لقدرتك على القراءة والإنصات وإنهاء المهامّ. استعادة النوم ليست نصيحةً من ضمن قائمة؛ إنها **الشرط المسبَق** الذي يجعل بقية النصائح ممكنة.',

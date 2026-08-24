@@ -69,7 +69,7 @@ export const connections = {
     {
       icon: '🧒',
       theme: L('نلوم الطفل على بيئةٍ صمّمها الكبار', 'We blame the child for an environment adults designed'),
-      a: { bookId: 'why-we-sleep', slug: 'myth-or-fact', says: L(
+      a: { bookId: 'why-we-sleep', slug: 'activities', says: L(
         'مواعيد بدء المدارس المبكّرة تصادم بيولوجيا المراهق التي تدفع نومه إلى وقتٍ متأخّر — ثم نصف المراهق بالكسل.',
         'Early school start times collide with a teenager’s biology, which pushes sleep later — and then we call the teenager lazy.'
       ) },
@@ -85,7 +85,7 @@ export const connections = {
     {
       icon: '⚠️',
       theme: L('قبل اللافتة، اسأل عن البيئة', 'Before the label, ask about the environment'),
-      a: { bookId: 'why-we-sleep', slug: 'studies', says: L(
+      a: { bookId: 'why-we-sleep', slug: 'activities', says: L(
         'من دراسات الكتاب ما يربط قلّة النوم عند الأطفال بأعراضٍ تشبه فرط الحركة وتشتّت الانتباه.',
         'Among the book’s studies are those linking children’s lost sleep to symptoms resembling ADHD.'
       ) },

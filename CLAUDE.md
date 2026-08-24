@@ -340,9 +340,17 @@ keeps `base: './'` sub-path hosting working.
   third-person assertion — the old myths were first-person and in «guillemets» while the
   facts were third-person statistics, so the punctuation alone gave the answer away — and
   neither half may be guessable by length or tone. The data files say this at the top too.
-- **The focus-habits assessment lives INSIDE «مختبر التركيز»** as its second panel
-  (`FocusLabPanels` in `BookSection`), not as its own tab: both answer "how is my focus?",
-  one by self-report and one by measurement, and they are worth more read against each other.
+- **«أنشطة إضافية» is ONE tab with everything STACKED on it** — no inner tab bar, which was
+  an explicit call. The quiz, the game, the assessment, the focus lab and «الشخصيات» are
+  `parts` of a single section (`kind: 'activities'`), rendered one under another by
+  `Activities` in `BookSection`; each part keeps the `kind` it had as a section so `Activity`
+  renders it unchanged. The focus-habits assessment sits directly **under** the lab rather
+  than beside it — they answer the same question, one by self-report and one by measurement.
+  **Nothing may look an activity up as a section any more.** `findByKind(book, kind)` in
+  `data/books.js` searches sections *and* parts and returns both the part (its data) and the
+  section (its URL); the landing's stat chips, `FactRotator` and `countExperts` all go
+  through it. Missing that is how the «X+ شخصية» chip silently vanished. `searchIndex` emits
+  an entry per part, and the studies' `?study=` deep link resolves against the parts too.
 - **Home is deliberately two blocks: the hero and the book carousel.** Nothing else. Two
   further sections were removed on 2026-08-03 at the user's request — "Ask me one" (a
   random-study session opener, with `data/studiesPool.js` behind it) and a "how this works"

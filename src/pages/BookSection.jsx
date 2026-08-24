@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
-import { getBook, entrySlugs, readingUnits } from '../data/books.js'
+import { getBook, entrySlugs, readingUnits, findByKind } from '../data/books.js'
 import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
@@ -62,6 +62,54 @@ function ReadingProgress() {
 
 /* ---- one-question comprehension check at the end of an article ---- */
 
+/* ONE activity — the quiz, the assessment, the lab, the game, or a plain
+   blocks section like «الشخصيات». Split out of the page's own dispatch so the
+   stacked «أنشطة إضافية» tab renders each of its parts exactly as that part
+   would have rendered when it was still a page of its own. */
+function Activity({ book, part }) {
+  switch (part.kind) {
+    case 'quiz':
+      return <StudiesQuiz studies={part.studies} interestOrder={part.interestOrder}
+        bookTitle={book.title} sectionTitle={part.title} />
+    case 'assessment':
+      return <AssessmentForm questions={part.assessment.questions}
+        tips={part.assessment.tips} goodTip={part.assessment.goodTip}
+        bookTitle={book.title} sectionTitle={part.title} />
+    case 'focus-lab':
+      return (
+        <Suspense fallback={<div className="figure-loading" aria-hidden />}>
+          <FocusLab bookTitle={book.title} sectionTitle={part.title} />
+        </Suspense>
+      )
+    case 'myth-game':
+      return <MythOrFact items={part.items} bookTitle={book.title} sectionTitle={part.title} />
+    default:
+      return <div className="section-content"><ContentBlocks blocks={part.blocks} /></div>
+  }
+}
+
+/* «أنشطة إضافية» — every activity STACKED on one page, deliberately not behind
+   a second row of tabs. They were four sidebar entries, then briefly a tab bar
+   inside one; the user's call was one tab and no subtabs, so they run down the
+   page under their own headings. Each keeps its own title and lead, so the page
+   reads as a list of things to do rather than one undifferentiated wall. */
+function Activities({ book, section }) {
+  const { t } = useApp()
+  return (
+    <div className="activities">
+      {(section.parts || []).map((part) => (
+        <section key={part.id} className="activity">
+          <h2 className="activity-title">
+            <Icon name={part.icon} className="section-emoji" /> {t(part.title)}
+          </h2>
+          {part.lead && <p className="activity-lead">{t(part.lead)}</p>}
+          <Activity book={book} part={part} />
+        </section>
+      ))}
+    </div>
+  )
+}
+
 /* ---- rotating shocking-fact teaser on the landing hero ---- */
 function FactRotator({ book }) {
   const { t } = useApp()
@@ -70,8 +118,8 @@ function FactRotator({ book }) {
      Only the FACT half: teasing the landing page with a myth would be telling
      the reader something untrue in the book's own voice. */
   const facts = useMemo(() => {
-    const sec = book.sections.find((s) => s.kind === 'myth-game')
-    return (sec?.items || []).filter((it) => !it.isMyth).map((it) => it.statement)
+    const found = findByKind(book, 'myth-game')
+    return (found?.part.items || []).filter((it) => !it.isMyth).map((it) => it.statement)
   }, [book])
   const [i, setI] = useState(() => Math.floor(Math.random() * Math.max(1, facts.length)))
   if (!facts.length) return null
@@ -101,63 +149,17 @@ function FactRotator({ book }) {
 
 /* ---- landing: hero + stats + grouped section cards ---- */
 function countExperts(book) {
-  const sec = book.sections.find((s) => s.slug === 'characters')
-  if (!sec) return 0
+  // «الشخصيات» is an activity PART now, not a section of its own — look in both
+  // places, or the landing quietly loses its «X+ شخصية» chip.
+  const all = book.sections.flatMap((s) => [s, ...(s.parts || [])])
+  const sec = all.find((s) => s.slug === 'characters' || s.id === 'characters')
+  if (!sec?.blocks) return 0
   return sec.blocks.reduce((n, b) => {
     if (b.type === 'people') return n + b.people.length
     if (b.type === 'peoplegroups') return n + b.groups.reduce((m, g) => m + g.people.length, 0)
     return n
   }, 0)
 }
-/* The focus lab and the habits assessment are ONE tab now.
-   They were two sidebar entries answering the same question — "how is my
-   focus?" — one by self-report and one by measurement, which is exactly the
-   pair that belongs side by side rather than three items apart. The lab is the
-   default panel because the lab is what the tab is called; the assessment is a
-   click away and the two results read against each other.
-   Same `.block-tabs` chrome as the in-content tabs block, so a reader meets one
-   switching idiom on the site, not two. */
-function FocusLabPanels({ book, section }) {
-  const { t } = useApp()
-  /* Same `?tab=` contract as TabbedBlocks, and for the same reason: a panel
-     nothing can link to is a panel nothing can send a reader to. This held
-     local state at first, which is exactly why the lab's own «قيّم عاداتك الآن»
-     button still pointed at a section that no longer existed — there was no
-     address to repoint it to. `…/focus-lab?tab=assessment` works now. */
-  const [params, setParams] = useSearchParams()
-  const panels = [
-    { id: 'lab', title: L('الألعاب', 'The games') },
-    { id: 'assessment', title: L('تقييم عاداتك', 'Your habits') },
-  ]
-  const tab = params.get('tab') === 'assessment' ? 'assessment' : 'lab'
-  const select = (id) => {
-    const next = new URLSearchParams(params); next.set('tab', id)
-    setParams(next, { replace: true })
-  }
-  return (
-    <div className="block-tabs">
-      <div className="block-tabs-bar" role="tablist">
-        {panels.map((p) => (
-          <button key={p.id} type="button" role="tab" aria-selected={tab === p.id}
-            className={`block-tab ${tab === p.id ? 'active' : ''}`}
-            onClick={() => select(p.id)}>{t(p.title)}</button>
-        ))}
-      </div>
-      <div className="block-tabs-panel" role="tabpanel">
-        {tab === 'lab' ? (
-          <Suspense fallback={<div className="figure-loading" aria-hidden />}>
-            <FocusLab bookTitle={book.title} sectionTitle={section.title} />
-          </Suspense>
-        ) : (
-          <AssessmentForm questions={section.assessment.questions}
-            tips={section.assessment.tips} goodTip={section.assessment.goodTip}
-            bookTitle={book.title} sectionTitle={section.assessment.title || section.title} />
-        )}
-      </div>
-    </div>
-  )
-}
-
 /* What a section card advertises under its title. Prose sections get a read
    time; the interactive ones say what they actually contain, which is more use
    than a blanket "interactive". */
@@ -167,6 +169,8 @@ function sectionMeta(section, minutes) {
     return { ar: `🔬 ${section.studies.length} دراسة`, en: `🔬 ${section.studies.length} studies` }
   if (section.kind === 'myth-game' && section.items)
     return { ar: `🎲 ${section.items.length} عبارة`, en: `🎲 ${section.items.length} statements` }
+  if (section.kind === 'activities' && section.parts)
+    return { ar: `🎯 ${section.parts.length} أنشطة`, en: `🎯 ${section.parts.length} activities` }
   return { ar: '🎮 تفاعلي', en: '🎮 Interactive' }
 }
 
@@ -238,9 +242,9 @@ const landingGroups = new Map() // bookId → { open: Set<number>, touched: bool
 function BookLanding({ book }) {
   const { t, lang, visited } = useApp()
   const bySlug = useMemo(() => new Map(book.sections.map((s, i) => [s.slug, { s, i }])), [book])
-  const studiesSec = book.sections.find((s) => s.kind === 'quiz')
+  const studiesSec = findByKind(book, 'quiz')
   const experts = countExperts(book)
-  const labSec = book.sections.find((s) => s.kind === 'focus-lab')
+  const labSec = findByKind(book, 'focus-lab')
   // Panels, not sections — see readingUnits. Counting sections made one panel
   // of ten read like a whole chapter of the book.
   const units = useMemo(() => readingUnits(book), [book])
@@ -319,14 +323,21 @@ function BookLanding({ book }) {
               Linking them turns the summary into a second way in. The section
               count stays inert: it describes the page you're already on. */}
           <div className="book-stats" role="list">
-            <span role="listitem">📚 {t({ ar: `${total} قسماً`, en: `${total} sections` })}</span>
+            {/* `total` is reading UNITS (panels), not sections — 7 for a book
+                with 3 tabs. Calling them «أقسام» read as a section count and
+                matched neither. It is the same number the progress ring counts
+                against, so the two now describe the same thing. */}
+            <span role="listitem">📚 {t({ ar: `${total} جزءاً للقراءة`, en: `${total} parts to read` })}</span>
+            {/* findByKind returns the PART (for its data) and the SECTION it
+                lives in (for the URL) — these are activities inside one tab now,
+                not sections of their own. */}
             {studiesSec && (
-              <Link role="listitem" to={`/book/${book.id}/${studiesSec.slug}`}>
-                🔬 {t({ ar: `${studiesSec.studies.length} دراسة`, en: `${studiesSec.studies.length} studies` })}
+              <Link role="listitem" to={`/book/${book.id}/${studiesSec.section.slug}`}>
+                🔬 {t({ ar: `${studiesSec.part.studies.length} دراسة`, en: `${studiesSec.part.studies.length} studies` })}
               </Link>
             )}
             {labSec && (
-              <Link role="listitem" to={`/book/${book.id}/${labSec.slug}`}>
+              <Link role="listitem" to={`/book/${book.id}/${labSec.section.slug}`}>
                 🧪 {t({ ar: '٧ ألعاب', en: '7 games' })}
               </Link>
             )}
@@ -510,22 +521,9 @@ export default function BookSection() {
         {section.lead && <p className="section-lead">{t(section.lead)}</p>}
       </header>
 
-      {section.kind === 'quiz' ? (
-        <StudiesQuiz studies={section.studies} interestOrder={section.interestOrder}
-          bookTitle={book.title} sectionTitle={section.title} />
-      ) : section.kind === 'assessment' ? (
-        <AssessmentForm questions={section.assessment.questions}
-          tips={section.assessment.tips} goodTip={section.assessment.goodTip}
-          bookTitle={book.title} sectionTitle={section.title} />
-      ) : section.kind === 'focus-lab' ? (
-        <FocusLabPanels book={book} section={section} />
-      ) : section.kind === 'myth-game' ? (
-        <MythOrFact items={section.items} bookTitle={book.title} sectionTitle={section.title} />
-      ) : (
-        <div className="section-content">
-          <ContentBlocks blocks={section.blocks} />
-        </div>
-      )}
+      {section.kind === 'activities'
+        ? <Activities book={book} section={section} />
+        : <Activity book={book} part={section} />}
 
 
       <nav className="section-nav-v2">

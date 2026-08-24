@@ -96,6 +96,61 @@ const people = {
   ],
 }
 
+/* «أنشطة إضافية» — ONE tab, everything stacked on it.
+   These were four sidebar entries. They are `parts` of a single section now,
+   rendered one under another by `Activities` in BookSection — deliberately NOT
+   behind a second row of tabs, which was the explicit call. Each part keeps the
+   `kind` it had as a section, so `Activity` renders it exactly as before and
+   `findByKind` in data/books.js can still locate it for the landing's chips. */
+const activities = {
+  slug: 'activities',
+  kind: 'activities',
+  icon: '🎯',
+  title: L('أنشطة إضافية', 'Extra activities'),
+  lead: L(
+    'كلّ ما تفعله بعد القراءة في صفحةٍ واحدة: قيّم نومك، خمّن نتائج الدراسات، العب «خرافة أم حقيقة؟»، وتعرّف على شخصيات الكتاب.',
+    'Everything you do after reading, on one page: assess your sleep, guess the studies, play “Myth or Fact?”, and meet the book’s people.'
+  ),
+  parts: [
+    {
+      id: 'assessment',
+      kind: 'assessment',
+      icon: '📝',
+      title: L('تقييم النوم', 'Sleep Assessment'),
+      lead: L(
+        'قيّم نومك واحصل على نصائح شخصية — كلّ شيء يجري في متصفّحك.',
+        'Assess your own sleep and get personalized tips — all in your browser.'
+      ),
+      assessment: { questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP },
+    },
+    {
+      id: 'studies',
+      kind: 'quiz',
+      icon: '🔬',
+      title: L('الدراسات والتجارب', 'Studies & Experiments'),
+      lead: L(
+        'كلّ دراسات الكتاب الـ١٢٢ كلعبة تخمين: اقرأ المنهجية، خمّن النتيجة، ثم اكشفها واقرأ النقاش!',
+        'All 122 of the book’s studies as a guessing game: read the methodology, predict the result, then reveal it and read the discussion!'
+      ),
+      studies,
+      interestOrder,
+    },
+    {
+      id: 'myth-or-fact',
+      kind: 'myth-game',
+      icon: '🎲',
+      title: L('خرافة أم حقيقة؟', 'Myth or Fact?'),
+      lead: L(
+        'عبارةٌ واحدة في كلّ مرّة — قرّر: خرافةٌ شائعة أم حقيقةٌ من الكتاب؟ ثم اقرأ لماذا.',
+        'One statement at a time — decide: a common myth, or a fact from the book? Then read why.'
+      ),
+      items: mythOrFact,
+    },
+    { id: 'characters', icon: characters.icon, title: characters.title,
+      lead: characters.lead, blocks: characters.blocks },
+  ],
+}
+
 export const whyWeSleep = {
   id: 'why-we-sleep',
   title: L('لماذا ننام', 'Why We Sleep'),
@@ -114,46 +169,11 @@ export const whyWeSleep = {
   groups: [
     { slug: 'author' },
     { slug: 'review' },
-    { title: L('أنشطة إضافية', 'Extra activities'),
-      slugs: ['assessment', 'studies', 'myth-or-fact', 'characters'] },
+    { slug: 'activities' },
   ],
   sections: [
     people,
     review,
-    {
-      slug: 'assessment',
-      kind: 'assessment',
-      icon: '📝',
-      title: L('تقييم النوم', 'Sleep Assessment'),
-      lead: L(
-        'بعد أن عرفت مبادئ الكتاب، قيّم نومك واحصل على نصائح شخصية — كلّ شيء يجري في متصفّحك.',
-        'Now that you know the book’s principles, assess your own sleep and get personalized tips — all in your browser.'
-      ),
-      assessment: { questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP },
-    },
-    {
-      slug: 'studies',
-      kind: 'quiz',
-      icon: '🔬',
-      title: L('الدراسات والتجارب', 'Studies & Experiments'),
-      lead: L(
-        'كلّ دراسات الكتاب الـ١٢٢ كلعبة تخمين: اقرأ المنهجية، خمّن النتيجة، ثم اكشفها واقرأ النقاش!',
-        'All 122 of the book’s studies as a guessing game: read the methodology, predict the result, then reveal it and read the discussion!'
-      ),
-      studies,
-      interestOrder,
-    },
-    {
-      slug: 'myth-or-fact',
-      kind: 'myth-game',
-      icon: '🎲',
-      title: L('خرافة أم حقيقة؟', 'Myth or Fact?'),
-      lead: L(
-        'عبارةٌ واحدة في كلّ مرّة — قرّر: خرافةٌ شائعة أم حقيقةٌ من الكتاب؟ ثم اقرأ لماذا.',
-        'One statement at a time — decide: a common myth, or a fact from the book? Then read why.'
-      ),
-      items: mythOrFact,
-    },
-    characters,
+    activities,
   ],
 }

@@ -64,9 +64,27 @@ function buildIndex() {
         })
       })
 
-      // Index the studies themselves — they're the most-searched content and
-      // they all live behind a single quiz route.
-      ;(section.studies || []).forEach((study) => {
+      /* Activities are `parts` of one section now, not sections — index each
+         so «مختبر التركيز» or «خرافة أم حقيقة؟» is still findable by name. */
+      ;(section.parts || []).forEach((part) => {
+        if (!part.id) return
+        out.push({
+          id: `${book.id}/${section.slug}/${part.id}`,
+          kind: part.kind && KIND_LABEL[part.kind] ? part.kind : 'section',
+          kindLabel: KIND_LABEL[part.kind] || KIND_LABEL.section,
+          icon: part.icon || '📄',
+          title: part.title,
+          subtitle: part.lead || section.title,
+          bookTitle: book.title,
+          to: `/book/${book.id}/${section.slug}`,
+          text: hay(part.title, part.lead, section.title, book.title),
+        })
+      })
+
+      /* Index the studies themselves — the most-searched content, and they all
+         live behind one route. They sit inside an activity part now, so look in
+         both places; `?study=` still jumps the quiz straight to one. */
+      ;[section, ...(section.parts || [])].flatMap((o) => o.studies || []).forEach((study) => {
         out.push({
           id: `${book.id}/${section.slug}/${study.id}`,
           kind: 'study',

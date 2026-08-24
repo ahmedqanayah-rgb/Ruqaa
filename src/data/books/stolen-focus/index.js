@@ -176,6 +176,71 @@ const review = {
   ],
 }
 
+/* «أنشطة إضافية» — ONE tab, everything stacked on it. See the same block in
+   why-we-sleep/index.js for the reasoning.
+   The habits assessment sits DIRECTLY under the lab rather than beside it: the
+   two answer the same question, one by self-report and one by measurement, and
+   they were briefly a subtab pair inside the lab — which the no-subtabs call
+   rules out. Stacked, you still read the two results against each other. */
+const activities = {
+  slug: 'activities',
+  kind: 'activities',
+  icon: '🎯',
+  title: L('أنشطة إضافية', 'Extra activities'),
+  lead: L(
+    'كلّ ما تفعله بعد القراءة في صفحةٍ واحدة: جرّب انتباهك في المختبر، ثم قيّم عاداتك، وخمّن نتائج الدراسات، والعب «خرافة أم حقيقة؟».',
+    'Everything you do after reading, on one page: test your attention in the lab, assess your habits, guess the studies, and play “Myth or Fact?”.'
+  ),
+  parts: [
+    {
+      id: 'focus-lab',
+      kind: 'focus-lab',
+      icon: '🧪',
+      title: L('مختبر التركيز', 'The Focus Lab'),
+      lead: L(
+        'سبع ألعابٍ قصيرة تُشعرك بانتباهك وهو يعمل: كبح التشتيت، وكلفة التبديل، وثبات اليقظة، والتصفية وسط الضجيج، والذاكرة العاملة، وسعة الأرقام، والقراءة وسط الإشعارات — مع مؤشّرٍ إجماليّ في النهاية.',
+        'Seven short games that let you feel your attention at work: suppressing distraction, the cost of switching, steady vigilance, filtering through noise, working memory, digit span, and reading amid notifications — with an overall score at the end.'
+      ),
+    },
+    {
+      id: 'focus-assessment',
+      kind: 'assessment',
+      icon: '📝',
+      title: L('تقييم عادات التركيز', 'Focus Habits Assessment'),
+      lead: L(
+        'وبعد أن قِسْتَ انتباهك، قيّم عاداتك — واقرأ النتيجتين معاً: ما تظنّه عن تركيزك، وما يفعله فعلاً.',
+        'And now that you have measured your attention, assess your habits — then read the two together: what you believe about your focus, and what it actually does.'
+      ),
+      assessment: { questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP },
+    },
+    {
+      id: 'studies',
+      kind: 'quiz',
+      icon: '🔬',
+      title: L('الدراسات والتجارب', 'Studies & Experiments'),
+      lead: L(
+        'ستّون دراسةً وتجربة من الكتاب كلعبة تخمين: اقرأ المنهجية، خمّن النتيجة، ثم اكشفها واقرأ النقاش.',
+        'Sixty of the book’s studies and experiments as a guessing game: read the methodology, predict the result, then reveal it and read the discussion.'
+      ),
+      studies,
+      interestOrder,
+    },
+    {
+      id: 'myth-or-fact',
+      kind: 'myth-game',
+      icon: '🎲',
+      title: L('خرافة أم حقيقة؟', 'Myth or Fact?'),
+      lead: L(
+        'عبارةٌ واحدة في كلّ مرّة — قرّر: خرافةٌ شائعة أم حقيقةٌ من الكتاب؟ ثم اقرأ لماذا.',
+        'One statement at a time — decide: a common myth, or a fact from the book? Then read why.'
+      ),
+      items: mythOrFact,
+    },
+    { id: 'characters', icon: characters.icon, title: characters.title,
+      lead: characters.lead, blocks: characters.blocks },
+  ],
+}
+
 export const stolenFocus = {
   id: 'stolen-focus',
   title: L('تركيزنا المسلوب', 'Stolen Focus'),
@@ -198,56 +263,12 @@ export const stolenFocus = {
     { slug: 'author' },
     { slug: 'review' },
     { slug: 'flow-state' },
-    { title: L('أنشطة إضافية', 'Extra activities'),
-      slugs: ['focus-lab', 'studies', 'myth-or-fact', 'characters'] },
+    { slug: 'activities' },
   ],
   sections: [
     people,
-    // Same translator as the other book, so the biography lives in one shared
-    // module and each book passes only its own edition details.
     review,
     enrich(flowState),
-    {
-      slug: 'focus-lab',
-      kind: 'focus-lab',
-      icon: '🧪',
-      title: L('مختبر التركيز', 'The Focus Lab'),
-      lead: L(
-        'سبع ألعابٍ قصيرة تُشعرك بانتباهك وهو يعمل: كبح التشتيت، وكلفة التبديل، وثبات اليقظة، والتصفية وسط الضجيج، والذاكرة العاملة، وسعة الأرقام، والقراءة وسط الإشعارات — مع مؤشّرٍ إجماليّ في النهاية.',
-        'Seven short games that let you feel your attention at work: suppressing distraction, the cost of switching, steady vigilance, filtering through noise, working memory, digit span, and reading amid notifications — with an overall score at the end. A habits assessment sits in the second panel, so you can read the two together.'
-      ),
-      /* Second panel of this same tab — see FocusLabPanels in BookSection. It
-         was its own sidebar entry; both it and the games answer "how is my
-         focus?", one by self-report and one by measurement, and the pair is
-         worth more read against each other than three items apart. */
-      assessment: {
-        questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP,
-        title: L('تقييم عادات التركيز', 'Focus Habits Assessment'),
-      },
-    },
-    {
-      slug: 'studies',
-      kind: 'quiz',
-      icon: '🔬',
-      title: L('الدراسات والتجارب', 'Studies & Experiments'),
-      lead: L(
-        'ستّون دراسةً وتجربة من الكتاب كلعبة تخمين: اقرأ المنهجية، خمّن النتيجة، ثم اكشفها واقرأ النقاش.',
-        'Sixty of the book’s studies and experiments as a guessing game: read the methodology, predict the result, then reveal it and read the discussion.'
-      ),
-      studies,
-      interestOrder,
-    },
-    {
-      slug: 'myth-or-fact',
-      kind: 'myth-game',
-      icon: '🎲',
-      title: L('خرافة أم حقيقة؟', 'Myth or Fact?'),
-      lead: L(
-        'عبارةٌ واحدة في كلّ مرّة — قرّر: خرافةٌ شائعة أم حقيقةٌ من الكتاب؟ ثم اقرأ لماذا.',
-        'One statement at a time — decide: a common myth, or a fact from the book? Then read why.'
-      ),
-      items: mythOrFact,
-    },
-    characters,
+    activities,
   ],
 }

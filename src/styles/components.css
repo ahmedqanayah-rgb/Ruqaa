@@ -241,6 +241,27 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .block-tab-icon { width: 1.05em; height: 1.05em; }
 
 /* ============================================================
+   «أنشطة إضافية» — every activity stacked on one page (BookSection →
+   Activities). No second tab bar by design, so the separators do the work a
+   tab bar would have: each activity has to announce itself, or the page reads
+   as one undifferentiated wall of widgets.
+   ============================================================ */
+.activities { display: flex; flex-direction: column; }
+.activity + .activity {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border);
+}
+.activity-title {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 var(--space-2); font-size: var(--fs-lg);
+}
+.activity-lead {
+  color: var(--text-soft); margin: 0 0 var(--space-4);
+  max-width: 66ch;
+}
+
+/* ============================================================
    «خرافة أم حقيقة؟» — components/MythOrFact.jsx
    ============================================================ */
 .mof { max-width: 680px; margin-inline: auto; }
