@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
-import { getBook } from '../data/books.js'
+import { getBook, entrySlugs } from '../data/books.js'
 import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
-import WeekChallenge from '../components/WeekChallenge.jsx'
+import MythOrFact from '../components/MythOrFact.jsx'
 
 /* Seven games' worth of logic for a single section — loaded on arrival. */
 const FocusLab = lazy(() => import('../components/FocusLab.jsx'))
@@ -134,15 +134,56 @@ function countExperts(book) {
     return n
   }, 0)
 }
+/* The focus lab and the habits assessment are ONE tab now.
+   They were two sidebar entries answering the same question — "how is my
+   focus?" — one by self-report and one by measurement, which is exactly the
+   pair that belongs side by side rather than three items apart. The lab is the
+   default panel because the lab is what the tab is called; the assessment is a
+   click away and the two results read against each other.
+   Same `.block-tabs` chrome as the in-content tabs block, so a reader meets one
+   switching idiom on the site, not two. */
+function FocusLabPanels({ book, section }) {
+  const { t } = useApp()
+  const [tab, setTab] = useState('lab')
+  const panels = [
+    { id: 'lab', title: L('الألعاب', 'The games') },
+    ...(section.assessment ? [{ id: 'assessment', title: L('تقييم عاداتك', 'Your habits') }] : []),
+  ]
+  return (
+    <div className="block-tabs">
+      {panels.length > 1 && (
+        <div className="block-tabs-bar" role="tablist">
+          {panels.map((p) => (
+            <button key={p.id} type="button" role="tab" aria-selected={tab === p.id}
+              className={`block-tab ${tab === p.id ? 'active' : ''}`}
+              onClick={() => setTab(p.id)}>{t(p.title)}</button>
+          ))}
+        </div>
+      )}
+      <div className="block-tabs-panel" role="tabpanel">
+        {tab === 'lab' ? (
+          <Suspense fallback={<div className="figure-loading" aria-hidden />}>
+            <FocusLab bookTitle={book.title} sectionTitle={section.title} />
+          </Suspense>
+        ) : (
+          <AssessmentForm questions={section.assessment.questions}
+            tips={section.assessment.tips} goodTip={section.assessment.goodTip}
+            bookTitle={book.title} sectionTitle={section.assessment.title || section.title} />
+        )}
+      </div>
+    </div>
+  )
+}
+
 /* What a section card advertises under its title. Prose sections get a read
    time; the interactive ones say what they actually contain, which is more use
    than a blanket "interactive". */
 function sectionMeta(section, minutes) {
   if (minutes) return { ar: `⏱ ~${minutes} د قراءة`, en: `⏱ ~${minutes} min read` }
-  if (section.kind === 'challenge' && section.days)
-    return { ar: `🗓️ ${section.days.length} أيام`, en: `🗓️ ${section.days.length} days` }
   if (section.kind === 'quiz' && section.studies)
     return { ar: `🔬 ${section.studies.length} دراسة`, en: `🔬 ${section.studies.length} studies` }
+  if (section.kind === 'myth-game' && section.items)
+    return { ar: `🎲 ${section.items.length} عبارة`, en: `🎲 ${section.items.length} statements` }
   return { ar: '🎮 تفاعلي', en: '🎮 Interactive' }
 }
 
@@ -244,7 +285,7 @@ function BookLanding({ book }) {
      so its first slug is what "the beginning" means to a reader. Once they've
      read something the button follows them to the first section they haven't
      seen, which makes it useful on the second visit instead of redundant. */
-  const ordered = book.groups ? book.groups.flatMap((g) => g.slugs) : book.sections.map((s) => s.slug)
+  const ordered = book.groups ? book.groups.flatMap(entrySlugs) : book.sections.map((s) => s.slug)
   const startSlug = ordered.find((sl) => bySlug.has(sl))
   const nextSlug = ordered.find((sl) => bySlug.has(sl) && !visited.has(`${book.id}/${sl}`))
   const ctaSlug = seenCount > 0 ? (nextSlug || startSlug) : startSlug
@@ -263,7 +304,7 @@ function BookLanding({ book }) {
      its cards on screen, so this doesn't undo the reordering win. State is in
      memory like `visited` — no storage — and re-seeds on remount, which is what
      makes it follow the reader's progress instead of going stale. */
-  const ctaGroup = book.groups ? book.groups.findIndex((g) => g.slugs.includes(ctaSlug)) : -1
+  const ctaGroup = book.groups ? book.groups.findIndex((g) => entrySlugs(g).includes(ctaSlug)) : -1
   const [openGroups, setOpenGroups] = useState(() => {
     const saved = landingGroups.get(book.id)
     return saved?.touched ? saved.open : new Set([ctaGroup >= 0 ? ctaGroup : 0])
@@ -333,6 +374,15 @@ function BookLanding({ book }) {
           a screen reader gets stays the same as the one everyone else sees. */}
       {book.groups ? (
         book.groups.map((g, gi) => {
+          // Solo entry: just the card. No header, no fold — there is nothing to
+          // unfold, and a one-item accordion only hides it.
+          if (g.slug) {
+            return bySlug.has(g.slug)
+              ? <section key={gi} className="landing-group is-solo">
+                  <div className="section-cards">{renderCard(g.slug)}</div>
+                </section>
+              : null
+          }
           const open = openGroups.has(gi)
           const items = g.slugs.map((sl) => bySlug.get(sl)).filter(Boolean)
           const groupSeen = items.filter((h) => visited.has(`${book.id}/${h.s.slug}`)).length
@@ -484,11 +534,9 @@ export default function BookSection() {
           tips={section.assessment.tips} goodTip={section.assessment.goodTip}
           bookTitle={book.title} sectionTitle={section.title} />
       ) : section.kind === 'focus-lab' ? (
-        <Suspense fallback={<div className="figure-loading" aria-hidden />}>
-          <FocusLab bookTitle={book.title} sectionTitle={section.title} />
-        </Suspense>
-      ) : section.kind === 'challenge' ? (
-        <WeekChallenge challenge={section} bookId={book.id} />
+        <FocusLabPanels book={book} section={section} />
+      ) : section.kind === 'myth-game' ? (
+        <MythOrFact items={section.items} bookTitle={book.title} sectionTitle={section.title} />
       ) : (
         <div className="section-content">
           <ContentBlocks blocks={section.blocks} />

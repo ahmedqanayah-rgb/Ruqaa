@@ -3,58 +3,6 @@ const anat = (f) => `./images/anatomical/${f}`
 // background-removed cut-outs, now WebP; callers still pass the old .png name.
 const clean = (f) => `./images/clean/${f.replace(/\.\w+$/, '')}.webp`
 
-/* ===================== 1) General Summary ===================== */
-export const summary = {
-  slug: 'summary',
-  icon: '📖',
-  title: L('الملخّص العام', 'General Summary'),
-  lead: L(
-    'الأطروحة المركزية للكتاب ورحلته في أربعة أجزاء، وأهمّ ما يخرج به القارئ.',
-    'The book’s central thesis, its four-part journey, and the reader’s key takeaways.'
-  ),
-  blocks: [
-    { type: 'h', text: L('الأطروحة المركزية', 'The central thesis') },
-    { type: 'p', text: L(
-      'حجّة الكتاب في جملة واحدة: **النوم ليس رفاهيةً بل ضرورةٌ بيولوجية لا تُفاوَض، وهو أقوى وأرخص «دواءٍ» وقائيٍّ نملكه** — يعيد كلّ ليلةٍ ضبط الدماغ والجسد والعاطفة. ويحذّر ووكر (Walker) من أن العالم الصناعي يعيش **وباءَ حرمانٍ صامتاً** من النوم، ثمنُه صحّةٌ متدهورة وحوادثُ وخسائرُ اقتصادية هائلة — وأن معظم الناس لا يدركون حجم الضرر لأنهم فقدوا القدرة على الحكم على مدى إرهاقهم.',
-      'The book in one sentence: **sleep is not a luxury but a non-negotiable biological necessity — the most powerful and cheapest preventive “medicine” we have**, resetting brain, body and emotion every night. Walker warns that the industrialised world is living through a silent **epidemic of sleep deprivation**, paid for in failing health, accidents and vast economic loss — and that most people miss the scale of the damage because they have lost the ability to judge how impaired they are.'
-    ) },
-
-    { type: 'h', text: L('رحلة الكتاب في أربعة أجزاء', 'The book’s journey in four parts') },
-    { type: 'callout', variant: 'key', title: L('الجزء الأول — ما هو النوم وكيف يعمل', 'Part 1 — What sleep is and how it works'), text: L(
-      'يشرح النظامين اللذين يحكمان توقيت النوم (**الإيقاع اليومي (Circadian Rhythm)** عبر النواة فوق التصالبية (Suprachiasmatic Nucleus) والميلاتونين (Melatonin)، و**ضغط النوم (Sleep Pressure)** عبر تراكم الأدينوزين (Adenosine))، ثم بنية النوم ومراحله (**NREM** العميق و**REM** الحالم في دوراتٍ من ٩٠ دقيقة)، وكيف يتغيّر النوم عبر العمر ولدى الكائنات الأخرى.',
-      'Explains the two systems that govern sleep timing (the **Circadian Rhythm** via the Suprachiasmatic Nucleus and Melatonin, and **Sleep Pressure** via accumulating Adenosine), then sleep architecture and stages (deep **NREM** and dreaming **REM** in ~90-minute cycles), and how sleep changes across the lifespan and across other species.'
-    ) },
-    { type: 'callout', variant: 'key', title: L('الجزء الثاني — فوائد النوم وأخطار فقدانه', 'Part 2 — The benefits of sleep and dangers of losing it'), text: L(
-      'أغنى الأجزاء بالأدلّة. النوم شرطٌ لـ**الذاكرة والتعلّم** (قبل التعلّم وبعده)، ولـ**صحّة الجسد** (المناعة، السرطان، القلب، الأيض، الخصوبة)، ولـ**الاتّزان العاطفي**. وقلّته تُقارب الإنسان من السُّكْر خلف المقود، ومن السكري خلال أسبوع، وتُسقط مناعته في ليلةٍ واحدة.',
-      'The most evidence-rich part. Sleep is a precondition for **memory and learning** (both before and after learning), for **physical health** (immunity, cancer, heart, metabolism, fertility), and for **emotional balance**. Losing it pushes a person toward drunk-driving impairment, toward diabetes within a week, and drops immunity in a single night.'
-    ) },
-    { type: 'callout', variant: 'key', title: L('الجزء الثالث — الأحلام', 'Part 3 — Dreams'), text: L(
-      'لماذا نحلم وكيف. الأحلام (في REM) ليست ضجيجاً، بل **معالجةٌ عاطفية ليلية** تنزع شحنة الذكريات المؤلمة، و**حاضنةٌ للإبداع** تربط المعارف المتباعدة وتحلّ المشكلات.',
-      'Why and how we dream. Dreams (in REM) are not noise but **overnight emotional processing** that defuses painful memories, and an **incubator of creativity** that links distant knowledge and solves problems.'
-    ) },
-    { type: 'callout', variant: 'key', title: L('الجزء الرابع — الاضطرابات والمجتمع والحلول', 'Part 4 — Disorders, society and solutions'), text: L(
-      'اضطراباتٌ تُعلّمنا الكثير (الأرق، التغفيق (Narcolepsy)، السير النومي، الأرق العائلي القاتل (Fatal Familial Insomnia))، وما يفسد نومنا (الضوء، الكحول، الكافيين، الأقراص المنوّمة)، وأثر قلّة النوم على **المجتمع** (المدارس، أماكن العمل، الطب)، ثم **رؤيةٌ للحلول** على مستوى الفرد والمؤسسة والمجتمع.',
-      'Disorders that teach us a great deal (insomnia, narcolepsy, sleepwalking, Fatal Familial Insomnia), what spoils our sleep (light, alcohol, caffeine, sleeping pills), the impact of sleep loss on **society** (schools, workplaces, medicine), and a **vision for solutions** at the individual, institutional and societal level.'
-    ) },
-
-    { type: 'h', text: L('أهمّ ما يخرج به القارئ', 'The reader’s key takeaways') },
-    { type: 'ul', items: [
-      L('النوم يخدم الدماغ والجسد في **كلّ جهازٍ تقريباً**؛ لا نظامَ يستغني عنه.',
-        'Sleep serves the brain and body in **nearly every system**; no system does without it.'),
-      L('**الكمّية وحدها لا تكفي** — الليلة الكاملة ضرورية لأن كلّ مرحلة (NREM/REM) تخدم وظيفةً مختلفة، والتوقيت يحدّد ما تخسره.',
-        '**Quantity alone is not enough** — a full night matters because each stage (NREM/REM) serves a different function, and timing decides what you lose.'),
-      L('الحرمان من النوم **لا يُعوَّض بالكامل**؛ النوم ليس بنكاً.',
-        'Sleep deprivation is **not fully recoverable**; sleep is not a bank.'),
-      L('كثيرٌ من مآسي العصر (حوادث، أمراض، تدهور تحصيل، بل كوارث صناعية) جذرُها قلّة النوم.',
-        'Many modern tragedies (accidents, disease, falling achievement, even industrial disasters) are rooted in lack of sleep.'),
-    ] },
-    { type: 'quote', text: L(
-      'الرسالة الختامية: **استعادة حقّنا في ليلة نومٍ كاملة بلا خجلٍ ولا وصمة كسل**، وتغييرٌ جذريٌّ في نظرتنا الشخصية والثقافية والمؤسسية للنوم.',
-      'The closing message: **reclaim our right to a full night’s sleep — without shame or the stigma of laziness** — and radically change how we see sleep personally, culturally and institutionally.'
-    ) },
-  ],
-}
-
 /* ===================== 2) Complete Sleep Mechanism ===================== */
 export const mechanism = {
   slug: 'mechanism',

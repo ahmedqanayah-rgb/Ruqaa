@@ -69,7 +69,7 @@ export const connections = {
     {
       icon: '🧒',
       theme: L('نلوم الطفل على بيئةٍ صمّمها الكبار', 'We blame the child for an environment adults designed'),
-      a: { bookId: 'why-we-sleep', slug: 'shocking', says: L(
+      a: { bookId: 'why-we-sleep', slug: 'myth-or-fact', says: L(
         'مواعيد بدء المدارس المبكّرة تصادم بيولوجيا المراهق التي تدفع نومه إلى وقتٍ متأخّر — ثم نصف المراهق بالكسل.',
         'Early school start times collide with a teenager’s biology, which pushes sleep later — and then we call the teenager lazy.'
       ) },

@@ -27,20 +27,43 @@ export const verdict = {
   reception: 'reception',
 }
 
-export const reception = {
-  slug: 'reception',
-  icon: '⚖️',
-  title: L('الكتاب في الميزان', 'The book under scrutiny'),
-  lead: L(
-    'كتابٌ عن الانتباه يستحقّ أن نعطيه انتباهاً ناقداً. ما الذي أخذه النقّاد على «تركيزنا المسلوب»؟ وما الذي ردّ به المؤلّف؟',
-    'A book about attention deserves our critical attention. What did critics hold against “Stolen Focus,” and how did the author respond?'
-  ),
-  blocks: [
+/* NOT A SECTION ANY MORE. «الكتاب في الميزان» was its own tab until 2026-08-24;
+   these blocks are appended to the sections making the claims they qualify.
+
+   The 23-minute entry is NOT here — it became a myth item in the game
+   (mythOrFact.js), where the reader commits to the claim before being corrected,
+   which is a better home for it than a criticism page.
+
+   Every criticism stays sourced and paired with the author's reply where one
+   exists — the bar CLAUDE.md sets for this material. */
+
+/* → «فرط الحركة وتشتّت الانتباه». This one has PRACTICAL STAKES and is the
+   reason none of this could simply be deleted: someone with ADHD could read the
+   book's chapters and stop their treatment over them. It belongs against the
+   chapters themselves, not on a separate page they may never open. */
+export const adhdCaveat = [
+  { type: 'h', text: L('ما يؤخذ على فصول الكتاب هنا', 'What critics take issue with in these chapters') },
+    { type: 'debate',
+      topic: L('فصول فرط الحركة وتشتّت الانتباه (ADHD)', 'The ADHD chapters'),
+      claim: L(
+        'يتشكّك الكتاب في تصاعد تشخيص فرط الحركة وتشتّت الانتباه، ويقترح أن كثيراً منه استجابةٌ لبيئةٍ مريضة لا لخللٍ في الدماغ.',
+        'The book is sceptical of the rising rate of ADHD diagnosis, suggesting much of it is a response to a sick environment rather than a disorder in the brain.'
+      ),
+      critique: L(
+        'يأخذ عليه النقّاد أنه لا يوازن ذلك بالكمّ الكبير من الأبحاث المحكَّمة التي تعامل الاضطراب بوصفه اضطراباً عصبياً نمائياً حقيقياً، وأنه يمرّ سريعاً على أدلّةٍ تشير إلى أن العلاج الدوائي المناسب يُحسّن حياة المصابين — بل ويرتبط بانخفاض الوفيات لديهم. وهذه نقطةٌ حسّاسة عملياً: قد يقرأها مصابٌ فيتوقّف عن علاجه.',
+        'Critics fault it for not weighing that against the substantial peer-reviewed literature treating ADHD as a genuine neurodevelopmental condition, and for moving quickly past evidence that appropriate medication improves patients’ lives — and is associated with lower all-cause mortality among them. This one has practical stakes: someone with ADHD could read it and stop their treatment.'
+      ),
+    },
+]
+
+/* → «المؤلّف والمترجم». How much weight to give the book's reporting, and the
+   author's own record, are questions about the author — so they sit in his tab. */
+export const authorScrutiny = [
+  { type: 'h', text: L('الكتاب في الميزان', 'The book under scrutiny') },
     { type: 'p', text: L(
       'لقي الكتاب رواجاً واسعاً وثناءً كثيراً — ولقي في الوقت نفسه نقداً جادّاً من علماء نفسٍ وصحفيّين. النقد يدور حول ثلاثة محاور: **قوّة الأدلّة**، و**فصول فرط الحركة وتشتّت الانتباه**، و**سجلّ المؤلّف المهنيّ**. ونعرضها هنا كما وردت، مع ما فعله هاري في المقابل.',
       'The book was widely read and widely praised — and at the same time drew serious criticism from psychologists and journalists. It clusters around three things: **the strength of the evidence**, **the ADHD chapters**, and **the author’s professional record**. Here they are as stated, together with what Hari did in response.'
     ) },
-
     { type: 'debate',
       topic: L('قوّة الأدلّة', 'The strength of the evidence'),
       claim: L(
@@ -53,36 +76,6 @@ export const reception = {
       ),
       critic: L('ستيوارت ريتشي، مجلّة أنهيرد، ٢٠٢٢', 'Stuart Ritchie, UnHerd, 2022'),
     },
-
-    { type: 'debate',
-      topic: L('رقم الـ٢٣ دقيقة', 'The 23-minute number'),
-      claim: L(
-        'أشهر رقمٍ في الكتاب: بعد كلّ مقاطعة تحتاج في المتوسّط **٢٣ دقيقة** لتعود إلى تركيزك. ينسبه الكتاب إلى **مايكل بوزنر** في جامعة أوريغون.',
-        'The book’s most famous number: after each interruption it takes on average **23 minutes** to get back to your focus. The book attributes it to **Michael Posner** at the University of Oregon.'
-      ),
-      critique: L(
-        'ثلاث مشكلات، وجدناها بالتحقّق المباشر لا نقلاً عن ناقد. **أولاً النسبة خاطئة**: الرقم لـ**غلوريا مارك (Gloria Mark)** في جامعة كاليفورنيا بإرفاين — وهي نفسها التي يستشهد بها الكتاب قبل سطورٍ في رقم «الدقائق الثلاث» — وبوزنر عالِمُ **شبكات الانتباه**، ولا نعرف له بحثاً يُخرج هذا الرقم. **وثانياً لا مصدر منشوراً له**: لا يظهر «٢٣ دقيقة و١٥ ثانية» في أيّ بحثٍ محكَّم، وإنما في مقابلاتٍ صحفية مع مارك؛ وبحثه في ورقتها الأشهر لا يعطي نتيجةً واحدة لكلمة «23». **وثالثاً الورقة نفسها وجدت شيئاً آخر**: في «كلفة العمل المُقاطَع» (٢٠٠٨) أنجز المُقاطَعون مهمّتهم **أسرع** (٢٠٫٣ و٢٠٫٦ دقيقة) ممّن لم يُقاطَعوا (٢٢٫٨ دقيقة)، لكن بتوتّرٍ وإحباطٍ وجهدٍ أعلى — ولم تقس زمن الاستعادة أصلاً. وتقديرات دراساتٍ أخرى في الأدبيات أقرب إلى ١١–١٦ دقيقة.',
-        'Three problems, found by checking directly rather than repeating a critic. **First, the attribution is wrong**: the figure is **Gloria Mark’s**, at UC Irvine — the very researcher the book cites a few lines earlier for the “three minutes” figure — while Posner is a scientist of **attention networks**, with no study we can find that yields this number. **Second, it has no published source**: “23 minutes 15 seconds” appears in no peer-reviewed paper, only in press interviews with Mark; searching her best-known paper for “23” returns nothing. **Third, that paper found something else**: in “The Cost of Interrupted Work” (2008) the interrupted group finished **faster** (20.3 and 20.6 minutes) than the uninterrupted one (22.8 minutes), but with higher stress, frustration and effort — and it never measured recovery time at all. Other studies in the literature put recovery nearer 11–16 minutes.'
-      ),
-      response: L(
-        'لم نجد للمؤلّف ردّاً منشوراً على هذه النقطة تحديداً. وقد بقي الرقم في الكتاب على حاله في الطبعات اللاحقة. أزلنا من الموقع الشكل التفاعليّ الذي كان مبنيّاً عليه، وأبقينا الرقم في النصّ لأنه ممّا يقوله الكتاب — مع هذا التنبيه بجانبه.',
-        'We found no published response from the author on this specific point, and the figure stands unchanged in later printings. We removed the interactive figure that was built on it, and kept the number in the text because it is what the book says — with this note beside it.'
-      ),
-      critic: L('تحقّقٌ من النادي، ٢٠٢٦', 'The club’s own fact-check, 2026'),
-    },
-
-    { type: 'debate',
-      topic: L('فصول فرط الحركة وتشتّت الانتباه (ADHD)', 'The ADHD chapters'),
-      claim: L(
-        'يتشكّك الكتاب في تصاعد تشخيص فرط الحركة وتشتّت الانتباه، ويقترح أن كثيراً منه استجابةٌ لبيئةٍ مريضة لا لخللٍ في الدماغ.',
-        'The book is sceptical of the rising rate of ADHD diagnosis, suggesting much of it is a response to a sick environment rather than a disorder in the brain.'
-      ),
-      critique: L(
-        'يأخذ عليه النقّاد أنه لا يوازن ذلك بالكمّ الكبير من الأبحاث المحكَّمة التي تعامل الاضطراب بوصفه اضطراباً عصبياً نمائياً حقيقياً، وأنه يمرّ سريعاً على أدلّةٍ تشير إلى أن العلاج الدوائي المناسب يُحسّن حياة المصابين — بل ويرتبط بانخفاض الوفيات لديهم. وهذه نقطةٌ حسّاسة عملياً: قد يقرأها مصابٌ فيتوقّف عن علاجه.',
-        'Critics fault it for not weighing that against the substantial peer-reviewed literature treating ADHD as a genuine neurodevelopmental condition, and for moving quickly past evidence that appropriate medication improves patients’ lives — and is associated with lower all-cause mortality among them. This one has practical stakes: someone with ADHD could read it and stop their treatment.'
-      ),
-    },
-
     { type: 'debate',
       topic: L('سجلّ المؤلّف المهنيّ', 'The author’s professional record'),
       claim: L(
@@ -99,12 +92,10 @@ export const reception = {
       ),
       critic: L('بي بي سي وواشنطن بوست، ٢٠١١؛ أنهيرد، ٢٠٢٢', 'BBC and Washington Post, 2011; UnHerd, 2022'),
     },
-
     { type: 'callout', variant: 'key', title: L('كيف نقرأه إذن؟', 'So how should we read it?'), text: L(
       'الفكرة المركزية للكتاب — أن الانتباه تشكّله البيئة لا الإرادة وحدها — ليست موضع خلافٍ جوهريّ؛ كثيرٌ من الباحثين يوافقون عليها. الخلاف على **مقدار ما تحتمله الأدلّة** في كلّ سببٍ من الاثني عشر. أفضل طريقةٍ لقراءته: خذ الإطار، وتعامل مع كلّ دراسةٍ مفردة بوصفها بداية بحثٍ لا نهايته. ولعلّ أطرف ما في الأمر أن هذا بالضبط ما يطالبنا به الكتاب: انتباهٌ عميقٌ بطيء، لا تصديقٌ سريع.',
       'The book’s central idea — that attention is shaped by environment, not willpower alone — is not seriously contested; many researchers agree with it. The argument is about **how much weight the evidence bears** for each of the twelve causes. The best way to read it: take the frame, and treat each individual study as the start of an inquiry rather than the end of one. There is a certain irony there — that is precisely what the book asks of us: slow, deep attention rather than quick belief.'
     ) },
-
     { type: 'sources', title: L('اقرأ بنفسك', 'Read it yourself'), items: [
       { label: L('نقد ستيوارت ريتشي للكتاب', 'Stuart Ritchie’s critique of the book'),
         publisher: L('أنهيرد، ٢٠٢٢', 'UnHerd, 2022'), url: 'https://unherd.com/2022/01/johann-haris-stolen-ideas/' },
@@ -117,6 +108,4 @@ export const reception = {
         publisher: L('مؤتمر CHI، ٢٠٠٨', 'CHI Conference, 2008'), url: 'https://ics.uci.edu/~gmark/chi08-mark.pdf' },
       { label: L('تتبّعٌ لأصل رقم «٢٣ دقيقة و١٥ ثانية»', 'Tracing the origin of the “23 minutes 15 seconds” figure'),
         publisher: L('مدوّنة oberien، ٢٠٢٣', 'oberien’s blog, 2023'), url: 'https://blog.oberien.de/2023/11/05/23-minutes-15-seconds.html' },
-    ] },
-  ],
-}
+    ] },]

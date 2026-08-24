@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
 import RichText from './RichText.jsx'
+import Icon from './Icon.jsx'
 
 /* The figure registry pulls in every chart component and, through them, all of
    recharts — the heaviest dependency in the app. Loading it lazily keeps it off
@@ -192,6 +193,36 @@ function PeopleGroups({ block }) {
   )
 }
 
+/* Two (or more) whole sub-documents inside one section, switched by a segmented
+   bar — used to put «عن المؤلّف» and «عن المترجم» in a single tab instead of two.
+   It renders ContentBlocks again for the active panel, so a panel can hold
+   anything a section can. Only the active panel is mounted: these panels carry
+   portraits and source lists, and mounting both would fetch two sets of images
+   for one visible one. */
+function TabbedBlocks({ block }) {
+  const { t } = useApp()
+  const [active, setActive] = useState(0)
+  const panels = block.panels || []
+  if (!panels.length) return null
+  return (
+    <div className="block-tabs">
+      <div className="block-tabs-bar" role="tablist">
+        {panels.map((p, i) => (
+          <button key={i} type="button" role="tab" aria-selected={i === active}
+            className={`block-tab ${i === active ? 'active' : ''}`}
+            onClick={() => setActive(i)}>
+            {p.icon && <Icon name={p.icon} className="block-tab-icon" />}
+            {t(p.title)}
+          </button>
+        ))}
+      </div>
+      <div className="block-tabs-panel" role="tabpanel">
+        <ContentBlocks blocks={panels[active]?.blocks || []} />
+      </div>
+    </div>
+  )
+}
+
 export default function ContentBlocks({ blocks }) {
   return (
     <>
@@ -238,6 +269,7 @@ export default function ContentBlocks({ blocks }) {
           case 'people': return <PeopleGrid key={i} people={b.people} />
           case 'peoplegroups': return <PeopleGroups key={i} block={b} />
           case 'linkcards': return <LinkCards key={i} block={b} />
+          case 'tabs': return <TabbedBlocks key={i} block={b} />
           case 'myth': return <MythCard key={i} block={b} />
           case 'debate': return <DebateCard key={i} block={b} />
           case 'sources': return <SourceList key={i} block={b} />

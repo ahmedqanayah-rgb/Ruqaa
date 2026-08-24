@@ -9,7 +9,7 @@
  *
  * Run:  node scripts/check-links.mjs
  */
-const { books } = await import('../src/data/books.js')
+const { books, entrySlugs } = await import('../src/data/books.js')
 const { connections } = await import('../src/data/connections.js')
 
 const slugs = new Map(books.map((b) => [b.id, new Set(b.sections.map((s) => s.slug))]))
@@ -28,8 +28,11 @@ for (const item of connections.items ?? []) {
 }
 
 for (const b of books) {
+  // A groups entry is a titled list or a solo `{ slug }` — see entrySlugs in
+  // data/books.js. Walking only `g.slugs` would silently skip every solo tab,
+  // which is exactly the class of dead link this script exists to catch.
   for (const g of b.groups ?? [])
-    for (const s of g.slugs ?? []) check(b.id, s, `${b.id} · group "${g.title?.en ?? ''}"`)
+    for (const s of entrySlugs(g)) check(b.id, s, `${b.id} · ${g.slug ? 'solo entry' : `group "${g.title?.en ?? ''}"`}`)
 
   const challenge = b.sections.find((s) => s.kind === 'challenge')
   for (const d of challenge?.days ?? [])

@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import Icon from './Icon.jsx'
 import { ui } from '../data/ui.js'
-import { books } from '../data/books.js'
+import { books, entrySlugs } from '../data/books.js'
 
 export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) {
   const { t, visited } = useApp()
@@ -28,7 +28,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
     if (!activeSlug) return
     const book = books.find((b) => b.id === activeBookId)
     if (!book?.groups) return
-    const gi = book.groups.findIndex((g) => g.slugs.includes(activeSlug))
+    const gi = book.groups.findIndex((g) => entrySlugs(g).includes(activeSlug))
     if (gi < 0) return
     setOpenGroups((prev) => {
       const key = `${activeBookId}:${gi}`
@@ -134,6 +134,12 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
                   {isOpenBook && book.groups && (
                     <div className="side-sections">
                       {book.groups.map((g, gi) => {
+                        /* Solo entry — a plain link at the same level as the
+                           group headers, no fold. A group of one only hides it. */
+                        if (g.slug) {
+                          const only = bySlug.get(g.slug)
+                          return only ? sectionLink(book, only) : null
+                        }
                         const key = `${book.id}:${gi}`
                         const isOpen = openGroups.has(key)
                         const sections = g.slugs.map((sl) => bySlug.get(sl)).filter(Boolean)

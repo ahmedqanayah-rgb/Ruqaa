@@ -68,7 +68,11 @@ content you almost always edit data, not JSX.
 
 - **Section blocks.** A normal section is `{ slug, title, lead, blocks:[…] }`. Each block
   is `{ type, … }`; `ContentBlocks.jsx` switches on `type` (`h`/`h4`/`p`/`ul`/`ol`/
-  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`myth`). A `{ type:'figure', id }`
+  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`myth`). A `{ type:'tabs',
+  panels:[{title,blocks}] }` renders whole sub-documents behind a segmented bar and recurses
+  into `ContentBlocks` — it is what puts the author and the translator in one tab. Only the
+  active panel is mounted, so a hidden panel's portraits are never fetched.
+  A `{ type:'figure', id }`
   block renders an interactive figure via `src/components/figures/registry.jsx`, which maps
   a string id (`fig1`, `fig4_6`, `brainNetworks`, …) to a component.
 
@@ -240,8 +244,12 @@ keeps `base: './'` sub-path hosting working.
   (**public**). The parent `Ruqaa/` is intentionally not a repo. **Never commit the book
   reference material** (`Ruqaa/Why we Sleep/`, `Ruqaa/Stolen focus/` — epub, raw book
   text, figure PDFs); history was rewritten on 2026-07-20 to purge exactly those.
-- **Two books are live**: `why-we-sleep` (16 sections, 122-study quiz) and `stolen-focus`
-  (20 sections, 61-study quiz, built per `PLAN-stolen-focus.md` — kept for reference).
+- **Two books are live**: `why-we-sleep` (13 sections, 122-study quiz) and `stolen-focus`
+  (16 sections, 61-study quiz, built per `PLAN-stolen-focus.md` — kept for reference).
+  **Both were cut down on 2026-08-24** — see the header comment in each book's `index.js`
+  for exactly what went and where anything worth keeping went with it. Removed outright:
+  the summary/«خلاصة الكتاب», «خريطة الأسباب», the 7-day challenge, and the session-materials
+  section. Merged: author+translator into one tab, and myths+shocking-facts into a game.
   Stolen Focus in Arabic is **«تركيزنا المسلوب»** by **«يوهان هاري»** (the published
   Dar Al-Tanweer edition) — not «التركيز المسروق»/«جوهان هاري». Same rule for
   Csikszentmihalyi: **«ميهالي تشيكزينتميهالي»**, the spelling his Arabic translations use —
@@ -257,6 +265,9 @@ keeps `base: './'` sub-path hosting working.
   (a "see all" card appears only past 3 books). The active book's sections render as
   collapsible groups (from the book's `groups` data) — only the group holding the
   current section auto-expands; headers show visited/total counts, items show ✓ ticks.
+  **A `groups` entry may instead be `{ slug }` — a SOLO top-level tab with no header**
+  (`entrySlugs` in `data/books.js`). Everything that walks `groups` must go through that
+  helper, `check-links` included, or solo tabs are silently skipped.
   The collapsed icon-rail hides the section tree entirely.
 - **Book landing v2** (`BookSection.jsx`): books may define `groups` (titled slug lists)
   for a grouped card layout; section cards show lead + computed read-time; a `fam` tag on
@@ -267,10 +278,16 @@ keeps `base: './'` sub-path hosting working.
   window), next-up card, arrow-key + swipe navigation, `route-fade` transition.
 - `ContentBlocks` supports `peoplegroups` (people in titled groups with filter chips) —
   used by the stolen-focus characters section; the plain `people` block still works.
-- **Verdict + critical reception.** Each book module may export a `verdict` (rating,
+- **Verdict + critical reception.** Each book module exports a `verdict` (rating,
   opinion, read-it-if / watch-out-for) — rendered as the «رأي النادي» card on the book
-  landing — and a `reception` section («الكتاب في الميزان») holding the book's critical
-  reception. Both live in `data/books/<slug>/reception.js`. **The verdict text is the
+  landing. **«الكتاب في الميزان» is no longer a section** (removed 2026-08-24), but
+  `reception.js` still holds its material as block arrays appended to the sections that
+  make the claims they qualify: `scrutiny` → «النوم والصحّة» for Why We Sleep, and
+  `adhdCaveat` → «فرط الحركة» plus `authorScrutiny` → the author tab for Stolen Focus.
+  **That relocation was not optional and must not be undone by deleting them**: two of
+  Guzey's four corrections are about claims the site still states plainly, and the ADHD
+  critique has practical stakes — someone could stop treatment over those chapters. A
+  correction filed away from the claim it corrects is a correction nobody reads. **The verdict text is the
   club's opinion, not fact — edit it freely.** The reception content is the opposite:
   every criticism must stay sourced, paired with the author's reply where one exists, and
   limited to what is publicly documented. It exists to make the club read critically, not
@@ -283,21 +300,26 @@ keeps `base: './'` sub-path hosting working.
   and link the primary source. **Don't "restore" the 23-minute claim as fact anywhere**, and
   don't reinstate the interruption figure that was built on it (POLISH-PLAN §7).
 - **Flow-state deep dive** (`data/books/stolen-focus/sections-flow.js`) — a section inside the
-  Stolen Focus tab sourced from **another book**, Csikszentmihalyi's *Flow*. It sits in its own
-  sidebar group («قراءةٌ في الكتاب الأصل») and opens with a callout saying so, precisely so it
-  never reads as Hari's. Its four figures live in `figures/stolen-focus/FlowFigures.jsx` and are
+  Stolen Focus tab sourced from **another book**, Csikszentmihalyi's *Flow*. It is a **solo top-level tab**
+  and opens with a callout saying whose book it is — which is what keeps it from reading as
+  Hari's. It used to sit in a titled group of one, which only buried it. Its four figures live in `figures/stolen-focus/FlowFigures.jsx` and are
   hand-rolled SVG — **don't reach for recharts there**, it would drag the charting library into
   a text section. Fig 15 looks for `public/images/flow/brain-lateral.webp` and falls back to a
   schematic if absent (ClubBanner's degrade-don't-break pattern), so dropping that file in
   upgrades the figure with no code change.
-- **7-day challenge** — `BookSection` dispatches a fourth kind, **`'challenge'`** →
-  `components/WeekChallenge.jsx`, with content in `data/books/<slug>/challenge.js`. It is
-  the site's answer to its own tagline («نقرأ الكتاب… ثم نعيشه»): seven small experiments
-  drawn from the book, each linking to the section that explains it (every `to` must be a
-  real slug). Tick state lives in `AppContext.challengeDone` keyed `bookId/n` — in memory
-  like `visited`, so it survives navigation but not a refresh, and each book's week is
-  tracked independently. Both books' day 7 sends the reader back to a measurement
-  (assessment / Focus Lab) so the week has a before-and-after.
+- **The 7-day challenge was deleted (2026-08-24)** at the user's call — "completely
+  unimportant". `WeekChallenge.jsx`, both `challenge.js` files and `AppContext.challengeDone`
+  are gone with it. In git history if it is ever wanted back; don't rebuild it from memory.
+- **«خرافة أم حقيقة؟» — the myths and the shocking facts are one game now**
+  (`components/MythOrFact.jsx`, kind `'myth-game'`, data in `data/books/<slug>/mythOrFact.js`).
+  Both were read-only lists that printed the answer beside the claim. **Two rules keep the
+  deck honest, and it stops working if either breaks**: every statement is a flat
+  third-person assertion — the old myths were first-person and in «guillemets» while the
+  facts were third-person statistics, so the punctuation alone gave the answer away — and
+  neither half may be guessable by length or tone. The data files say this at the top too.
+- **The focus-habits assessment lives INSIDE «مختبر التركيز»** as its second panel
+  (`FocusLabPanels` in `BookSection`), not as its own tab: both answer "how is my focus?",
+  one by self-report and one by measurement, and they are worth more read against each other.
 - **Home is deliberately two blocks: the hero and the book carousel.** Nothing else. Two
   further sections were removed on 2026-08-03 at the user's request — "Ask me one" (a
   random-study session opener, with `data/studiesPool.js` behind it) and a "how this works"
@@ -414,7 +436,8 @@ keeps `base: './'` sub-path hosting working.
   already carry a fixed bar at the bottom. **The sidebar starts collapsed** to a 64px rail;
   its state lives in `Layout` and survives navigation for the sitting.
 
-- **Each book has an «عن المترجم» tab** beside «عن المؤلّف» (`src/data/translator.js`).
+- **Author and translator share ONE tab** («المؤلّف والمترجم»), two panels inside it via the
+  `tabs` block; the translator biography is still `src/data/translator.js`.
   Both Arabic editions are Dar Al-Tanweer and share one translator, so the biography is
   written once and each book passes only its title and edition year. Everything factual
   there is carried by the four linked sources, the first of which is his own televised

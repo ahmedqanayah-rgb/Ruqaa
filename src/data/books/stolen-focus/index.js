@@ -3,16 +3,32 @@
  * Extras over the base shape: `groups` (landing-page grouping), a `fam` tag on
  * cause sections (family colour on cards), and a `quick` one-question check
  * appended to each article section (rendered by BookSection after the blocks).
+ *
+ * SIMPLIFIED 2026-08-24, in step with why-we-sleep — see that file's header for
+ * the shared list. Book-specific parts:
+ *
+ *   «خريطة الأسباب»        → removed. The twelve causes are the group beneath it.
+ *   «تقييم عادات التركيز»  → moved INSIDE «مختبر التركيز» as its second panel;
+ *                            both answered "how is my focus?", one by
+ *                            self-report and one by measurement.
+ *   «داخل حالة التدفّق»     → promoted to a solo top-level tab. It was alone
+ *                            inside a titled group, so reaching it meant
+ *                            unfolding a drawer to find one item.
+ *   «الكتاب في الميزان»    → removed as a section; its load-bearing entries
+ *                            survive. The 23-minute fact-check is a myth item
+ *                            in the game (mythOrFact.js), and the ADHD critique
+ *                            — which has practical stakes, someone could stop
+ *                            treatment over it — moved into the ADHD section.
  */
 import { author } from './author.js'
 import { translatorSection } from '../../translator.js'
-import { summary, causesMap, speedFlow, exhaustion } from './sections-1.js'
+import { speedFlow, exhaustion } from './sections-1.js'
 import { readingMindwandering, bigTech, cruelOptimism } from './sections-2.js'
 import { stressVigilance, dietPollution, adhd, childhood, rebellion } from './sections-3.js'
-import { characters, shocking, myths, discussion } from './sections-4.js'
+import { characters } from './sections-4.js'
 import { flowState } from './sections-flow.js'
-import { verdict, reception } from './reception.js'
-import { challenge } from './challenge.js'
+import { verdict, adhdCaveat, authorScrutiny } from './reception.js'
+import { mythOrFact } from './mythOrFact.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 import { studies, interestOrder } from './studies.js'
 
@@ -20,18 +36,6 @@ const L = (ar, en) => ({ ar, en })
 
 /* One quick end-of-article question per section, keyed by slug. */
 const QUICK = {
-  summary: {
-    q: L('ما المقارنة التي يعتمدها هاري لتفسير أزمة الانتباه؟', 'Which comparison does Hari use to explain the attention crisis?'),
-    opts: [L('وباء السمنة', 'The obesity epidemic'), L('سباق التسلّح', 'The arms race'), L('انقراض الديناصورات', 'The dinosaurs’ extinction')],
-    correct: 0,
-    note: L('كما لم تنهَر إرادة البشر فجأةً بل تغيّرت بيئتهم الغذائية، تغيّرت بيئة الانتباه فتغيّر تركيزنا.', 'Just as human willpower didn’t suddenly collapse — the food environment changed — the attention environment changed, and our focus with it.'),
-  },
-  'causes-map': {
-    q: L('في أيّ عائلةٍ يقع «التفاؤل القاسي»؟', 'Which family does “cruel optimism” belong to?'),
-    opts: [L('العقل', 'Mind'), L('التقنية', 'Technology'), L('المجتمع', 'Society')],
-    correct: 2,
-    note: L('يبدو مرتبطاً بالتقنية، لكنه خطابٌ اجتماعيّ يحمّل الفرد وحده مشكلةً جماعية.', 'It sounds tech-related, but it is a social script that loads a collective problem onto the individual.'),
-  },
   'speed-flow': {
     q: L('كم من الوقت يقول الكتاب إنك تحتاجه لتعود إلى تركيزك العميق بعد مقاطعة؟', 'How long does the book say it takes to regain deep focus after an interruption?'),
     opts: [L('٣ دقائق', '3 minutes'), L('٢٣ دقيقة', '23 minutes'), L('ساعتان', 'Two hours')],
@@ -112,6 +116,34 @@ const FAM = {
 
 const enrich = (s) => ({ ...s, fam: FAM[s.slug], quick: QUICK[s.slug] })
 
+/* The author and the translator in one tab, switched inside it — same shape as
+   the other book. The translator is the reason this club can read the book at
+   all; pairing them says so, and it costs one sidebar entry instead of two. */
+/* The ADHD chapters carry their own critique now. It goes against the chapters
+   rather than on a separate page because it has practical stakes — someone with
+   ADHD could read them and stop their treatment. */
+const adhdChecked = { ...adhd, blocks: [...adhd.blocks, ...adhdCaveat] }
+
+const translator = translatorSection({ titleAr: 'تركيزنا المسلوب', titleEn: 'Stolen Focus', yearAr: '٢٠٢٣' })
+const people = {
+  slug: 'author',
+  icon: '✍️',
+  title: L('المؤلّف والمترجم', 'Author & Translator'),
+  lead: L(
+    'يوهان هاري الذي كتب الكتاب، والحارث النبهان الذي نقله إلى العربية — كلاهما هنا.',
+    'Johann Hari, who wrote the book, and Al-Harith Al-Nabhan, who brought it into Arabic — both here.'
+  ),
+  blocks: [
+    { type: 'tabs', panels: [
+      /* How much weight the book's reporting deserves, and Hari's own
+         professional record, are questions about the author — so the scrutiny
+         that «الكتاب في الميزان» used to carry sits in his panel. */
+      { title: L('المؤلّف', 'The author'), blocks: [...author.blocks, ...authorScrutiny] },
+      { title: L('المترجم', 'The translator'), blocks: translator.blocks },
+    ] },
+  ],
+}
+
 export const stolenFocus = {
   id: 'stolen-focus',
   title: L('تركيزنا المسلوب', 'Stolen Focus'),
@@ -128,24 +160,24 @@ export const stolenFocus = {
   ),
   verdict,
   accent: 'var(--accent)',
+  /* `{ slug }` is a solo entry — a top-level tab with no group header. See
+     entrySlugs in data/books.js. */
   groups: [
-    { title: L('ابدأ هنا', 'Start here'), slugs: ['author', 'translator', 'summary', 'causes-map'] },
+    { slug: 'author' },
     { title: L('الأسباب الاثنا عشر', 'The twelve causes'),
       slugs: ['speed-flow', 'exhaustion', 'reading-mindwandering', 'big-tech', 'cruel-optimism',
               'stress-vigilance', 'diet-pollution', 'adhd', 'childhood', 'rebellion'] },
-    // Drawn from another book, so it gets its own group rather than sitting
-    // among Hari's twelve causes as though he wrote it.
-    { title: L('من كتاب «التدفّق»', 'From the book Flow'), slugs: ['flow-state'] },
-    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-assessment', 'focus-lab', 'challenge', 'studies'] },
-    { title: L('مراجع النادي', 'Club reference'), slugs: ['reception', 'characters', 'shocking', 'myths', 'discussion'] },
+    // Drawn from another book. It used to sit in a titled group of its own so it
+    // never read as Hari's — but a group of one only buried it, and the section
+    // opens with a callout saying whose book it is, which does that job better.
+    { slug: 'flow-state' },
+    { title: L('جرّب بنفسك', 'Try it yourself'), slugs: ['focus-lab', 'studies', 'myth-or-fact'] },
+    { title: L('مراجع النادي', 'Club reference'), slugs: ['characters'] },
   ],
   sections: [
-    author,
+    people,
     // Same translator as the other book, so the biography lives in one shared
     // module and each book passes only its own edition details.
-    translatorSection({ titleAr: 'تركيزنا المسلوب', titleEn: 'Stolen Focus', yearAr: '٢٠٢٣' }),
-    enrich(summary),
-    enrich(causesMap),
     enrich(speedFlow),
     enrich(exhaustion),
     enrich(readingMindwandering),
@@ -153,25 +185,11 @@ export const stolenFocus = {
     enrich(cruelOptimism),
     enrich(stressVigilance),
     enrich(dietPollution),
-    enrich(adhd),
+    enrich(adhdChecked),
     enrich(childhood),
     enrich(rebellion),
     enrich(flowState),
-    reception,
     characters,
-    shocking,
-    myths,
-    {
-      slug: 'focus-assessment',
-      kind: 'assessment',
-      icon: '📝',
-      title: L('تقييم عادات التركيز', 'Focus Habits Assessment'),
-      lead: L(
-        'بعد أن عرفت أسباب الكتاب، قيّم عاداتك في التركيز واحصل على نصائح شخصية — كلّ شيء يجري في متصفّحك.',
-        'Now that you know the book’s causes, assess your own focus habits and get personalized tips — all in your browser.'
-      ),
-      assessment: { questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP },
-    },
     {
       slug: 'focus-lab',
       kind: 'focus-lab',
@@ -179,10 +197,17 @@ export const stolenFocus = {
       title: L('مختبر التركيز', 'The Focus Lab'),
       lead: L(
         'سبع ألعابٍ قصيرة تُشعرك بانتباهك وهو يعمل: كبح التشتيت، وكلفة التبديل، وثبات اليقظة، والتصفية وسط الضجيج، والذاكرة العاملة، وسعة الأرقام، والقراءة وسط الإشعارات — مع مؤشّرٍ إجماليّ في النهاية.',
-        'Seven short games that let you feel your attention at work: suppressing distraction, the cost of switching, steady vigilance, filtering through noise, working memory, digit span, and reading amid notifications — with an overall score at the end.'
+        'Seven short games that let you feel your attention at work: suppressing distraction, the cost of switching, steady vigilance, filtering through noise, working memory, digit span, and reading amid notifications — with an overall score at the end. A habits assessment sits in the second panel, so you can read the two together.'
       ),
+      /* Second panel of this same tab — see FocusLabPanels in BookSection. It
+         was its own sidebar entry; both it and the games answer "how is my
+         focus?", one by self-report and one by measurement, and the pair is
+         worth more read against each other than three items apart. */
+      assessment: {
+        questions: QUESTIONS, tips: TIPS, goodTip: GOOD_TIP,
+        title: L('تقييم عادات التركيز', 'Focus Habits Assessment'),
+      },
     },
-    challenge,
     {
       slug: 'studies',
       kind: 'quiz',
@@ -195,6 +220,16 @@ export const stolenFocus = {
       studies,
       interestOrder,
     },
-    discussion,
+    {
+      slug: 'myth-or-fact',
+      kind: 'myth-game',
+      icon: '🎲',
+      title: L('خرافة أم حقيقة؟', 'Myth or Fact?'),
+      lead: L(
+        'عبارةٌ واحدة في كلّ مرّة — قرّر: خرافةٌ شائعة أم حقيقةٌ من الكتاب؟ ثم اقرأ لماذا.',
+        'One statement at a time — decide: a common myth, or a fact from the book? Then read why.'
+      ),
+      items: mythOrFact,
+    },
   ],
 }

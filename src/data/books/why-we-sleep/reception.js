@@ -26,15 +26,17 @@ export const verdict = {
   reception: 'reception',
 }
 
-export const reception = {
-  slug: 'reception',
-  icon: '⚖️',
-  title: L('الكتاب في الميزان', 'The book under scrutiny'),
-  lead: L(
-    'نقرأ الكتاب، ثم نقرأ ما قيل ضدّه. هذا القسم ليس هدماً للكتاب بل إكمالٌ له — وأفضل جلساتنا تبدأ من هنا.',
-    'We read the book, then we read what was said against it. This section isn’t a demolition — it completes the book, and our best sessions start here.'
-  ),
-  blocks: [
+/* NOT A SECTION ANY MORE — these blocks are appended to «النوم والصحّة والمناعة
+   والسرطان» (see index.js), which is the section making the claims they correct.
+   «الكتاب في الميزان» was its own tab until 2026-08-24.
+
+   KEEPING THEM SOMEWHERE WAS NOT OPTIONAL. Two of the four corrections are about
+   claims this site still states plainly — the cancer line and «كلّما قلّ نومُك
+   قصُر عمرك», the second of which is quoted in the myth-or-fact game. Dropping
+   this material would have left the site asserting contested findings as
+   settled. Every criticism stays sourced and paired with the author's reply,
+   which is the bar CLAUDE.md sets for it. */
+export const scrutiny = [
     { type: 'p', text: L(
       'صدر «لماذا ننام» عام ٢٠١٧ فصار من أكثر كتب العلم مبيعاً وتأثيراً في العقد. وفي نوفمبر ٢٠١٩ نشر الباحث **أليكسي غوزي (Alexey Guzey)** مقالةً مطوّلة قال فيها إنه أمضى نحو ١٣٠ ساعة في تدقيق **الفصل الأول وحده** — عشر صفحات، أقلّ من ٤٪ من الكتاب — ووجد فيه سلسلةً من الأخطاء. ما يلي أبرز ما أثاره، وما ردّ به المؤلّف.',
       '“Why We Sleep” appeared in 2017 and became one of the decade’s best-selling and most influential science books. In November 2019 the researcher **Alexey Guzey** published a long essay saying he had spent some 130 hours fact-checking **the first chapter alone** — ten pages, under 4% of the book — and found a series of errors in it. Here are the main points he raised, and how the author replied.'
@@ -113,5 +115,4 @@ export const reception = {
         publisher: L('ماثيو ووكر', 'Matthew Walker'),
         url: 'https://sleepdiplomat.wordpress.com/2019/12/19/why-we-sleep-responses-to-questions-from-readers/' },
     ] },
-  ],
-}
+]

@@ -1,128 +1,6 @@
 const L = (ar, en) => ({ ar, en })
 const img = (f) => `./images/${f}`
 
-/* ===================== The Book in Brief (summary) ===================== */
-export const summary = {
-  slug: 'summary',
-  icon: '📌',
-  title: L('خلاصة الكتاب', 'The Book in Brief'),
-  lead: L(
-    'انهيار الانتباه ليس فشلاً أخلاقياً فردياً، بل نتيجة قوى خارجية تسرق تركيزنا — واستعادته تبدأ فردية وتكتمل جماعية.',
-    'The collapse of attention is not a personal moral failing but the result of external forces stealing our focus — and reclaiming it starts individual and is completed collectively.'
-  ),
-  blocks: [
-    { type: 'h', text: L('القصّة الافتتاحية: غريسلاند', 'The opening story: Graceland') },
-    { type: 'p', text: L(
-      'يفتتح **يوهان هاري** الكتاب بقصّةٍ شخصية: وعدَ ابنَ عمّته «آدم» — المهووس بـ**إلفيس بريسلي (Elvis Presley)** — بأن يصطحبه يوماً إلى **غريسلاند (Graceland)**، قصر إلفيس. وبعد عشر سنوات صار آدم شابّاً «ضائعاً»، يقضي معظم يقظته متنقّلاً بين الشاشات، عاجزاً عن البقاء مع أيّ موضوعٍ دقائق. وحين ذهبا أخيراً إلى غريسلاند، وجدا الزوّار جميعاً يحدّقون في أجهزة **آيباد (iPad)** تعرض الغرف — بدل النظر إلى الغرف نفسها المحيطة بهم.',
-      'Johann Hari opens the book with a personal story: he promised his godson “Adam” — obsessed with **Elvis Presley** — that one day he would take him to **Graceland**, Elvis’s mansion. Ten years later Adam had become a “lost” young man, spending almost all his waking hours flitting between screens, unable to stay with any subject for more than minutes. When they finally went to Graceland, they found every visitor staring into **iPads** displaying the rooms — instead of looking at the actual rooms around them.'
-    ) },
-
-    { type: 'image', src: img('graceland-jungle-room.jpg'), wide: true,
-      alt: L('غرفة الأدغال في غريسلاند', 'The Jungle Room at Graceland'),
-      caption: L('«غرفة الأدغال» في غريسلاند — حيث رأى هاري زائراً يمرّر إصبعه على الآيباد ليرى الغرفة التي يقف فيها.',
-                 'The Jungle Room at Graceland — where Hari watched a visitor swipe an iPad to see the very room he was standing in.') },
-
-    { type: 'quote', text: L(
-      '«لكن يا سيّدي، هناك طريقةٌ قديمة للتمرير يمكنك أن تفعلها: تُسمّى أن تُدير رأسك».',
-      '“But, sir, there’s an old-fashioned form of swiping you can do. It’s called turning your head.”'
-    ) },
-
-    { type: 'p', text: L(
-      'لم تكن تلك اللحظة عن آدم وحده. أدرك هاري أن انتباهه هو نفسه يتفتّت: يقرأ أقلّ، ويقاطع نفسه أكثر، ويشعر أن حياته تتحوّل إلى شريطٍ من الومضات. فقرّر أن يعامل المسألة كتحقيقٍ صحفيّ كبير: سافر عشرات آلاف الأميال على مدى ثلاث سنوات، وقابل **أكثر من ٢٥٠ خبيراً** — علماء أعصاب ونفس، ومصمّمي تقنيةٍ منشقّين، وأطبّاء ومعلّمين — ليجيب عن سؤالٍ واحد: لماذا فقدنا القدرة على التركيز، وكيف نستعيدها؟',
-      'That moment was not only about Adam. Hari realised his own attention was fragmenting too: he read less, interrupted himself more, and felt his life turning into a reel of flickers. So he treated the question as a major piece of investigative journalism: over three years he travelled tens of thousands of miles and interviewed **more than 250 experts** — neuroscientists and psychologists, defecting tech designers, physicians and teachers — to answer one question: why did we lose the ability to focus, and how do we get it back?'
-    ) },
-
-    { type: 'callout', variant: 'key', title: L('الفكرة المحورية', 'The core idea'), text: L(
-      'المشكلة ليست أنك كسولٌ أو ضعيف الإرادة. انتباهك يتعرّض لهجومٍ منظّم من بيئةٍ صُمّمت لتشتيتك. هاري يحدّد **اثني عشر سبباً** خارجياً لانهيار التركيز — من تصميم التطبيقات إلى قلّة النوم وسوء الغذاء وحبس الأطفال في البيوت. ولأن الأسباب خارجية وجماعية، فإن الحلّ الفرديّ (كإطفاء الهاتف) يساعد قليلاً لكنه لا يكفي وحده.',
-      'The problem is not that you are lazy or weak-willed. Your attention is under systematic attack from an environment engineered to distract you. Hari identifies **twelve external causes** of the collapse of focus — from app design to too little sleep, poor diet, and the confinement of children indoors. Because the causes are external and collective, individual fixes (like switching off your phone) help a little but are not enough on their own.'
-    ) },
-
-    { type: 'h', text: L('الأسباب الاثنا عشر في لمحة', 'The twelve causes at a glance') },
-    { type: 'ol', items: [
-      L('تسارع الحياة وكثرة التبديل والتصفية بين المهامّ.', 'The increase in speed, switching and filtering.'),
-      L('تعطيل حالات التدفّق (Flow) العميقة.', 'The crippling of our flow states.'),
-      L('الإنهاك البدني والذهني وقلّة النوم.', 'The rise of physical and mental exhaustion.'),
-      L('انهيار القراءة المتواصلة العميقة.', 'The collapse of sustained reading.'),
-      L('تعطيل شرود الذهن الخلّاق.', 'The disruption of mind-wandering.'),
-      L('تقنيةٌ تتعقّبك وتتلاعب بك.', 'Technology that can track and manipulate you.'),
-      L('«التفاؤل القاسي»: تحميل الفرد وحده مسؤولية الحلّ.', 'The rise of cruel optimism (blaming the individual alone).'),
-      L('تصاعد التوتّر وحالة اليقظة الدائمة.', 'The surge in stress and vigilance.'),
-      L('تدهور غذائنا.', 'Our deteriorating diets.'),
-      L('تصاعد التلوّث.', 'Rising pollution.'),
-      L('تصاعد تشخيص فرط الحركة وتشتّت الانتباه (ADHD) وطريقة استجابتنا له.', 'The rise of ADHD and how we respond to it.'),
-      L('حبس أطفالنا جسدياً ونفسياً.', 'The confinement of our children, physically and psychologically.'),
-    ] },
-
-    { type: 'h', text: L('ما الذي لا يقوله الكتاب', 'What the book is not saying') },
-    { type: 'p', text: L(
-      'يحرص هاري على تصحيح سوء فهمٍ شائع: هو لا يقول إن أدمغتنا «تعطّلت» بيولوجياً، ولا يعظ ضدّ التقنية من موقعٍ أخلاقيّ متعالٍ. المقارنة التي يعتمدها هي **وباء السمنة**: لم يصبح البشر فجأةً أكثر شراهةً وأضعف إرادة؛ بل تغيّرت بيئتهم الغذائية جذرياً — طعامٌ مُصنَّع وفير رخيص مصمَّم ليُشتهى — فتغيّرت أجسادهم. وبالطريقة نفسها تغيّرت **بيئة الانتباه** من حولنا، فتغيّر تركيزنا. مَن يفسّر السمنة بـ«قلّة الانضباط» وحدها يخطئ التشخيص؛ ومَن يفسّر التشتّت بها يخطئ الخطأ نفسه.',
-      'Hari is careful to correct a common misreading: he is not claiming our brains have biologically “broken,” nor preaching against technology from a moral high ground. His working comparison is the **obesity epidemic**: humans did not suddenly become greedier and weaker-willed; their food environment changed radically — abundant, cheap, engineered-to-be-craved processed food — and their bodies changed with it. In exactly the same way, the **attention environment** around us changed, and our focus changed. Explaining obesity by “lack of discipline” alone is a misdiagnosis; explaining distraction that way is the same mistake.'
-    ) },
-
-    { type: 'callout', variant: 'fact', title: L('من الفرد إلى الجماعة', 'From the individual to the collective'), text: L(
-      'يقترح الكتاب مساراً على مستويين: تغييراتٌ فردية تستعيد بعض السيطرة (نومٌ كافٍ، حظر الإشعارات، وقتٌ للتدفّق واللعب)، ثم **«تمرّد الانتباه» (Attention Rebellion)** الجماعي: تغيير نموذج الأعمال القائم على استنزاف انتباهنا، وحقّ قطع الاتصال، وأسبوع عملٍ أقصر، وإعادة الحرّية لطفولة الأطفال.',
-      'The book proposes a two-level path: individual changes that reclaim some control (enough sleep, blocking notifications, time for flow and play), and then a collective **“Attention Rebellion”**: changing the business model built on draining our attention, a right to disconnect, a shorter work week, and giving children their freedom back.'
-    ) },
-
-    { type: 'p', text: L(
-      'في هذا الموقع قسّمنا الأسباب الاثني عشر إلى أربع عائلاتٍ مترابطة — العقل والتقنية والجسد والمجتمع — لكلٍّ منها أقسامها التفصيلية. ابدأ بـ«خريطة الأسباب» لتحصل على الصورة الكاملة، ثم اقرأ الأقسام بأيّ ترتيبٍ يجذبك، وجرّب «مختبر التركيز» و«تقييم العادات» لتلمس الأفكار على نفسك.',
-      'On this site we group the twelve causes into four interlocking families — mind, technology, body, and society — each with its own detailed sections. Start with the “Map of the Causes” for the full picture, then read the sections in whatever order draws you, and try the Focus Lab and the habits assessment to feel the ideas on yourself.'
-    ) },
-  ],
-}
-
-/* ===================== Map of the 12 Causes ===================== */
-export const causesMap = {
-  slug: 'causes-map',
-  icon: '🗺️',
-  title: L('خريطة الأسباب', 'Map of the Causes'),
-  lead: L(
-    'الأسباب الاثنا عشر ليست منفصلة؛ تتجمّع في أربع عائلات تتغذّى على بعضها: العقل، والتقنية، والجسد، والمجتمع.',
-    'The twelve causes are not separate; they cluster into four families that feed one another: mind, technology, body, and society.'
-  ),
-  blocks: [
-    { type: 'p', text: L(
-      'يعرض هاري أسبابه الاثني عشر فصلاً بعد فصل، لكنها في الحقيقة شبكةٌ واحدة: كلّ سببٍ يفتح الباب لغيره ويغلقه على الحلّ الفردي. لتسهيل التتبّع، يقسّم هذا الموقع الأسباب إلى أربع عائلات، لكلٍّ منها قسمٌ خاصّ يشرحها بالتفصيل. الشكل التالي يجمعها في خريطةٍ واحدة قابلة للنقر.',
-      'Hari presents his twelve causes chapter by chapter, but in truth they form a single web: each cause opens the door for the others and closes it on individual fixes. To make them easier to follow, this site groups the causes into four families, each with its own detailed section. The figure below gathers them into one clickable map.'
-    ) },
-    { type: 'figure', id: 'sfCausesMap' },
-
-    { type: 'h4', text: L('العقل: كيف يعمل الانتباه أصلاً', 'Mind: how attention works in the first place') },
-    { type: 'p', text: L(
-      'تضمّ هذه العائلة الأسباب **١ و٢ و٤ و٥**: التبديل المتسارع بين المهامّ، وتعطيل التدفّق، وانهيار القراءة العميقة، وكبت شرود الذهن. قاسمها المشترك أنها تمسّ **آليات الانتباه نفسها**: الدماغ الذي لا يستطيع التركيز إلا على فكرةٍ أو فكرتين في اللحظة، والذي يحتاج إلى الانغماس الطويل ليصل إلى أعمق حالاته، وإلى الشرود الحرّ ليربط الأفكار ويخطّط. حين تفهم هذه الآليات تفهم لماذا تنجح بقية الأسباب في سرقتنا.',
-      'This family holds causes **1, 2, 4 and 5**: accelerating task-switching, the crippling of flow, the collapse of deep reading, and the suppression of mind-wandering. What they share is that they strike **the machinery of attention itself**: a brain that can hold only one or two thoughts at a time, that needs long immersion to reach its deepest states, and free wandering to connect ideas and plan. Understand this machinery and you understand why the other causes succeed in robbing us.'
-    ) },
-
-    { type: 'h4', text: L('التقنية: مَن يستفيد من تشتّتك', 'Technology: who profits from your distraction') },
-    { type: 'p', text: L(
-      'السبب **٦**: تطبيقاتٌ صُمّمت لتتعقّبك وتُبقيك ممرِّراً بلا نهاية. هذه العائلة تجيب عن سؤال «لماذا؟»: لأن نموذج ربحٍ كاملاً — بيع انتباهك للمعلنين — يعتمد على هزيمة إرادتك. وهي أكبر من حجمها الظاهر: فصلان كاملان من الكتاب وأشهر شهوده — مهندسون منشقّون بنوا هذه الحيل بأيديهم.',
-      'Cause **6**: apps engineered to track you and keep you scrolling forever. This family answers the “why?”: because an entire profit model — selling your attention to advertisers — depends on defeating your willpower. And it is bigger than it looks: two full chapters of the book and its most famous witnesses — defecting engineers who built these tricks with their own hands.'
-    ) },
-
-    { type: 'h4', text: L('الجسد: الوقود الذي يحتاجه التركيز', 'Body: the fuel focus runs on') },
-    { type: 'p', text: L(
-      'الأسباب **٣ و٩ و١٠**: قلّة النوم، وتدهور الغذاء، والتلوّث الذي يصل إلى الدماغ. الانتباه ليس عمليةً «ذهنية» معلّقة في الفراغ؛ إنه وظيفة عضوٍ بيولوجيّ يحتاج إلى نومٍ يُنظّفه، ووقودٍ ثابت يغذّيه، وبيئةٍ كيميائية لا تعطّل نموّه. أهمِل الجسد، وسينهار التركيز مهما كانت تطبيقاتك «نظيفة».',
-      'Causes **3, 9 and 10**: too little sleep, deteriorating diets, and pollution that reaches the brain. Attention is not a “mental” process floating in a vacuum; it is the function of a biological organ that needs sleep to clean it, steady fuel to feed it, and a chemical environment that does not disrupt its development. Neglect the body and focus collapses no matter how “clean” your apps are.'
-    ) },
-
-    { type: 'h4', text: L('المجتمع: البيئة التي نعيش فيها جميعاً', 'Society: the environment we all live in') },
-    { type: 'p', text: L(
-      'الأسباب **٧ و٨ و١١ و١٢**: «التفاؤل القاسي» الذي يحمّل الفرد وحده مسؤولية مشكلةٍ جماعية، والتوتّر واليقظة الدائمة، وطريقة تعاملنا مع فرط الحركة، وحبس الأطفال جسدياً ونفسياً. هنا يتّسع السؤال من «أنا» إلى «نحن»: ثقافةٌ تلومك، وعملٌ لا يتوقّف، وأمانٌ ماليّ مهزوز، ومدارس تلغي اللعب، وشوارع لم تعد للأطفال — كلّها تصنع أدمغةً في حالة إنذارٍ يستحيل معها التركيز العميق.',
-      'Causes **7, 8, 11 and 12**: the “cruel optimism” that loads a collective problem onto the individual alone, stress and permanent vigilance, how we respond to ADHD, and the physical and psychological confinement of children. Here the question widens from “me” to “us”: a culture that blames you, work that never stops, shaky financial security, schools that cancel play, streets no longer for children — all of it builds brains stuck in alarm mode, where deep focus is impossible.'
-    ) },
-
-    { type: 'h', text: L('كيف تتغذّى العائلات على بعضها', 'How the families feed one another') },
-    { type: 'p', text: L(
-      'قوّة حجّة الكتاب في التقاطعات: التوتّر (مجتمع) يفسد النوم (جسد)، وقلّة النوم تجعلك فريسةً أسهل للتمرير الليلي (تقنية)، والتمرير يلتهم وقت القراءة والشرود (عقل)، وضعف التركيز يزيد التوتّر في العمل — فتكتمل الدائرة. وبالمقابل، الخوف الاجتماعي يحبس الأطفال في البيوت، فتملأ الشاشاتُ الفراغَ، فيخسرون اللعب الذي يبني انتباههم. لهذا يصرّ هاري على أن معالجة سببٍ واحد بمعزلٍ عن البقية تشبه سدّ ثقبٍ واحد في قاربٍ مثقوبٍ من اثني عشر موضعاً.',
-      'The force of the book’s argument lies in the intersections: stress (society) wrecks sleep (body), sleeplessness makes you easier prey for late-night scrolling (technology), scrolling devours the time for reading and mind-wandering (mind), and weakened focus raises stress at work — closing the loop. In the other direction, social fear keeps children indoors, screens fill the vacuum, and they lose the play that builds attention. That is why Hari insists that fixing one cause in isolation is like plugging one hole in a boat leaking from twelve.'
-    ) },
-    { type: 'callout', variant: 'note', title: L('من أين تبدأ القراءة؟', 'Where to start reading'), text: L(
-      'لا يشترط الترتيب: إن كان همّك الهاتف فابدأ بعائلة التقنية؛ وإن كنت والداً فابدأ بـ«طفولة محاصرة»؛ وإن كنت منهَكاً فابدأ بـ«الإنهاك والنوم». لكن اختم دائماً بـ«تمرّد الانتباه» — فهناك تلتقي الخيوط كلّها.',
-      'No fixed order is required: if your worry is the phone, start with the technology family; if you are a parent, start with “Confined Childhood”; if you are exhausted, start with “Exhaustion & Sleep.” But always finish with “Attention Rebellion” — that is where all the threads meet.'
-    ) },
-  ],
-}
-
 /* ===================== Speed, Switching & Flow (Causes 1–2) ===================== */
 export const speedFlow = {
   slug: 'speed-flow',
@@ -239,7 +117,9 @@ export const exhaustion = {
       'The researcher **Charles Czeisler** — scientist of sleep and the circadian rhythm — appears in both this book and “Why We Sleep.” For anyone who wants to go deeper into how sleep resets the brain and attention, our first book is a full reference for it.'
     ) },
     { type: 'linkcards', title: L('اقرأ في كتاب «لماذا ننام»', 'Read in “Why We Sleep”'), links: [
-      { to: '/book/why-we-sleep/summary', icon: '🌙', label: L('خلاصة «لماذا ننام»', '“Why We Sleep” in brief') },
+      // was the deleted «الملخّص العام»; the mechanism section is what that
+      // card actually promised — how sleep resets the brain.
+      { to: '/book/why-we-sleep/mechanism', icon: '🌙', label: L('آلية النوم الكاملة', 'How sleep works') },
       { to: '/book/why-we-sleep/health', icon: '❤️', label: L('النوم والصحّة', 'Sleep and health') },
       { to: '/book/why-we-sleep/assessment', icon: '📝', label: L('قيّم نومك', 'Assess your sleep') },
     ] },
