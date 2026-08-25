@@ -14,10 +14,10 @@ const { connections } = await import('../src/data/connections.js')
 
 const slugs = new Map(books.map((b) => [b.id, new Set(b.sections.map((s) => s.slug))]))
 
-/* Chapters folded into a `tabs` block are reached as `…/<slug>?tab=<panel>`.
-   A wrong panel id fails EXACTLY like a wrong slug — TabbedBlocks falls back to
-   the first panel and the reader lands on the wrong chapter with no error — so
-   it gets checked the same way. bookId/slug -> Set(panel ids). */
+/* Chapters folded into a `tabs` block are reached as `…/<slug>?open=<panel>`.
+   A wrong id fails EXACTLY like a wrong slug — nothing errors, the heading just
+   never unfolds and the reader is left on a page of shut titles — so it gets
+   checked the same way. bookId/slug -> Set(panel ids). */
 const panels = new Map()
 for (const b of books)
   for (const s of b.sections)
@@ -25,26 +25,22 @@ for (const b of books)
       if (blk.type === 'tabs')
         panels.set(`${b.id}/${s.slug}`, new Set((blk.panels ?? []).map((p) => p.id).filter(Boolean)))
 
-/* `?open=<id>` unfolds one activity of the «أنشطة إضافية» tab. Same failure
-   shape as a bad `?tab=`: nothing errors, the reader just gets a page of shut
-   titles instead of the thing the link promised. bookId/slug -> Set(part ids). */
+/* Same for the «أنشطة إضافية» tab's activities. bookId/slug -> Set(part ids). */
 const activityParts = new Map()
 for (const b of books)
   for (const s of b.sections)
     if (s.parts) activityParts.set(`${b.id}/${s.slug}`, new Set(s.parts.map((p) => p.id).filter(Boolean)))
 let bad = 0
-const check = (bookId, slug, where, tab, open) => {
+const check = (bookId, slug, where, open) => {
   if (!slugs.has(bookId)) { console.log(`  BAD BOOK  "${bookId}"           ${where}`); bad++; return }
   if (!slugs.get(bookId).has(slug)) { console.log(`  BAD SLUG  ${bookId}/${slug}   ${where}`); bad++; return }
-  if (open) {
-    const parts = activityParts.get(`${bookId}/${slug}`)
-    if (!parts) { console.log(`  NO PARTS  ${bookId}/${slug}?open=${open}   ${where}`); bad++ }
-    else if (!parts.has(open)) { console.log(`  BAD OPEN  ${bookId}/${slug}?open=${open}   ${where}`); bad++ }
-  }
-  if (!tab) return
-  const known = panels.get(`${bookId}/${slug}`)
-  if (!known) { console.log(`  NO TABS   ${bookId}/${slug}?tab=${tab}   ${where}`); bad++; return }
-  if (!known.has(tab)) { console.log(`  BAD TAB   ${bookId}/${slug}?tab=${tab}   ${where}`); bad++ }
+  if (!open) return
+  /* One param for both: a `tabs` block's panels and an activities section's
+     parts are the same thing to a reader — a heading that unfolds. Either way a
+     wrong id fails silently, with the reader left on a page of shut headings. */
+  const ids = panels.get(`${bookId}/${slug}`) ?? activityParts.get(`${bookId}/${slug}`)
+  if (!ids) { console.log(`  NOTHING TO OPEN  ${bookId}/${slug}?open=${open}   ${where}`); bad++; return }
+  if (!ids.has(open)) { console.log(`  BAD OPEN  ${bookId}/${slug}?open=${open}   ${where}`); bad++ }
 }
 
 for (const item of connections.items ?? []) {
@@ -52,10 +48,10 @@ for (const item of connections.items ?? []) {
   for (const key of ['a', 'b']) {
     const side = item[key]
     if (!side?.slug) continue
-    // a connections slug may carry its panel: "review?tab=big-tech"
+    // a connections slug may carry its heading: "review?open=big-tech"
     const [sl, q] = side.slug.split('?')
     const qs = new URLSearchParams(q || '')
-    check(side.bookId, sl, `connections · ${theme} · ${key}`, qs.get('tab'), qs.get('open'))
+    check(side.bookId, sl, `connections · ${theme} · ${key}`, qs.get('open'))
   }
 }
 
@@ -74,7 +70,7 @@ for (const b of books) {
       const m = v.to.match(/^\/book\/([^/]+)\/([^/?#]+)(\?[^#]*)?/)
       if (m) {
         const q = new URLSearchParams(m[3] || '')
-        check(m[1], m[2], where, q.get('tab'), q.get('open'))
+        check(m[1], m[2], where, q.get('open'))
       }
     }
     Object.values(v).forEach((x) => walk(x, where))

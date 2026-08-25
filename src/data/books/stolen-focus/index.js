@@ -155,11 +155,11 @@ const people = {
 /* THE WHOLE BOOK IN ONE TAB. Ten cause-chapters, in the book's own order, as
    panels rather than ten sidebar entries.
 
-   Every panel keeps an `id`, and TabbedBlocks holds the open one in `?tab=`.
+   Every panel keeps an `id`, and Collapsible holds the open one in `?open=`.
    These were routes until today, so without that every link to a cause — the
    cross-book connections, the in-content cards in the other book, a search hit
    — would land on the parent and leave the reader hunting. Deep links are
-   `…/review?tab=big-tech`. */
+   `…/review?open=big-tech`. */
 const review = {
   slug: 'review',
   icon: '📖',

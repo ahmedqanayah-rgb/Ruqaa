@@ -6,7 +6,7 @@
  * THREE TOP-LEVEL TABS (2026-08-24). The book was nineteen sidebar entries; it
  * is now «المؤلّف والمترجم», «مراجعة الكتاب», and «أنشطة إضافية».
  *
- * The nine chapters live INSIDE «مراجعة الكتاب» as four panels of a `tabs`
+ * The nine chapters live INSIDE «مراجعة الكتاب» as four collapsible headings of a `tabs`
  * block, folded by topic rather than left one-per-panel:
  *
  *   آلية النوم            ← mechanism + النوم عبر مراحل العمر + نوم الحيوانات
@@ -18,10 +18,10 @@
  * is silently welded together — you can still see where one ends.
  *
  * WHY A PANEL STILL HAS AN ADDRESS. Every panel carries an `id`, and
- * TabbedBlocks keeps the open one in `?tab=`. These chapters were routes until
+ * Collapsible keeps the open one in `?open=`. These chapters were routes until
  * today; without that, every link to one — the cross-book connections, the
  * in-content cards in the other book, a search hit — would land on the parent
- * and leave the reader hunting. Deep links are `…/review?tab=rem`.
+ * and leave the reader hunting. Deep links are `…/review?open=rem`.
  *
  * Removed earlier the same day: the summary, the 7-day challenge, the
  * session-materials section, and «الكتاب في الميزان» as a section (its

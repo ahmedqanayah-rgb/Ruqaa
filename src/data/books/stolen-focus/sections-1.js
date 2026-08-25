@@ -119,8 +119,8 @@ export const exhaustion = {
     { type: 'linkcards', title: L('اقرأ في كتاب «لماذا ننام»', 'Read in “Why We Sleep”'), links: [
       // was the deleted «الملخّص العام»; the mechanism section is what that
       // card actually promised — how sleep resets the brain.
-      { to: '/book/why-we-sleep/review?tab=mechanism', icon: '🌙', label: L('آلية النوم الكاملة', 'How sleep works') },
-      { to: '/book/why-we-sleep/review?tab=health', icon: '❤️', label: L('النوم والصحّة', 'Sleep and health') },
+      { to: '/book/why-we-sleep/review?open=mechanism', icon: '🌙', label: L('آلية النوم الكاملة', 'How sleep works') },
+      { to: '/book/why-we-sleep/review?open=health', icon: '❤️', label: L('النوم والصحّة', 'Sleep and health') },
       { to: '/book/why-we-sleep/activities', icon: '📝', label: L('قيّم نومك', 'Assess your sleep') },
     ] },
     { type: 'p', text: L(

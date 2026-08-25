@@ -210,48 +210,15 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .center { text-align: center; }
 
 /* ============================================================
-   Tabs inside a section (ContentBlocks `tabs` block, and the focus lab's
-   two panels). One switching idiom on the site, used by both.
+   Collapsible headings — components/Collapsible.jsx.
+   The site's ONE disclosure idiom: the book's chapters and the activities tab
+   both use it. Closed, a page is a short list of headings; open, each body sits
+   under its own. The separators do the work a tab bar used to.
    ============================================================ */
-/* ONE ROW, ALWAYS — it scrolls rather than wraps.
-   Wrapping looked fine for the two-panel author tab and fell apart at ten: the
-   Stolen Focus bar was 151px tall on a 375px phone, 19% of the screen spent
-   before a word of reading, with labels crushed to 34px. `flex: 1 0 auto` does
-   both jobs from one rule — two tabs still grow to fill the bar, ten size to
-   their labels and overflow into a swipe. Same shape as .sitenav-row, scrollbar
-   hidden the same way. */
-.block-tabs-bar {
-  display: flex; gap: 4px; flex-wrap: nowrap;
-  overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
-  padding: 4px; margin-bottom: var(--space-4);
-  background: var(--bg-elev-2); border: 1px solid var(--border);
-  border-radius: 999px;
-}
-.block-tabs-bar::-webkit-scrollbar { display: none; }
-.block-tab {
-  flex: 1 0 auto; white-space: nowrap;
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 8px 16px; border: none; border-radius: 999px;
-  background: none; color: var(--text-soft);
-  font-family: inherit; font-size: var(--fs-sm); font-weight: 600;
-  transition: background var(--transition), color var(--transition);
-}
-.block-tab:hover { color: var(--text); }
-.block-tab.active { background: var(--bg-elev); color: var(--accent); box-shadow: var(--shadow-sm); }
-.block-tab-icon { width: 1.05em; height: 1.05em; }
-
-/* ============================================================
-   «أنشطة إضافية» — every activity stacked on one page (BookSection →
-   Activities). No second tab bar by design, so the separators do the work a
-   tab bar would have: each activity has to announce itself, or the page reads
-   as one undifferentiated wall of widgets.
-   ============================================================ */
-.activities { display: flex; flex-direction: column; }
-/* A rule between every one, so a closed list reads as a list rather than a
-   run-on paragraph of headings. */
-.activity + .activity { border-top: 1px solid var(--border); }
-.activity-title { margin: 0; font-size: var(--fs-lg); }
-.activity-toggle {
+.collapsibles { display: flex; flex-direction: column; }
+.collapsible + .collapsible { border-top: 1px solid var(--border); }
+.collapsible-title { margin: 0; font-size: var(--fs-lg); }
+.collapsible-toggle {
   display: flex; align-items: center; gap: 10px; width: 100%;
   padding: var(--space-4) var(--space-2);
   border: none; background: none; color: inherit;
@@ -259,15 +226,12 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
   text-align: start; cursor: pointer; border-radius: var(--radius-sm);
   transition: background var(--transition), color var(--transition);
 }
-.activity-toggle:hover { background: var(--surface-hover); }
-.activity.is-open .activity-toggle { color: var(--accent); }
-.activity-title-text { flex: 1; min-width: 0; }
-.activity-body { padding: 0 var(--space-2) var(--space-6); animation: fadeIn 200ms ease both; }
-.activity-lead {
-  color: var(--text-soft); margin: 0 0 var(--space-4);
-  max-width: 66ch;
-}
-@media (prefers-reduced-motion: reduce) { .activity-body { animation: none; } }
+.collapsible-toggle:hover { background: var(--surface-hover); }
+.collapsible.is-open .collapsible-toggle { color: var(--accent); }
+.collapsible-title-text { flex: 1; min-width: 0; }
+.collapsible-body { padding: 0 var(--space-2) var(--space-6); animation: fadeIn 200ms ease both; }
+.collapsible-lead { color: var(--text-soft); margin: 0 0 var(--space-4); max-width: 66ch; }
+@media (prefers-reduced-motion: reduce) { .collapsible-body { animation: none; } }
 
 /* ============================================================
    «خرافة أم حقيقة؟» — components/MythOrFact.jsx

@@ -44,7 +44,7 @@ function buildIndex() {
 
       /* Chapters folded into a `tabs` block are panels, not routes — but they
          are still what a reader searches for by name. Index each one against
-         its own `?tab=` address, or collapsing chapters into one section would
+         its own `?open=` address, or collapsing chapters into one section would
          have quietly cost the search most of its entries. */
       ;(section.blocks || []).forEach((b) => {
         if (b.type !== 'tabs') return
@@ -58,7 +58,7 @@ function buildIndex() {
             title: panel.title,
             subtitle: section.title,
             bookTitle: book.title,
-            to: `/book/${book.id}/${section.slug}?tab=${encodeURIComponent(panel.id)}`,
+            to: `/book/${book.id}/${section.slug}?open=${encodeURIComponent(panel.id)}`,
             text: hay(panel.title, section.title, book.title),
           })
         })

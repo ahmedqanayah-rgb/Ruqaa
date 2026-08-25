@@ -27,7 +27,7 @@ export function getSection(book, slug) {
    the page would pull that page's whole module graph into the entry chunk. */
 export const entrySlugs = (g) => g.slugs || [g.slug]
 
-/* A UNIT OF READING, as `bookId/slug` or `bookId/slug?tab=panel`.
+/* A UNIT OF READING, as `bookId/slug` or `bookId/slug?open=<panel id>`.
    Chapters became panels of one `review` section, so counting sections stopped
    describing the book: opening one cause of ten ticked the whole review, the
    progress ring jumped from 4% to 14% for the same reading, and the «تابع
@@ -37,7 +37,7 @@ export function readingUnits(book) {
   return book.sections.flatMap((s) => {
     const tabs = (s.blocks || []).find((b) => b.type === 'tabs')
     return tabs
-      ? tabs.panels.map((p) => `${s.slug}?tab=${p.id}`)
+      ? tabs.panels.map((p) => `${s.slug}?open=${p.id}`)
       : [s.slug]
   })
 }

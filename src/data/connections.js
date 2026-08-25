@@ -21,11 +21,11 @@ export const connections = {
     {
       icon: '😴',
       theme: L('كتابنا الأوّل هو السبب الثالث في كتابنا الثاني', 'Our first book is the third cause in our second'),
-      a: { bookId: 'why-we-sleep', slug: 'review?tab=health', says: L(
+      a: { bookId: 'why-we-sleep', slug: 'review?open=health', says: L(
         'ليلةٌ واحدةٌ ناقصة تكفي لتقويض الانتباه والذاكرة والمزاج في اليوم التالي. النوم ليس راحةً بل صيانةٌ ليلية للدماغ.',
         'A single short night is enough to undercut attention, memory and mood the next day. Sleep isn’t rest — it’s nightly maintenance for the brain.'
       ) },
-      b: { bookId: 'stolen-focus', slug: 'review?tab=exhaustion', says: L(
+      b: { bookId: 'stolen-focus', slug: 'review?open=exhaustion', says: L(
         'يضع هاري الإنهاك وقلّة النوم **ثالثَ** الأسباب الاثني عشر: البقاء مستيقظاً ١٩ ساعة يترك أداءك المعرفيّ عند حدّ السُّكر القانونيّ للقيادة.',
         'Hari makes exhaustion and lost sleep the **third** of the twelve causes: 19 hours awake leaves your cognition at the legal drink-driving limit.'
       ) },
@@ -37,11 +37,11 @@ export const connections = {
     {
       icon: '📖',
       theme: L('كلاهما عن العمق: ليلاً ونهاراً', 'Both are about depth — by night and by day'),
-      a: { bookId: 'why-we-sleep', slug: 'review?tab=nrem', says: L(
+      a: { bookId: 'why-we-sleep', slug: 'review?open=nrem', says: L(
         'النوم يثبّت ما تعلّمته ويربطه بما تعرفه — الدماغ ينسج المعنى وأنت نائم.',
         'Sleep consolidates what you learned and links it to what you already knew — the brain weaves meaning while you sleep.'
       ) },
-      b: { bookId: 'stolen-focus', slug: 'review?tab=reading-mindwandering', says: L(
+      b: { bookId: 'stolen-focus', slug: 'review?open=reading-mindwandering', says: L(
         'انهيار القراءة المتواصلة وتعطيل شرود الذهن يحرمان العقل من المادّة المتّصلة ومن الوقت الفارغ الذي يحتاجه ليفكّر.',
         'The collapse of sustained reading and the disruption of mind-wandering deprive the mind of connected material — and of the empty time it needs to think.'
       ) },
@@ -53,11 +53,11 @@ export const connections = {
     {
       icon: '📱',
       theme: L('الشاشة تسرق نهارك وليلك', 'The screen takes your day and your night'),
-      a: { bookId: 'why-we-sleep', slug: 'review?tab=mechanism', says: L(
+      a: { bookId: 'why-we-sleep', slug: 'review?open=mechanism', says: L(
         'الضوء — وخاصّةً الأزرق — يؤخّر إفراز الميلاتونين ويزيح ساعتك البيولوجية، فتنام متأخّراً وأقلّ.',
         'Light — blue light especially — delays melatonin and shifts your body clock, so you sleep later and less.'
       ) },
-      b: { bookId: 'stolen-focus', slug: 'review?tab=big-tech', says: L(
+      b: { bookId: 'stolen-focus', slug: 'review?open=big-tech', says: L(
         'التطبيقات مصمَّمة بمكافآتٍ متغيّرة مستعارةٍ من علم الاشتراط، لتُبقيك على الشاشة أطول ممّا نويت.',
         'Apps are built on variable rewards borrowed from conditioning research, to keep you on the screen longer than you meant to be.'
       ) },
@@ -73,7 +73,7 @@ export const connections = {
         'مواعيد بدء المدارس المبكّرة تصادم بيولوجيا المراهق التي تدفع نومه إلى وقتٍ متأخّر — ثم نصف المراهق بالكسل.',
         'Early school start times collide with a teenager’s biology, which pushes sleep later — and then we call the teenager lazy.'
       ) },
-      b: { bookId: 'stolen-focus', slug: 'review?tab=childhood', says: L(
+      b: { bookId: 'stolen-focus', slug: 'review?open=childhood', says: L(
         'حبسُ الأطفال في البيوت وحرمانهم اللعب الحرّ يسلبهم المساحة التي يتعلّمون فيها الانتباه أصلاً.',
         'Confining children indoors and denying them free play takes away the very space in which attention is learned.'
       ) },
@@ -89,7 +89,7 @@ export const connections = {
         'من دراسات الكتاب ما يربط قلّة النوم عند الأطفال بأعراضٍ تشبه فرط الحركة وتشتّت الانتباه.',
         'Among the book’s studies are those linking children’s lost sleep to symptoms resembling ADHD.'
       ) },
-      b: { bookId: 'stolen-focus', slug: 'review?tab=adhd', says: L(
+      b: { bookId: 'stolen-focus', slug: 'review?open=adhd', says: L(
         'يتساءل هاري عن تصاعد التشخيص، ويقترح النظر في البيئة قبل الاكتفاء بالتفسير الدوائي.',
         'Hari questions the rising rate of diagnosis and urges looking at the environment before settling on a pharmacological account.'
       ) },

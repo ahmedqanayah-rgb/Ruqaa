@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, lazy, Suspense } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { useCallback, useState, lazy, Suspense } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
-import { scroller } from '../lib/scroll.js'
 import RichText from './RichText.jsx'
+import Collapsible from './Collapsible.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -170,12 +170,6 @@ function PeopleGroups({ block }) {
   )
 }
 
-/* Two (or more) whole sub-documents inside one section, switched by a segmented
-   bar — used to put «عن المؤلّف» and «عن المترجم» in a single tab instead of two.
-   It renders ContentBlocks again for the active panel, so a panel can hold
-   anything a section can. Only the active panel is mounted: these panels carry
-   portraits and source lists, and mounting both would fetch two sets of images
-   for one visible one. */
 /* End-of-article check. Lives here rather than in BookSection because a
    chapter folded into a `tabs` panel has to carry its own — see the `quick`
    block type below. */
@@ -209,61 +203,20 @@ function QuickCheck({ quick }) {
   )
 }
 
-function TabbedBlocks({ block }) {
-  const { t, markVisited } = useApp()
-  const [params, setParams] = useSearchParams()
-  const panels = block.panels || []
-
-  /* WHICH PANEL IS OPEN LIVES IN THE URL, not in state.
-     Chapters that used to be their own routes are panels now, so without this
-     every link to one — the cross-book connections, the in-content cards, a
-     search hit — would land on the parent and leave the reader to find it. Same
-     idiom the studies quiz already uses for `?study=`. `replace` so clicking
-     through tabs does not bury the previous page under history entries. */
-  const found = panels.findIndex((p) => p.id === params.get('tab'))
-  const active = found >= 0 ? found : 0
-  const select = (i) => {
-    const next = new URLSearchParams(params)
-    next.set('tab', panels[i].id)
-    setParams(next, { replace: true })
-  }
-
-  /* A panel is the unit of reading now (readingUnits in data/books.js), so it
-     marks ITSELF read. Leaving this to BookSection meant opening one chapter of
-     ten ticked the whole book off. */
+/* Adapts a `tabs` block's panels onto the shared Collapsible, and marks a panel
+   read once it is opened — a panel is the unit the progress ring counts. */
+function PanelBlocks({ block }) {
+  const { markVisited } = useApp()
   const { bookId, slug } = useParams()
-  const activeId = panels[active]?.id
-  useEffect(() => {
-    if (!bookId || !slug || !activeId) return
-    const id = setTimeout(() => markVisited(bookId, `${slug}?tab=${activeId}`), 1200)
-    return () => clearTimeout(id)
-  }, [bookId, slug, activeId, markVisited])
-
-  /* Switching chapter should start that chapter, not drop you at the scroll
-     depth of the last one. The page-level reset is keyed on the section, which
-     no longer changes when the reader moves between chapters. */
-  const first = useRef(true)
-  useEffect(() => {
-    if (first.current) { first.current = false; return }
-    scroller().scrollTop = 0
-  }, [activeId])
-
-  if (!panels.length) return null
+  const onOpen = useCallback((id) => {
+    if (bookId && slug) markVisited(bookId, `${slug}?open=${id}`)
+  }, [bookId, slug, markVisited])
   return (
-    <div className="block-tabs">
-      <div className="block-tabs-bar" role="tablist">
-        {panels.map((p, i) => (
-          <button key={p.id || i} type="button" role="tab" aria-selected={i === active}
-            className={`block-tab ${i === active ? 'active' : ''}`}
-            onClick={() => select(i)}>
-            {t(p.title)}
-          </button>
-        ))}
-      </div>
-      <div className="block-tabs-panel" role="tabpanel">
-        <ContentBlocks blocks={panels[active]?.blocks || []} />
-      </div>
-    </div>
+    <Collapsible
+      items={block.panels || []}
+      onOpen={onOpen}
+      renderBody={(panel) => <ContentBlocks blocks={panel.blocks || []} />}
+    />
   )
 }
 
@@ -313,7 +266,11 @@ export default function ContentBlocks({ blocks }) {
           case 'people': return <PeopleGrid key={i} people={b.people} />
           case 'peoplegroups': return <PeopleGroups key={i} block={b} />
           case 'linkcards': return <LinkCards key={i} block={b} />
-          case 'tabs': return <TabbedBlocks key={i} block={b} />
+          /* Chapters as collapsible headings — the site's one disclosure idiom,
+             shared with the activities tab. The block type keeps the name `tabs`
+             because every book's data uses it; only the presentation changed,
+             from a segmented bar to Wikipedia-style headings. */
+          case 'tabs': return <PanelBlocks key={i} block={b} />
           // A chapter folded into a panel brings its end-of-article check with it.
           case 'quick': return <QuickCheck key={i} quick={b.quick} />
           case 'debate': return <DebateCard key={i} block={b} />

@@ -255,13 +255,24 @@ keeps `base: './'` sub-path hosting working.
   lifespan + animal sleep, REM folds in dreams, NREM folds in memory, plus health) and ten
   for Stolen Focus, in the book's own order. A folded-in chapter keeps an `h` heading of its
   own title, so the seam stays visible.
-  **Every panel has an `id` and the open one lives in `?tab=`** — `…/review?tab=rem`. That
-  is not decoration: these were routes until that date, so without it every link to a
-  chapter (cross-book `connections`, in-content link cards, `FocusLab`'s links, a search
-  hit) would land on the parent and leave the reader hunting. `check-links` validates the
-  tab id as well as the slug, because a wrong one fails exactly like a wrong slug — the
-  reader silently gets panel 1. **`searchIndex` emits one entry per panel** for the same
-  reason; indexing only sections would have cost search most of its entries.
+  **`components/Collapsible.jsx` is the site's ONE disclosure idiom** — Wikipedia-style
+  collapsible headings, used by the chapters, the author/translator tab and the activities
+  tab alike. There is no tab bar anywhere any more; `TabbedBlocks` and the stacked
+  `Activities` were two implementations a week apart and a third was the alternative.
+  **All closed on arrival, several may be open at once, and a body mounts only while
+  open.** That last part is load-bearing: the review's default panel used to mount on
+  arrival and it carries figures, so ~138 kB gzip of charts came down on every book visit —
+  measured, the charts chunk is now not fetched until a chapter with a figure is opened.
+  **`?open=<id>` unfolds one on arrival** — `…/review?open=rem`. Not decoration: chapters
+  were routes until 2026-08-24, so without it every link to one (cross-book `connections`,
+  in-content cards, `FocusLab`'s links, search hits, the landing's stat chips) would drop
+  the reader on a page of shut headings. **The seeding is an EFFECT, not a `useState`
+  initialiser** — only the query changes when a link points at a sibling from the same
+  page, so the component never remounts and an initialiser runs once and never again
+  (measured). It only ADDS, and scrolls the target into view. `check-links` validates
+  `?open=` against panel ids AND activity part ids — a wrong one fails exactly like a wrong
+  slug, silently. **`searchIndex` emits one entry per panel and per activity**, each
+  deep-linked; indexing only sections would have cost search most of its entries.
   **A panel is the unit of reading**, not the section: `readingUnits()` in `data/books.js`
   drives the progress ring and the «تابع القراءة» CTA, and `TabbedBlocks` marks the active
   panel visited itself. Counting sections made one chapter of ten tick the whole book off
@@ -340,17 +351,9 @@ keeps `base: './'` sub-path hosting working.
   third-person assertion — the old myths were first-person and in «guillemets» while the
   facts were third-person statistics, so the punctuation alone gave the answer away — and
   neither half may be guessable by length or tone. The data files say this at the top too.
-- **«أنشطة إضافية» is ONE tab of COLLAPSIBLE headings**, Wikipedia-style — no inner tab bar,
-  which was an explicit call. **All closed on arrival, several may be open at once**, and a
-  body is mounted only while open: the focus lab is a lazy chunk and the quiz is 122
-  studies, so a reader who came for one thing loads nothing else. `?open=<id>` unfolds one
-  on arrival — the landing's stat chips, search hits and the lab's own button all land here
-  and would otherwise drop the reader on a page of shut titles. **That seeding is an EFFECT,
-  not a `useState` initialiser**: only the query changes when a link points at another
-  activity from this same page, so the component never remounts and an initialiser runs once
-  and never again (measured — an `?open=focus-lab` arrival left the previously-opened one
-  showing). It only ever ADDS, and scrolls the target into view. `check-links` validates
-  `?open=` against the part ids exactly as it validates `?tab=`. The quiz, the game, the assessment, the focus lab and «الشخصيات» are
+- **«أنشطة إضافية» is ONE tab**, its activities rendered through the same `Collapsible` as
+  the chapters — see the bullet above for how that works. The focus lab is a lazy chunk and
+  the quiz is 122 studies, so a reader who came for one activity loads nothing else. The quiz, the game, the assessment, the focus lab and «الشخصيات» are
   `parts` of a single section (`kind: 'activities'`), rendered one under another by
   `Activities` in `BookSection`; each part keeps the `kind` it had as a section so `Activity`
   renders it unchanged. The focus-habits assessment sits directly **under** the lab rather
