@@ -340,8 +340,17 @@ keeps `base: './'` sub-path hosting working.
   third-person assertion — the old myths were first-person and in «guillemets» while the
   facts were third-person statistics, so the punctuation alone gave the answer away — and
   neither half may be guessable by length or tone. The data files say this at the top too.
-- **«أنشطة إضافية» is ONE tab with everything STACKED on it** — no inner tab bar, which was
-  an explicit call. The quiz, the game, the assessment, the focus lab and «الشخصيات» are
+- **«أنشطة إضافية» is ONE tab of COLLAPSIBLE headings**, Wikipedia-style — no inner tab bar,
+  which was an explicit call. **All closed on arrival, several may be open at once**, and a
+  body is mounted only while open: the focus lab is a lazy chunk and the quiz is 122
+  studies, so a reader who came for one thing loads nothing else. `?open=<id>` unfolds one
+  on arrival — the landing's stat chips, search hits and the lab's own button all land here
+  and would otherwise drop the reader on a page of shut titles. **That seeding is an EFFECT,
+  not a `useState` initialiser**: only the query changes when a link points at another
+  activity from this same page, so the component never remounts and an initialiser runs once
+  and never again (measured — an `?open=focus-lab` arrival left the previously-opened one
+  showing). It only ever ADDS, and scrolls the target into view. `check-links` validates
+  `?open=` against the part ids exactly as it validates `?tab=`. The quiz, the game, the assessment, the focus lab and «الشخصيات» are
   `parts` of a single section (`kind: 'activities'`), rendered one under another by
   `Activities` in `BookSection`; each part keeps the `kind` it had as a section so `Activity`
   renders it unchanged. The focus-habits assessment sits directly **under** the lab rather

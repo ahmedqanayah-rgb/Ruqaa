@@ -95,17 +95,73 @@ function Activity({ book, part }) {
    reads as a list of things to do rather than one undifferentiated wall. */
 function Activities({ book, section }) {
   const { t } = useApp()
+  const [params] = useSearchParams()
+  const parts = section.parts || []
+
+  /* COLLAPSED BY DEFAULT, several may be open at once — Wikipedia's shape.
+     Stacked open, this page was five heavy widgets deep and you scrolled past
+     four to reach the fifth. Closed, it is a short list of things to do.
+
+     `?open=<id>` opens one on arrival, which is not decoration: the landing's
+     stat chips, the search hits and the lab's own button all land here, and
+     without it they would drop the reader on a page of shut titles and leave
+     them to guess which one they were promised. After that it is plain local
+     state — an accordion is not worth a history entry per click, and Wikipedia
+     doesn't put it in the URL either. */
+  const [open, setOpen] = useState(() => new Set())
+  const toggle = (id) => setOpen((prev) => {
+    const next = new Set(prev)
+    if (next.has(id)) next.delete(id); else next.add(id)
+    return next
+  })
+
+  /* An EFFECT, not a useState initialiser. Only the query changes when a link
+     points at another activity from this same page, so the component never
+     remounts and an initialiser would run once and never again — measured, an
+     `?open=focus-lab` arrival left the previously-opened one showing instead.
+     It only ADDS: opening one activity is no reason to shut another the reader
+     opened themselves. */
+  const want = params.get('open')
+  const wantRef = useRef(null)
+  useEffect(() => {
+    if (!want || !parts.some((p) => p.id === want)) return
+    setOpen((prev) => (prev.has(want) ? prev : new Set([...prev, want])))
+    // …and put it on screen. Unfolding something below the fold, on a page whose
+    // whole point is that it starts short, is indistinguishable from nothing.
+    const el = wantRef.current
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ block: 'start', behavior: 'smooth' }))
+  }, [want, parts])
+
   return (
     <div className="activities">
-      {(section.parts || []).map((part) => (
-        <section key={part.id} className="activity">
-          <h2 className="activity-title">
-            <Icon name={part.icon} className="section-emoji" /> {t(part.title)}
-          </h2>
-          {part.lead && <p className="activity-lead">{t(part.lead)}</p>}
-          <Activity book={book} part={part} />
-        </section>
-      ))}
+      {parts.map((part) => {
+        const isOpen = open.has(part.id)
+        return (
+          <section key={part.id} className={`activity ${isOpen ? 'is-open' : ''}`}
+            ref={part.id === want ? wantRef : undefined}>
+            {/* The button sits INSIDE the h2, not around it: a <button> may only
+                contain phrasing content, and wrapping the heading would drop it
+                out of the document outline. Same shape as the landing groups. */}
+            <h2 className="activity-title">
+              <button type="button" className="activity-toggle" aria-expanded={isOpen}
+                onClick={() => toggle(part.id)}>
+                <span className={`side-chev ${isOpen ? 'open' : ''}`} aria-hidden>›</span>
+                <Icon name={part.icon} className="section-emoji" />
+                <span className="activity-title-text">{t(part.title)}</span>
+              </button>
+            </h2>
+            {/* Mounted only when open. That is the other half of the win: the
+                focus lab is a lazy chunk and the quiz is 122 studies, and none
+                of it loads for a reader who came for something else. */}
+            {isOpen && (
+              <div className="activity-body">
+                {part.lead && <p className="activity-lead">{t(part.lead)}</p>}
+                <Activity book={book} part={part} />
+              </div>
+            )}
+          </section>
+        )
+      })}
     </div>
   )
 }
@@ -141,7 +197,7 @@ function FactRotator({ book }) {
         </button>
         {/* «الحقائق الصادمة» is not a section any more — the facts live in the
             game, which is also where this teaser's text comes from. */}
-        <Link to={`/book/${book.id}/myth-or-fact`}>{t(L('العب بها كلّها ←', 'Play them all →'))}</Link>
+        <Link to={`/book/${book.id}/activities?open=myth-or-fact`}>{t(L('العب بها كلّها ←', 'Play them all →'))}</Link>
       </div>
     </div>
   )
@@ -332,12 +388,12 @@ function BookLanding({ book }) {
                 lives in (for the URL) — these are activities inside one tab now,
                 not sections of their own. */}
             {studiesSec && (
-              <Link role="listitem" to={`/book/${book.id}/${studiesSec.section.slug}`}>
+              <Link role="listitem" to={`/book/${book.id}/${studiesSec.section.slug}?open=${studiesSec.part.id || ''}`}>
                 🔬 {t({ ar: `${studiesSec.part.studies.length} دراسة`, en: `${studiesSec.part.studies.length} studies` })}
               </Link>
             )}
             {labSec && (
-              <Link role="listitem" to={`/book/${book.id}/${labSec.section.slug}`}>
+              <Link role="listitem" to={`/book/${book.id}/${labSec.section.slug}?open=${labSec.part.id || ''}`}>
                 🧪 {t({ ar: '٧ ألعاب', en: '7 games' })}
               </Link>
             )}

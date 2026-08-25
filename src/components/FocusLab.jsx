@@ -841,7 +841,7 @@ export default function FocusLab({ bookTitle, sectionTitle }) {
               : L('تقارَبت نتيجتا القراءة هذه المرّة؛ جرّبها ثانيةً في وقتٍ آخر.', 'Your two reading scores were close this time; try again another time.'))}</li>}
           </ul>
           <div className="fl-summary-actions">
-            <Link className="btn primary" to="/book/stolen-focus/activities">{t(L('قيّم عاداتك الآن', 'Now assess your habits'))}</Link>
+            <Link className="btn primary" to="/book/stolen-focus/activities?open=focus-assessment">{t(L('قيّم عاداتك الآن', 'Now assess your habits'))}</Link>
             <Link className="btn" to="/book/stolen-focus/review?tab=rebellion">{t(L('كيف أستعيد تركيزي؟', 'How do I reclaim my focus?'))}</Link>
             <button className="btn ghost" onClick={reset}>↺ {t(L('أعِد كلّ الاختبارات', 'Redo all tests'))}</button>
           </div>

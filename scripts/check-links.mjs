@@ -24,10 +24,23 @@ for (const b of books)
     for (const blk of s.blocks ?? [])
       if (blk.type === 'tabs')
         panels.set(`${b.id}/${s.slug}`, new Set((blk.panels ?? []).map((p) => p.id).filter(Boolean)))
+
+/* `?open=<id>` unfolds one activity of the «أنشطة إضافية» tab. Same failure
+   shape as a bad `?tab=`: nothing errors, the reader just gets a page of shut
+   titles instead of the thing the link promised. bookId/slug -> Set(part ids). */
+const activityParts = new Map()
+for (const b of books)
+  for (const s of b.sections)
+    if (s.parts) activityParts.set(`${b.id}/${s.slug}`, new Set(s.parts.map((p) => p.id).filter(Boolean)))
 let bad = 0
-const check = (bookId, slug, where, tab) => {
+const check = (bookId, slug, where, tab, open) => {
   if (!slugs.has(bookId)) { console.log(`  BAD BOOK  "${bookId}"           ${where}`); bad++; return }
   if (!slugs.get(bookId).has(slug)) { console.log(`  BAD SLUG  ${bookId}/${slug}   ${where}`); bad++; return }
+  if (open) {
+    const parts = activityParts.get(`${bookId}/${slug}`)
+    if (!parts) { console.log(`  NO PARTS  ${bookId}/${slug}?open=${open}   ${where}`); bad++ }
+    else if (!parts.has(open)) { console.log(`  BAD OPEN  ${bookId}/${slug}?open=${open}   ${where}`); bad++ }
+  }
   if (!tab) return
   const known = panels.get(`${bookId}/${slug}`)
   if (!known) { console.log(`  NO TABS   ${bookId}/${slug}?tab=${tab}   ${where}`); bad++; return }
@@ -41,7 +54,8 @@ for (const item of connections.items ?? []) {
     if (!side?.slug) continue
     // a connections slug may carry its panel: "review?tab=big-tech"
     const [sl, q] = side.slug.split('?')
-    check(side.bookId, sl, `connections · ${theme} · ${key}`, new URLSearchParams(q || '').get('tab'))
+    const qs = new URLSearchParams(q || '')
+    check(side.bookId, sl, `connections · ${theme} · ${key}`, qs.get('tab'), qs.get('open'))
   }
 }
 
@@ -57,8 +71,11 @@ for (const b of books) {
     if (!v || typeof v !== 'object') return
     if (Array.isArray(v)) return v.forEach((x) => walk(x, where))
     if (typeof v.to === 'string') {
-      const m = v.to.match(/^\/book\/([^/]+)\/([^/?#]+)(?:\?tab=([^&#]+))?/)
-      if (m) check(m[1], m[2], where, m[3])
+      const m = v.to.match(/^\/book\/([^/]+)\/([^/?#]+)(\?[^#]*)?/)
+      if (m) {
+        const q = new URLSearchParams(m[3] || '')
+        check(m[1], m[2], where, q.get('tab'), q.get('open'))
+      }
     }
     Object.values(v).forEach((x) => walk(x, where))
   }

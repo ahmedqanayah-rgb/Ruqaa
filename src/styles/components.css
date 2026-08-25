@@ -247,19 +247,27 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    as one undifferentiated wall of widgets.
    ============================================================ */
 .activities { display: flex; flex-direction: column; }
-.activity + .activity {
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--border);
+/* A rule between every one, so a closed list reads as a list rather than a
+   run-on paragraph of headings. */
+.activity + .activity { border-top: 1px solid var(--border); }
+.activity-title { margin: 0; font-size: var(--fs-lg); }
+.activity-toggle {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: var(--space-4) var(--space-2);
+  border: none; background: none; color: inherit;
+  font: inherit; font-size: inherit; font-weight: 700;
+  text-align: start; cursor: pointer; border-radius: var(--radius-sm);
+  transition: background var(--transition), color var(--transition);
 }
-.activity-title {
-  display: flex; align-items: center; gap: 10px;
-  margin: 0 0 var(--space-2); font-size: var(--fs-lg);
-}
+.activity-toggle:hover { background: var(--surface-hover); }
+.activity.is-open .activity-toggle { color: var(--accent); }
+.activity-title-text { flex: 1; min-width: 0; }
+.activity-body { padding: 0 var(--space-2) var(--space-6); animation: fadeIn 200ms ease both; }
 .activity-lead {
   color: var(--text-soft); margin: 0 0 var(--space-4);
   max-width: 66ch;
 }
+@media (prefers-reduced-motion: reduce) { .activity-body { animation: none; } }
 
 /* ============================================================
    «خرافة أم حقيقة؟» — components/MythOrFact.jsx

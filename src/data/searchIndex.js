@@ -76,7 +76,7 @@ function buildIndex() {
           title: part.title,
           subtitle: part.lead || section.title,
           bookTitle: book.title,
-          to: `/book/${book.id}/${section.slug}`,
+          to: `/book/${book.id}/${section.slug}?open=${part.id}`,
           text: hay(part.title, part.lead, section.title, book.title),
         })
       })
@@ -94,7 +94,8 @@ function buildIndex() {
           subtitle: study.researcher,
           bookTitle: book.title,
           // ?study= lets the quiz jump straight to this one instead of study 1.
-          to: `/book/${book.id}/${section.slug}?study=${encodeURIComponent(study.id)}`,
+          // `open=` unfolds the quiz, `study=` jumps it to this one.
+          to: `/book/${book.id}/${section.slug}${section.parts ? '?open=studies&' : '?'}study=${encodeURIComponent(study.id)}`,
           text: hay(study.title, study.researcher, study.chapter, study.method),
         })
       })
