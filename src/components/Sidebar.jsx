@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import Icon from './Icon.jsx'
 import { ui } from '../data/ui.js'
-import { books, entrySlugs } from '../data/books.js'
+import { books, entrySlugs, sectionProgress } from '../data/books.js'
 
 export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) {
   const { t, visited } = useApp()
@@ -52,7 +52,8 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
   ]
 
   const sectionLink = (book, s) => {
-    const seen = visited.has(`${book.id}/${s.slug}`)
+    // Same definition of "read" as the card and the ring — see sectionUnits.
+    const { done: seen } = sectionProgress(book, s, visited)
     return (
       <NavLink key={s.slug} to={`/book/${book.id}/${s.slug}`} onClick={onClose}
         className={({ isActive }) => `side-link sub ${isActive ? 'active' : ''}`}>
@@ -143,7 +144,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
                         const key = `${book.id}:${gi}`
                         const isOpen = openGroups.has(key)
                         const sections = g.slugs.map((sl) => bySlug.get(sl)).filter(Boolean)
-                        const seenCount = sections.filter((s) => visited.has(`${book.id}/${s.slug}`)).length
+                        const seenCount = sections.filter((s) => sectionProgress(book, s, visited).done).length
                         const holdsActive = activeSlug && g.slugs.includes(activeSlug)
                         return (
                           <div key={key} className="side-group">

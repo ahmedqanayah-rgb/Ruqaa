@@ -12,8 +12,13 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/books" element={<Books />} />
         <Route path="/about" element={<About />} />
-        {/* Sleep Assessment now lives inside the book */}
-        <Route path="/assessment" element={<Navigate to="/book/why-we-sleep/assessment" replace />} />
+        {/* A legacy address from when the sleep assessment was its own page. It
+            is an activity of «أنشطة إضافية» now, so the redirect opens that
+            heading. Found by scripts/check-component-links.mjs — a redirect
+            target is a link no data walk can see, and it had been pointing at a
+            deleted section since the collapse. */}
+        <Route path="/assessment"
+          element={<Navigate to="/book/why-we-sleep/activities?open=assessment" replace />} />
         <Route path="/book/:bookId" element={<BookSection />} />
         <Route path="/book/:bookId/:slug" element={<BookSection />} />
         <Route path="*" element={<Navigate to="/" replace />} />

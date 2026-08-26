@@ -1,16 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react'
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react'
 import { createPortal } from 'react-dom'
-import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
-import { getBook, entrySlugs, readingUnits, findByKind } from '../data/books.js'
+import { getBook, entrySlugs, readingUnits, sectionProgress, openable, findByKind } from '../data/books.js'
 import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
 import MythOrFact from '../components/MythOrFact.jsx'
 import Collapsible from '../components/Collapsible.jsx'
 
-/* Seven games' worth of logic for a single section — loaded on arrival. */
+/* Seven games' worth of logic. Lazy, and it stays off the wire until the
+   reader opens «مختبر التركيز» — that boundary is the point, not an accident. */
 const FocusLab = lazy(() => import('../components/FocusLab.jsx'))
 import RichText from '../components/RichText.jsx'
 import Icon from '../components/Icon.jsx'
@@ -40,7 +41,7 @@ function blockWords(b, lang) {
   return s.split(/\s+/).filter(Boolean).length
 }
 function readMinutes(section, lang) {
-  if (!section.blocks) return null // quiz / assessment / lab
+  if (!section.blocks) return null // «أنشطة إضافية» — its parts, not prose
   const words = section.blocks.reduce((sum, b) => sum + blockWords(b, lang), 0)
   return Math.max(1, Math.round(words / 180))
 }
@@ -61,7 +62,6 @@ function ReadingProgress() {
   return <div className="read-progress" aria-hidden><div ref={barRef} className="read-progress-fill" /></div>
 }
 
-/* ---- one-question comprehension check at the end of an article ---- */
 
 /* ONE activity — the quiz, the assessment, the lab, the game, or a plain
    blocks section like «الشخصيات». Split out of the page's own dispatch so the
@@ -90,15 +90,12 @@ function Activity({ book, part }) {
 }
 
 /* «أنشطة إضافية» — the activities as collapsible headings, through the same
-   shared component the book's chapters use. They were briefly stacked open,
-   which made the page five heavy widgets deep. */
+   shared component the chapters use. Collapsible marks its own visits. */
 function Activities({ book, section }) {
-  const { markVisited } = useApp()
-  const onOpen = useCallback((id) => markVisited(book.id, `${section.slug}?open=${id}`), [book.id, section.slug, markVisited])
   return (
     <Collapsible
       items={section.parts || []}
-      onOpen={onOpen}
+      keepMounted
       renderBody={(part) => <Activity book={book} part={part} />}
     />
   )
@@ -170,12 +167,16 @@ function sectionMeta(section, minutes) {
 
 function SectionCard({ book, section, index, minutes }) {
   const { t, visited } = useApp()
-  const seen = visited.has(`${book.id}/${section.slug}`)
+  const { seen: seenUnits, total: totalUnits, done: seen } = sectionProgress(book, section, visited)
   return (
     <Link to={`/book/${book.id}/${section.slug}`}
       className={`section-card card rich ${seen ? 'seen' : ''}`}>
       <div className="section-card-top">
-        <span className="section-card-num">{seen ? '✓' : index + 1}</span>
+        {/* A partial count rather than a number nobody can act on: with ten
+            headings inside, «3/10» says more than «2.». */}
+        <span className="section-card-num">
+          {seen ? '✓' : totalUnits > 1 && seenUnits > 0 ? `${seenUnits}/${totalUnits}` : index + 1}
+        </span>
         <Icon name={section.icon} className="section-card-icon" />
         <span className="section-card-title">{t(section.title)}</span>
       </div>
@@ -236,13 +237,22 @@ const landingGroups = new Map() // bookId → { open: Set<number>, touched: bool
 function BookLanding({ book }) {
   const { t, lang, visited } = useApp()
   const bySlug = useMemo(() => new Map(book.sections.map((s, i) => [s.slug, { s, i }])), [book])
+  const minutesBySlug = useMemo(
+    () => new Map(book.sections.map((s) => [s.slug, readMinutes(s, lang)])),
+    [book, lang]
+  )
   const studiesSec = findByKind(book, 'quiz')
-  const experts = countExperts(book)
+  /* Memoised together: `readMinutes` walks every heading's blocks now, so one
+     `review` card alone is ~120 block visits, and this ran on every landing
+     render — a group toggle, a theme flip, and every `visited` change, which
+     the collapsibles now produce mid-page. None of it can change unless the
+     book or the language does. */
+  const experts = useMemo(() => countExperts(book), [book])
   const labSec = findByKind(book, 'focus-lab')
   // Panels, not sections — see readingUnits. Counting sections made one panel
   // of ten read like a whole chapter of the book.
   const units = useMemo(() => readingUnits(book), [book])
-  const seenCount = units.filter((u) => visited.has(`${book.id}/${u}`)).length
+  const seenCount = units.filter((u) => visited.has(u)).length
   const total = units.length
   const ring = Math.round((seenCount / total) * 100)
 
@@ -250,7 +260,7 @@ function BookLanding({ book }) {
     const hit = bySlug.get(slug)
     if (!hit) return null
     return <SectionCard key={slug} book={book} section={hit.s} index={hit.i}
-      minutes={readMinutes(hit.s, lang)} />
+      minutes={minutesBySlug.get(slug)} />
   }
 
   /* The landing's one primary action. A newcomer needs a first step more than
@@ -264,12 +274,16 @@ function BookLanding({ book }) {
      seen, which makes it useful on the second visit instead of redundant. */
   const ordered = book.groups ? book.groups.flatMap(entrySlugs) : book.sections.map((s) => s.slug)
   const startSlug = ordered.find((sl) => bySlug.has(sl))
-  /* In group order, but at panel granularity: the first unread unit inside a
-     section counts, so «تابع القراءة» lands on the chapter you stopped at
-     rather than on the next section along. */
+  /* In reading order, but at HEADING granularity, so «تابع القراءة» lands on
+     the chapter you stopped at rather than the next section along. Units are
+     fully qualified (`bookId/slug?open=id`); the CTA needs the path part, so
+     the book prefix comes off here — it is the only place that difference
+     matters, and building the link from a half-key was how this last broke. */
+  const path = (unit) => unit.slice(`${book.id}/`.length)
   const nextSlug = ordered
-    .flatMap((sl) => units.filter((u) => u === sl || u.startsWith(`${sl}?`)))
-    .find((u) => !visited.has(`${book.id}/${u}`))
+    .flatMap((sl) => units.filter((u) => path(u) === sl || path(u).startsWith(`${sl}?`)))
+    .filter((u) => !visited.has(u))
+    .map(path)[0]
   const ctaSlug = seenCount > 0 ? (nextSlug || startSlug) : startSlug
   const ctaLabel = seenCount > 0 && nextSlug
     ? L('تابع القراءة', 'Continue reading')
@@ -367,7 +381,7 @@ function BookLanding({ book }) {
           // unfold, and a one-item accordion only hides it.
           if (g.slug) {
             return bySlug.has(g.slug)
-              ? <section key={gi} className="landing-group is-solo">
+              ? <section key={gi} className="landing-group">
                   <div className="section-cards">{renderCard(g.slug)}</div>
                 </section>
               : null
@@ -450,7 +464,11 @@ export default function BookSection() {
   // Session read-tracking + scroll reset on section change.
   useEffect(() => {
     if (book && section) {
-      markVisited(book.id, section.slug)
+      /* Only a section that has no headings is "read" by arriving. One with
+         headings is read by opening them (Collapsible marks each), and marking
+         the bare slug here too put a ✓ on the card while the ring — which counts
+         heading keys — still said 0. */
+      if (!openable(section).length) markVisited(book.id, section.slug)
       document.body.scrollTop = 0; window.scrollTo({ top: 0 })
     }
   }, [book, section, markVisited])
@@ -497,7 +515,8 @@ export default function BookSection() {
     if (target) navigate(`/book/${book.id}/${target.slug}`)
   }
 
-  const minutes = readMinutes(section, lang)
+  // Same reason as the landing's memo: this walks every heading's blocks.
+  const minutes = useMemo(() => readMinutes(section, lang), [section, lang])
 
   return (
     <article key={section.slug} className="section-page route-fade"

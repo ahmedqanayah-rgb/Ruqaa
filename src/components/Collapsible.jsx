@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import Icon from './Icon.jsx'
 
 /*
  * THE SITE'S ONE DISCLOSURE IDIOM — collapsible headings, Wikipedia-style.
  *
- * Used by «مراجعة الكتاب» (the book's chapters) and «أنشطة إضافية» (the
- * activities). Those were two different things a week apart — a segmented tab
+ * Used by «مراجعة الكتاب» (the chapters), «المؤلّف والمترجم» (author and
+ * translator) and «أنشطة إضافية» (the activities) — every disclosure on the
+ * site. Those were two different things a week apart — a segmented tab
  * bar and a stack — and a third implementation was the alternative to this one.
  * A reader should meet one way of opening things on this site, not three.
  *
@@ -28,18 +29,42 @@ import Icon from './Icon.jsx'
  * `?open=` arrival left the previously-opened one showing instead. It only ever
  * ADDS: opening one is no reason to shut one the reader opened themselves.
  */
-export default function Collapsible({ items = [], renderBody, onOpen, className = '' }) {
-  const { t } = useApp()
-  const [params] = useSearchParams()
+export default function Collapsible({ items = [], renderBody, keepMounted = false, className = '' }) {
+  const { t, markVisited } = useApp()
+  const [params, setParams] = useSearchParams()
+  const { bookId, slug } = useParams()
   const [open, setOpen] = useState(() => new Set())
+  /* `keepMounted` callers keep a body alive once it has been opened, hidden
+     rather than unmounted. Nothing mounts before its first click either way, so
+     the lazy chunks and ResizeObservers stay off the wire exactly as before —
+     only CLOSING changes. It matters where a body holds the reader's work:
+     shutting «الدراسات والتجارب» unmounts StudiesQuiz, and forty answers into a
+     122-study quiz go with it. For the chapters the default is right — twelve of
+     them, seven figures each, and nothing to lose but a chart slider. */
+  const everOpened = useRef(new Set())
   const want = params.get('open')
   const wantRef = useRef(null)
 
-  const toggle = (id) => setOpen((prev) => {
-    const next = new Set(prev)
-    if (next.has(id)) next.delete(id); else next.add(id)
-    return next
-  })
+  const toggle = (id) => {
+    setOpen((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+    /* OPENING writes itself into the URL. Two things depended on that and both
+       were silently broken while it was local-only: a reader who opened a
+       chapter and copied the address shared a page of shut headings, and
+       Analytics (which passes `pathname + search`) only ever saw a chapter that
+       was arrived at by link — a click-opened one produced no location change
+       and so no event, collapsing the book's chapters back into three rows.
+       Spread the existing params or `?study=` is dropped on the way. `replace`
+       so a fold is not a history entry. */
+    if (!open.has(id)) {
+      const next = new URLSearchParams(params)
+      next.set('open', id)
+      setParams(next, { replace: true })
+    }
+  }
 
   useEffect(() => {
     if (!want || !items.some((i) => i.id === want)) return
@@ -51,16 +76,24 @@ export default function Collapsible({ items = [], renderBody, onOpen, className 
   }, [want, items])
 
   /* Opening a heading is what "reading it" means now — these are the units the
-     progress ring counts (readingUnits in data/books.js). Left to the page, one
-     chapter of ten would tick the whole book off. */
-  const opened = [...open].join(',')
+     progress ring counts (`readingUnits` in data/books.js, which keys them
+     exactly like this). Left to the page, one chapter of ten would tick the
+     whole book off.
+
+     Marks each heading ONCE, on its own dwell. Marking the whole open set on
+     every change re-marked everything already counted and restarted the timer,
+     so the dwell it looked like it enforced was not per-heading at all. */
+  const marked = useRef(new Set())
   useEffect(() => {
-    if (!onOpen) return
-    const id = setTimeout(() => open.forEach(onOpen), 1200)
-    return () => clearTimeout(id)
-    // `opened` rather than `open`: a Set is a new object each render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [opened, onOpen])
+    if (!bookId || !slug) return
+    const fresh = [...open].filter((id) => !marked.current.has(id))
+    if (!fresh.length) return
+    const timer = setTimeout(() => fresh.forEach((id) => {
+      marked.current.add(id)
+      markVisited(bookId, `${slug}?open=${id}`)
+    }), 1200)
+    return () => clearTimeout(timer)
+  }, [open, bookId, slug, markVisited])
 
   if (!items.length) return null
 
@@ -68,6 +101,8 @@ export default function Collapsible({ items = [], renderBody, onOpen, className 
     <div className={`collapsibles ${className}`}>
       {items.map((item) => {
         const isOpen = open.has(item.id)
+        if (isOpen) everOpened.current.add(item.id)
+        const mounted = isOpen || (keepMounted && everOpened.current.has(item.id))
         return (
           <section key={item.id} className={`collapsible ${isOpen ? 'is-open' : ''}`}
             ref={item.id === want ? wantRef : undefined}>
@@ -82,8 +117,8 @@ export default function Collapsible({ items = [], renderBody, onOpen, className 
                 <span className="collapsible-title-text">{t(item.title)}</span>
               </button>
             </h2>
-            {isOpen && (
-              <div className="collapsible-body">
+            {mounted && (
+              <div className="collapsible-body" hidden={!isOpen}>
                 {item.lead && <p className="collapsible-lead">{t(item.lead)}</p>}
                 {renderBody(item)}
               </div>

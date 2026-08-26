@@ -27,19 +27,46 @@ export function getSection(book, slug) {
    the page would pull that page's whole module graph into the entry chunk. */
 export const entrySlugs = (g) => g.slugs || [g.slug]
 
-/* A UNIT OF READING, as `bookId/slug` or `bookId/slug?open=<panel id>`.
-   Chapters became panels of one `review` section, so counting sections stopped
-   describing the book: opening one cause of ten ticked the whole review, the
-   progress ring jumped from 4% to 14% for the same reading, and the «تابع
-   القراءة» CTA — whose only job is to point at the next unread thing — skipped
-   nine chapters. Progress and the CTA count these instead. */
+/* THE OPENABLE HEADINGS OF A SECTION, whichever shape holds them.
+   A section keeps them in one of two places and both render identically through
+   components/Collapsible.jsx: the book's chapters are panels of a `tabs` BLOCK,
+   the activities are a `parts` FIELD. Everything that needs to enumerate them —
+   reading units, the search index, check-links — goes through here.
+
+   It exists because that walk was written three times and had already diverged:
+   `readingUnits` knew only about `tabs`, so it emitted `activities` while
+   Collapsible marked `activities?open=<part>`. Every activity's visited key was
+   a dead write, and the tab counted as a unit nothing could ever tick. */
+export function openable(section) {
+  const tabs = (section.blocks || []).find((b) => b.type === 'tabs')
+  return tabs?.panels || section.parts || []
+}
+
+/* THE UNITS OF READING A SECTION CONTAINS, fully qualified as `bookId/…`.
+   A section with headings is its headings; a plain one is itself. This is the
+   ONE definition of "read" — the card's ✓, the sidebar's ✓, the progress ring
+   and the «تابع القراءة» CTA all count these keys.
+
+   They used to disagree. Arriving at a section marked the bare slug, which the
+   ticks read; the ring counted heading keys, which arrival never wrote. So the
+   card showed ✓ «مراجعة الكتاب» while the hero said «قرأت 0 من 7» — on the same
+   screen, about the same section. Two meanings of "read" over one Set. */
+export function sectionUnits(book, section) {
+  const heads = openable(section)
+  return heads.length
+    ? heads.map((h) => `${book.id}/${section.slug}?open=${h.id}`)
+    : [`${book.id}/${section.slug}`]
+}
+
+/* How much of a section the reader has opened: `{ seen, total, done }`. */
+export function sectionProgress(book, section, visited) {
+  const units = sectionUnits(book, section)
+  const seen = units.filter((u) => visited.has(u)).length
+  return { seen, total: units.length, done: seen === units.length }
+}
+
 export function readingUnits(book) {
-  return book.sections.flatMap((s) => {
-    const tabs = (s.blocks || []).find((b) => b.type === 'tabs')
-    return tabs
-      ? tabs.panels.map((p) => `${s.slug}?open=${p.id}`)
-      : [s.slug]
-  })
+  return book.sections.flatMap((s) => sectionUnits(book, s))
 }
 
 /* Find an activity by its kind, wherever it lives.

@@ -1,6 +1,6 @@
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, Legend, Cell,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, Legend,
 } from 'recharts'
 import { useApp } from '../../context/AppContext.jsx'
 import FigureFrame from './FigureFrame.jsx'
@@ -79,11 +79,6 @@ export function Fig10Injuries() {
   )
 }
 
-/* ---------------- Fig 12 — Sleep loss vs car accidents (static) ---------------- */
-const carData = [
-  { r: '<4h', mult: 11.5 }, { r: '4–5h', mult: 4.3 },
-  { r: '5–6h', mult: 1.9 }, { r: '6–7h', mult: 1.3 },
-]
 /* ---------------- Fig 13 — Obesity vs sleep over decades (hover both lines) ---------------- */
 const obesityData = [
   { year: 1960, sleep: 8.1, obesity: 13 }, { year: 1970, sleep: 7.7, obesity: 15 },

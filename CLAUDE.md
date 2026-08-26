@@ -33,6 +33,7 @@ Two data checks, neither wired into a test runner (there isn't one) — run them
 ```bash
 node scripts/check-image-refs.mjs
 node scripts/check-links.mjs
+node scripts/check-component-links.mjs
 ```
 `check-image-refs` imports the book data and walks every block (paths are helper-built, so
 grepping filenames misses them), then reports refs pointing at missing files, files in
@@ -101,10 +102,19 @@ Members join from places with very uneven connections, so initial payload is tre
 feature. `vite.config.js` splits `react`/`react-dom`/`react-router-dom` and `recharts` into
 their own chunks, and two things are loaded lazily:
 
-- **`figures/registry.jsx`** (via `React.lazy` in `ContentBlocks`) — it imports every chart
-  component and, through them, all of recharts (~105 kB gzipped). Keeping it lazy is what
-  keeps recharts off Home, Books, About and every text-only section. **Never import the
-  registry statically**, or recharts lands back in the entry chunk.
+- **`figures/registry.jsx`** (via `React.lazy` in `ContentBlocks`) — **never import the
+  registry statically**, or every figure component lands in the entry chunk.
+- **A SECOND boundary INSIDE the registry.** Only three modules use recharts
+  (`SimpleFigures`, `StolenFocusCharts`, `HoverLineChart`), but the registry used to import
+  everything statically, so **one figure of any kind pulled the ~105 kB gzipped charts chunk**.
+  That pointed exactly the wrong way: «داخل حالة التدفّق» renders five figures that are
+  hand-rolled SVG *precisely because* the rule below forbids recharts in a text section — and
+  paid for recharts anyway (130.8 → 25.4 kB gz once split). The nine recharts-backed figures
+  now load through their own `lazy()` and suspend inside the `Suspense` ContentBlocks already
+  wraps every figure in. **Keep those three modules behind `lazy()`** — a plain import of any
+  of them silently undoes it, and the entry-chunk check below still passes, because recharts
+  was never in the entry to begin with. Verify with the built graph instead: `registry-*.js`
+  must not statically import `charts-*.js`.
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 
 Both render a `.figure-loading` placeholder through `Suspense` so the page doesn't jump.
@@ -272,19 +282,33 @@ keeps `base: './'` sub-path hosting working.
   the reader on a page of shut headings. **The seeding is an EFFECT, not a `useState`
   initialiser** — only the query changes when a link points at a sibling from the same
   page, so the component never remounts and an initialiser runs once and never again
-  (measured). It only ADDS, and scrolls the target into view. `check-links` validates
+  (measured). It only ADDS, and scrolls the target into view. **Opening also writes `?open=`
+  back to the URL** — without that a reader who opened a chapter and copied the address
+  shared a page of shut headings, and `Analytics` (which passes `pathname + search`) only ever
+  saw chapters arrived at by link, collapsing the book back into three rows. `check-links` validates
   `?open=` against panel ids AND activity part ids — a wrong one fails exactly like a wrong
   slug, silently. **`searchIndex` emits one entry per panel and per activity**, each
   deep-linked; indexing only sections would have cost search most of its entries.
-  **A panel is the unit of reading**, not the section: `readingUnits()` in `data/books.js`
-  drives the progress ring and the «تابع القراءة» CTA, and `TabbedBlocks` marks the active
-  panel visited itself. Counting sections made one chapter of ten tick the whole book off
-  and sent the CTA past 90% of it. `blockWords` recurses into panels for the same reason —
-  without that the review card advertised «~1 min read» for an entire book.
-  NB `check-links` walks the whole book object now (a bare slug on `verdict` once pointed at
-  a deleted section while the script reported clean), but it still sees **data only** —
-  links hardcoded in components (`FocusLab.jsx`) are invisible to it, so grep for
-  `/book/<id>/` after any slug change.
+  **A HEADING is the unit of reading**, not the section — and there is now exactly **one
+  definition of "read"**: `sectionUnits()` / `sectionProgress()` in `data/books.js`, which the
+  card's ✓, the sidebar's ✓, the progress ring and the «تابع القراءة» CTA all count. They
+  disagreed for a while: arriving marked the bare slug (which the ticks read) while the ring
+  counted heading keys (which arrival never wrote), so a card showed ✓ «مراجعة الكتاب» beside
+  a hero saying «قرأت 0 من 7». **Arrival only marks a section that has no headings**; one with
+  headings is read by opening them, and a partly-read card shows `3/10` rather than a ✓.
+  `blockWords` recurses into headings for the same reason — without it the review card
+  advertised «~1 min read» for an entire book — and `readMinutes` is memoised, since that walk
+  is ~120 blocks per card and `visited` changes now happen mid-page.
+  **`openable(section)`** is the one place that knows a section keeps its headings in either a
+  `tabs` block or a `parts` field; `readingUnits`, `searchIndex` and both link checkers go
+  through it. That walk was written three times and had already diverged — `readingUnits` knew
+  only `tabs`, so every activity's visited key was a dead write.
+  **Two checkers, because one cannot see everything.** `check-links` walks the whole book
+  object (a bare slug on `verdict` once pointed at a deleted section while it reported clean).
+  `check-component-links` matches `/book/…` links written straight into JSX, which no data
+  walk can reach — `FocusLab.jsx` carries nine and `App.jsx`'s legacy `/assessment` redirect
+  had been pointing at a deleted section since the collapse, found by that script on its first
+  run. Template holes (`/book/${id}/…`) are skipped rather than guessed at.
   Stolen Focus in Arabic is **«تركيزنا المسلوب»** by **«يوهان هاري»** (the published
   Dar Al-Tanweer edition) — not «التركيز المسروق»/«جوهان هاري». Same rule for
   Csikszentmihalyi: **«ميهالي تشيكزينتميهالي»**, the spelling his Arabic translations use —
@@ -355,7 +379,12 @@ keeps `base: './'` sub-path hosting working.
   facts were third-person statistics, so the punctuation alone gave the answer away — and
   neither half may be guessable by length or tone. The data files say this at the top too.
 - **«أنشطة إضافية» is ONE tab**, its activities rendered through the same `Collapsible` as
-  the chapters — see the bullet above for how that works. The focus lab is a lazy chunk and
+  the chapters — see the bullet above. It passes **`keepMounted`** and the chapters do not:
+  a body mounts on first open either way (so nothing is fetched early), but closing an
+  activity only *hides* it. Shutting «الدراسات والتجارب» used to unmount `StudiesQuiz` and
+  take forty answers of a 122-study quiz with it; the same for the lab's seven results and
+  the game's deck. For the chapters, unmounting is right — twelve of them, up to seven
+  figures each, and nothing to lose but a chart slider. The focus lab is a lazy chunk and
   the quiz is 122 studies, so a reader who came for one activity loads nothing else. The quiz, the game, the assessment, the focus lab and «الشخصيات» are
   `parts` of a single section (`kind: 'activities'`), rendered one under another by
   `Activities` in `BookSection`; each part keeps the `kind` it had as a section so `Activity`

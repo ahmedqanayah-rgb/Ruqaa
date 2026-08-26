@@ -1,5 +1,5 @@
-import { useCallback, useState, lazy, Suspense } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useState, lazy, Suspense } from 'react'
+import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
@@ -203,23 +203,6 @@ function QuickCheck({ quick }) {
   )
 }
 
-/* Adapts a `tabs` block's panels onto the shared Collapsible, and marks a panel
-   read once it is opened — a panel is the unit the progress ring counts. */
-function PanelBlocks({ block }) {
-  const { markVisited } = useApp()
-  const { bookId, slug } = useParams()
-  const onOpen = useCallback((id) => {
-    if (bookId && slug) markVisited(bookId, `${slug}?open=${id}`)
-  }, [bookId, slug, markVisited])
-  return (
-    <Collapsible
-      items={block.panels || []}
-      onOpen={onOpen}
-      renderBody={(panel) => <ContentBlocks blocks={panel.blocks || []} />}
-    />
-  )
-}
-
 export default function ContentBlocks({ blocks }) {
   return (
     <>
@@ -270,7 +253,10 @@ export default function ContentBlocks({ blocks }) {
              shared with the activities tab. The block type keeps the name `tabs`
              because every book's data uses it; only the presentation changed,
              from a segmented bar to Wikipedia-style headings. */
-          case 'tabs': return <PanelBlocks key={i} block={b} />
+          case 'tabs': return (
+            <Collapsible key={i} items={b.panels || []}
+              renderBody={(panel) => <ContentBlocks blocks={panel.blocks || []} />} />
+          )
           // A chapter folded into a panel brings its end-of-article check with it.
           case 'quick': return <QuickCheck key={i} quick={b.quick} />
           case 'debate': return <DebateCard key={i} block={b} />

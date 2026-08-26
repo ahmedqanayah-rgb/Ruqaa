@@ -512,7 +512,6 @@ html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
 .book-start { margin-top: var(--space-4); font-size: var(--fs-md); padding: 12px 22px; }
 .book-progress { display: flex; align-items: center; gap: 10px; margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--success); font-weight: 600; }
 .fact-teaser { border: 1px solid var(--border); border-inline-start: 3px solid var(--warm); border-radius: var(--radius); background: var(--bg-elev-2); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); }
-.fact-teaser-body strong { display: block; color: var(--warm); margin-bottom: 4px; }
 .fact-teaser-body p { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }
 .fact-teaser-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); flex-wrap: wrap; font-size: var(--fs-sm); }
 .fact-teaser-btn { padding: 4px 12px; font-size: var(--fs-xs); }
@@ -777,8 +776,6 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 .sf-preset:hover { border-color: var(--accent); }
 .sf-preset.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .sf-readout { font-size: var(--fs-sm); color: var(--text-soft); margin: var(--space-3) 0 0; }
-
-/* Fig 1 — causes map */
 
 /* Fig 4 — flow channel */
 .sf-flow { display: flex; flex-direction: column; align-items: center; }
@@ -1527,7 +1524,6 @@ html[data-presenting] img { margin-inline: auto; }
 .verdict-cell.warn { border-inline-start-color: var(--warm); }
 .verdict-cell strong { display: block; font-size: var(--fs-sm); margin-bottom: 4px; }
 .verdict-cell p { margin: 0; font-size: var(--fs-sm); }
-.verdict-more { margin-top: var(--space-4); }
 
 /* claim → critique → response */
 .debate { padding: var(--space-4); margin: var(--space-4) 0; }
@@ -1584,13 +1580,6 @@ html[data-presenting] img { margin-inline: auto; }
   .xbook-sides { grid-template-columns: 1fr; }
   .xbook-join { transform: rotate(90deg); }
 }
-
-/* ============================================================
-   "A week with the book" — 7-day challenge
-   ============================================================ */
-
-
-
 
 /* Placeholder while a lazily-loaded figure or the Focus Lab arrives. Reserves
    height so the page doesn't jump when the real component swaps in. */
@@ -1915,7 +1904,7 @@ html[data-presenting] .section-bar { display: none; }
   .book-stats a, .fact-teaser-foot a { min-height: 44px; display: inline-flex; align-items: center; }
   .see-all, .xbook-link, .season-open { min-height: 44px; display: inline-flex; align-items: center; }
   .sitenav-chip { min-height: 44px; }
-  .fl-tie a, .week-link { min-height: 44px; display: inline-flex; align-items: center; }
+  .fl-tie a { min-height: 44px; display: inline-flex; align-items: center; }
   /* The site's only off-site links. They sit in a list, not in a sentence, so
      they can take the full target height without disturbing any prose. */
   .sources li a { min-height: 44px; display: inline-flex; align-items: center; }

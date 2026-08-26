@@ -5,7 +5,7 @@
  * entries of already-in-memory strings, so there is nothing to fetch, persist
  * or invalidate. Adding a book to the registry indexes it automatically.
  */
-import { books } from './books.js'
+import { books, openable } from './books.js'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -42,48 +42,33 @@ function buildIndex() {
         text: hay(section.title, section.lead, book.title),
       })
 
-      /* Chapters folded into a `tabs` block are panels, not routes — but they
-         are still what a reader searches for by name. Index each one against
-         its own `?open=` address, or collapsing chapters into one section would
-         have quietly cost the search most of its entries. */
-      ;(section.blocks || []).forEach((b) => {
-        if (b.type !== 'tabs') return
-        ;(b.panels || []).forEach((panel) => {
-          if (!panel.id) return
-          out.push({
-            id: `${book.id}/${section.slug}/${panel.id}`,
-            kind: 'section',
-            kindLabel: KIND_LABEL.section,
-            icon: panel.icon || section.icon || '📄',
-            title: panel.title,
-            subtitle: section.title,
-            bookTitle: book.title,
-            to: `/book/${book.id}/${section.slug}?open=${encodeURIComponent(panel.id)}`,
-            text: hay(panel.title, section.title, book.title),
-          })
-        })
-      })
-
-      /* Activities are `parts` of one section now, not sections — index each
-         so «مختبر التركيز» or «خرافة أم حقيقة؟» is still findable by name. */
-      ;(section.parts || []).forEach((part) => {
-        if (!part.id) return
+      /* Chapters and activities are HEADINGS, not routes — but they are still
+         what a reader searches for by name. One entry each, against its own
+         `?open=` address, or collapsing them into two sections would have cost
+         the search most of its entries. `openable()` knows both shapes so this
+         does not have to. */
+      openable(section).forEach((head) => {
+        if (!head.id) return
         out.push({
-          id: `${book.id}/${section.slug}/${part.id}`,
-          kind: part.kind && KIND_LABEL[part.kind] ? part.kind : 'section',
-          kindLabel: KIND_LABEL[part.kind] || KIND_LABEL.section,
-          icon: part.icon || '📄',
-          title: part.title,
-          subtitle: part.lead || section.title,
+          id: `${book.id}/${section.slug}/${head.id}`,
+          kind: head.kind && KIND_LABEL[head.kind] ? head.kind : 'section',
+          kindLabel: KIND_LABEL[head.kind] || KIND_LABEL.section,
+          icon: head.icon || section.icon || '📄',
+          title: head.title,
+          subtitle: head.lead || section.title,
           bookTitle: book.title,
-          to: `/book/${book.id}/${section.slug}?open=${part.id}`,
-          text: hay(part.title, part.lead, section.title, book.title),
+          to: `/book/${book.id}/${section.slug}?open=${encodeURIComponent(head.id)}`,
+          text: hay(head.title, head.lead, section.title, book.title),
         })
       })
 
       /* Index the studies themselves — the most-searched content, and they all
-         live behind one route. They sit inside an activity part now, so look in
-         both places; `?study=` still jumps the quiz straight to one. */
+         live behind one route. They sit inside an activity part now, so the
+         link has to open that heading AND jump the quiz: `?open=<part>&study=`.
+         The part id comes from the part that owns the studies, never spelled
+         out — a hardcoded `?open=studies&` dies silently if the part is
+         renamed, and check-links cannot see a string built in this module. */
+      const quizPart = (section.parts || []).find((pt) => pt.studies)
       ;[section, ...(section.parts || [])].flatMap((o) => o.studies || []).forEach((study) => {
         out.push({
           id: `${book.id}/${section.slug}/${study.id}`,
@@ -94,8 +79,7 @@ function buildIndex() {
           subtitle: study.researcher,
           bookTitle: book.title,
           // ?study= lets the quiz jump straight to this one instead of study 1.
-          // `open=` unfolds the quiz, `study=` jumps it to this one.
-          to: `/book/${book.id}/${section.slug}${section.parts ? '?open=studies&' : '?'}study=${encodeURIComponent(study.id)}`,
+          to: `/book/${book.id}/${section.slug}?${quizPart ? `open=${encodeURIComponent(quizPart.id)}&` : ''}study=${encodeURIComponent(study.id)}`,
           text: hay(study.title, study.researcher, study.chapter, study.method),
         })
       })

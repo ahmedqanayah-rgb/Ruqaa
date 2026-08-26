@@ -1,10 +1,8 @@
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { useApp } from '../../../context/AppContext.jsx'
 import FigureFrame from '../FigureFrame.jsx'
 
 const L = (ar, en) => ({ ar, en })
-const slug = (s) => `/book/stolen-focus/${s}`
 
 /* The "cost of interruption" figure lived here and was REMOVED (2026-07-28).
    It modelled an hour eaten by 23-minute refocus "shadows", but that 23-minute
