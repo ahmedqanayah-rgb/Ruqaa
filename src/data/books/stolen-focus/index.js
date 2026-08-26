@@ -7,10 +7,11 @@
  * SIMPLIFIED 2026-08-24, in step with why-we-sleep — see that file's header for
  * the shared list. Book-specific parts:
  *
- *   «خريطة الأسباب»        → removed. The twelve causes are the group beneath it.
- *   «تقييم عادات التركيز»  → moved INSIDE «مختبر التركيز» as its second panel;
- *                            both answered "how is my focus?", one by
- *                            self-report and one by measurement.
+ *   «خريطة الأسباب»        → removed. The ten causes are the headings beneath it.
+ *   «تقييم عادات التركيز»  → an activity of «أنشطة إضافية», sitting directly
+ *                            under the focus lab: both answer "how is my
+ *                            focus?", one by self-report and one by
+ *                            measurement, so they read against each other.
  *   «داخل حالة التدفّق»     → promoted to a solo top-level tab. It was alone
  *                            inside a titled group, so reaching it meant
  *                            unfolding a drawer to find one item.
@@ -129,8 +130,8 @@ const panel = (s) => ({
    ADHD could read them and stop their treatment. */
 const adhdChecked = { ...adhd, blocks: [...adhd.blocks, ...adhdCaveat] }
 
-/* The author and the translator in one tab, switched inside it — same shape as
-   the other book. The translator is the reason this club can read the book at
+/* The author and the translator in ONE tab, one collapsible heading each —
+   same shape as the other book. The translator is the reason this club can read the book at
    all; pairing them says so, and it costs one sidebar entry instead of two. */
 const translator = translatorSection({ titleAr: 'تركيزنا المسلوب', titleEn: 'Stolen Focus', yearAr: '٢٠٢٣' })
 const people = {
@@ -176,8 +177,8 @@ const review = {
   ],
 }
 
-/* «أنشطة إضافية» — ONE tab, everything stacked on it. See the same block in
-   why-we-sleep/index.js for the reasoning.
+/* «أنشطة إضافية» — ONE tab, one collapsible heading per activity. See the same
+   block in why-we-sleep/index.js for the reasoning.
    The habits assessment sits DIRECTLY under the lab rather than beside it: the
    two answer the same question, one by self-report and one by measurement, and
    they were briefly a subtab pair inside the lab — which the no-subtabs call

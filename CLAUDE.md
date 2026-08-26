@@ -68,12 +68,15 @@ content you almost always edit data, not JSX.
 
 - **Section blocks.** A normal section is `{ slug, title, lead, blocks:[…] }`. Each block
   is `{ type, … }`; `ContentBlocks.jsx` switches on `type` (`h`/`h4`/`p`/`ul`/`ol`/
-  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`quick`/`myth`).
+  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`quick`).
   `quick` is the end-of-article check; it lives in `ContentBlocks` (not `BookSection`)
-  because a chapter folded into a panel has to carry its own. A `{ type:'tabs',
-  panels:[{title,blocks}] }` renders whole sub-documents behind a segmented bar and recurses
-  into `ContentBlocks` — it is what puts the author and the translator in one tab. Only the
-  active panel is mounted, so a hidden panel's portraits are never fetched.
+  because a chapter folded into a heading has to carry its own. A `{ type:'tabs',
+  panels:[{id,title,blocks}] }` renders whole sub-documents as **collapsible headings** via
+  `Collapsible.jsx` and recurses into `ContentBlocks` — it is what holds the book's chapters
+  and the author/translator pair. **The name `tabs` is historical**: it was a segmented bar
+  for a day, and every book's data uses the name, so the name stayed and the presentation
+  changed. Only an OPEN panel is mounted, so a shut one's figures and portraits are never
+  fetched.
   A `{ type:'figure', id }`
   block renders an interactive figure via `src/components/figures/registry.jsx`, which maps
   a string id (`fig1`, `fig4_6`, `brainNetworks`, …) to a component.

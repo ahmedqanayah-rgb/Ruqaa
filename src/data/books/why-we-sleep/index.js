@@ -6,8 +6,9 @@
  * THREE TOP-LEVEL TABS (2026-08-24). The book was nineteen sidebar entries; it
  * is now «المؤلّف والمترجم», «مراجعة الكتاب», and «أنشطة إضافية».
  *
- * The nine chapters live INSIDE «مراجعة الكتاب» as four collapsible headings of a `tabs`
- * block, folded by topic rather than left one-per-panel:
+ * The nine chapters live INSIDE «مراجعة الكتاب» as four collapsible headings
+ * (a `tabs` block — the name is historical, see below), folded by topic rather
+ * than left one chapter per heading:
  *
  *   آلية النوم            ← mechanism + النوم عبر مراحل العمر + نوم الحيوانات
  *   REM والأحلام          ← rem + الأحلام
@@ -17,11 +18,16 @@
  * Each folded-in chapter keeps its own `h` heading inside the panel, so nothing
  * is silently welded together — you can still see where one ends.
  *
- * WHY A PANEL STILL HAS AN ADDRESS. Every panel carries an `id`, and
- * Collapsible keeps the open one in `?open=`. These chapters were routes until
- * today; without that, every link to one — the cross-book connections, the
- * in-content cards in the other book, a search hit — would land on the parent
- * and leave the reader hunting. Deep links are `…/review?open=rem`.
+ * THE BLOCK TYPE IS STILL CALLED `tabs`, and it renders no tabs. It was a
+ * segmented bar for a day; every book's data uses the name, so the name stayed
+ * and only the presentation changed. components/Collapsible.jsx is what draws
+ * it, and the same component draws the activities tab — one disclosure idiom.
+ *
+ * WHY A HEADING STILL HAS AN ADDRESS. Every panel carries an `id` and the open
+ * one lives in `?open=`. These chapters were routes until today; without it,
+ * every link to one — the cross-book connections, the in-content cards in the
+ * other book, a search hit — would drop the reader on a page of shut headings.
+ * Deep links are `…/review?open=rem`.
  *
  * Removed earlier the same day: the summary, the 7-day challenge, the
  * session-materials section, and «الكتاب في الميزان» as a section (its
@@ -53,8 +59,8 @@ const review = {
   icon: '📖',
   title: L('مراجعة الكتاب', 'The Book'),
   lead: L(
-    'الكتاب كلّه في أربع لوحات: كيف يعمل النوم، ونوم الأحلام، والنوم العميق والذاكرة، وما يفعله النوم بصحّتك.',
-    'The whole book in four panels: how sleep works, dreaming sleep, deep sleep and memory, and what sleep does to your health.'
+    'الكتاب كلّه تحت أربعة عناوين: كيف يعمل النوم، ونوم الأحلام، والنوم العميق والذاكرة، وما يفعله النوم بصحّتك.',
+    'The whole book under four headings: how sleep works, dreaming sleep, deep sleep and memory, and what sleep does to your health.'
   ),
   blocks: [
     { type: 'tabs', panels: [
@@ -75,10 +81,10 @@ const review = {
   ],
 }
 
-/* The author and the translator in one tab, switched inside it. Two sidebar
-   entries for "who made this book" was one more than the idea deserves, and the
-   translator is the reason this club can read it at all — pairing them says so.
-   Both panels keep their own blocks verbatim; nothing was rewritten. */
+/* The author and the translator in ONE tab, one collapsible heading each. Two
+   sidebar entries for "who made this book" was one more than the idea deserves,
+   and the translator is the reason this club can read it at all — pairing them
+   says so. Both keep their own blocks verbatim; nothing was rewritten. */
 const translator = translatorSection({ titleAr: 'لماذا ننام', titleEn: 'Why We Sleep', yearAr: '٢٠١٩' })
 const people = {
   slug: 'author',
@@ -96,12 +102,12 @@ const people = {
   ],
 }
 
-/* «أنشطة إضافية» — ONE tab, everything stacked on it.
+/* «أنشطة إضافية» — ONE tab, one collapsible heading per activity.
    These were four sidebar entries. They are `parts` of a single section now,
-   rendered one under another by `Activities` in BookSection — deliberately NOT
-   behind a second row of tabs, which was the explicit call. Each part keeps the
-   `kind` it had as a section, so `Activity` renders it exactly as before and
-   `findByKind` in data/books.js can still locate it for the landing's chips. */
+   drawn by the same components/Collapsible.jsx the chapters use. Each part keeps
+   the `kind` it had as a section, so `Activity` in BookSection renders it exactly
+   as before and `findByKind` in data/books.js can still locate it for the
+   landing's chips — nothing may look an activity up as a section any more. */
 const activities = {
   slug: 'activities',
   kind: 'activities',
