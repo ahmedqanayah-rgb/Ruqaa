@@ -90,11 +90,19 @@ export const club = {
     },
     {
       bookId: 'stolen-focus',
-      status: 'current',
+      status: 'done',
       start: L('الجلسة الأولى: ١١ يوليو ٢٠٢٦', 'First session: 11 July 2026'),
+      end: L('٢٠ سبتمبر ٢٠٢٦', '20 September 2026'),
+      note: L('موسمنا الثاني — عن الانتباه: من سرقه، وكيف نستعيده.',
+              'Our second season — on attention: who stole it, and how we take it back.'),
+    },
+    {
+      bookId: 'talking-to-my-daughter',
+      status: 'current',
+      start: L('الجلسة الأولى: ٢٧ سبتمبر ٢٠٢٦', 'First session: 27 September 2026'),
       end: null,   // ongoing — the "Reading now" pill carries the rest
-      note: L('موسمنا الحالي — عن الانتباه: من سرقه، وكيف نستعيده.',
-              'Our current season — on attention: who stole it, and how we take it back.'),
+      note: L('موسمنا الحالي — عن الاقتصاد: من أين يأتي المال، ولماذا لا ينبغي أن نتركه للاقتصاديين.',
+              'Our current season — on the economy: where money comes from, and why we shouldn’t leave it to the economists.'),
     },
   ],
 

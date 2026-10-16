@@ -45,6 +45,32 @@ const VIEW = [500, 760]
 const RULE = (y) => ({ type: 'rule', x1: 175, x2: 325, y, w: 2.5, fill: INK })
 
 export const pageArt = {
+  /* The one title too long for a single line in either language. The Arabic
+     breaks where the Dar Al Saqi cover breaks it — «الاقتصاد» above «كما أشرحه
+     لابنتي» — and the second line is set smaller, as on the cover, so it fits
+     the page's measure. The rule and author drop to make room. */
+  'talking-to-my-daughter': {
+    ar: {
+      view: VIEW,
+      art: [RULE(368)],
+      text: [
+        { s: 'الاقتصاد', x: 250, y: 250, size: 66, font: AR, weight: 700, fill: INK },
+        { s: 'كما أشرحه لابنتي', x: 250, y: 326, size: 46, font: AR, weight: 700, fill: INK },
+        { s: 'يانيس فاروفاكيس', x: 250, y: 440, size: 34, font: AR, weight: 500, fill: INK },
+        { s: 'ترجمة: عماد شيحة', x: 250, y: 648, size: 26, font: AR, weight: 500, fill: INK },
+      ],
+    },
+    en: {
+      view: VIEW,
+      art: [RULE(368)],
+      text: [
+        { s: 'Talking to My Daughter', x: 250, y: 266, size: 34, font: SERIF, weight: 600, fill: INK },
+        { s: 'About the Economy', x: 250, y: 318, size: 34, font: SERIF, weight: 600, fill: INK },
+        { s: 'Yanis Varoufakis', x: 250, y: 440, size: 32, font: EN, weight: 500, track: 1, fill: INK },
+      ],
+    },
+  },
+
   'stolen-focus': {
     ar: {
       view: VIEW,

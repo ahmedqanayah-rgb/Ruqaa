@@ -126,9 +126,15 @@ function PeopleGrid({ people }) {
     <div className="people-grid">
       {people.map((p, i) => (
         <article key={i} className="person-card card">
-          <div className="person-photo">
-            <img src={p.img} alt={t(p.name)} loading="lazy"
-              onError={(e) => { e.currentTarget.parentElement.classList.add('noimg') }} />
+          {/* `img` is optional: a person with no usable portrait (Rousseau,
+              Radford, a pseudonym like Satoshi Nakamoto) gets the monogram the
+              broken-image path already falls back to, without a request that is
+              guaranteed to 404 first. */}
+          <div className={`person-photo ${p.img ? '' : 'noimg'}`}>
+            {p.img && (
+              <img src={p.img} alt={t(p.name)} loading="lazy"
+                onError={(e) => { e.currentTarget.parentElement.classList.add('noimg') }} />
+            )}
             <span className="person-fallback" aria-hidden>{t(p.name).charAt(0)}</span>
           </div>
           <div className="person-body">
@@ -139,6 +145,41 @@ function PeopleGrid({ people }) {
         </article>
       ))}
     </div>
+  )
+}
+
+/* A comparison table: `{ type:'table', caption, head:[…], rows:[[…]] }`, every
+   cell a `{ar,en}` object (or a plain string) rendered through RichText.
+   The first cell of each row is its label and renders as a row header.
+
+   No horizontal scrolling on a phone: below 640px each row becomes a card and
+   every cell carries its column name in front of it, read from `data-label`
+   (see .data-table in components.css). A four-column comparison squeezed into
+   375px is unreadable either way, and a sideways scroller inside a page that
+   deliberately has no visible scrollbar is one nobody finds. */
+function DataTable({ block }) {
+  const { t } = useApp()
+  const head = block.head || []
+  return (
+    <figure className="data-table-wrap">
+      {block.caption && <figcaption className="fig-caption"><RichText value={block.caption} /></figcaption>}
+      <table className="data-table">
+        {head.length > 0 && (
+          <thead>
+            <tr>{head.map((h, j) => <th key={j} scope="col"><RichText value={h} /></th>)}</tr>
+          </thead>
+        )}
+        <tbody>
+          {block.rows.map((row, r) => (
+            <tr key={r}>
+              {row.map((cell, j) => (j === 0
+                ? <th key={j} scope="row"><RichText value={cell} /></th>
+                : <td key={j} data-label={head[j] ? t(head[j]) : undefined}><RichText value={cell} /></td>))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </figure>
   )
 }
 
@@ -261,6 +302,7 @@ export default function ContentBlocks({ blocks }) {
           case 'quick': return <QuickCheck key={i} quick={b.quick} />
           case 'debate': return <DebateCard key={i} block={b} />
           case 'sources': return <SourceList key={i} block={b} />
+          case 'table': return <DataTable key={i} block={b} />
           default: return null
         }
       })}

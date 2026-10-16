@@ -1,0 +1,180 @@
+/* Figures for «الاقتصاد كما أشرحه لابنتي» and its debt-and-usury companion.
+   Imported by EconomyFigures.jsx and DebtFigures.jsx, so Vite ships it in their
+   lazy chunk: a reader who never opens a figure never downloads a byte of it.
+   Tokens only — every colour here must hold in both themes. */
+
+.td-switch { display: flex; flex-wrap: wrap; gap: 8px; margin: var(--space-2) 0 var(--space-3); }
+.sf-preset:disabled { opacity: .42; cursor: not-allowed; }
+.td-readout { margin: var(--space-3) 0 0; padding: var(--space-3); border-radius: var(--radius); background: var(--bg-elev-2); border-inline-start: 3px solid var(--accent); font-size: var(--fs-sm); line-height: 1.75; }
+.td-readout.good { border-inline-start-color: var(--success); }
+.td-readout.bad { border-inline-start-color: var(--danger); }
+.td-note { margin: var(--space-2) 0 0; font-size: var(--fs-sm); color: var(--text-soft); }
+.td-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.td-chip { padding: 7px 13px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; transition: all var(--transition); }
+.td-chip:hover { border-color: var(--accent); }
+.td-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.td-chip.off { opacity: .35; text-decoration: line-through; }
+.td-stats { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin-top: var(--space-2); font-size: var(--fs-sm); color: var(--text-soft); }
+.td-stats b { color: var(--text); font-variant-numeric: tabular-nums; margin-inline-start: 4px; }
+
+/* ---- charts drawn in SVG ---- */
+.td-chart { width: 100%; height: auto; display: block; overflow: visible; }
+.td-axis { stroke: var(--border-strong); stroke-width: 1.5; }
+.td-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.td-line.price, .td-line.debt { stroke: var(--accent); }
+.td-line.cost { stroke: var(--blue); stroke-dasharray: 7 5; }
+.td-line.stock { stroke: var(--blue); }
+.td-line.fixed { stroke: var(--success); }
+.td-cursor { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.td-cursor.due { stroke: var(--text-soft); stroke-dasharray: none; }
+.td-dot { stroke: var(--bg); stroke-width: 2; }
+.td-dot.price, .td-dot.debt { fill: var(--accent); }
+.td-dot.cost { fill: var(--blue); }
+.td-dot.fixed { fill: var(--success); }
+.td-zone { fill: color-mix(in srgb, var(--danger) 12%, transparent); }
+.td-zone-lbl { fill: var(--danger); font-size: 13px; font-weight: 700; }
+.td-tick { fill: var(--text-muted); font-size: 12px; }
+.td-bar-catch { fill: color-mix(in srgb, var(--accent) 55%, transparent); }
+.td-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: var(--space-2) 0; font-size: var(--fs-xs); color: var(--text-soft); }
+.td-key::before { content: ''; display: inline-block; inline-size: 18px; block-size: 3px; border-radius: 2px; vertical-align: middle; margin-inline-end: 6px; background: var(--accent); }
+.td-key.cost::before { background: repeating-linear-gradient(90deg, var(--blue) 0 6px, transparent 6px 10px); }
+.td-key.stock::before { background: var(--blue); }
+.td-key.catch::before { block-size: 10px; inline-size: 10px; background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.td-key.fixed::before { background: var(--success); }
+
+/* ---- fig 1: surplus ---- */
+.td-surplus-core { width: fit-content; margin: var(--space-2) auto var(--space-3); padding: 8px 22px; border-radius: 999px; background: var(--accent); color: var(--accent-contrast); font-weight: 700; transition: opacity var(--transition); }
+.td-surplus-core.off { opacity: .3; }
+.td-surplus .td-chips { justify-content: center; }
+
+/* ---- fig 2: two values ---- */
+.td-values-panel { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-start; }
+.td-meter { width: 100%; display: grid; grid-template-columns: minmax(0, 15rem) 1fr; gap: var(--space-2); align-items: center; font-size: var(--fs-sm); }
+.td-bar { height: 12px; border-radius: 999px; background: var(--bg-elev-2); overflow: hidden; border: 1px solid var(--border); }
+.td-bar i { display: block; height: 100%; border-radius: inherit; transition: inline-size .35s ease; }
+.td-bar.exp i { background: var(--success); }
+.td-bar.exch i { background: var(--accent); }
+@media (max-width: 520px) { .td-meter { grid-template-columns: 1fr; gap: 4px; } }
+
+/* ---- fig 3: the great reversal ---- */
+.td-chain { list-style: none; padding: 0; margin: var(--space-2) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.td-chain li { display: flex; align-items: center; gap: 6px; }
+.td-step { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text); font-weight: 700; cursor: pointer; transition: all var(--transition); }
+.td-step.debt { background: var(--text); color: var(--bg); border-color: var(--text); }
+.td-step.active { outline: 3px solid var(--accent); outline-offset: 2px; }
+.td-step-n { font-size: var(--fs-xs); opacity: .65; font-weight: 600; }
+.td-chain-arrow { color: var(--text-muted); font-size: 1.2em; }
+
+/* ---- fig 4: the bank's books ---- */
+.td-ledger-cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+@media (max-width: 560px) { .td-ledger-cols { grid-template-columns: 1fr; } }
+.td-ledger-hd { display: block; font-size: var(--fs-xs); font-weight: 700; color: var(--text-soft); margin-bottom: 6px; }
+.td-ledger-row { display: grid; grid-template-columns: 7.5rem 1fr 3.4rem; gap: 8px; align-items: center; font-size: var(--fs-sm); margin-bottom: 6px; }
+.td-ledger-bar { height: 14px; border-radius: 4px; background: var(--bg-elev-2); overflow: hidden; }
+.td-ledger-bar i { display: block; height: 100%; transition: inline-size .35s ease; }
+.td-ledger-row.a i { background: var(--blue); }
+.td-ledger-row.l i { background: var(--accent); }
+.td-ledger-row.e i { background: var(--success); }
+.td-ledger-row.warn i { background: var(--danger); }
+.td-ledger-v { font-variant-numeric: tabular-nums; text-align: end; font-weight: 600; }
+.td-ledger-money { margin: var(--space-3) 0 var(--space-2); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: var(--fs-sm); }
+.td-ledger-money b { font-size: var(--fs-xl); color: var(--accent); font-variant-numeric: tabular-nums; }
+.td-ledger-sub { color: var(--text-muted); font-size: var(--fs-xs); }
+
+/* ---- fig 5: the stag hunt ---- */
+.td-stag .sf-slider { max-width: 420px; }
+.td-hunters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: var(--space-3) 0 0; }
+.td-hunter { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.td-hunter-dot { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border-strong); background: var(--bg-elev-2); transition: all .3s ease; }
+.td-hunter.stag .td-hunter-dot { background: var(--success); border-color: var(--success); }
+.td-hunter.hare.first .td-hunter-dot { background: var(--danger); border-color: var(--danger); }
+.td-hunter.hare.follows .td-hunter-dot { background: color-mix(in srgb, var(--danger) 35%, transparent); border-color: var(--danger); }
+.td-hunter-th { font-size: var(--fs-xs); color: var(--text-muted); font-variant-numeric: tabular-nums; text-align: center; }
+
+/* ---- fig 7: the camp ---- */
+.td-camp-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: var(--fs-sm); color: var(--text-soft); }
+.td-camp-price b { font-size: 2.2rem; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.td-camp-stock { display: flex; flex-wrap: wrap; gap: 4px; margin: var(--space-2) 0; }
+.td-camp-stock i { width: 22px; height: 6px; border-radius: 3px; background: var(--bg-elev-2); border: 1px solid var(--border); transition: background .3s ease; }
+.td-camp-stock i.on { background: var(--warm); border-color: var(--warm); }
+.td-camp-loan { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px dashed var(--border); }
+
+/* ---- fig 9: HALPEVAM ---- */
+.td-halp-q { font-weight: 700; font-size: var(--fs-md); margin: 0 0 var(--space-2); }
+
+/* ================= the debt-and-usury companion ================= */
+
+/* who hands what to whom */
+.td-seq { list-style: none; padding: 0; margin: var(--space-2) 0 0; display: flex; flex-direction: column; gap: 6px; }
+.td-seq-row { display: grid; grid-template-columns: 1.8rem minmax(0, 15rem) 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--bg-elev); border: 1px solid var(--border); border-inline-start: 4px solid var(--text-muted); font-size: var(--fs-sm); }
+.td-seq-row.money { border-inline-start-color: var(--accent); }
+.td-seq-row.asset { border-inline-start-color: var(--text); }
+.td-seq-row.promise { border-inline-start-style: dashed; border-inline-start-color: var(--text-muted); }
+.td-seq-n { width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid; place-items: center; background: var(--bg-elev-2); font-size: var(--fs-xs); font-weight: 700; }
+.td-seq-who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-weight: 700; }
+.td-seq-arrow { color: var(--text-muted); }
+.td-seq-kind { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
+@media (max-width: 600px) {
+  .td-seq-row { grid-template-columns: 1.8rem 1fr; }
+  .td-seq-what, .td-seq-kind { grid-column: 2; }
+}
+
+/* labelled bars */
+.td-bars { display: flex; flex-direction: column; gap: 8px; }
+.td-bars-row { display: grid; grid-template-columns: minmax(0, 9.5rem) 1fr 5.5rem; gap: 10px; align-items: center; font-size: var(--fs-sm); }
+.td-bars-lbl { font-weight: 600; line-height: 1.3; }
+.td-bars-lbl small, .td-bars-v small { display: block; font-size: var(--fs-xs); color: var(--text-muted); font-weight: 400; }
+.td-bars-track { height: 16px; border-radius: 4px; background: var(--bg-elev-2); overflow: hidden; }
+.td-bars-track i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.td-bars-v { text-align: end; font-weight: 700; font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .td-bars-row { grid-template-columns: minmax(0, 7rem) 1fr 4.6rem; } }
+
+/* two paths on interest */
+.td-path-head, .td-path-row { display: grid; grid-template-columns: 8rem 1fr 1fr; gap: 8px; }
+.td-path-head { font-size: var(--fs-xs); font-weight: 700; color: var(--text-soft); margin-bottom: 6px; }
+.td-path-row { margin-bottom: 8px; }
+.td-path-era { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); padding-top: 8px; }
+.td-path-cell { padding: 8px 10px; border-radius: var(--radius-sm); background: var(--bg-elev); font-size: var(--fs-sm); line-height: 1.6; border-inline-start: 2px solid var(--border-strong); }
+.td-path-cell p { margin: 0; }
+.td-path-cell.ban { border-inline-start: 5px solid var(--text); }
+.td-path-cell.empty { background: transparent; color: var(--text-muted); border: none; text-align: center; }
+@media (max-width: 600px) {
+  .td-path-head { display: none; }
+  .td-path-row { grid-template-columns: 1fr; gap: 4px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .td-path-cell.empty { display: none; }
+}
+
+/* who carries the loss */
+.td-loss { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-3); }
+@media (max-width: 560px) { .td-loss { grid-template-columns: 1fr; } }
+.td-loss-block strong { display: block; margin-bottom: 6px; font-size: var(--fs-sm); }
+.td-loss-row { display: grid; grid-template-columns: 7.5rem 1fr 3.2rem; gap: 8px; align-items: center; font-size: var(--fs-xs); margin-bottom: 6px; }
+.td-loss-row b { text-align: end; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; color: var(--success); }
+.td-loss-row b.neg { color: var(--danger); }
+.td-div { position: relative; height: 14px; background: var(--bg-elev-2); border-radius: 4px; overflow: hidden; }
+.td-div i { position: absolute; top: 0; bottom: 0; transition: all .3s ease; }
+.td-div i.pos { background: var(--success); }
+.td-div i.neg { background: var(--danger); }
+.td-div-zero { position: absolute; top: 0; bottom: 0; inset-inline-start: 50%; width: 1px; background: var(--text-muted); }
+
+/* layers of money */
+.td-tiers { display: flex; flex-direction: column; gap: 4px; }
+.td-tier { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--border); border-inline-start: 5px solid var(--text-muted); background: var(--bg-elev); }
+.td-tier.cb { border-inline-start-color: var(--text); }
+.td-tier.bank { border-inline-start-color: var(--blue); }
+.td-tier strong { display: block; }
+.td-tier span { font-size: var(--fs-xs); color: var(--text-muted); }
+.td-tier-share { text-align: end; max-width: 13rem; }
+.td-tier-share b { display: block; font-size: var(--fs-xl); color: var(--accent); }
+.td-tier-links { display: flex; justify-content: space-between; gap: var(--space-3); padding: 2px var(--space-4); font-size: var(--fs-xs); color: var(--text-soft); }
+
+/* three systems */
+.td-systems { display: flex; flex-direction: column; gap: var(--space-3); }
+.td-system { padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--border); border-inline-start: 5px solid var(--blue); background: var(--bg-elev); }
+.td-system.com { border-inline-start-color: var(--warm); }
+.td-system.isl { border-inline-start-color: var(--success); }
+.td-system-name { display: block; margin-bottom: 6px; }
+.td-system-path { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--fs-sm); }
+.td-system-path li { display: flex; align-items: center; gap: 6px; }
+.td-system-arrow { color: var(--text-muted); }
+.td-system-back { margin: 8px 0 0; font-size: var(--fs-sm); color: var(--text-soft); }

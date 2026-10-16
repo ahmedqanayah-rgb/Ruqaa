@@ -12,10 +12,10 @@
 const L = (ar, en) => ({ ar, en })
 
 export const connections = {
-  title: L('كتابانا يتحدّثان', 'Where our books meet'),
+  title: L('كتبنا تتحدّث', 'Where our books meet'),
   lead: L(
-    'قرأنا «لماذا ننام» ثم «تركيزنا المسلوب»، فاكتشفنا أنهما يرويان القصّة نفسها من طرفين. هذه المواضع التي يلتقيان فيها — وهي أفضل ما في قراءة كتابين معاً.',
-    'We read “Why We Sleep,” then “Stolen Focus,” and found they tell the same story from two ends. These are the places they meet — and they are the best thing about reading two books together.'
+    'قرأنا «لماذا ننام» ثم «تركيزنا المسلوب»، فاكتشفنا أنهما يرويان القصّة نفسها من طرفين؛ ثم جاء «الاقتصاد كما أشرحه لابنتي» فشرح لماذا صُمّمت البيئة التي يشكو منها الكتابان على هذا النحو. هذه المواضع التي تلتقي فيها — وهي أفضل ما في قراءة الكتب معاً.',
+    'We read “Why We Sleep,” then “Stolen Focus,” and found they tell the same story from two ends; then “Talking to My Daughter About the Economy” explained why the environment both books complain about was built the way it was. These are the places they meet — and they are the best thing about reading books together.'
   ),
   items: [
     {
@@ -94,10 +94,75 @@ export const connections = {
         'Hari questions the rising rate of diagnosis and urges looking at the environment before settling on a pharmacological account.'
       ) },
       synthesis: L(
-        'سؤالٌ مشترك يستحقّ النقاش — **لكن انتبه**: هذا ليس نصيحةً طبية، ولا دعوةً لأحدٍ أن يوقف علاجه. النقّاد أخذوا على «تركيزنا المسلوب» تحديداً خفّته في هذا الموضع، وشرحنا ذلك في «الكتاب في الميزان».',
-        'A shared question worth discussing — **but note**: this is not medical advice, and not a reason for anyone to stop treatment. Critics faulted “Stolen Focus” precisely here, which we set out in “The book under scrutiny.”'
+        'سؤالٌ مشترك يستحقّ النقاش — **لكن انتبه**: هذا ليس نصيحةً طبية، ولا دعوةً لأحدٍ أن يوقف علاجه. النقّاد أخذوا على «تركيزنا المسلوب» تحديداً خفّته في هذا الموضع، وشرحنا ذلك تحت فصل فرط الحركة نفسه.',
+        'A shared question worth discussing — **but note**: this is not medical advice, and not a reason for anyone to stop treatment. Critics faulted “Stolen Focus” precisely here, which we set out under the ADHD chapter itself.'
       ),
       caution: true,
+    },
+    /* ---- the third book, against the second ---- */
+    {
+      icon: '🎈',
+      theme: L('نلوم الفرد على ما صنعه النظام', 'We blame the person for what the system made'),
+      a: { bookId: 'stolen-focus', slug: 'review?open=cruel-optimism', says: L(
+        '«التفاؤل القاسي»: أن نقول لمن يغرق «تعلّم السباحة» بينما تُلقى عليه أمواجٌ صُنعت لإغراقه. لا تكفي الإرادة أمام صناعةٍ صُمّمت لهزيمتها.',
+        '“Cruel optimism”: telling a drowning person to “learn to swim” while waves built to sink them keep coming. Willpower is no match for an industry designed to beat it.'
+      ) },
+      b: { bookId: 'talking-to-my-daughter', slug: 'review?open=oedipal-markets', says: L(
+        '«منكرو البطالة» يقولون إن العاطل لم يخفّض أجره بما يكفي — وفاروفاكيس يردّ بصيد الأيل: لا يستطيع صيّادٌ واحد أن يصيد الأيل وحده، ولا عاملٌ واحد أن يخلق الطلب على عمله.',
+        'The “unemployment deniers” say the jobless just haven’t cut their price enough — and Varoufakis answers with the stag hunt: no single hunter can catch the stag alone, and no single worker can create the demand for his labour.'
+      ) },
+      synthesis: L(
+        'الكتابان ينقلان السؤال من «ما خطبي؟» إلى «ما الذي صُمّم حولي؟». واحدٌ عن انتباهك وآخر عن عملك، والنتيجة نفسها: لوم الفرد على ما لا يستطيع فردٌ أن يغيّره يعفي من صمّم البيئة.',
+        'Both books move the question from “what’s wrong with me?” to “what was built around me?”. One is about your attention and one about your job, and the conclusion is the same: blaming individuals for what no individual can change lets off whoever designed the environment.'
+      ),
+    },
+    {
+      icon: '📱',
+      theme: L('حين صار انتباهنا بضاعة', 'When our attention became a commodity'),
+      a: { bookId: 'talking-to-my-daughter', slug: 'review?open=market-society', says: L(
+        'يروي فاروفاكيس كيف انتصرت القيمة التبادلية على القيمة الاستعمالية: الأرض أوّلاً، ثم العمل، ثم البذور والجينات والأرحام المؤجَّرة.',
+        'Varoufakis tells how exchange value defeated experiential value: land first, then labour, then seeds, genes and rented wombs.'
+      ) },
+      b: { bookId: 'stolen-focus', slug: 'review?open=big-tech', says: L(
+        'يروي هاري الفصل التالي من القصّة نفسها: التطبيقات «المجانية» تبيع انتباهك للمعلنين، ولهذا صُمّمت لتأخذ منه أكثر ما تستطيع.',
+        'Hari tells the next chapter of the same story: “free” apps sell your attention to advertisers, which is why they are built to take as much of it as they can.'
+      ) },
+      synthesis: L(
+        'التسييجات طردت الأقنان من الأرض لأن الصوف صار له سعرٌ عالميّ؛ ومنصّات اليوم «تسيّج» انتباهنا لأن له سعراً عند المعلنين. ما كان «مسرّةً» بلغة فاروفاكيس — ساعةٌ من الشرود أو القراءة — صار بضاعة.',
+        'The enclosures drove serfs off the land because wool had acquired a world price; today’s platforms “enclose” our attention because advertisers will pay for it. What Varoufakis would call a good — an hour of mind-wandering, or reading — has become a commodity.'
+      ),
+    },
+    {
+      icon: '⚙️',
+      theme: L('آلاتٌ وعدت بالراحة فأتعبتنا', 'Machines that promised rest and wore us out'),
+      a: { bookId: 'talking-to-my-daughter', slug: 'review?open=haunted-machines', says: L(
+        'كان يُفترض أن تحرّرنا الآلات من الكدح كما في «ستار تريك»، فصرنا كالهامستر على عجلته: نركض أسرع ولا نصل إلى مكان، لأن المنافسة تفرض على كلّ واحدٍ أن يجاري آخر آلة.',
+        'Machines were meant to free us from toil, as in Star Trek; instead we are hamsters on a wheel, running faster and getting nowhere, because competition forces everyone to keep up with the latest machine.'
+      ) },
+      b: { bookId: 'stolen-focus', slug: 'review?open=stress-vigilance', says: L(
+        'يرى هاري الإنهاك والتوتّر سبباً لانهيار الانتباه، ويستشهد بتجارب أسبوع العمل ذي الأيام الأربعة التي رفعت الإنتاجية بدل أن تخفضها.',
+        'Hari treats exhaustion and stress as causes of the collapse of attention, and cites four-day-week trials that raised productivity rather than cutting it.'
+      ) },
+      synthesis: L(
+        'هاري يقول إن الراحة وقود الإنتاجية لا خصمٌ منها؛ وفاروفاكيس يقول لماذا لا نحصل عليها رغم الآلات: لأن ثمار الآلات تذهب إلى من يملكها، لا إلى من تحرّر وقتهم. أسبوع الأيام الأربعة هو، بطريقةٍ ما، اقتراح فاروفاكيس مطبّقاً على الوقت بدل المال.',
+        'Hari says rest is productivity’s fuel, not a deduction from it; Varoufakis says why we don’t get it despite the machines: their fruits go to whoever owns them, not to those whose time they free. A four-day week is, in a way, Varoufakis’s proposal applied to time instead of money.'
+      ),
+    },
+    {
+      icon: '✊',
+      theme: L('الحلّ جماعيّ، لا فرديّ', 'The fix is collective, not personal'),
+      a: { bookId: 'stolen-focus', slug: 'review?open=rebellion', says: L(
+        'يختم هاري بـ«تمرّد الانتباه»: كما نظّم الناس أنفسهم ضدّ الرصاص في الوقود وضدّ ما ثقب طبقة الأوزون وانتصروا، يمكن أن ينتظموا لاستعادة انتباههم.',
+        'Hari ends with an “attention rebellion”: just as people organised against lead in petrol and the chemicals tearing the ozone layer, and won, they can organise to take back their attention.'
+      ) },
+      b: { bookId: 'talking-to-my-daughter', slug: 'review?open=stupid-viruses', says: L(
+        'يختم فاروفاكيس بنهر السلمون: لا يستطيع صيّادٌ واحد أن يصطاد أقلّ والآخرون مستمرّون، والحلّ اتّفاقٌ يُفرض — وفي النهاية ديمقراطيةٌ أصيلة لا «تسليعٌ لكلّ شيء».',
+        'Varoufakis ends with the trout river: no single fisherman can fish less while the rest carry on; the answer is an enforced agreement — and in the end an authentic democracy, not “commodify everything”.'
+      ) },
+      synthesis: L(
+        'كلا الكتابين ينتهي في المكان نفسه بعد طريقين مختلفين. لا أحد يستطيع أن يقلّ استعماله للهاتف أو صيده للسمك وحده دون أن يخسر؛ ما ينجح هو القاعدة التي تُلزم الجميع معاً. هذا، أكثر من أيّ نصيحة، ما يجمع كتب النادي الثلاثة.',
+        'Both books end in the same place by different roads. Nobody can use their phone less or fish less alone without losing out; what works is the rule that binds everyone at once. That, more than any piece of advice, is what joins the club’s three books.'
+      ),
     },
   ],
 }

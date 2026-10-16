@@ -55,7 +55,7 @@ content you almost always edit data, not JSX.
   the Arabic view — so you may author numbers in either form in source and the Arabic UI
   always shows Western digits. Colors are CSS variables in `src/styles/tokens.css`.
 
-- **Books registry.** `src/data/books.js` exports `books = [whyWeSleep, stolenFocus]`.
+- **Books registry.** `src/data/books.js` exports `books = [whyWeSleep, stolenFocus, talkingToMyDaughter]`.
   Each book is a self-contained folder `src/data/books/<slug>/` whose `index.js` assembles
   an ordered `sections` array from `sections-1..4.js` (+ `author.js`, `studies.js`,
   `assessment.js`). Add a book by creating a sibling folder and appending it to the
@@ -69,7 +69,11 @@ content you almost always edit data, not JSX.
 
 - **Section blocks.** A normal section is `{ slug, title, lead, blocks:[…] }`. Each block
   is `{ type, … }`; `ContentBlocks.jsx` switches on `type` (`h`/`h4`/`p`/`ul`/`ol`/
-  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`quick`).
+  `callout`/`quote`/`figure`/`image`/`imggrid`/`people`/`tabs`/`quick`/`table`).
+  `table` is `{ caption, head:[…], rows:[[…]] }`, first cell of a row its header; below
+  640px each row becomes a card with every cell labelled by its column (`data-label`),
+  because a sideways scroller is invisible on a page with no scrollbar. A `people` entry's
+  `img` is optional — without one the card shows the monogram, with no 404 first.
   `quick` is the end-of-article check; it lives in `ContentBlocks` (not `BookSection`)
   because a chapter folded into a heading has to carry its own. A `{ type:'tabs',
   panels:[{id,title,blocks}] }` renders whole sub-documents as **collapsible headings** via
@@ -116,6 +120,10 @@ their own chunks, and two things are loaded lazily:
   was never in the entry to begin with. Verify with the built graph instead: `registry-*.js`
   must not statically import `charts-*.js`.
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
+- **The Varoufakis book's 20 figures** (`figures/economy/EconomyFigures.jsx`, `DebtFigures.jsx`,
+  and their `economy.css`) also load through their own `lazy()` in the registry, though none
+  uses recharts — a reader of the other books should not download them by opening a sleep
+  chart. The CSS rides in that chunk, not the entry stylesheet.
 
 Both render a `.figure-loading` placeholder through `Suspense` so the page doesn't jump.
 Verify with `npm run build`: the entry `index.html` should reference only `index-*.js`,
@@ -257,10 +265,13 @@ keeps `base: './'` sub-path hosting working.
   2026-07-20).
 - **Git: the only repo is this `app/` folder** → github.com/ahmedqanayah-rgb/Ruqaa
   (**public**). The parent `Ruqaa/` is intentionally not a repo. **Never commit the book
-  reference material** (`Ruqaa/Why we Sleep/`, `Ruqaa/Stolen focus/` — epub, raw book
-  text, figure PDFs); history was rewritten on 2026-07-20 to purge exactly those.
-- **Two books are live**: `why-we-sleep` (6 sections) and `stolen-focus` (7), down from 19
-  and 24 on **2026-08-24**. Each book's `index.js` header lists exactly what went where.
+  reference material** (`Ruqaa/Why we Sleep/`, `Ruqaa/Stolen focus/`, `Ruqaa/Talking to My
+  Daughter About the Economy…/` — epub, raw book text, figure PDFs, both editions of the
+  Varoufakis book and the club's own companion PDF); history was rewritten on 2026-07-20 to
+  purge exactly those.
+- **Three books are live**: `why-we-sleep`, `stolen-focus`, and since **2026-10-16**
+  `talking-to-my-daughter` (Varoufakis — see its own bullet below). The first two went down
+  from 19 and 24 sections on **2026-08-24**. Each book's `index.js` header lists exactly what went where.
   The shape is now **three or four top-level tabs**: «المؤلّف والمترجم», «مراجعة الكتاب»,
   («داخل حالة التدفّق» for Stolen Focus), and a group «أنشطة إضافية».
 - **THE CHAPTERS ARE PANELS, NOT ROUTES.** «مراجعة الكتاب» (slug `review`) is one section
@@ -395,6 +406,38 @@ keeps `base: './'` sub-path hosting working.
   section (its URL); the landing's stat chips, `FactRotator` and `countExperts` all go
   through it. Missing that is how the «X+ شخصية» chip silently vanished. `searchIndex` emits
   an entry per part, and the studies' `?study=` deep link resolves against the parts too.
+- **«الاقتصاد كما أشرحه لابنتي» — Yanis Varoufakis, the third book** (season from
+  2026-09-27; Stolen Focus ended 2026-09-20). `data/books/talking-to-my-daughter/`. Arabic
+  title, author spelling «يانيس فاروفاكيس» and translator «عماد شيحة» are the **Dar Al Saqi
+  2020** edition's own, read off its title page; chapter titles likewise — **except chapter
+  8**, «فيروساتٌ غبيّة؟», which is a rendering: the club's scan lacks that page. Check it
+  against a paper copy. The Arabic edition prints **no subtitle**, so `subtitle` is
+  English-only and the landing renders it through `t()` (an `{ar:''}` object is truthy).
+  Chapter vocabulary follows the translation (مجتمع السوق، الانقلاب الكبير، التسييجات،
+  المصرف…); names too (السيد نابوك، القبطان كوستاس، فاسيلي).
+  - Four tabs: author+translator, «مراجعة الكتاب» (8 chapters + epilogue as panels), the
+    companion **«الدَّين والربا والأنظمة الثلاثة»** (slug `debt-usury`), and activities.
+  - **The companion tab is the club's own PDF**, converted (it stays outside the repo with the
+    book files). Deliberately dropped from it: page references into one person's scan, a
+    **named bank** in its mortgage-rate example (sourced only to a broker's social post — the
+    point stands unnamed), a link to what looks like an unauthorised copy of Usmani's book,
+    and a recoloured screenshot of the IMF's map. It presents fiqh positions **including
+    minority ones and says it is not a fatwa** — keep it that way. The Qur'anic text is
+    transcribed from the PDF; the English renders meaning, not a translation.
+  - **No assessment or lab, on purpose**: the other books measure something the reader does;
+    this one is about a system. Each chapter has one interactive figure instead. The quiz is
+    «تجارب وحوادث» (22 items) because the book cites almost no studies.
+  - **Three club fact-checks** (`reception.js`), each appended to its chapter: blood-donation
+    payment (Titmuss is only partly borne out), Bitcoin's supply (~99% by 2035, last coin
+    ~2140 — not "2032"), Easter Island (no abandonment, collapse narrative contested).
+  - **Photos the club supplied but that are NOT used**, with reasons, are listed at the top of
+    `scripts/prep-economy-images.mjs`: two AI-generated "historical" images, a mislabelled
+    Swiss engraving, works not in the book, and the author's daughter (a private person,
+    photographed as a minor). Bretton Woods/Nixon and *Utopia* are not in the book either but
+    each has a clearly marked «من خارج الكتاب» aside beside the chapter it extends.
+  - **Payload**: each book's text sits in the entry chunk (all-books-at-load design), so this
+    book took the entry from **309.6 → 453.9 kB gzipped**. Splitting book data per book is the
+    real fix and the same deferred §4 work — now three times the reason to do it.
 - **Home is deliberately two blocks: the hero and the book carousel.** Nothing else. Two
   further sections were removed on 2026-08-03 at the user's request — "Ask me one" (a
   random-study session opener, with `data/studiesPool.js` behind it) and a "how this works"
@@ -513,7 +556,9 @@ keeps `base: './'` sub-path hosting working.
 
 - **Author and translator share ONE tab** («المؤلّف والمترجم»), two panels inside it via the
   `tabs` block; the translator biography is still `src/data/translator.js`.
-  Both Arabic editions are Dar Al-Tanweer and share one translator, so the biography is
-  written once and each book passes only its title and edition year. Everything factual
+  The first two Arabic editions are Dar Al-Tanweer and share one translator, so the biography
+  is written once and each book passes only its title and edition year. Everything factual
   there is carried by the four linked sources, the first of which is his own televised
-  account.
+  account. **The third book has a different translator** (عماد شيحة, Dar Al Saqi 2020), whose
+  page lives with that book (`books/talking-to-my-daughter/translator.js`) — don't turn
+  `translator.js` into a template for him; it is one man's biography.

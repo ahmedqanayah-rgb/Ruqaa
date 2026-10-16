@@ -4,11 +4,15 @@
    A companion to each book's «عن المؤلّف» tab, for the ARABIC edition the club
    actually reads.
 
-   ONE MODULE, BOTH BOOKS, because it is one man: الحارث النبهان translated both
+   ONE MODULE, TWO BOOKS, because it is one man: الحارث النبهان translated both
    «لماذا ننام» (2019) and «تركيزنا المسلوب» (2023), and both are Dar Al-Tanweer
    editions. The biography is therefore written once and each book passes only
    what differs — its own title and the year of its Arabic edition. Duplicating
    it per book would guarantee the two drift apart.
+
+   The club's third book has a different translator (عماد شيحة, Dar Al Saqi),
+   whose page lives with that book in books/talking-to-my-daughter/translator.js.
+   This file stays one man's biography, not a template.
 
    SOURCING. Everything factual here comes from the Arabic Wikipedia entry, his
    publisher's own author page, and his interview with Asharq Al-Awsat; the
@@ -100,8 +104,8 @@ export function translatorSection({ titleAr, titleEn, yearAr }) {
 
       { type: 'h', text: L('الطبعة التي نقرؤها', 'The edition we read') },
       { type: 'p', text: L(
-        `صدرت الترجمة العربية لـ**«${titleAr}»** عن **دار التنوير** عام **${yearAr}**، بترجمة الحارث النبهان. وقد ترجم للدار نفسها ما يزيد على **خمسين** عنواناً — ومن بينها كتابا النادي كلاهما.`,
-        `The Arabic edition of **“${titleEn}”** was published by **Dar Al-Tanweer** in **${yearAr}**, translated by Al-Harith Al-Nabhan. He has translated more than **fifty** titles for the same publisher — including both of the club’s books.`
+        `صدرت الترجمة العربية لـ**«${titleAr}»** عن **دار التنوير** عام **${yearAr}**، بترجمة الحارث النبهان. وقد ترجم للدار نفسها ما يزيد على **خمسين** عنواناً — ومن بينها أوّل كتابَين قرأهما النادي.`,
+        `The Arabic edition of **“${titleEn}”** was published by **Dar Al-Tanweer** in **${yearAr}**, translated by Al-Harith Al-Nabhan. He has translated more than **fifty** titles for the same publisher — including the first two books the club read.`
       ) },
 
       { type: 'h', text: L('من ترجماته', 'Some of his translations') },
@@ -115,8 +119,8 @@ export function translatorSection({ titleAr, titleEn, yearAr }) {
         // the asterisk inside "F*ck" makes five in the line — the pairing breaks
         // and the markers print on screen. Arabic keeps its bold; it has none.
         L('**«فن اللامبالاة»** لمارك مانسون (Mark Manson).', '“The Subtle Art of Not Giving a F*ck” by Mark Manson.'),
-        L('**«لماذا ننام»** لماثيو ووكر (٢٠١٩) و**«تركيزنا المسلوب»** ليوهان هاري (٢٠٢٣) — كتابا النادي.',
-          '**“Why We Sleep”** by Matthew Walker (2019) and **“Stolen Focus”** by Johann Hari (2023) — the club’s two books.'),
+        L('**«لماذا ننام»** لماثيو ووكر (٢٠١٩) و**«تركيزنا المسلوب»** ليوهان هاري (٢٠٢٣) — أوّل كتابَين للنادي.',
+          '**“Why We Sleep”** by Matthew Walker (2019) and **“Stolen Focus”** by Johann Hari (2023) — the club’s first two books.'),
       ] },
 
       { type: 'h', text: L('كيف يرى الترجمة', 'How he sees translation') },

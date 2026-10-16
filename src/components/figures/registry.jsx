@@ -22,6 +22,12 @@ import { lazy } from 'react'
 const chart = (load, name) => lazy(() => load().then((m) => ({ default: m[name] })))
 const simple = (name) => chart(() => import('./SimpleFigures.jsx'), name)
 const sfChart = (name) => chart(() => import('./stolen-focus/StolenFocusCharts.jsx'), name)
+/* The Varoufakis book's figures load the same way, though none uses recharts:
+   twenty figures and their stylesheet are not something a reader of the other
+   two books should download because they opened a sleep chart. Same Suspense,
+   same fallback, nothing new to place. */
+const eco = (name) => chart(() => import('./economy/EconomyFigures.jsx'), name)
+const debt = (name) => chart(() => import('./economy/DebtFigures.jsx'), name)
 
 const Fig1Temperature = simple('Fig1Temperature')
 const Fig2Melatonin = simple('Fig2Melatonin')
@@ -80,6 +86,30 @@ export const FIGURES = {
   sfFlowNine: SfFlowNine,
   sfFlowBrain: SfFlowBrain,
   sfFlowRatchet: SfFlowRatchet,
+
+  // ----- Talking to My Daughter About the Economy -----
+  tdSurplus: eco('TdSurplus'),
+  tdTwoValues: eco('TdTwoValues'),
+  tdGreatReversal: eco('TdGreatReversal'),
+  tdBankLedger: eco('TdBankLedger'),
+  tdStagHunt: eco('TdStagHunt'),
+  tdIcarus: eco('TdIcarus'),
+  tdCigaretteCamp: eco('TdCigaretteCamp'),
+  tdTroutRiver: eco('TdTroutRiver'),
+  tdHalpevam: eco('TdHalpevam'),
+
+  // ----- its companion tab, «الدَّين والربا والأنظمة الثلاثة» -----
+  tdRibaPaths: debt('TdRibaPaths'),
+  tdCompound: debt('TdCompound'),
+  tdCarTwoWays: debt('TdCarTwoWays'),
+  tdWhoBearsLoss: debt('TdWhoBearsLoss'),
+  tdSaudiContracts: debt('TdSaudiContracts'),
+  tdMoneyLayers: debt('TdMoneyLayers'),
+  tdBondCycle: debt('TdBondCycle'),
+  tdDebtGdp: debt('TdDebtGdp'),
+  tdSukukIssuers: debt('TdSukukIssuers'),
+  tdBondVsSukuk: debt('TdBondVsSukuk'),
+  tdThreeSystems: debt('TdThreeSystems'),
 }
 
 export function Figure({ id }) {

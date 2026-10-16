@@ -322,7 +322,9 @@ function BookLanding({ book }) {
         <div className="book-hero-body">
           <span className="pill">{t({ ar: 'كتاب', en: 'Book' })}</span>
           <h1>{t(book.title)}</h1>
-          {book.subtitle && <p className="book-subtitle">{t(book.subtitle)}</p>}
+          {/* t(), not the object: a subtitle may exist in one language only (the
+              Varoufakis edition in Arabic carries none), and `{ar:''}` is truthy. */}
+          {t(book.subtitle) && <p className="book-subtitle">{t(book.subtitle)}</p>}
           <p className="book-author">{t({ ar: 'تأليف', en: 'by' })} {t(book.author)}</p>
           <p>{t(book.blurb)}</p>
           {/* The chips that describe a thing now go to it. They were plain

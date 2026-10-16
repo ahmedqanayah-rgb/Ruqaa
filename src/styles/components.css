@@ -657,6 +657,26 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 .img-grid .img-block { margin: 0; }
 .img-grid img { width: 100%; max-height: 340px; }
 
+/* `table` blocks — see DataTable in ContentBlocks. Wide screens get a real
+   table; narrow ones get one card per row with each cell labelled by its column
+   (`data-label`), because a sideways scroller is invisible on a page that has
+   no scrollbar. Row headers are th[scope=row] so the card keeps a title. */
+.data-table-wrap { margin: var(--space-5) 0; }
+.data-table-wrap .fig-caption { margin: 0 0 var(--space-2); text-align: start; }
+.data-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); line-height: 1.6; }
+.data-table th, .data-table td { padding: 9px 10px; text-align: start; vertical-align: top; border-bottom: 1px solid var(--border); }
+.data-table thead th { font-size: var(--fs-xs); color: var(--text-soft); font-weight: 700; border-bottom: 2px solid var(--border-strong); }
+.data-table tbody th { font-weight: 700; color: var(--text); white-space: nowrap; }
+.data-table td p, .data-table th p { margin: 0; }
+@media (max-width: 640px) {
+  .data-table thead { display: none; }
+  .data-table, .data-table tbody, .data-table tr, .data-table th, .data-table td { display: block; width: 100%; }
+  .data-table tr { border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); background: var(--bg-elev); }
+  .data-table tbody th { white-space: normal; border-bottom: 1px solid var(--border); padding: 4px 0 8px; font-size: var(--fs-md); }
+  .data-table td { border: none; padding: 6px 0; }
+  .data-table td[data-label]::before { content: attr(data-label); display: block; font-size: var(--fs-xs); font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+}
+
 .link-cards { margin: var(--space-4) 0; }
 .link-cards-title { display: block; margin-bottom: var(--space-3); font-size: var(--fs-md); }
 
