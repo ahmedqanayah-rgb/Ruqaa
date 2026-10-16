@@ -26,7 +26,7 @@ import { fileURLToPath } from 'node:url'
 import { heroScene } from '../src/data/heroScene.js'
 import { coverArt } from '../src/data/coverArt.js'
 import { pageArt } from '../src/data/pageArt.js'
-import { books } from '../src/data/books.js'
+import { books } from '../src/data/allBooks.js'
 import { club } from '../src/data/club.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

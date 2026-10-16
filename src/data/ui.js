@@ -62,8 +62,10 @@ export const ui = {
       en: 'Fan-made summaries by the Ruqʿa reading club, for discussion — not affiliated with the authors or publishers.',
     },
     note: {
-      ar: 'المحتوى تعليمي مرجعي وليس نصيحة طبية.',
-      en: 'Educational reference content, not medical advice.',
+      // Medical and financial both, since the club reads books on sleep and
+      // attention (medicine) and on the economy (money, debt).
+      ar: 'المحتوى تعليمي مرجعي، وليس نصيحةً طبية أو مالية.',
+      en: 'Educational reference content — not medical or financial advice.',
     },
   },
 }

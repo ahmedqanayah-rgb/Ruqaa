@@ -1607,6 +1607,17 @@ html[data-presenting] img { margin-inline: auto; }
   min-height: 220px; border-radius: var(--radius);
   background: var(--bg-elev-2); border: 1px solid var(--border);
 }
+/* The same placeholder, page-sized, while a book's content chunk arrives
+   (BookSection → BookLoading). Tall enough that the footer does not flash up
+   to the middle of the screen and drop back down when the page fills in. */
+.book-loading { min-height: 60vh; margin-top: var(--space-4); }
+/* A lazy piece that did not arrive — a book, a figure, the lab, search
+   (components/LoadBoundary.jsx). Message and a reload button, wrapping to two
+   lines on a phone. */
+.load-failed { padding: var(--space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-3) 0; }
+.load-failed p { margin: 0; flex: 1 1 16rem; }
+.book-load-failed { margin-top: var(--space-4); }
+.sp-load-failed { margin: var(--space-3); }
 
 /* Skip link — hidden until focused, then parks below the navbar. Uses the
    logical start edge so it lands correctly in both RTL and LTR. */
@@ -2007,3 +2018,8 @@ html[data-presenting] .section-bar { display: none; }
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Members' reviews on a book's landing (BookSection → MemberReviews). */
+.member-reviews { margin: var(--space-6) 0 var(--space-4); }
+.member-reviews > h2 { margin-bottom: var(--space-2); }
+.review-note { font-size: var(--fs-sm); color: var(--text-muted); font-style: italic; margin-top: 0; }

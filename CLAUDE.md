@@ -29,13 +29,15 @@ scripts/<name>.mjs`. `process-images.mjs` and `fix-images.mjs` remove background
 flood-fill and write to `public/images/clean/`; `to-webp.mjs <dir>` converts a directory in
 place; `gen-image-dims.mjs` regenerates `src/data/imageDims.js`.
 
-Two data checks, neither wired into a test runner (there isn't one) — run them by hand:
+Data checks, none wired into a test runner (there isn't one) — run them by hand:
 ```bash
 node scripts/check-image-refs.mjs
 node scripts/check-links.mjs
 node scripts/check-component-links.mjs
+node scripts/gen-book-skeletons.mjs --check
 ```
-`check-image-refs` imports the book data and walks every block (paths are helper-built, so
+The last exits 1 if the generated skeletons/search data are stale (see "Books registry").
+`check-image-refs` imports the full books (`data/allBooks.js`) and walks every block (paths are helper-built, so
 grepping filenames misses them), then reports refs pointing at missing files, files in
 `public/images` nothing references, and content images missing from `imageDims.js`.
 `check-links` validates every internal slug — cross-book `connections`, challenge `to`
@@ -55,11 +57,34 @@ content you almost always edit data, not JSX.
   the Arabic view — so you may author numbers in either form in source and the Arabic UI
   always shows Western digits. Colors are CSS variables in `src/styles/tokens.css`.
 
-- **Books registry.** `src/data/books.js` exports `books = [whyWeSleep, stolenFocus, talkingToMyDaughter]`.
-  Each book is a self-contained folder `src/data/books/<slug>/` whose `index.js` assembles
-  an ordered `sections` array from `sections-1..4.js` (+ `author.js`, `studies.js`,
-  `assessment.js`). Add a book by creating a sibling folder and appending it to the
-  registry — it appears on Home and in the sidebar automatically.
+- **Books registry — skeletons up front, content on demand (since 2026-10-16).** Each book
+  is a self-contained folder `src/data/books/<slug>/` whose `index.js` assembles an ordered
+  `sections` array (+ `author.js`, `studies.js`, …). The FULL books are listed in
+  **`src/data/allBooks.js`, which only Node scripts import — never the app**: one import of
+  it from anything under `src/` puts every book back in the entry chunk.
+  The app imports `src/data/books.js`, whose `books` are **skeletons** — titles, covers,
+  sections, panel/part headings and precomputed stats, ~9 kB gz for all three — from the
+  GENERATED `src/data/bookSkeletons.js`. A book's content arrives when it is opened:
+  `useBook(id)` → `{ book, failed }` (one lazy chunk per book, found by
+  `import.meta.glob('./books/*/index.js')`), `peekBook(id)` synchronously once it is here, and
+  `Layout` prefetches on intent (pointer over, finger on, or focus of any `#/book/<id>` link).
+  While the chunk is in flight `BookSection` shows the skeleton's title and lead over a
+  placeholder; if it fails, a notice with a reload button (see "Bundle splitting" for why
+  not a retry).
+  - **`scripts/gen-book-skeletons.mjs` writes `bookSkeletons.js` and `searchData.js`** and runs
+    as `predev`/`prebuild`, so `npm run dev` and every Vercel build regenerate both; they are
+    committed anyway. In dev, `loadBook` logs a console error when a loaded book disagrees
+    with its skeleton — rerun the script after changing any heading.
+  - **The skeleton's one invariant** (`data/skeleton.js`): every question a page asks before
+    the book loads must get the same answer the full book gives — above all `readingUnits`,
+    which the sidebar (skeleton) and the progress ring (full book) both count. So it keeps
+    every panel and part id.
+  - The helpers that work on either shape (`entrySlugs`, `openable`, `sectionUnits`,
+    `sectionProgress`, `readingUnits`, `findByKind`) live in **`data/bookHelpers.js`** and are
+    re-exported by `books.js`; scripts import them from `bookHelpers.js`.
+  - **Add a book**: create its folder and append it to `allBooks.js`. Nothing else registers
+    it — the loader finds the folder by glob, and the skeleton and search index regenerate on
+    the next dev/build.
 
 - **Routing.** `HashRouter` (see `main.jsx`) → routes in `App.jsx`. Sections are
   `/#/book/:bookId/:slug`; `BookSection.jsx` looks up the section and dispatches by its
@@ -104,8 +129,13 @@ content you almost always edit data, not JSX.
 
 Members join from places with very uneven connections, so initial payload is treated as a
 feature. `vite.config.js` splits `react`/`react-dom`/`react-router-dom` and `recharts` into
-their own chunks, and two things are loaded lazily:
+their own chunks, and these are loaded lazily:
 
+- **Every book's content, and search.** The entry chunk carries skeletons only (see "Books
+  registry"): it went **453.9 → 69.6 kB gzipped** on 2026-10-16, when it had been growing by
+  ~140 kB with every book. Each book is its own ~120–140 kB gz chunk, and the search index
+  (`searchIndex.js` + `searchData.js`, ~88 kB gz) loads the first time the palette opens —
+  `SearchPalette` must keep importing it dynamically.
 - **`figures/registry.jsx`** (via `React.lazy` in `ContentBlocks`) — **never import the
   registry statically**, or every figure component lands in the entry chunk.
 - **A SECOND boundary INSIDE the registry.** Only three modules use recharts
@@ -126,9 +156,25 @@ their own chunks, and two things are loaded lazily:
   chart. The CSS rides in that chunk, not the entry stylesheet.
 
 Both render a `.figure-loading` placeholder through `Suspense` so the page doesn't jump.
+
+**A lazy piece that fails to arrive must not take the page down.** The usual cause is a
+deploy, not the connection: Vercel serves only the newest build's files, so a tab opened
+before a push asks for chunk names that no longer exist. Until 2026-10-16 there was no error
+boundary anywhere, so one missing figure chunk unmounted the whole app. Now
+`components/LoadBoundary.jsx` wraps every `lazy()` (figures in `ContentBlocks`, the focus
+lab), and a book that fails (`useBook` → `failed`) or the search index shows the same
+`LoadFailed` notice. **Its button reloads; there is deliberately no "try again"**: the
+browser caches a failed `import()` for the life of the page — measured in Chrome 152, a
+second import of the same URL failed without touching the network after the file appeared.
+**Wrap any new `lazy()` in a `LoadBoundary`.** To test: `npm run build`, `npm run preview`,
+open a page, move a chunk out of `dist/assets/`, then navigate to what needs it (the preview
+server answers a missing chunk with `index.html`, which the browser refuses as a module —
+as good a failure as a 404).
 Verify with `npm run build`: the entry `index.html` should reference only `index-*.js`,
 `react-*.js` and the CSS — if `charts-*` appears there, something started importing
-recharts eagerly.
+recharts eagerly. And the entry `index-*.js` should statically import **only** `react-*.js`
+(~70 kB gz): a book chunk or `searchIndex-*` there means something imported `allBooks.js`, a
+book folder or the search index eagerly. Check that, not just the size line.
 
 ## Images
 
@@ -256,12 +302,13 @@ keeps `base: './'` sub-path hosting working.
 - `README.md` is a good complement but its "Project structure" list predates the per-book
   `data/books/<slug>/` reorganization — trust the actual tree over it.
 
-## Current project state (last big update: 2026-07-20)
+## Current project state (last big update: 2026-10-16)
 
 - **The project is Ruqʿa / رُقعة** (`ruqaa-reading-club`) — a multi-book club site, not a
   single-book site. Keep site chrome book-agnostic. The footer carries a required
   disclaimer (fan-made summaries, not affiliated with authors/publishers) — don't remove
-  it. The workspace folder is `C:\Users\aq\Desktop\Ruqaa\` (renamed from `Sleep\` on
+  it. Its second line says the content is educational, not medical **or financial** advice
+  (the "financial" since the Varoufakis book and its usury tab). The workspace folder is `C:\Users\aq\Desktop\Ruqaa\` (renamed from `Sleep\` on
   2026-07-20).
 - **Git: the only repo is this `app/` folder** → github.com/ahmedqanayah-rgb/Ruqaa
   (**public**). The parent `Ruqaa/` is intentionally not a repo. **Never commit the book
@@ -281,7 +328,9 @@ keeps `base: './'` sub-path hosting working.
   own title, so the seam stays visible.
   **`components/Collapsible.jsx` is the site's ONE disclosure idiom** — Wikipedia-style
   collapsible headings, used by the chapters, the author/translator tab and the activities
-  tab alike. There is no tab bar anywhere any more; `TabbedBlocks` and the stacked
+  tab alike — and by the members' reviews on a book landing, which pass `level={3}` because
+  they sit under an `h2` of their own (the look comes from the class, not the tag). There is
+  no tab bar anywhere any more; `TabbedBlocks` and the stacked
   `Activities` were two implementations a week apart and a third was the alternative.
   **All closed on arrival, several may be open at once, and a body mounts only while
   open.** That last part is load-bearing: the review's default panel used to mount on
@@ -298,10 +347,11 @@ keeps `base: './'` sub-path hosting working.
   shared a page of shut headings, and `Analytics` (which passes `pathname + search`) only ever
   saw chapters arrived at by link, collapsing the book back into three rows. `check-links` validates
   `?open=` against panel ids AND activity part ids — a wrong one fails exactly like a wrong
-  slug, silently. **`searchIndex` emits one entry per panel and per activity**, each
-  deep-linked; indexing only sections would have cost search most of its entries.
+  slug, silently. **The search index (`data/searchBuild.js`) emits one entry per panel and
+  per activity**, each deep-linked; indexing only sections would have cost search most of
+  its entries.
   **A HEADING is the unit of reading**, not the section — and there is now exactly **one
-  definition of "read"**: `sectionUnits()` / `sectionProgress()` in `data/books.js`, which the
+  definition of "read"**: `sectionUnits()` / `sectionProgress()` in `data/bookHelpers.js`, which the
   card's ✓, the sidebar's ✓, the progress ring and the «تابع القراءة» CTA all count. They
   disagreed for a while: arriving marked the bare slug (which the ticks read) while the ring
   counted heading keys (which arrival never wrote), so a card showed ✓ «مراجعة الكتاب» beside
@@ -311,7 +361,7 @@ keeps `base: './'` sub-path hosting working.
   advertised «~1 min read» for an entire book — and `readMinutes` is memoised, since that walk
   is ~120 blocks per card and `visited` changes now happen mid-page.
   **`openable(section)`** is the one place that knows a section keeps its headings in either a
-  `tabs` block or a `parts` field; `readingUnits`, `searchIndex` and both link checkers go
+  `tabs` block or a `parts` field; `readingUnits`, `searchBuild` and both link checkers go
   through it. That walk was written three times and had already diverged — `readingUnits` knew
   only `tabs`, so every activity's visited key was a dead write.
   **Two checkers, because one cannot see everything.** `check-links` walks the whole book
@@ -336,7 +386,7 @@ keeps `base: './'` sub-path hosting working.
   collapsible groups (from the book's `groups` data) — only the group holding the
   current section auto-expands; headers show visited/total counts, items show ✓ ticks.
   **A `groups` entry may instead be `{ slug }` — a SOLO top-level tab with no header**
-  (`entrySlugs` in `data/books.js`). Everything that walks `groups` must go through that
+  (`entrySlugs` in `data/bookHelpers.js`). Everything that walks `groups` must go through that
   helper, `check-links` included, or solo tabs are silently skipped.
   The collapsed icon-rail hides the section tree entirely.
 - **Book landing v2** (`BookSection.jsx`): books may define `groups` (titled slug lists)
@@ -371,6 +421,16 @@ keeps `base: './'` sub-path hosting working.
   Gloria Mark's, and it appears in no peer-reviewed paper. Same bar applies: check it yourself
   and link the primary source. **Don't "restore" the 23-minute claim as fact anywhere**, and
   don't reinstate the interruption figure that was built on it (POLISH-PLAN §7).
+- **Members' reviews** — `book.reviews`, from `data/books/<slug>/reviews.js` (the first,
+  2026-10-16, is Maria's on «تركيزنا المسلوب»). Rendered as «بأقلام الأعضاء» on the book
+  landing straight after the club's verdict — the club's opinion, then the members' — one
+  collapsible heading each, so a long review costs the landing one line until opened. Each
+  `id` is its `?open=` address and search links to it, so keep ids stable.
+  **The Arabic is the member's own text, verbatim**: don't copy-edit it or align it with the
+  site's spellings (Maria writes «سون ليمان» where the site writes «سونه ليمان»). **The
+  English is a translation made for the site and says so** through `translationNote`, which
+  is empty in Arabic. Book header lines (title/author/translator) are left out — the page
+  already says which book it is.
 - **Flow-state deep dive** (`data/books/stolen-focus/sections-flow.js`) — a section inside the
   Stolen Focus tab sourced from **another book**, Csikszentmihalyi's *Flow*. It is a **solo top-level tab**
   and opens with a callout saying whose book it is — which is what keeps it from reading as
@@ -402,9 +462,9 @@ keeps `base: './'` sub-path hosting working.
   renders it unchanged. The focus-habits assessment sits directly **under** the lab rather
   than beside it — they answer the same question, one by self-report and one by measurement.
   **Nothing may look an activity up as a section any more.** `findByKind(book, kind)` in
-  `data/books.js` searches sections *and* parts and returns both the part (its data) and the
+  `data/bookHelpers.js` searches sections *and* parts and returns both the part (its data) and the
   section (its URL); the landing's stat chips, `FactRotator` and `countExperts` all go
-  through it. Missing that is how the «X+ شخصية» chip silently vanished. `searchIndex` emits
+  through it. Missing that is how the «X+ شخصية» chip silently vanished. The search index emits
   an entry per part, and the studies' `?study=` deep link resolves against the parts too.
 - **«الاقتصاد كما أشرحه لابنتي» — Yanis Varoufakis, the third book** (season from
   2026-09-27; Stolen Focus ended 2026-09-20). `data/books/talking-to-my-daughter/`. Arabic
@@ -426,7 +486,8 @@ keeps `base: './'` sub-path hosting working.
     transcribed from the PDF; the English renders meaning, not a translation.
   - **No assessment or lab, on purpose**: the other books measure something the reader does;
     this one is about a system. Each chapter has one interactive figure instead. The quiz is
-    «تجارب وحوادث» (22 items) because the book cites almost no studies.
+    «تجارب وحوادث» (22 items) because the book cites almost no studies; its part's
+    `countLabel` makes the landing chip say «22 تجربةً وحادثة» rather than «دراسة».
   - **Three club fact-checks** (`reception.js`), each appended to its chapter: blood-donation
     payment (Titmuss is only partly borne out), Bitcoin's supply (~99% by 2035, last coin
     ~2140 — not "2032"), Easter Island (no abandonment, collapse narrative contested).
@@ -435,9 +496,9 @@ keeps `base: './'` sub-path hosting working.
     Swiss engraving, works not in the book, and the author's daughter (a private person,
     photographed as a minor). Bretton Woods/Nixon and *Utopia* are not in the book either but
     each has a clearly marked «من خارج الكتاب» aside beside the chapter it extends.
-  - **Payload**: each book's text sits in the entry chunk (all-books-at-load design), so this
-    book took the entry from **309.6 → 453.9 kB gzipped**. Splitting book data per book is the
-    real fix and the same deferred §4 work — now three times the reason to do it.
+  - **Payload**: this book took the entry chunk from 309.6 → 453.9 kB gzipped, which is what
+    finally forced the per-book split (same day, 2026-10-16): the entry is now 69.6 kB gz and
+    each book loads on its own — see "Books registry".
 - **Home is deliberately two blocks: the hero and the book carousel.** Nothing else. Two
   further sections were removed on 2026-08-03 at the user's request — "Ask me one" (a
   random-study session opener, with `data/studiesPool.js` behind it) and a "how this works"
@@ -454,7 +515,10 @@ keeps `base: './'` sub-path hosting working.
   out automatically, so adding a third book only means adding themes here.
 - **Club data** lives in `src/data/club.js` (seasons, `banner`, `members`, `gallery`) and
   drives the About page, which is book-agnostic and reads titles/covers from the books
-  registry. `members`/`gallery` are empty by design — the page hides those sections until
+  registry. **Its stats strip reads `clubTotals`**, precomputed per book by `bookStats()` in
+  `data/skeleton.js`, which walks the whole object (figures count distinct ids — two are shown
+  twice). The path-based count it replaced had said «0 دراسة» and «5 أشكال» since the
+  sections were folded into panels and parts. `members`/`gallery` are empty by design — the page hides those sections until
   they're filled, and members without a `photo` render an initial monogram. Photos go in
   `public/images/club/`. The optional atmospheric `banner` (About-page hero) expects
   `public/images/club/reading-corner.jpg`; its `ClubBanner` starts `display:none` and
@@ -465,8 +529,10 @@ keeps `base: './'` sub-path hosting working.
   the card itself. Copy falls back clipboard API → `execCommand` → a selectable textarea;
   don't "simplify" that chain, the first two fail on insecure origins and unfocused docs.
 - **Search** — `⌘K`/`Ctrl-K` or `/` opens `components/SearchPalette.jsx`, over a flat index
-  built once at load in `src/data/searchIndex.js` (every section + every study, both
-  languages in one haystack). Study hits deep-link as `…/studies?study=<id>`; `StudiesQuiz`
+  **prebuilt at build time** (`data/searchBuild.js`, run by `gen-book-skeletons.mjs` into
+  `data/searchData.js`) and imported with its scoring (`data/searchIndex.js`) only when the
+  palette first opens — so searching needs neither the books nor anything in the entry chunk.
+  Every section, panel, activity, study and member review, both languages in one haystack. Study hits deep-link as `…/studies?study=<id>`; `StudiesQuiz`
   reads that param and jumps, guarded by a ref so answering can't yank the reader back.
 - **Member world map** (`components/WorldReach.jsx`, data in `club.reach`) — the club is
   online, so the About page maps where members join the weekly session from. Non-obvious

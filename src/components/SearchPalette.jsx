@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
-import { searchAll } from '../data/searchIndex.js'
 import Icon from './Icon.jsx'
+import { LoadFailed } from './LoadBoundary.jsx'
 
 /*
  * ⌘K / Ctrl-K search over every section and study in every book.
  *
  * Open/close state lives in Layout so the navbar button and the shortcut drive
- * the same instance. Results are computed synchronously — the index is small
- * and already in memory, so there is no debounce or async state to manage.
+ * the same instance.
+ *
+ * THE INDEX LOADS ON FIRST OPEN, not with the page. It is prebuilt from every
+ * book (data/searchData.js, ~87 kB gzipped) and most visits never search, so it
+ * has no business in the entry chunk. Once it has arrived, results are computed
+ * synchronously — no debounce, no async state per keystroke.
  */
+let searchModule = null   // survives close/reopen, so only the first open waits
 
 const L = (ar, en) => ({ ar, en })
 
@@ -22,7 +27,20 @@ export default function SearchPalette({ open, onClose }) {
   const inputRef = useRef(null)
   const listRef = useRef(null)
 
-  const results = useMemo(() => searchAll(q, lang), [q, lang])
+  const [search, setSearch] = useState(() => searchModule?.searchAll ?? null)
+  const [loadFailed, setLoadFailed] = useState(false)
+  useEffect(() => {
+    if (!open || search) return
+    let live = true
+    setLoadFailed(false)
+    import('../data/searchIndex.js').then(
+      (m) => { searchModule = m; if (live) setSearch(() => m.searchAll) },
+      () => { if (live) setLoadFailed(true) },
+    )
+    return () => { live = false }
+  }, [open, search])
+
+  const results = useMemo(() => (search ? search(q, lang) : []), [search, q, lang])
 
   // Reset and focus each time it opens.
   useEffect(() => {
@@ -106,6 +124,10 @@ export default function SearchPalette({ open, onClose }) {
               {t(L('اكتب حرفين على الأقل — ابحث في كلّ الأقسام والدراسات.',
                    'Type at least two characters — searches every section and study.'))}
             </p>
+          ) : !search ? (
+            loadFailed
+              ? <LoadFailed className="sp-load-failed" message={L('تعذّر تحميل البحث.', 'Search could not be loaded.')} />
+              : <p className="sp-empty">{t(L('جارٍ تحميل البحث…', 'Loading search…'))}</p>
           ) : results.length === 0 ? (
             <p className="sp-empty">
               {t(L('لا نتائج. جرّب كلمةً أخرى، أو باللغة الأخرى.',

@@ -24,7 +24,8 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const pub = path.resolve(__dirname, '../public')
 const outFile = path.resolve(__dirname, '../src/data/imageDims.js')
-const { books } = await import('../src/data/books.js')
+// The FULL books (data/books.js is skeletons + a Vite-only loader).
+const { books } = await import('../src/data/allBooks.js')
 
 // Collect every src that reaches ImageBlock.
 const srcs = new Set()

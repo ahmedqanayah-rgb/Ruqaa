@@ -32,6 +32,7 @@ import { verdict, adhdCaveat, authorScrutiny } from './reception.js'
 import { mythOrFact } from './mythOrFact.js'
 import { QUESTIONS, TIPS, GOOD_TIP } from './assessment.js'
 import { studies, interestOrder } from './studies.js'
+import { reviews } from './reviews.js'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -257,6 +258,8 @@ export const stolenFocus = {
     'A global investigation into why our attention collapsed — twelve external forces stealing our focus, and how to reclaim it as individuals and together.'
   ),
   verdict,
+  // Members' own reviews, shown on the landing after the verdict.
+  reviews,
   accent: 'var(--accent)',
   /* `{ slug }` is a solo entry — a top-level tab with no group header. See
      entrySlugs in data/books.js. */

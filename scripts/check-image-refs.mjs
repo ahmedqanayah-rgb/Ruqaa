@@ -15,7 +15,8 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const pub = path.resolve(__dirname, '../public')
-const { books } = await import('../src/data/books.js')
+// The FULL books (data/books.js is skeletons + a Vite-only loader).
+const { books } = await import('../src/data/allBooks.js')
 
 const refs = new Set()
 const collect = (v) => {

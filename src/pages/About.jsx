@@ -2,24 +2,16 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
-import { books, getBook } from '../data/books.js'
+import { getBook, clubTotals } from '../data/books.js'
 import { club } from '../data/club.js'
 import WorldReach from '../components/WorldReach.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
-/* Totals across every book, so the stats row never goes stale as books land. */
-function clubStats() {
-  let sections = 0, studies = 0, interactives = 0
-  books.forEach((b) => {
-    b.sections.forEach((s) => {
-      sections += 1
-      if (s.studies) studies += s.studies.length
-      if (s.blocks) interactives += s.blocks.filter((x) => x.type === 'figure').length
-    })
-  })
-  return { books: books.length, sections, studies, interactives }
-}
+/* Totals across every book come precomputed with the skeletons (data/skeleton.js
+   → bookStats). They used to be counted here from top-level sections only, so
+   when the studies moved into the activities tab and the figures into chapter
+   panels this row quietly read «0 دراسة · 5 أشكال» — for two months. */
 
 function Stat({ n, label }) {
   const { t } = useApp()
@@ -107,7 +99,7 @@ function Season({ season }) {
 
 export default function About() {
   const { t } = useApp()
-  const stats = clubStats()
+  const stats = clubTotals
 
   return (
     <div className="prose-page club-page">
@@ -119,9 +111,12 @@ export default function About() {
 
       <div className="club-stats">
         <Stat n={stats.books} label={L('كتب', 'books')} />
-        <Stat n={stats.sections} label={L('قسماً', 'sections')} />
-        <Stat n={stats.studies} label={L('دراسة', 'studies')} />
-        <Stat n={stats.interactives} label={L('شكلاً تفاعلياً', 'interactives')} />
+        {/* Reading units — the same «parts to read» each book's landing counts —
+            rather than sections: a section is a tab now, and «11 أقسام» for three
+            whole books described nothing anyone reads. */}
+        <Stat n={stats.units} label={L('جزءاً للقراءة', 'parts to read')} />
+        <Stat n={stats.studies} label={L('دراسةً وتجربة', 'studies & experiments')} />
+        <Stat n={stats.figures} label={L('شكلاً تفاعلياً', 'interactive figures')} />
       </div>
 
       <h2>{t(L('لماذا «رُقعة»؟', 'Why “Ruqʿa”?'))}</h2>

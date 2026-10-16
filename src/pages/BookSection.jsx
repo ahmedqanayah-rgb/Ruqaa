@@ -3,12 +3,13 @@ import { createPortal } from 'react-dom'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
-import { getBook, entrySlugs, readingUnits, sectionProgress, openable, findByKind } from '../data/books.js'
+import { getBook, useBook, entrySlugs, readingUnits, sectionProgress, openable, findByKind } from '../data/books.js'
 import ContentBlocks from '../components/ContentBlocks.jsx'
 import StudiesQuiz from '../components/StudiesQuiz.jsx'
 import AssessmentForm from '../components/AssessmentForm.jsx'
 import MythOrFact from '../components/MythOrFact.jsx'
 import Collapsible from '../components/Collapsible.jsx'
+import LoadBoundary, { LoadFailed } from '../components/LoadBoundary.jsx'
 
 /* Seven games' worth of logic. Lazy, and it stays off the wire until the
    reader opens «مختبر التركيز» — that boundary is the point, not an accident. */
@@ -78,9 +79,11 @@ function Activity({ book, part }) {
         bookTitle={book.title} sectionTitle={part.title} />
     case 'focus-lab':
       return (
-        <Suspense fallback={<div className="figure-loading" aria-hidden />}>
-          <FocusLab bookTitle={book.title} sectionTitle={part.title} />
-        </Suspense>
+        <LoadBoundary message={L('تعذّر تحميل مختبر التركيز.', 'The focus lab could not be loaded.')}>
+          <Suspense fallback={<div className="figure-loading" aria-hidden />}>
+            <FocusLab bookTitle={book.title} sectionTitle={part.title} />
+          </Suspense>
+        </LoadBoundary>
       )
     case 'myth-game':
       return <MythOrFact items={part.items} bookTitle={book.title} sectionTitle={part.title} />
@@ -220,6 +223,36 @@ function VerdictCard({ book }) {
   )
 }
 
+/* Members' own reviews of the book, in their words and under their names
+   (`book.reviews`, e.g. data/books/stolen-focus/reviews.js). Right after the
+   club's verdict: the club's opinion, then the members'. One heading each,
+   through the site's one disclosure idiom, so a long review costs the page a
+   single line until someone opens it — and `?open=<id>` links straight to one.
+   `items` is memoised: Collapsible re-runs its `?open=` seeding whenever the
+   array changes, which on every landing re-render would scroll back to it. */
+function MemberReviews({ book }) {
+  const { t } = useApp()
+  const items = useMemo(() => (book.reviews || []).map((r) => ({
+    id: r.id,
+    icon: '✍️',
+    title: L(`«${r.title.ar}» — ${r.author.ar}`, `“${r.title.en}” — ${r.author.en}`),
+    lead: r.byline,
+    review: r,
+  })), [book])
+  if (!items.length) return null
+  return (
+    <section className="member-reviews">
+      <h2>{t(L('بأقلام الأعضاء', 'From our members'))}</h2>
+      <Collapsible items={items} level={3} renderBody={(it) => (
+        <>
+          {t(it.review.translationNote) && <p className="review-note">{t(it.review.translationNote)}</p>}
+          <ContentBlocks blocks={it.review.blocks} />
+        </>
+      )} />
+    </section>
+  )
+}
+
 /*
  * Which landing groups are unfolded, per book. Module scope rather than
  * component state because `BookLanding` unmounts every time the reader opens a
@@ -343,7 +376,9 @@ function BookLanding({ book }) {
                 not sections of their own. */}
             {studiesSec && (
               <Link role="listitem" to={`/book/${book.id}/${studiesSec.section.slug}?open=${studiesSec.part.id || ''}`}>
-                🔬 {t({ ar: `${studiesSec.part.studies.length} دراسة`, en: `${studiesSec.part.studies.length} studies` })}
+                {/* `countLabel` lets a quiz say what it holds — the Varoufakis
+                    book's are experiments and episodes, not studies. */}
+                🔬 {studiesSec.part.studies.length} {t(studiesSec.part.countLabel || L('دراسة', 'studies'))}
               </Link>
             )}
             {labSec && (
@@ -425,6 +460,8 @@ function BookLanding({ book }) {
 
       <VerdictCard book={book} />
 
+      <MemberReviews book={book} />
+
       <FactRotator book={book} />
     </div>
   )
@@ -453,11 +490,43 @@ function SectionNotFound({ book }) {
 }
 
 /* ---- section page ---- */
+/* While a book's content is on its way: the section's own heading from the
+   skeleton (so the page already says where you are) over a quiet placeholder,
+   or — if the chunk could not be fetched — a plain message and a reload (see
+   LoadBoundary for why not a retry). Members join from places with uneven
+   connections; a dropped request must not leave a page that spins for ever. */
+function BookLoading({ skeleton, slug, failed }) {
+  const { t } = useApp()
+  const section = slug ? skeleton.sections.find((s) => s.slug === slug) : null
+  return (
+    <div className={section ? 'section-page' : 'book-page'} aria-busy={!failed}>
+      <header className="section-head">
+        <h1>{section && <Icon name={section.icon} className="section-emoji" />} {t(section ? section.title : skeleton.title)}</h1>
+        {section?.lead && <p className="section-lead">{t(section.lead)}</p>}
+      </header>
+      {failed ? (
+        <LoadFailed className="book-load-failed" message={L(
+          'تعذّر تحميل الكتاب — ربما انقطع الاتصال، أو حُدِّث الموقع بعد أن فتحت هذه الصفحة.',
+          'The book could not be loaded — the connection may have dropped, or the site was updated after this page was opened.')} />
+      ) : <div className="figure-loading book-loading" aria-hidden />}
+    </div>
+  )
+}
+
+/* The route. Knows from the SKELETON (data/books.js) whether the book exists,
+   and renders it once its content has arrived — at once if it already has. */
 export default function BookSection() {
   const { bookId, slug } = useParams()
+  const skeleton = getBook(bookId)
+  const { book, failed } = useBook(skeleton ? bookId : null)
+  if (!skeleton) return <div className="prose-page"><h1>404</h1></div>
+  if (!book) return <BookLoading skeleton={skeleton} slug={slug} failed={failed} />
+  return <BookPage book={book} slug={slug} />
+}
+
+function BookPage({ book, slug }) {
   const { t, dir, lang, markVisited } = useApp()
   const navigate = useNavigate()
-  const book = getBook(bookId)
   const touch = useRef(null)
 
   const idx = book && slug ? book.sections.findIndex((s) => s.slug === slug) : -1
@@ -493,7 +562,10 @@ export default function BookSection() {
     return () => window.removeEventListener('keydown', onKey)
   }, [section, dir, next, prev, book, navigate])
 
-  if (!book) return <div className="prose-page"><h1>404</h1></div>
+  // Before the early returns below — a hook must run on every render or on
+  // none. (It used to sit after them, a rules-of-hooks violation in waiting.)
+  const minutes = useMemo(() => (section ? readMinutes(section, lang) : null), [section, lang])
+
   if (!slug) return <BookLanding book={book} />
   // A slug that matches nothing used to fall through to the landing, so a stale
   // or mistyped link looked like it had worked. Say so instead.
@@ -516,9 +588,6 @@ export default function BookSection() {
     const target = forward ? next : prev
     if (target) navigate(`/book/${book.id}/${target.slug}`)
   }
-
-  // Same reason as the landing's memo: this walks every heading's blocks.
-  const minutes = useMemo(() => readMinutes(section, lang), [section, lang])
 
   return (
     <article key={section.slug} className="section-page route-fade"

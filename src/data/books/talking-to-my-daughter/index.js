@@ -162,6 +162,8 @@ const activities = {
       ),
       studies,
       interestOrder,
+      // What the landing's chip calls them — these are not studies.
+      countLabel: L('تجربةً وحادثة', 'experiments & episodes'),
     },
     {
       id: 'myth-or-fact',

@@ -8,6 +8,7 @@ import Breadcrumb from './Breadcrumb.jsx'
 import SearchPalette from './SearchPalette.jsx'
 import ScrollOverlay from './ScrollOverlay.jsx'
 import { scroller, onPageScroll, onAnyScroll, SCROLL_IDLE_MS } from '../lib/scroll.js'
+import { prefetchBook } from '../data/books.js'
 
 export default function Layout({ children }) {
   const { t, presenting, setPresenting, togglePresenting } = useApp()
@@ -59,6 +60,24 @@ export default function Layout({ children }) {
       offScroll()
       document.removeEventListener('click', remember, { capture: true })
     }
+  }, [])
+
+  /* ---- fetch a book on the first sign of intent ----------------------------
+     Each book's content is its own chunk, fetched when the book is opened
+     (data/books.js). Starting that fetch when a pointer arrives on a link to
+     it — or a finger lands on one — wins back most of the wait before the
+     click completes. Delegated from the document because book links are
+     everywhere: the carousel, the sidebar, the navbar chips, the hero, search
+     results, and in-content cards between books. */
+  useEffect(() => {
+    const onIntent = (e) => {
+      const a = e.target.closest?.('a[href*="#/book/"]')
+      const m = a && /#\/book\/([^/?#]+)/.exec(a.getAttribute('href'))
+      if (m) prefetchBook(m[1])
+    }
+    const opts = { passive: true, capture: true }
+    for (const type of ['pointerover', 'touchstart', 'focusin']) document.addEventListener(type, onIntent, opts)
+    return () => { for (const type of ['pointerover', 'touchstart', 'focusin']) document.removeEventListener(type, onIntent, opts) }
   }, [])
 
   /* ---- "the reader is scrolling", for every scrollbar on the page ----------

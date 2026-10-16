@@ -28,8 +28,14 @@ import Icon from './Icon.jsx'
  * remounts and an initialiser would run once and never again — measured, an
  * `?open=` arrival left the previously-opened one showing instead. It only ever
  * ADDS: opening one is no reason to shut one the reader opened themselves.
+ *
+ * `level` is the heading's rank in the page outline: 2 where the headings ARE
+ * the page's sections (chapters, activities), 3 where they sit under an h2 of
+ * their own (members' reviews on a book landing). The look is the class's, so
+ * it does not change with the level.
  */
-export default function Collapsible({ items = [], renderBody, keepMounted = false, className = '' }) {
+export default function Collapsible({ items = [], renderBody, keepMounted = false, className = '', level = 2 }) {
+  const Heading = `h${level}`
   const { t, markVisited } = useApp()
   const [params, setParams] = useSearchParams()
   const { bookId, slug } = useParams()
@@ -106,17 +112,17 @@ export default function Collapsible({ items = [], renderBody, keepMounted = fals
         return (
           <section key={item.id} className={`collapsible ${isOpen ? 'is-open' : ''}`}
             ref={item.id === want ? wantRef : undefined}>
-            {/* The button sits INSIDE the h2, not around it: a <button> may only
-                contain phrasing content, and wrapping the heading would drop it
-                out of the document outline. Same shape as the landing groups. */}
-            <h2 className="collapsible-title">
+            {/* The button sits INSIDE the heading, not around it: a <button> may
+                only contain phrasing content, and wrapping the heading would drop
+                it out of the document outline. Same shape as the landing groups. */}
+            <Heading className="collapsible-title">
               <button type="button" className="collapsible-toggle" aria-expanded={isOpen}
                 onClick={() => toggle(item.id)}>
                 <span className={`side-chev ${isOpen ? 'open' : ''}`} aria-hidden>›</span>
                 {item.icon && <Icon name={item.icon} className="section-emoji" />}
                 <span className="collapsible-title-text">{t(item.title)}</span>
               </button>
-            </h2>
+            </Heading>
             {mounted && (
               <div className="collapsible-body" hidden={!isOpen}>
                 {item.lead && <p className="collapsible-lead">{t(item.lead)}</p>}

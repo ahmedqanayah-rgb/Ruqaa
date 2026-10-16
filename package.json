@@ -3,9 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Bilingual (AR/EN) reading-club website for Matthew Walker's Why We Sleep",
+  "description": "Ruqʿa (رُقعة) reading club — bilingual (Arabic/English) interactive summaries of the books the club reads",
   "scripts": {
+    "predev": "node scripts/gen-book-skeletons.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/gen-book-skeletons.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

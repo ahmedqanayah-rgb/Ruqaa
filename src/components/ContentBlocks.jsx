@@ -5,6 +5,7 @@ import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
 import RichText from './RichText.jsx'
 import Collapsible from './Collapsible.jsx'
+import LoadBoundary from './LoadBoundary.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -275,10 +276,14 @@ export default function ContentBlocks({ blocks }) {
               </blockquote>
             )
           case 'figure':
+            // Keyed by id too, so a failure does not stick to whatever figure
+            // lands at the same index on the next section.
             return (
-              <Suspense key={i} fallback={<div className="figure-loading" aria-hidden />}>
-                <Figure id={b.id} />
-              </Suspense>
+              <LoadBoundary key={`${i}:${b.id}`} message={L('تعذّر تحميل هذا الشكل.', 'This figure could not be loaded.')}>
+                <Suspense fallback={<div className="figure-loading" aria-hidden />}>
+                  <Figure id={b.id} />
+                </Suspense>
+              </LoadBoundary>
             )
           case 'image': return <ImageBlock key={i} block={b} />
           case 'imggrid':

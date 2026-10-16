@@ -1,87 +1,117 @@
-import { whyWeSleep } from './books/why-we-sleep/index.js'
-import { stolenFocus } from './books/stolen-focus/index.js'
-import { talkingToMyDaughter } from './books/talking-to-my-daughter/index.js'
+import { useEffect, useState } from 'react'
+import { bookSkeletons, clubTotals } from './bookSkeletons.js'
 
 /*
- * Books registry. Each book lives in its own folder under data/books/<slug>/ —
- * add a new folder and append it here; it appears on Home and in the sidebar
- * automatically.
+ * THE APP'S BOOKS REGISTRY — skeletons now, content on demand.
+ *
+ * `books` is every book's SKELETON (generated into data/bookSkeletons.js from
+ * the full data; see data/skeleton.js for exactly what it keeps): titles,
+ * covers, sections, chapter and activity headings, and counts. That is all the
+ * Home carousel, the sidebar, the breadcrumb, the hero and the About page ever
+ * needed, and it is ~9 kB gzipped for all three books.
+ *
+ * A book's CONTENT — every paragraph, figure, study and quiz — loads when the
+ * book is opened: `loadBook(id)` / `useBook(id)`, one chunk per book. Until
+ * 2026-10 every book was bundled into the entry chunk, so the first page of the
+ * site downloaded all of them: 453.9 kB gzipped of JavaScript for a visitor who
+ * might read none of it, and +140 kB with every new book. The club's members
+ * join from places with very uneven connections.
+ *
+ * To add a book: create its folder under data/books/<slug>/ and add it to
+ * data/allBooks.js. The skeleton regenerates on `npm run dev` / `npm run build`,
+ * and the loader below finds the folder by glob — nothing else to register.
  */
-export const books = [whyWeSleep, stolenFocus, talkingToMyDaughter]
 
+export const books = bookSkeletons
+export { clubTotals }
+
+export {
+  entrySlugs, openable, sectionUnits, sectionProgress, readingUnits, findByKind,
+} from './bookHelpers.js'
+
+/* The SKELETON for an id, synchronously — enough to know the book exists and to
+   name it. For anything inside a section, use the full book from useBook(). */
 export function getBook(id) {
   return books.find((b) => b.id === id)
 }
 
-export function getSection(book, slug) {
-  return book.sections.find((s) => s.slug === slug)
+/* ---------------- content on demand ---------------- */
+
+// One lazy chunk per book. The glob is resolved by Vite at build time, so a
+// new folder needs no entry here; the key is the folder, which is the book id.
+const loaders = import.meta.glob('./books/*/index.js')
+const loaded = new Map()   // id → full book
+const pending = new Map()  // id → Promise<full book>
+
+/* The full book if it has already arrived, else undefined. Synchronous, so a
+   page revisited in the same sitting renders at once — no flash of a loading
+   state, and scroll restoration finds the content where it left it. */
+export function peekBook(id) {
+  return loaded.get(id)
 }
 
-/* A `groups` entry is either a titled list — `{ title, slugs }` — or a SOLO
-   section, `{ slug }`, which renders as a top-level entry with no header of its
-   own. Solo entries exist because a group of one is a lie: «داخل حالة التدفّق»
-   sat alone inside a titled group, so reaching it meant opening a drawer to find
-   a single item, and «المؤلّف والمترجم» needed a home once «ابدأ هنا» was gone.
-   Everything that walks `groups` — the sidebar, the landing, check-links — goes
-   through this. It lives here, beside the data it describes, rather than in a
-   component: the sidebar and the book page both need it, and importing it from
-   the page would pull that page's whole module graph into the entry chunk. */
-export const entrySlugs = (g) => g.slugs || [g.slug]
-
-/* THE OPENABLE HEADINGS OF A SECTION, whichever shape holds them.
-   A section keeps them in one of two places and both render identically through
-   components/Collapsible.jsx: the book's chapters are panels of a `tabs` BLOCK,
-   the activities are a `parts` FIELD. Everything that needs to enumerate them —
-   reading units, the search index, check-links — goes through here.
-
-   It exists because that walk was written three times and had already diverged:
-   `readingUnits` knew only about `tabs`, so it emitted `activities` while
-   Collapsible marked `activities?open=<part>`. Every activity's visited key was
-   a dead write, and the tab counted as a unit nothing could ever tick. */
-export function openable(section) {
-  const tabs = (section.blocks || []).find((b) => b.type === 'tabs')
-  return tabs?.panels || section.parts || []
+export function loadBook(id) {
+  if (loaded.has(id)) return Promise.resolve(loaded.get(id))
+  if (pending.has(id)) return pending.get(id)
+  const load = loaders[`./books/${id}/index.js`]
+  if (!load) return Promise.resolve(undefined)
+  const p = load()
+    .then((m) => {
+      // Each book module exports its book as a named const; find it by id
+      // rather than by export name, so a new book needs no change here.
+      const book = Object.values(m).find((v) => v && typeof v === 'object' && v.id === id)
+      loaded.set(id, book)
+      pending.delete(id)
+      if (import.meta.env.DEV) warnIfStale(book)
+      return book
+    })
+    .catch((err) => {
+      // Not cached here — but the BROWSER caches it: a failed import() of the
+      // same URL fails again without refetching for the life of the page
+      // (measured, Chrome 152). Recovery is a reload; see LoadBoundary.jsx.
+      pending.delete(id)
+      throw err
+    })
+  pending.set(id, p)
+  return p
 }
 
-/* THE UNITS OF READING A SECTION CONTAINS, fully qualified as `bookId/…`.
-   A section with headings is its headings; a plain one is itself. This is the
-   ONE definition of "read" — the card's ✓, the sidebar's ✓, the progress ring
-   and the «تابع القراءة» CTA all count these keys.
+/* The full book for a page: `{ book, failed }`. `book` is undefined while the
+   chunk is on its way; `failed` is set if it could not be fetched. */
+export function useBook(id) {
+  const [, rerender] = useState(0)
+  const [failed, setFailed] = useState(false)
+  const book = id ? loaded.get(id) : undefined
 
-   They used to disagree. Arriving at a section marked the bare slug, which the
-   ticks read; the ring counted heading keys, which arrival never wrote. So the
-   card showed ✓ «مراجعة الكتاب» while the hero said «قرأت 0 من 7» — on the same
-   screen, about the same section. Two meanings of "read" over one Set. */
-export function sectionUnits(book, section) {
-  const heads = openable(section)
-  return heads.length
-    ? heads.map((h) => `${book.id}/${section.slug}?open=${h.id}`)
-    : [`${book.id}/${section.slug}`]
+  useEffect(() => {
+    if (!id || loaded.has(id)) return
+    let live = true
+    setFailed(false)
+    loadBook(id).then(
+      () => { if (live) rerender((n) => n + 1) },
+      () => { if (live) setFailed(true) },
+    )
+    return () => { live = false }
+  }, [id])
+
+  return { book, failed: failed && !book }
 }
 
-/* How much of a section the reader has opened: `{ seen, total, done }`. */
-export function sectionProgress(book, section, visited) {
-  const units = sectionUnits(book, section)
-  const seen = units.filter((u) => visited.has(u)).length
-  return { seen, total: units.length, done: seen === units.length }
+/* Start fetching a book before it is needed — on the first sign of intent
+   (a pointer over, or a finger on, a link to it). Safe to call any number of
+   times; errors are left for useBook to surface when the page actually asks. */
+export function prefetchBook(id) {
+  if (id && loaders[`./books/${id}/index.js`]) loadBook(id).catch(() => {})
 }
 
-export function readingUnits(book) {
-  return book.sections.flatMap((s) => sectionUnits(book, s))
-}
-
-/* Find an activity by its kind, wherever it lives.
-   The quiz, the game, the lab and the assessment stopped being sections when
-   they moved into the one «أنشطة إضافية» tab — they are `parts` of it now. The
-   landing's stat chips, the fact rotator and anything else that used to do
-   `sections.find(s => s.kind === 'quiz')` goes through this instead, and gets
-   back both the part (for its data) and the section (for its URL). */
-export function findByKind(book, kind) {
-  for (const section of book.sections) {
-    if (section.kind === kind) return { section, part: section }
-    for (const part of section.parts || []) {
-      if (part.kind === kind) return { section, part }
-    }
+/* DEVELOPMENT ONLY: the skeletons are generated, so an edit to a book that
+   changes what the skeleton holds (a heading added, a section retitled) leaves
+   them stale until the generator runs again — which `npm run dev` does on start.
+   Say so loudly instead of letting the sidebar and the page disagree. */
+async function warnIfStale(book) {
+  const { toSkeleton } = await import('./skeleton.js')
+  const shipped = getBook(book.id)
+  if (JSON.stringify(toSkeleton(book)) !== JSON.stringify(shipped)) {
+    console.error(`[books] data/bookSkeletons.js is stale for “${book.id}”. Run: node scripts/gen-book-skeletons.mjs`)
   }
-  return null
 }

@@ -230,15 +230,27 @@ all; switching to English adds 3 more for **11 files / 300 kB**.
 
 ---
 
-## 4. The 649 kB entry chunk is now mostly book content
+## 4. The entry chunk was book content — split per book  ✅ **done (2026-10-16)**
 
-After the vendor/lazy split, what's left in the entry is the books themselves — 183 studies
-with full methodology text in two languages. Splitting it means lazy-loading each book's
-sections, which touches everything reading `book.sections`, plus `searchIndex.js`, which
-deliberately walks *all* books at module load. (`studiesPool.js` used to be the other one;
-it went with "Ask me one" on 2026-08-03.)
+After the vendor/lazy split, what was left in the entry was the books themselves. The third
+book took it to **453.9 kB gzipped**, growing ~140 kB with every book, for a visitor who might
+read none of them. It is now **69.6 kB gzipped**, and its only static import is `react-*`:
 
-Real work, real risk, and worth far less than item 1. Don't start it before the images.
+- The app imports **skeletons** (`data/bookSkeletons.js`, ~9 kB gz for all three: titles,
+  sections, panel/part headings, precomputed totals), generated from the full books by
+  `scripts/gen-book-skeletons.mjs` as `predev`/`prebuild`.
+- Each book's content is its own chunk (~120–140 kB gz), fetched when the book is opened
+  (`useBook`) or on the first sign of intent — a pointer or finger on a link to it.
+- The search index is **prebuilt at build time** (`data/searchData.js`, ~88 kB gz) and loaded
+  when the palette first opens, so searching needs none of the books.
+
+The risk this item warned about was real and is handled by one invariant, stated in
+`data/skeleton.js`: before a book loads, every question a page asks of it must get the same
+answer the full book gives — above all the reading units the sidebar and the progress ring
+both count. In development `loadBook` compares the two and says so loudly when they drift.
+The refactor also surfaced a stale count: the About page had said «0 دراسة» and «5 أشكال»
+since the sections were folded into panels; it now reads totals computed from the whole
+book (205 studies, 46 distinct figures).
 
 ---
 
@@ -436,4 +448,5 @@ fixed Home pointing at the finished book · bad section slugs no longer fail sil
 to WebP + build inputs moved out of `public/`) · layout shift fixed for covers *and* content
 images · heading hierarchy fixed · flow-zone quadrant bug fixed ·
 map made legible on mobile · theme now follows the device colour scheme ·
-four Stolen Focus figures redesigned per user feedback (§6).
+four Stolen Focus figures redesigned per user feedback (§6) ·
+**entry chunk 453.9 → 69.6 kB gzipped** — books and search load on demand (§4).

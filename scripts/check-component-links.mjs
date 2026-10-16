@@ -22,7 +22,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const { books, openable } = await import('../src/data/books.js')
+// The FULL books — data/books.js holds only skeletons now, and it uses Vite's
+// import.meta.glob, which Node cannot run.
+const { books } = await import('../src/data/allBooks.js')
+const { openable } = await import('../src/data/bookHelpers.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const srcDir = path.resolve(here, '../src')
