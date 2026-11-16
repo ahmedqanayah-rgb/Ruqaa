@@ -197,7 +197,8 @@ export const talkingToMyDaughter = {
     'Greece’s former finance minister explains the economy to his teenage daughter without jargon: where inequality came from, how bankers create money from thin air, and why money can never be free of politics — through stories from Faust, Oedipus and The Matrix.'
   ),
   verdict,
-  accent: 'var(--accent)',
+  /* The book's colour world — the red of its cover's title (see lib/tone.js). */
+  tone: { from: '#c9281f', to: '#7d1410', spark: '#ffd7a1' },
   groups: [
     { slug: 'author' },
     { slug: 'review' },

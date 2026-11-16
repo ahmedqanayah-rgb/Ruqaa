@@ -1,0 +1,509 @@
+/* ============================================================
+   «رُقعة النرد» — the club's dice game (pages/Game.jsx).
+
+   Imported by the game's page, so it rides in the game's lazy chunk: nobody who
+   came to read a chapter downloads a board game's stylesheet.
+
+   TWO WORLDS IN ONE FILE.
+   - The SETUP screen (`.gm-setup`) is an ordinary page of the site: it uses the
+     site's tokens and follows the light/dark theme.
+   - The STAGE (`.gm-stage`) and everything laid over it (`.gm-overlay`) do NOT
+     follow the theme. The table is always dark and the cards are always paper,
+     the way a real table and real cards are. It is the thing being shared on a
+     call, and large light shapes on a dark ground are what survives video
+     compression. Its colours are the `--gm-*` set below, and it never reads
+     `--text`/`--bg`.
+   ============================================================ */
+:root {
+  --gm-table: #100d09;
+  --gm-panel: rgba(246, 241, 231, 0.06);
+  --gm-line: rgba(246, 241, 231, 0.14);
+  --gm-text: #f6f1e7;
+  --gm-muted: #b5aa95;
+  --gm-gold: #d9bd8d;
+  --gm-paper: #fbf8f2;
+  --gm-ink: #1a1611;
+  --gm-ink-soft: #4f473c;
+  --gm-rule: #e4dccb;
+  --gm-good: #1f7a52;
+  --gm-good-soft: #e2f5ea;
+  --gm-bad: #b8443a;
+  --gm-bad-soft: #fbe6e3;
+}
+
+/* The site sets a colour on every <p>, <li> and <strong> from the THEME. On the
+   dark table and the paper cards that is the wrong colour half the time (dark
+   text on the table in the light theme, pale text on a card in the dark one),
+   so inside the game those elements take their colour from where they sit.
+   The element list is in `:where()` so the whole selector weighs exactly ONE
+   class: enough to beat the site's bare `p {}` and `strong {}`, and no more
+   than any single-class rule below, which therefore still wins by coming
+   later. (Wrapping the `.gm-*` half in `:where()` too drops it to zero, and
+   then the site's rules win — the scoreboard was dark text on the dark table.) */
+.gm-stage :where(p, li, strong, small, span, h1, h2, h3),
+.gm-overlay :where(p, li, strong, small, span, h1, h2, h3) { color: inherit; }
+
+/* ============================================================
+   Setup — an ordinary page
+   ============================================================ */
+.gm-setup { display: flex; flex-direction: column; gap: var(--space-4); }
+
+/* The same ink card as the game's door on Home, so the door and the room
+   behind it look like one place. */
+.gm-hero {
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-5);
+  padding: var(--space-5) var(--space-6); border-radius: var(--radius-xl);
+  background: #17130e; color: #f6f1e7;
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+}
+.gm-hero::before {
+  content: ''; position: absolute; inset-block: -45%; inset-inline-start: -8%; width: min(70%, 520px);
+  background: radial-gradient(closest-side, rgba(165, 133, 91, 0.5), transparent);
+  pointer-events: none;
+}
+.gm-hero > * { position: relative; }
+.gm-hero-art { width: clamp(120px, 20vw, 210px); height: auto; }
+.gm-hero .eyebrow { color: #d9bd8d; }
+.gm-hero h1 { color: #fff; margin: 4px 0 6px; font-size: var(--fs-display); }
+.gm-hero p { color: #cfc5b3; margin: 0; font-size: var(--fs-md); max-width: 50ch; }
+
+.gm-setup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
+.gm-panel { padding: var(--space-5); border-radius: var(--radius-lg); }
+.gm-panel h2 { font-size: var(--fs-lg); margin: 0 0 4px; }
+.gm-panel h2:not(:first-child) { margin-top: var(--space-5); }
+.gm-hint { color: var(--text-muted); font-size: var(--fs-sm); margin: 0 0 var(--space-3); }
+
+.gm-players { list-style: none; padding: 0; margin: 0 0 var(--space-3); display: flex; flex-direction: column; gap: 10px; }
+.gm-players li { display: flex; align-items: center; gap: 10px; margin: 0; }
+/* 16px, never smaller: iOS zooms the whole page into any input set below it,
+   and does not zoom back out. */
+.gm-input {
+  flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 11px 14px;
+  border-radius: 14px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text);
+  transition: border-color var(--transition), background var(--transition);
+}
+.gm-input::placeholder { color: var(--text-muted); }
+.gm-input:focus { outline: none; border-color: var(--accent); background: var(--bg-elev); }
+.gm-remove {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; border: 0; background: transparent;
+  color: var(--text-muted); display: grid; place-items: center;
+  transition: background var(--transition), color var(--transition);
+}
+.gm-remove:hover:not(:disabled) { background: var(--surface-hover); color: var(--danger); }
+.gm-remove:disabled { opacity: 0.3; cursor: default; }
+
+/* A book is a switch: its cover, its name, and a tick in its own tone. */
+.gm-books { display: grid; gap: 10px; }
+.gm-book {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 8px; padding-inline: 8px 14px;
+  border-radius: 16px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text-muted);
+  font: inherit; font-weight: 700; font-size: var(--fs-sm); text-align: start;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+.gm-book img { width: 36px; height: 54px; object-fit: cover; border-radius: 4px; flex-shrink: 0; filter: grayscale(0.8); opacity: 0.6; transition: filter var(--transition), opacity var(--transition); }
+.gm-book-title { flex: 1; min-width: 0; }
+.gm-book-check {
+  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center;
+  border: 1.5px solid var(--border-strong); color: transparent; font-size: 0.85rem;
+}
+.gm-book.is-on { color: var(--text); border-color: color-mix(in srgb, var(--tone) 55%, var(--border-strong)); background: color-mix(in srgb, var(--tone) 9%, var(--bg-elev)); }
+.gm-book.is-on img { filter: none; opacity: 1; }
+.gm-book.is-on .gm-book-check { background: var(--tone); border-color: var(--tone); color: #fff; }
+
+/* Segmented choices: the game's length, the answer timer. */
+.gm-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; padding: 5px; border-radius: 18px; background: var(--bg-elev-2); margin-top: var(--space-2); }
+.gm-seg button {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 48px; padding: 8px 6px; border-radius: 14px; border: 0; background: transparent;
+  color: var(--text-soft); font: inherit; text-align: center;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+.gm-seg button strong { font-size: var(--fs-sm); color: inherit; }
+.gm-seg button small { font-size: 0.7rem; color: var(--text-muted); }
+.gm-seg button.is-on { background: var(--bg-elev); color: var(--text); box-shadow: var(--shadow-sm); }
+
+.gm-setup-foot { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.gm-setup-foot .gm-hint { margin: 0; }
+.gm-start { font-size: var(--fs-md); padding: 15px 36px; }
+.gm-how { margin-top: var(--space-3); }
+.gm-how h2 { font-size: var(--fs-lg); }
+.gm-rules { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 8px; max-width: 70ch; }
+.gm-rules li { margin: 0; }
+
+@media (max-width: 760px) {
+  /* minmax(0, 1fr), not 1fr. A bare `1fr` is minmax(auto, 1fr), and `auto`
+     lets the widest thing inside set the floor — here a text <input>, whose
+     intrinsic width is twenty characters (~309px) however small `min-width`
+     says it may shrink. The panel measured 445px in a 375px phone. */
+  .gm-setup-grid { grid-template-columns: minmax(0, 1fr); }
+  .gm-hero { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) var(--space-4) var(--space-5); }
+  .gm-hero-art { width: 130px; }
+  .gm-panel { padding: var(--space-4); }
+  .gm-start { width: 100%; }
+}
+
+/* ============================================================
+   Tokens and the die — shared by setup and stage
+   ============================================================ */
+.gm-token {
+  display: inline-grid; place-items: center; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--tk); color: #1a1611; font-weight: 700; font-size: 0.95rem; line-height: 1;
+  border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* A real cube. `--die` is its edge; every face is pushed out by half of it.
+   The faces are INK with paper pips, because the die sits on the paper-coloured
+   roll button and a white die would vanish into it. */
+.gm-die { --die: 54px; display: inline-block; width: var(--die); height: var(--die); perspective: 520px; flex-shrink: 0; }
+.gm-die-cube {
+  display: block; position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d; transition: transform 900ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+.gm-die-face {
+  position: absolute; inset: 0; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  padding: 15%; gap: 7%; border-radius: 20%;
+  background: #1a1611; box-shadow: inset 0 0 0 1.5px rgba(246, 241, 231, 0.18);
+}
+.gm-die-face i { border-radius: 50%; }
+.gm-die-face i.on { background: #f6f1e7; }
+.gm-die-face.f1 { transform: translateZ(calc(var(--die) / 2)); }
+.gm-die-face.f6 { transform: rotateY(180deg) translateZ(calc(var(--die) / 2)); }
+.gm-die-face.f2 { transform: rotateY(90deg) translateZ(calc(var(--die) / 2)); }
+.gm-die-face.f5 { transform: rotateY(-90deg) translateZ(calc(var(--die) / 2)); }
+.gm-die-face.f3 { transform: rotateX(90deg) translateZ(calc(var(--die) / 2)); }
+.gm-die-face.f4 { transform: rotateX(-90deg) translateZ(calc(var(--die) / 2)); }
+
+/* ============================================================
+   The stage — the whole window, always the dark table
+   ============================================================ */
+.gm-stage {
+  height: 100vh; height: 100dvh;
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  color: var(--gm-text);
+  background:
+    radial-gradient(110% 80% at 50% 0%, #2c2217 0%, #15110b 55%, var(--gm-table) 100%);
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  /* A drag on the board must not pull the page (or pull-to-refresh the game). */
+  overscroll-behavior: none; touch-action: manipulation;
+  -webkit-user-select: none; user-select: none;
+}
+
+.gm-top { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+.gm-top-title { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.gm-top-title strong { font-size: var(--fs-md); }
+.gm-top-title span { font-size: var(--fs-xs); color: var(--gm-muted); }
+.gm-top-actions { margin-inline-start: auto; display: flex; gap: 6px; }
+.gm-icon {
+  width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%;
+  display: grid; place-items: center; font-size: 1.1rem;
+  border: 1px solid var(--gm-line); background: var(--gm-panel); color: var(--gm-text);
+  transition: background var(--transition);
+}
+.gm-icon:hover { background: rgba(246, 241, 231, 0.14); }
+.gm-icon.is-text { font-weight: 700; font-size: 0.85rem; }
+
+/* Wide: the board, with the scores and the turn beside it.
+   Tall (anything taller than it is wide — a phone, a tablet upright, a narrow
+   window): scores above, board in the middle, the die under the thumb.
+   Keyed on the SHAPE of the window, not its width: a phone turned sideways is
+   844px wide and needs the side-by-side layout, or its board is a strip. */
+.gm-main {
+  min-height: 0; padding: 0 14px 14px; display: grid; gap: 14px;
+  grid-template-columns: minmax(0, 1fr) clamp(210px, 28vw, 330px);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'table scores' 'table turn';
+}
+.gm-table { grid-area: table; min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; }
+.gm-scores { grid-area: scores; }
+.gm-turn { grid-area: turn; }
+
+.gm-scores { list-style: none; margin: 0; padding: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; }
+.gm-scores::-webkit-scrollbar { display: none; }
+.gm-score {
+  display: flex; align-items: center; gap: 10px; margin: 0; padding: 9px 14px 9px 9px; padding-inline: 9px 14px;
+  border-radius: 999px; background: var(--gm-panel); border: 1px solid var(--gm-line);
+  transition: background var(--transition), border-color var(--transition);
+}
+.gm-score.is-turn { background: rgba(217, 189, 141, 0.18); border-color: var(--gm-gold); }
+.gm-score-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.gm-score-n { font-size: 1.5rem; line-height: 1; font-variant-numeric: tabular-nums; animation: gmPop 420ms var(--ease-out); }
+@keyframes gmPop { 0% { transform: scale(1.7); color: var(--gm-gold); } 100% { transform: none; } }
+.gm-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(246, 241, 231, 0.12); color: var(--gm-muted); white-space: nowrap; }
+.gm-badge.is-debt { background: rgba(239, 111, 97, 0.2); color: #ffb0a6; }
+.gm-badge.is-done { color: var(--gm-gold); }
+
+.gm-turn {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px;
+  border-radius: 24px; background: var(--gm-panel); border: 1px solid var(--gm-line);
+}
+.gm-turn-who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.gm-turn-who > span:last-child { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.gm-turn-who small { font-size: var(--fs-xs); color: var(--gm-muted); }
+.gm-turn-who strong { font-size: var(--fs-lg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-notices { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: var(--fs-sm); color: var(--gm-gold); }
+.gm-notices li { margin: 0; }
+
+/* The one button of the game. Chunky, with a lip it sinks onto when pressed —
+   it is a physical thing to hit, not a link to follow. */
+.gm-roll {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  padding: 14px 18px; border: 0; border-radius: 20px;
+  background: var(--gm-paper); color: var(--gm-ink);
+  font: inherit; font-weight: 700; font-size: var(--fs-lg);
+  box-shadow: 0 6px 0 #c4b89f, 0 16px 26px rgba(0, 0, 0, 0.4);
+  transition: transform 90ms ease, box-shadow 90ms ease, opacity var(--transition);
+}
+.gm-roll:hover:not(:disabled) { background: #fff; }
+.gm-roll:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 #c4b89f, 0 8px 14px rgba(0, 0, 0, 0.4); }
+.gm-roll:disabled { cursor: default; opacity: 0.78; }
+.gm-roll-label { min-width: 4ch; text-align: start; }
+
+/* ---- the board ---- */
+.gm-boardwrap { min-width: 0; min-height: 0; height: 100%; display: grid; place-items: center; overflow: hidden; }
+.gm-board { position: relative; flex: none; }
+/* The track: a soft line from each square's centre to the next one's. */
+.gm-link {
+  position: absolute; width: var(--cell); height: calc(var(--cell) * 0.1); margin-top: calc(var(--cell) * -0.05);
+  background: var(--gm-line); border-radius: 999px;
+}
+.gm-link.is-down { width: calc(var(--cell) * 0.1); height: var(--cell); margin-top: 0; margin-inline-start: calc(var(--cell) * -0.05); }
+
+.gm-sq { position: absolute; width: var(--cell); height: var(--cell); padding: calc(var(--cell) * 0.07); }
+.gm-sq-face {
+  position: relative; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding-top: calc(var(--cell) * 0.09);
+  border-radius: calc(var(--cell) * 0.22);
+  background: #2a231a; border: 1px solid var(--gm-line); color: var(--gm-text);
+  box-shadow: 0 calc(var(--cell) * 0.04) 0 rgba(0, 0, 0, 0.35);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.gm-sq-icon { font-size: calc(var(--cell) * 0.27); }
+.gm-sq-word { font-size: max(9px, calc(var(--cell) * 0.14)); font-weight: 700; line-height: 1; }
+/* A book's squares wear its tone (set per square by lib/tone.js). */
+.gm-sq.is-book .gm-sq-face { background: linear-gradient(155deg, var(--tone), var(--tone-2)); border-color: rgba(255, 255, 255, 0.2); color: #fff; }
+.gm-sq.is-tf .gm-sq-face { background: #f6f1e7; border-color: #f6f1e7; color: #1a1611; }
+.gm-sq.is-luck .gm-sq-face { background: linear-gradient(155deg, #e3c999, #a5855b); border-color: #e3c999; color: #1a1611; }
+.gm-sq.is-dare .gm-sq-face { background: linear-gradient(155deg, #9b87ea, #5b45ba); border-color: rgba(255, 255, 255, 0.25); color: #fff; }
+.gm-sq.is-start .gm-sq-face,
+.gm-sq.is-finish .gm-sq-face { background: transparent; border: 2px dashed var(--gm-gold); color: var(--gm-gold); box-shadow: none; justify-content: center; padding-top: 0; }
+.gm-sq.is-finish .gm-sq-face { background: rgba(217, 189, 141, 0.16); border-style: solid; }
+/* Where the player whose turn it is will land — lit before their token gets
+   there, so the room can see what is coming while it walks. */
+.gm-sq.is-here .gm-sq-face { box-shadow: 0 0 0 calc(var(--cell) * 0.045) var(--gm-gold), 0 calc(var(--cell) * 0.04) 0 rgba(0, 0, 0, 0.35); }
+
+.gm-token.on-board {
+  position: absolute; z-index: 2;
+  width: calc(var(--cell) * 0.4); height: calc(var(--cell) * 0.4);
+  margin-inline-start: calc(var(--cell) * -0.2); margin-top: calc(var(--cell) * -0.2);
+  font-size: calc(var(--cell) * 0.19); border-width: max(1.5px, calc(var(--cell) * 0.028));
+  /* Both spellings: the position is set with the logical property, and not
+     every engine lists that name as a transitionable one. */
+  transition: inset-inline-start 220ms var(--ease-out), left 220ms var(--ease-out), right 220ms var(--ease-out), top 220ms var(--ease-out);
+}
+.gm-token.on-board.is-crowded { width: calc(var(--cell) * 0.32); height: calc(var(--cell) * 0.32); margin-inline-start: calc(var(--cell) * -0.16); margin-top: calc(var(--cell) * -0.16); font-size: calc(var(--cell) * 0.15); }
+.gm-token.on-board.is-turn { z-index: 3; animation: gmPulse 1.5s ease-out infinite; }
+@keyframes gmPulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tk) 75%, transparent), 0 2px 6px rgba(0, 0, 0, 0.35); }
+  100% { box-shadow: 0 0 0 calc(var(--cell) * 0.2) transparent, 0 2px 6px rgba(0, 0, 0, 0.35); }
+}
+
+.gm-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: var(--fs-xs); color: var(--gm-muted); }
+.gm-legend li { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
+.gm-legend-dot { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-size: 0.72rem; background: #2a231a; color: var(--gm-text); }
+.gm-legend .is-book .gm-legend-dot { background: linear-gradient(155deg, var(--tone), var(--tone-2)); color: #fff; }
+.gm-legend .is-tf .gm-legend-dot { background: #f6f1e7; color: #1a1611; }
+.gm-legend .is-luck .gm-legend-dot { background: linear-gradient(155deg, #e3c999, #a5855b); color: #1a1611; }
+.gm-legend .is-dare .gm-legend-dot { background: linear-gradient(155deg, #9b87ea, #5b45ba); color: #fff; }
+
+@media (max-aspect-ratio: 1/1) {
+  .gm-top { padding: 8px 10px; gap: 8px; }
+  .gm-icon { width: 40px; height: 40px; }
+  .gm-main {
+    padding: 0 10px 10px; gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'scores' 'table' 'turn';
+  }
+  /* The scores become a grid of chips with EVERYONE on screen — a score that
+     has to be scrolled to is not being kept in front of the room. Two or three
+     players share one row; four sit two by two; five or six, three across.
+     (`.n4` etc. is the player count, set by the stage.) */
+  .gm-scores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; overflow: visible; }
+  .gm-scores.n2, .gm-scores.n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gm-score { min-width: 0; padding: 5px 12px 5px 5px; padding-inline: 5px 12px; gap: 7px; }
+  .gm-score .gm-token { width: 28px; height: 28px; font-size: 0.8rem; }
+  .gm-score-name { font-size: var(--fs-sm); }
+  .gm-score-n { font-size: 1.15rem; }
+  .gm-score .gm-badge { display: none; }
+  /* The narrowest phones: three chips across leaves a name about 15px, which
+     ellipsis reduces to «ل…». Two across keeps every name whole, and costs the
+     board nothing — at this width its squares are limited by the screen's
+     width, not by the height the extra row takes. */
+  @media (max-width: 359px) { .gm-scores { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .gm-turn { grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 10px; border-radius: 22px; }
+  .gm-notices { grid-column: 1 / -1; order: 3; }
+  .gm-roll { padding: 10px 16px; gap: 12px; font-size: var(--fs-md); }
+  .gm-die { --die: 46px; }
+  .gm-legend { gap: 4px 10px; font-size: 0.68rem; }
+  .gm-legend-dot { width: 18px; height: 18px; border-radius: 6px; font-size: 0.6rem; }
+}
+/* A short, wide window — a phone on its side. Everything gives up some height. */
+@media (min-aspect-ratio: 1/1) and (max-height: 520px) {
+  .gm-top { padding: 4px 10px; }
+  .gm-icon { width: 36px; height: 36px; }
+  .gm-main { padding: 0 10px 8px; gap: 8px; }
+  .gm-score { padding-block: 4px; }
+  .gm-score .gm-token { width: 26px; height: 26px; font-size: 0.75rem; }
+  .gm-score-n { font-size: 1.1rem; }
+  .gm-turn { padding: 8px; gap: 6px; }
+  .gm-turn-who strong { font-size: var(--fs-md); }
+  .gm-roll { padding: 8px 12px; font-size: var(--fs-md); }
+  .gm-die { --die: 40px; }
+  .gm-legend { display: none; }
+}
+
+/* ============================================================
+   Cards, dialogs and the result — laid over the stage
+   ============================================================ */
+.gm-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  display: grid; place-items: center; overflow-y: auto;
+  padding: clamp(10px, 3vw, 32px);
+  padding-top: max(clamp(10px, 3vw, 32px), env(safe-area-inset-top, 0px));
+  padding-bottom: max(clamp(10px, 3vw, 32px), env(safe-area-inset-bottom, 0px));
+  background: rgba(8, 6, 4, 0.74);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  animation: gmFade 160ms ease-out both;
+}
+@keyframes gmFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gmRise { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+.gm-card {
+  width: min(780px, 100%); border-radius: 28px; overflow: hidden;
+  background: var(--gm-paper); color: var(--gm-ink);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.75);
+  animation: gmRise 260ms var(--ease-out) both;
+}
+/* The band across the top says what kind of card it is, in the colour that
+   kind of square wears on the board — a book's question in the book's tone. */
+.gm-card-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 14px 18px;
+  background: linear-gradient(135deg, var(--tone), var(--tone-2)); color: #fff;
+}
+.gm-card.kind-tf .gm-card-head { background: #1a1611; color: #f6f1e7; }
+.gm-card.kind-luck .gm-card-head { background: linear-gradient(135deg, #e3c999, #a5855b); color: #1a1611; }
+.gm-card.kind-dare .gm-card-head { background: linear-gradient(135deg, #9b87ea, #5b45ba); color: #fff; }
+.gm-card.kind-finish .gm-card-head { background: linear-gradient(135deg, #e3c999, #a5855b); color: #1a1611; }
+.gm-card-kind { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 4px 13px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); }
+.gm-card.kind-luck .gm-card-kind, .gm-card.kind-finish .gm-card-kind { background: rgba(26, 22, 17, 0.12); }
+.gm-card-book { font-size: var(--fs-sm); font-weight: 600; opacity: 0.85; }
+.gm-card-who { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.gm-card-who .gm-token { width: 28px; height: 28px; font-size: 0.8rem; }
+.gm-card-stake { font-weight: 700; padding: 3px 11px; border-radius: 999px; background: rgba(0, 0, 0, 0.26); color: #fff; font-variant-numeric: tabular-nums; }
+
+.gm-timer { height: 8px; background: var(--gm-rule); }
+.gm-timer i { display: block; height: 100%; background: var(--gm-ink); transition: width 1s linear, background var(--transition); }
+.gm-timer i.is-low { background: var(--gm-bad); }
+
+.gm-card-body { display: flex; flex-direction: column; gap: 16px; padding: clamp(18px, 4vw, 34px); }
+/* The type is sized for a shared screen: this is read by people watching a
+   video of someone else's window. */
+.gm-q { margin: 0; font-size: clamp(1.25rem, 0.9rem + 1.6vw, 1.9rem); font-weight: 700; line-height: 1.5; text-wrap: balance; }
+.gm-q strong { font-weight: 700; }
+
+.gm-opts { display: grid; gap: 10px; }
+.gm-opts.is-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gm-opt {
+  display: flex; align-items: center; gap: 14px; text-align: start;
+  padding: 13px 16px; border-radius: 18px; border: 2px solid var(--gm-rule);
+  background: #fff; color: var(--gm-ink);
+  font: inherit; font-size: clamp(1rem, 0.86rem + 0.7vw, 1.3rem); font-weight: 600; line-height: 1.5;
+  box-shadow: 0 4px 0 var(--gm-rule);
+  transition: transform 90ms ease, box-shadow 90ms ease, border-color var(--transition), background var(--transition), opacity var(--transition);
+}
+.gm-opt:hover:not(:disabled) { border-color: var(--gm-ink); box-shadow: 0 4px 0 var(--gm-ink); }
+.gm-opt:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--gm-ink); }
+.gm-opt:disabled { cursor: default; }
+.gm-opt-letter {
+  width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center;
+  background: var(--gm-ink); color: var(--gm-paper); font-weight: 700; font-size: 1.05rem;
+}
+.gm-opt-text { min-width: 0; }
+.gm-opt.is-right { border-color: var(--gm-good); background: var(--gm-good-soft); box-shadow: 0 4px 0 var(--gm-good); }
+.gm-opt.is-right .gm-opt-letter { background: var(--gm-good); color: #fff; }
+.gm-opt.is-wrong { border-color: var(--gm-bad); background: var(--gm-bad-soft); box-shadow: 0 4px 0 var(--gm-bad); }
+.gm-opt.is-wrong .gm-opt-letter { background: var(--gm-bad); color: #fff; }
+.gm-opt.is-dim { opacity: 0.45; box-shadow: none; }
+.gm-opt.is-pass, .gm-opt.is-fail { justify-content: center; }
+.gm-opt.is-pass { border-color: var(--gm-good); color: var(--gm-good); box-shadow: 0 4px 0 var(--gm-good); }
+.gm-opt.is-fail { border-color: var(--gm-rule); color: var(--gm-ink-soft); }
+
+.gm-reveal { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding-top: 14px; border-top: 2px dashed var(--gm-rule); animation: gmRise 240ms var(--ease-out) both; }
+.gm-verdict { margin: 0; font-weight: 700; font-size: var(--fs-lg); }
+.gm-card.is-right .gm-verdict { color: var(--gm-good); }
+.gm-card.is-wrong .gm-verdict { color: var(--gm-bad); }
+.gm-why { margin: 0; font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem); line-height: 1.75; color: var(--gm-ink-soft); }
+.gm-why strong { color: var(--gm-ink); }
+.gm-effect { margin: 0; font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem); font-weight: 700; line-height: 1.35; }
+.mood-good .gm-effect { color: var(--gm-good); }
+.mood-bad .gm-effect { color: var(--gm-bad); }
+.gm-card-body.is-finish { align-items: center; text-align: center; }
+.gm-card-body.is-finish .gm-effect { color: #8a6a39; font-size: clamp(2rem, 1.2rem + 4vw, 3.4rem); }
+.gm-judge-note { margin: 0; color: #81776a; font-size: var(--fs-sm); }
+
+.gm-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding: 10px 22px; border-radius: 999px;
+  border: 2px solid #d5cab4; background: transparent; color: var(--gm-ink);
+  font: inherit; font-weight: 700; font-size: var(--fs-base);
+  transition: background var(--transition), border-color var(--transition), transform 90ms ease;
+}
+.gm-btn:hover { background: #f1ebde; }
+.gm-btn:active { transform: scale(0.97); }
+.gm-btn.is-main { background: var(--gm-ink); border-color: var(--gm-ink); color: var(--gm-paper); }
+.gm-btn.is-main:hover { background: #3a3126; border-color: #3a3126; }
+.gm-btn.is-danger { border-color: var(--gm-bad); color: var(--gm-bad); }
+.gm-btn.is-danger:hover { background: var(--gm-bad-soft); }
+
+/* Rules and the "end the game?" dialog: plain paper cards. */
+.gm-card.kind-rules { width: min(640px, 100%); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: clamp(20px, 4vw, 34px); }
+.gm-card.kind-rules h2 { margin: 0; font-size: var(--fs-xl); }
+.gm-card .gm-rules { color: var(--gm-ink-soft); }
+.gm-link-note { margin: 0; font-size: var(--fs-sm); color: #81776a; }
+
+/* ---- the result ---- */
+.gm-card.kind-over { width: min(620px, 100%); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: clamp(22px, 5vw, 40px); text-align: center; overflow: visible; }
+.gm-crown { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem; background: linear-gradient(155deg, #e3c999, #a5855b); color: #1a1611; box-shadow: 0 10px 24px -8px rgba(165, 133, 91, 0.8); }
+.gm-over-label { margin: 10px 0 0; font-size: var(--fs-sm); font-weight: 700; color: #8a6a39; }
+.gm-over-name { margin: 0 0 12px; font-size: clamp(2rem, 1.2rem + 4vw, 3.2rem); line-height: 1.25; overflow-wrap: anywhere; }
+.gm-final { list-style: none; margin: 0 0 18px; padding: 0; width: 100%; display: grid; gap: 8px; }
+.gm-final li { display: grid; grid-template-columns: auto minmax(0, 1.1fr) minmax(0, 2fr) auto; align-items: center; gap: 10px; margin: 0; padding: 8px 14px 8px 8px; padding-inline: 8px 14px; border-radius: 999px; background: #f1ebde; text-align: start; }
+.gm-final li.is-winner { background: #1a1611; color: #f6f1e7; }
+.gm-final-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-final-bar { height: 10px; border-radius: 999px; background: rgba(26, 22, 17, 0.1); overflow: hidden; }
+.gm-final li.is-winner .gm-final-bar { background: rgba(246, 241, 231, 0.18); }
+.gm-final-bar i { display: block; height: 100%; border-radius: 999px; min-width: 6px; }
+.gm-final-score { font-size: 1.3rem; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: end; }
+.gm-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.gm-manual { width: 100%; font: inherit; font-size: var(--fs-sm); line-height: 1.6; padding: 10px 12px; border-radius: 14px; border: 1.5px dashed #d5cab4; background: #fff; color: var(--gm-ink); resize: vertical; margin-bottom: 12px; }
+
+.gm-confetti { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+.gm-confetti i { position: absolute; top: -6%; width: 10px; height: 16px; border-radius: 2px; animation: gmFall linear infinite; }
+@keyframes gmFall { to { top: 106%; transform: rotate(720deg) translateX(40px); } }
+
+@media (max-width: 520px) {
+  .gm-card { border-radius: 24px; }
+  .gm-card-head { padding: 12px 14px; }
+  .gm-opt { padding: 12px 13px; gap: 11px; border-radius: 16px; }
+  .gm-opt-letter { width: 34px; height: 34px; border-radius: 11px; }
+  .gm-final li { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .gm-final-bar { display: none; }
+  .gm-over-actions .gm-btn { flex: 1 1 100%; }
+}
+
+/* Presentation mode scales the root font-size for the projector. The stage is
+   already sized to the window, so it must not also grow by rem: undo it here. */
+html[data-presenting][data-stage] { font-size: 16px; }

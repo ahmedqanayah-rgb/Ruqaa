@@ -3,60 +3,100 @@
    ============================================================ */
 .app-shell { min-height: 100%; display: flex; flex-direction: column; }
 
+/* THE TOP BAR (components/Navbar.jsx): brand · the four destinations · the
+   controls. Frosted rather than solid, so the hero video and a book's tone
+   show through it as the page scrolls underneath. */
 .navbar {
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; gap: var(--space-3);
-  padding: 0 var(--space-4); height: 62px;
-  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(10px);
-  /* It closes itself now. The site-map row used to sit underneath and carry the
-     border for both; the two were merged into this one bar, so the rule comes
-     back here. */
-  border-bottom: 1px solid var(--border);
+  padding: 0 var(--space-4); height: var(--nav-h);
+  background: var(--glass);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  backdrop-filter: saturate(160%) blur(16px);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
 }
-/* Pushes the controls to the far end whether or not the site map is showing. */
-.navbar .search-btn { margin-inline-start: auto; }
-.brand { display: flex; align-items: center; gap: 11px; color: var(--text); }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--text); flex-shrink: 0; }
 .brand:hover { text-decoration: none; }
-.brand-logo { width: 40px; height: 40px; border-radius: 11px; object-fit: cover; box-shadow: var(--shadow-sm); }
+.brand-logo { width: 38px; height: 38px; border-radius: 11px; object-fit: cover; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand-text strong { font-size: var(--fs-md); }
 .brand-text small { color: var(--text-muted); font-size: var(--fs-xs); }
 
+/* The destinations, as one segmented pill. Hidden on a phone — the dock at the
+   bottom of the screen carries them there (see `.dock`). `margin-inline: auto`
+   on both sides centres the pill in the space between brand and controls. */
+.topnav { display: none; }
+@media (min-width: 861px) {
+  .topnav {
+    display: flex; gap: 2px; padding: 4px; margin-inline: auto;
+    border-radius: 999px; border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-elev-2) 65%, transparent);
+  }
+}
+.topnav-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 16px; border-radius: 999px; white-space: nowrap;
+  color: var(--text-soft); font-weight: 600; font-size: var(--fs-sm);
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+.topnav-link:hover { color: var(--text); background: var(--surface-hover); text-decoration: none; }
+.topnav-link.active { background: var(--bg-elev); color: var(--text); box-shadow: var(--shadow-sm); }
+.topnav-link.active .icon { color: var(--accent); }
+/* Between the drawer breakpoint and a laptop the bar is at its tightest: four
+   links, the brand and four controls in under 1024px. The link icons are the
+   first thing that can go — the words are the label. */
+@media (max-width: 1023px) { .topnav-link .icon { display: none; } }
+
+/* The controls. On a phone this group is pushed to the far end by its own
+   margin; from 861px the destinations' auto margins do that job, and a second
+   auto margin here would pull the pill off-centre. */
+.nav-actions { display: flex; align-items: center; gap: 6px; margin-inline-start: auto; }
+@media (min-width: 861px) { .nav-actions { margin-inline-start: 0; } }
+
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text);
-  font-size: 1.1rem; transition: background var(--transition);
+  width: 40px; height: 40px; border-radius: 999px;
+  border: 1px solid transparent; background: transparent; color: var(--text);
+  font-size: 1.1rem; transition: background var(--transition), border-color var(--transition);
 }
 .icon-btn:hover { background: var(--surface-hover); }
 .pill-btn {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 8px 14px; border-radius: 999px;
-  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text);
+  border: 1px solid var(--border); background: transparent; color: var(--text);
   font-weight: 600; font-size: var(--fs-sm); transition: background var(--transition);
 }
 .pill-btn:hover { background: var(--surface-hover); }
 
 .app-body { flex: 1; display: flex; align-items: flex-start; }
 
+/* A glyph arrow that follows the reading direction. «افتح الكتاب →» typed as
+   text points right in both languages — which in Arabic is back the way the
+   reader came. */
+.arrow { display: inline-block; margin-inline-start: 0.2em; transition: transform var(--transition); }
+html[dir='rtl'] .arrow { transform: scaleX(-1); }
+a:hover > .arrow, .btn:hover > .arrow, a:hover .poster-open .arrow, a:hover .game-promo-cta .arrow { transform: translateX(3px); }
+html[dir='rtl'] a:hover > .arrow, html[dir='rtl'] .btn:hover > .arrow,
+html[dir='rtl'] a:hover .poster-open .arrow, html[dir='rtl'] a:hover .game-promo-cta .arrow { transform: scaleX(-1) translateX(3px); }
+
 /* ============================================================
-   Sidebar (right in RTL, left in LTR — driven by document dir)
+   Sidebar — the books and their section trees. Only rendered inside a book
+   (see Layout). Right in RTL, left in LTR — driven by document dir.
    ============================================================ */
 .sidebar {
-  position: sticky; top: 62px; align-self: flex-start;
+  position: sticky; top: var(--nav-h); align-self: flex-start;
   width: var(--sidebar-w); flex-shrink: 0;
-  height: calc(100vh - 62px); overflow-y: auto;
-  background: var(--bg-elev); border-inline-end: 1px solid var(--border);
+  height: calc(100vh - var(--nav-h)); overflow-y: auto;
+  background: color-mix(in srgb, var(--bg-elev) 60%, var(--bg)); border-inline-end: 1px solid var(--border);
   transition: width var(--transition);
 }
 .sidebar-inner { padding: var(--space-4) var(--space-3); position: relative; }
 .collapse-btn {
   position: absolute; inset-inline-end: 8px; top: 6px;
-  width: 28px; height: 28px; border-radius: 8px;
-  border: 1px solid var(--border); background: var(--bg-elev-2); color: var(--text-soft);
+  width: 28px; height: 28px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text-soft);
 }
-/* ---- icon rail (collapsed) -------------------------------------------------
+/* ---- cover rail (collapsed) ------------------------------------------------
    EVERY RULE HERE IS SCOPED TO DESKTOP, and that is not tidiness — it is the
    bug this block was written to fix. `collapsed` lives in Layout and is set
    regardless of viewport, so the MOBILE DRAWER carries the class as well. Below
@@ -65,12 +105,10 @@
    unlabelled icons. Anything that styles the 64px rail belongs inside this
    query, never outside it.
 
-   The rail itself was icons alone: five bare buttons, two of them the same book
-   glyph, so nothing in it could be identified — and since the sidebar starts
-   collapsed, that is what a reader meets first. Each entry now stacks its icon
-   over a small caption. The captions are the point; don't strip them back out
-   to save the height. Only the group HEADINGS stay hidden — «التصفّح» over three
-   items it already describes is the one label the rail can do without. */
+   The rail is the books' covers, one under another, each with a one-line
+   caption — a quick way from one book to the next. The captions are the point;
+   don't strip them back out to save the height. Only the group HEADING stays
+   hidden. */
 @media (min-width: 861px) {
   /* The rail's defining property lives in here with the rest of it. It used to
      sit outside and be undone by a counter-rule 950 lines away, which is the
@@ -81,7 +119,9 @@
   .sidebar.collapsed .side-sections { display: none; }
   .sidebar.collapsed .side-book-toggle { display: none; }
   /* 0.85rem of side padding left ~37px of a 64px rail for text. */
-  .sidebar.collapsed .sidebar-inner { padding-inline: var(--space-1); }
+  .sidebar.collapsed .sidebar-inner { padding-inline: var(--space-1); padding-top: 44px; }
+  .sidebar.collapsed .collapse-btn { inset-inline-end: 18px; }
+  .sidebar.collapsed .side-nav { margin-top: 0; }
   .sidebar.collapsed .side-link {
     flex-direction: column; justify-content: center; gap: 5px;
     padding: 8px 3px; text-align: center;
@@ -94,36 +134,36 @@
        are here to tell two books apart, which the first word already does. */
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .sidebar.collapsed .side-book-cover { width: 22px; height: 29px; }
+  .sidebar.collapsed .side-book-cover { width: 30px; height: 44px; border-radius: 4px; }
 }
 
 .drawer-close {
   position: absolute; inset-inline-end: 8px; top: 8px; z-index: 2;
-  width: 36px; height: 36px; border-radius: 10px;
+  width: 36px; height: 36px; border-radius: 999px;
   border: 1px solid var(--border); background: var(--bg-elev-2); color: var(--text);
   font-size: 1rem; display: inline-flex; align-items: center; justify-content: center;
 }
 .side-nav .side-heading:first-child { margin-top: 0; }
 .side-heading {
-  display: block; font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--text-muted);
+  display: block; font-size: var(--fs-xs); font-weight: 700;
+  color: var(--text-muted);
   margin: var(--space-3) var(--space-2) var(--space-2);
 }
+html[lang='en'] .side-heading { letter-spacing: 0.06em; text-transform: uppercase; }
 .side-nav { display: flex; flex-direction: column; gap: 2px; margin-top: var(--space-4); }
 .side-link {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px; border-radius: 10px;
+  padding: 9px 12px; border-radius: 12px;
   color: var(--text-soft); font-weight: 500; font-size: var(--fs-sm);
   transition: background var(--transition), color var(--transition);
 }
 .side-link:hover { background: var(--surface-hover); text-decoration: none; color: var(--text); }
 .side-link.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.side-book-row { display: flex; align-items: stretch; gap: 4px; margin-top: 6px; }
-.side-book-row .side-link.book-entry { flex: 1; min-width: 0; }
-.side-link.book-entry { border: 1px dashed var(--border-strong); }
+.side-book-row { display: flex; align-items: stretch; gap: 4px; margin-top: 4px; }
+.side-book-row .side-link.book-entry { flex: 1; min-width: 0; font-weight: 600; color: var(--text); }
 .side-book-toggle {
-  width: 32px; flex-shrink: 0; border-radius: 10px;
-  border: 1px dashed var(--border-strong); background: none; color: var(--text-muted);
+  width: 32px; flex-shrink: 0; border-radius: 12px;
+  border: none; background: none; color: var(--text-muted);
   display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
@@ -146,19 +186,19 @@
 /* A book's mark is its own cover, shaped like one. Fixed box so a missing or
    slow image never changes the row's height. */
 .side-book-cover {
-  width: 18px; height: 24px; border-radius: 3px; overflow: hidden;
+  width: 20px; height: 29px; border-radius: 3px; overflow: hidden;
   background: var(--bg-elev-2); box-shadow: var(--shadow-sm);
 }
 .side-book-cover img { width: 100%; height: 100%; object-fit: cover; }
 .side-text { flex: 1; }
 .side-link.sub { padding: 7px 10px; font-size: var(--fs-sm); }
 .side-seen { color: var(--success); font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
-.side-sections { margin-top: var(--space-2); display: flex; flex-direction: column; gap: 2px; }
+.side-sections { margin-top: var(--space-1); margin-bottom: var(--space-2); display: flex; flex-direction: column; gap: 2px; }
 
 /* Collapsible section groups inside the active book */
 .side-group-head {
   display: flex; align-items: center; gap: 8px; width: 100%;
-  padding: 7px 10px; border-radius: 10px; border: none; background: none;
+  padding: 7px 10px; border-radius: 12px; border: none; background: none;
   color: var(--text-muted); font-weight: 700; font-size: var(--fs-xs);
   font-family: inherit; text-align: start; cursor: pointer;
   transition: background var(--transition), color var(--transition);
@@ -184,7 +224,7 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 @keyframes sideGroupIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 
 .sidebar-overlay {
-  position: fixed; inset: 0; background: rgba(10, 12, 24, 0.5);
+  position: fixed; inset: 0; background: rgba(10, 8, 5, 0.55);
   opacity: 0; pointer-events: none; transition: opacity var(--transition); z-index: 45;
 }
 
@@ -200,9 +240,17 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .brand-text strong, .brand-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
 /* figure scroll wrappers never push the page wider than the viewport */
 .figure-body > div, .section-content > figure { max-width: 100%; }
-.page { flex: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: var(--space-5) var(--space-4); }
+/* TWO MEASURES. A page of prose keeps the 900px reading measure. The app-like
+   pages — the shelf, a book's landing, the game — mark their root `.wide-page`
+   and get the wider one, because a grid of posters or a game board is not a
+   paragraph and has no reason to be as narrow as one. */
+.page { flex: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: var(--space-5) var(--space-4) var(--space-6); }
+.page:has(> .wide-page) { max-width: var(--maxw-wide); }
+.page-head { max-width: 62ch; margin-bottom: var(--space-5); }
+.page-head h1 { margin-bottom: var(--space-2); }
+.page-lead { font-size: var(--fs-md); color: var(--text-soft); margin: 0; }
 .site-footer {
-  border-top: 1px solid var(--border); padding: var(--space-4);
+  border-top: 1px solid var(--border); padding: var(--space-5) var(--space-4);
   text-align: center; color: var(--text-muted); font-size: var(--fs-sm);
 }
 .site-footer p { margin: 2px 0; }
@@ -212,25 +260,36 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 /* ============================================================
    Collapsible headings — components/Collapsible.jsx.
    The site's ONE disclosure idiom: the book's chapters and the activities tab
-   both use it. Closed, a page is a short list of headings; open, each body sits
-   under its own. The separators do the work a tab bar used to.
+   both use it. Closed, a page is a short stack of rows; open, each body sits
+   under its own heading.
+
+   ONLY THE HEADING IS A CARD. The body is not boxed, on purpose: a chapter's
+   body holds figures that were measured to fit a phone's text column, and a
+   card's padding would take ~28px off that column and bring back the overflow
+   those figures were tuned out of.
    ============================================================ */
-.collapsibles { display: flex; flex-direction: column; }
-.collapsible + .collapsible { border-top: 1px solid var(--border); }
-.collapsible-title { margin: 0; font-size: var(--fs-lg); }
+.collapsibles { display: flex; flex-direction: column; gap: 10px; }
+/* Two classes, to outrank `.section-content h2` (a class and a tag), which
+   would otherwise give every row a section heading's top margin and size. */
+.collapsibles .collapsible-title { margin: 0; font-size: var(--fs-md); }
 .collapsible-toggle {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: var(--space-4) var(--space-2);
-  border: none; background: none; color: inherit;
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--border); background: var(--bg-elev); color: inherit;
   font: inherit; font-size: inherit; font-weight: 700;
-  text-align: start; cursor: pointer; border-radius: var(--radius-sm);
-  transition: background var(--transition), color var(--transition);
+  text-align: start; cursor: pointer; border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
 }
-.collapsible-toggle:hover { background: var(--surface-hover); }
-.collapsible.is-open .collapsible-toggle { color: var(--accent); }
+.collapsible-toggle:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+.collapsible-toggle .side-chev { color: var(--text-muted); font-size: 1.2rem; }
+.collapsible.is-open .collapsible-toggle {
+  background: var(--accent-soft); border-color: transparent; color: var(--accent); box-shadow: none;
+}
+.collapsible.is-open .collapsible-toggle .side-chev { color: var(--accent); }
 .collapsible-title-text { flex: 1; min-width: 0; }
-.collapsible-body { padding: 0 var(--space-2) var(--space-6); animation: fadeIn 200ms ease both; }
-.collapsible-lead { color: var(--text-soft); margin: 0 0 var(--space-4); max-width: 66ch; }
+.collapsible-body { padding: var(--space-4) var(--space-2) var(--space-5); animation: fadeIn 200ms ease both; }
+.collapsible-lead { color: var(--text-soft); margin: 0 0 var(--space-4); max-width: 66ch; font-size: var(--fs-md); }
 @media (prefers-reduced-motion: reduce) { .collapsible-body { animation: none; } }
 
 /* ============================================================
@@ -250,9 +309,9 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .mof-bar-fill { height: 100%; background: var(--accent); transition: width var(--transition); }
 
 .mof-card {
-  background: var(--bg-elev); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-elev); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--space-5);
+  box-shadow: var(--shadow);
   /* The verdict tints the whole card, so the answer registers before a word of
      it is read. Only the border colour moves — a background swap at this size
      flashes hard enough to be unpleasant on a dark theme. */
@@ -267,7 +326,7 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .mof-actions { display: flex; gap: var(--space-3); }
 /* Equal width and identical styling on purpose: a difference in weight between
    the two buttons is a hint, and this game only works if neither is inviting. */
-.mof-btn { flex: 1; justify-content: center; font-weight: 700; }
+.mof-btn { flex: 1; justify-content: center; font-weight: 700; padding-block: 14px; }
 
 .mof-verdict { margin: 0 0 var(--space-3); font-weight: 600; }
 .mof-mark {
@@ -299,7 +358,7 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
    The rest of Home re-applies the measure for itself, below. */
 .page:has(.hero-cinema) { max-width: none; padding-inline: 0; padding-top: 0; }
 .page:has(.hero-cinema) > .home > :not(.hero-cinema) {
-  max-width: var(--maxw); margin-inline: auto; padding-inline: var(--space-4);
+  max-width: var(--maxw-wide); margin-inline: auto; padding-inline: var(--space-4);
 }
 .hero-cinema { margin: 0 0 var(--space-5); }
 .hero-cinema-box { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
@@ -329,138 +388,234 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 }
 .hero-cinema-content {
   position: absolute; inset-inline: 0; bottom: 0; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
   padding: 0 var(--space-4) var(--space-4); text-align: center;
 }
-.hero-cinema-content h1 { margin: 0; font-size: var(--fs-xl); text-shadow: 0 1px 12px var(--bg); }
-/* The logo carries both .hero-logo and .hero-cinema-logo. This block sits
-   ABOVE the Home section, so at equal specificity .hero-logo's 84px and its
-   bottom margin would win on source order alone — qualifying the selector is
-   what makes the smaller cinema logo stick regardless of where the block sits. */
-.hero-cinema .hero-cinema-logo { margin: 0; width: 64px; height: 64px; }
+/* Sized for ONE line on a phone. At 375px this is ~31px, where «نقرأ الكتاب… ثم
+   نعيشه» still fits the width; a second line would lift the block over the foot
+   of the open page and cover the translator's credit printed there. */
+.hero-cinema-content h1 {
+  margin: 0; font-size: clamp(1.9rem, 1.1rem + 3.6vw, 3.6rem);
+  text-shadow: 0 1px 18px var(--bg), 0 0 2px var(--bg);
+}
+.hero-cinema-content .eyebrow {
+  padding: 3px 12px; border-radius: 999px; color: var(--text);
+  background: var(--glass); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
 .hero-cinema-content .hero-actions { margin-top: var(--space-2); }
+/* Over a photograph a hairline-bordered white button reads as a hole in the
+   picture. Frost it instead, like the eyebrow above. */
+.hero-cinema-content .btn:not(.primary) {
+  background: var(--glass); border-color: color-mix(in srgb, var(--border-strong) 60%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
 
 /* ============================================================
    Home
    ============================================================ */
-.hero { padding: var(--space-5) 0 var(--space-6); text-align: center; }
-.hero-logo { width: 84px; height: 84px; border-radius: 20px; object-fit: cover; margin: 0 auto var(--space-3); box-shadow: var(--shadow); }
-.hero h1 { margin-top: var(--space-3); }
+/* The plain text hero — only shown when heroScene.enabled is false. */
+.hero { padding: var(--space-6) 0; text-align: center; }
+.hero h1 { margin-top: var(--space-3); font-size: var(--fs-display); }
 .hero-lead { max-width: 660px; margin: 0 auto var(--space-4); font-size: var(--fs-md); color: var(--text-soft); }
-.hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
+.hero-actions { display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap; }
 
-/* ---- vertical rhythm between the home page's blocks ----
-   They used to run together at the default margin; a full --space-6 between
-   them lets each one read as its own thing. */
+/* ---- vertical rhythm between the home page's blocks ---- */
 .home > section + section { margin-top: var(--space-6); }
-.home > section + section::before {
-  content: ''; display: block; width: 56px; height: 1px;
-  margin: 0 auto var(--space-6); background: var(--border);
-}
 
 .section-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
-.see-all { font-weight: 600; font-size: var(--fs-sm); }
-.books-section h2 { margin: 0; }
-/* min(300px, 100%) — a bare 300px floor cannot shrink below itself, so on a
-   320px phone the cards run past the text column and the overflow-x safety net
-   hides it. Exactly the bug that shipped in .img-grid (POLISH-PLAN §8). */
-.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+.section-head-row h2 { margin: 0; }
+.see-all { font-weight: 700; font-size: var(--fs-sm); white-space: nowrap; }
+.see-all:hover { text-decoration: none; }
 
-/* Home sliding book list — horizontal scroll-snap, RTL-aware via flex + dir. */
-.book-carousel {
-  display: flex; gap: var(--space-4); margin-top: var(--space-4);
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  padding-bottom: var(--space-3);
-  -webkit-overflow-scrolling: touch; scrollbar-width: thin;
-  scroll-padding-inline: var(--space-1);
+/* ---- the shelf: a book as a poster (components/BookPoster.jsx) -------------
+   Three across where there is room; on a phone a single row that scroll-snaps
+   and BLEEDS to both screen edges, with the next poster showing a sliver of
+   itself — which is the whole affordance: a row that stopped neatly at the
+   padding would look complete and nobody would think to swipe it. */
+.shelf-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.shelf-item { min-width: 0; }
+@media (max-width: 860px) {
+  .shelf-row {
+    display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x mandatory;
+    margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4);
+    scroll-padding-inline: var(--space-4); padding-bottom: var(--space-3);
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .shelf-row::-webkit-scrollbar { display: none; }
+  .shelf-item { flex: 0 0 min(76%, 300px); scroll-snap-align: start; }
 }
-.carousel-card {
-  scroll-snap-align: start;
-  flex: 0 0 clamp(280px, 82%, 420px);
+
+.poster {
+  display: flex; flex-direction: column; height: 100%;
+  border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--bg-elev); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); color: var(--text);
+  transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out);
 }
-.book-carousel .ghost-card { min-height: 0; }
-.book-card { display: flex; overflow: hidden; color: var(--text); transition: transform var(--transition), box-shadow var(--transition); }
-.book-card:hover { text-decoration: none; transform: translateY(-3px); box-shadow: var(--shadow); }
-/* aspect-ratio reserves the cover's space before it loads, so text doesn't jump
-   as images arrive in bursts on a slow connection. Covers are a consistent 2:3. */
-.book-cover { width: 128px; aspect-ratio: 2 / 3; flex-shrink: 0; background: #101426; display: grid; place-items: center; overflow: hidden; }
-.book-cover img { width: 100%; height: 100%; object-fit: cover; }
-.book-info { padding: var(--space-3) var(--space-4); }
-.book-info h3 { margin-bottom: 2px; }
-.book-author { color: var(--text-muted); font-size: var(--fs-sm); }
-.book-info p { margin: var(--space-2) 0; font-size: var(--fs-sm); }
-.book-open { color: var(--accent); font-weight: 600; font-size: var(--fs-sm); }
-.ghost-card { align-items: center; justify-content: center; border-style: dashed; min-height: 150px; }
-.soon { text-align: center; color: var(--text-muted); }
-.soon span { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+.poster:hover { text-decoration: none; transform: translateY(-4px); box-shadow: var(--shadow); }
+/* The stage is the BOOK's colours, not the theme's — identical in light and
+   dark, the way a printed cover is. `--tone*` come from lib/tone.js. */
+.poster-stage {
+  position: relative; display: grid; place-items: center; padding: 28px 20px 24px;
+  background:
+    radial-gradient(85% 75% at 50% 0%, color-mix(in srgb, var(--tone-spark, #fff) 34%, transparent), transparent 72%),
+    linear-gradient(155deg, var(--tone), var(--tone-2));
+}
+.poster-cover {
+  width: min(50%, 168px); height: auto; aspect-ratio: 2 / 3; object-fit: cover;
+  border-radius: 5px; background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 32px -12px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.28);
+  transition: transform 320ms var(--ease-out);
+}
+.poster:hover .poster-cover { transform: translateY(-3px) scale(1.03); }
+.poster-season {
+  position: absolute; top: 12px; inset-inline-start: 12px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 11px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 700; color: #fff;
+  background: rgba(0, 0, 0, 0.36); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.poster-live {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--tone-spark, #fff);
+  animation: livePulse 2.2s ease-out infinite;
+}
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone-spark, #fff) 70%, transparent); }
+  100% { box-shadow: 0 0 0 8px transparent; }
+}
+.poster-body { display: flex; flex-direction: column; gap: 3px; padding: var(--space-4); flex: 1; }
+.poster-title { font-size: var(--fs-md); line-height: 1.4; }
+.poster-author { color: var(--text-muted); font-size: var(--fs-sm); }
+.poster-blurb {
+  color: var(--text-soft); font-size: var(--fs-sm); line-height: 1.7; margin-top: 6px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.poster-open { margin-top: auto; padding-top: 12px; color: var(--accent); font-weight: 700; font-size: var(--fs-sm); }
+
+/* Books page: the same posters in a grid, and a dashed slot for the next one.
+   min(280px, 100%) — a bare 280px floor cannot shrink below itself, so on a
+   320px phone the cards would run past the text column and the overflow-x
+   safety net would hide it (the bug that once shipped in .img-grid). */
+.poster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: var(--space-4); }
+.poster-ghost {
+  align-items: center; justify-content: center; gap: 6px; min-height: 220px;
+  border-style: dashed; border-color: var(--border-strong); background: transparent; box-shadow: none;
+  color: var(--text-muted); text-align: center;
+}
+.poster-ghost:hover { transform: none; box-shadow: none; }
+.poster-ghost p { margin: 0; color: inherit; font-size: var(--fs-sm); }
+.poster-ghost-plus { font-size: 2rem; line-height: 1; font-weight: 300; }
+
+/* ---- the game's door on Home -------------------------------------------
+   An ink card in BOTH themes: it is a poster for something to do, not a panel
+   of the page, so it keeps its own dark ground the way a book keeps its tone. */
+.game-promo {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+  gap: var(--space-5); padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-xl); overflow: hidden; color: #f6f1e7;
+  background: #17130e;
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  box-shadow: var(--shadow);
+  transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out);
+}
+.game-promo:hover { text-decoration: none; transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+/* The camel glow behind the dice. A pseudo-element rather than a background
+   gradient because it has to sit behind the ART, and the art is on the right in
+   Arabic and the left in English — `inset-inline-start` follows it, and a
+   gradient's `at 12% 50%` cannot. */
+.game-promo::before {
+  content: ''; position: absolute; inset-block: -45%; inset-inline-start: -8%; width: min(70%, 520px);
+  background: radial-gradient(closest-side, rgba(165, 133, 91, 0.5), transparent);
+  pointer-events: none;
+}
+.game-promo > * { position: relative; }
+.game-promo-art { width: clamp(150px, 24vw, 240px); height: auto; }
+.game-promo-body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.game-promo .eyebrow { color: #d9bd8d; }
+.game-promo-title { font-size: var(--fs-2xl); line-height: 1.2; color: #fff; }
+.game-promo-text { color: #cfc5b3; font-size: var(--fs-md); max-width: 46ch; }
+.game-promo-cta { margin-top: var(--space-3); background: #f6f1e7; color: #17130e; border-color: transparent; }
+.game-promo:hover .game-promo-cta { background: #fff; }
+@media (max-width: 620px) {
+  .game-promo { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) var(--space-4) var(--space-5); }
+  .game-promo-art { width: 150px; }
+}
+/* The mark itself (components/DiceArt.jsx). Fixed colours: it is always drawn
+   on the ink card or the game's own dark stage. */
+.dice-art-body { fill: #f6f1e7; }
+.dice-art-pip { fill: #17130e; }
+.dice-art-b .dice-art-body { fill: var(--brand); }
+.dice-art-b .dice-art-pip { fill: #fff; }
+.dice-art-tile { fill: none; stroke: var(--brand); stroke-width: 2; }
+.game-promo:hover .dice-art-a { transform: translate(78px, 70px) rotate(-22deg); }
+.game-promo:hover .dice-art-b { transform: translate(156px, 94px) rotate(26deg); }
+.dice-art-a, .dice-art-b { transition: transform 420ms var(--ease-out); }
 
 /* ============================================================
    Book landing + section pages
    ============================================================ */
-.book-hero { display: flex; gap: var(--space-5); align-items: center; margin-bottom: var(--space-5); flex-wrap: wrap; }
-.book-hero-cover { width: 150px; aspect-ratio: 2 / 3; flex-shrink: 0; border-radius: var(--radius); overflow: hidden; background: #101426; box-shadow: var(--shadow); }
+/* The header, washed in the book's own tone (lib/tone.js sets --tone on
+   .book-landing). The wash is the tone MIXED INTO the card surface, not laid
+   over it, so the text on it stays the theme's text colour and its contrast
+   never depends on which book this is. */
+.book-hero {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-5); align-items: center;
+  padding: var(--space-5); margin-bottom: var(--space-5);
+  border-radius: var(--radius-xl); border: 1px solid var(--border);
+  background: linear-gradient(175deg,
+    color-mix(in srgb, var(--tone) var(--tone-wash), var(--bg-elev)) 0%,
+    var(--bg-elev) 78%);
+  box-shadow: var(--shadow-sm);
+}
+.book-hero-cover {
+  width: clamp(132px, 20vw, 208px); aspect-ratio: 2 / 3; flex-shrink: 0;
+  border-radius: 8px; overflow: hidden; background: var(--tone-2);
+  box-shadow: 0 26px 44px -18px color-mix(in srgb, var(--tone-2) 70%, #000), 0 6px 14px rgba(0, 0, 0, 0.18);
+}
 .book-hero-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.book-hero-body h1 { margin: 4px 0 var(--space-2); }
 .book-subtitle { color: var(--text-soft); font-size: var(--fs-md); margin: 0 0 var(--space-2); }
-.section-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-3); }
-.section-card { display: flex; align-items: center; gap: 10px; padding: var(--space-3) var(--space-4); color: var(--text); transition: transform var(--transition), box-shadow var(--transition); }
-.section-card:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow); }
-.section-card-num { width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-sm); }
-.section-card-icon { font-size: 1.2rem; }
-.section-card-title { font-weight: 600; font-size: var(--fs-sm); }
+.book-author { color: var(--text-muted); font-size: var(--fs-sm); }
+@media (max-width: 620px) {
+  .book-hero { grid-template-columns: 1fr; gap: var(--space-4); padding: var(--space-4); border-radius: var(--radius-lg); }
+  .book-hero-cover { width: 128px; }
+}
+.section-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); gap: var(--space-3); }
+.section-card { display: flex; align-items: center; gap: 10px; padding: var(--space-4); color: var(--text); transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color var(--transition); }
+.section-card:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--border-strong); }
+.section-card-num { min-width: 30px; height: 30px; padding: 0 6px; flex-shrink: 0; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.section-card-icon { font-size: 1.2rem; color: var(--text-muted); }
+.section-card-title { font-weight: 700; font-size: var(--fs-base); }
 
-/* ---- site map strip (every page, under the navbar) ----
-   Chips for every destination, with the current one filled in. Horizontally
-   scrollable rather than wrapping: on a phone a wrapped row of six chips eats
-   three lines before the page has said anything, and a single scrolling row
-   keeps the reader's position visible at the start of it. */
-/* The path, one line under the header. Deliberately NOT sticky — see
-   Breadcrumb.jsx for the measured reason. Muted and small so it reads as chrome
-   rather than as a heading competing with the <h1> below it. */
-.crumbs { border-bottom: 1px solid var(--border); background: var(--bg-elev); }
+/* The path, one line above a section's title (components/Breadcrumb.jsx).
+   Muted and small so it reads as chrome rather than as a heading competing
+   with the <h1> below it. It rides inside the page's own measure now, so it
+   lines up with the article whether or not the sidebar is open. */
+.crumbs { margin-bottom: var(--space-3); }
 .crumbs-row {
-  max-width: var(--maxw); margin: 0 auto; padding: 9px var(--space-4);
+  margin: 0; padding: 0;
   display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
   list-style: none; font-size: var(--fs-sm); color: var(--text-muted);
 }
-.crumbs-row li { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
-.crumbs-row a { color: var(--text-soft); }
+.crumbs-row li { display: inline-flex; align-items: center; gap: 6px; min-width: 0; margin: 0; }
+.crumbs-row a { color: var(--text-soft); font-weight: 600; }
 .crumbs-row a:hover { color: var(--accent); }
-.crumb-current { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crumb-current { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .crumb-sep { color: var(--text-muted); }
 /* The chevron is a glyph and does not mirror itself. */
 html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
-@media (max-width: 520px) { .crumbs-row { padding: 8px var(--space-3); } }
 
-/* The site map rides INSIDE the navbar — one bar, not two. It brings no
-   surface or border of its own any more; the bar around it supplies both.
-   Below 1024px it hides: the navbar alone already needs ~448px and the chips
-   ~562px, so a phone cannot show both on one line, and the drawer carries the
-   same destinations there. */
-.sitenav { flex: 1; min-width: 0; }
-.sitenav-row {
-  display: flex; gap: var(--space-2); justify-content: center;
-  overflow-x: auto; scrollbar-width: none;
+.section-head { margin-bottom: var(--space-5); }
+.section-head h1 { margin-top: var(--space-2); }
+.section-index {
+  display: inline-flex; align-items: center; padding: 3px 12px; border-radius: 999px;
+  background: var(--accent-soft); font-size: var(--fs-xs); color: var(--accent); font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
-@media (max-width: 1023px) { .sitenav { display: none; } }
-.sitenav-row::-webkit-scrollbar { display: none; }
-.sitenav-chip {
-  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
-  padding: 7px 14px; border-radius: 999px; white-space: nowrap;
-  border: 1px solid var(--border); background: var(--bg-elev);
-  color: var(--text-soft); font-size: var(--fs-sm); font-weight: 600;
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
-}
-.sitenav-chip:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
-.sitenav-chip.active {
-  background: var(--accent); border-color: var(--accent); color: var(--accent-contrast);
-}
-.sitenav-chip.active:hover { color: var(--accent-contrast); }
-.section-head { border-bottom: 1px solid var(--border); padding-bottom: var(--space-4); margin-bottom: var(--space-4); }
-.section-index { font-size: var(--fs-sm); color: var(--accent); font-weight: 600; }
-.section-readtime { color: var(--text-muted); font-weight: 500; }
+.section-readtime { font-weight: 600; }
 
 /* ---- landing v2: grouped cards, stats, fact teaser, session progress ---- */
-.landing-group { margin-top: var(--space-5); }
+.landing-group { margin-top: var(--space-4); }
 .landing-group-title { font-size: var(--fs-lg); margin-bottom: var(--space-3); }
 
 /* Collapsible group headers. The h2 keeps its place in the outline and the
@@ -496,25 +651,35 @@ html[dir='rtl'] .crumb-sep { display: inline-block; transform: scaleX(-1); }
   .landing-group-toggle { cursor: default; pointer-events: none; min-height: 0; }
   .landing-group-toggle .side-chev { display: none; }
 }
-.section-card.rich { flex-direction: column; align-items: stretch; gap: 8px; border-top: 3px solid var(--border); }
+.section-card.rich { flex-direction: column; align-items: stretch; gap: 10px; }
 .section-card-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.section-card-meta { font-size: var(--fs-xs); color: var(--text-muted); }
+.section-card-meta { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--text-muted); font-weight: 600; }
 .section-card.seen .section-card-num { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
-.book-hero-body { min-width: 0; flex: 1; }
-.book-stats { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--text-soft); }
-.book-stats span, .book-stats a { background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; }
+.book-hero-body { min-width: 0; }
+.book-hero-body > p:not([class]) { max-width: 64ch; }
+.book-stats { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--text-soft); }
+.book-stats span, .book-stats a {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: color-mix(in srgb, var(--bg-elev) 70%, transparent); border: 1px solid var(--border);
+  border-radius: 999px; padding: 5px 13px; font-weight: 600;
+}
 /* Only the ones that go somewhere react to a pointer, so the pill shape stops
    promising a tap the inert chips can't honour. */
-.book-stats a { color: var(--accent); font-weight: 600; }
+.book-stats a { color: var(--accent); }
 .book-stats a:hover { border-color: var(--accent); background: var(--accent-soft); text-decoration: none; }
 /* The landing's single primary action. Deliberately the only filled button in
    the hero — a newcomer needs one obvious first step, not a choice. */
-.book-start { margin-top: var(--space-4); font-size: var(--fs-md); padding: 12px 22px; }
+.book-start { margin-top: var(--space-4); font-size: var(--fs-md); padding: 13px 26px; }
 .book-progress { display: flex; align-items: center; gap: 10px; margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--success); font-weight: 600; }
-.fact-teaser { border: 1px solid var(--border); border-inline-start: 3px solid var(--warm); border-radius: var(--radius); background: var(--bg-elev-2); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); }
-.fact-teaser-body p { margin: 0; font-size: var(--fs-sm); color: var(--text-soft); }
-.fact-teaser-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); flex-wrap: wrap; font-size: var(--fs-sm); }
-.fact-teaser-btn { padding: 4px 12px; font-size: var(--fs-xs); }
+.fact-teaser {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--bg-elev); box-shadow: var(--shadow-sm);
+  padding: var(--space-4); margin-bottom: var(--space-4);
+}
+.fact-teaser-body p { margin: 6px 0 0; font-size: var(--fs-md); color: var(--text); line-height: 1.7; }
+.fact-teaser-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-3); flex-wrap: wrap; font-size: var(--fs-sm); }
+.fact-teaser-foot a { font-weight: 700; }
+.fact-teaser-btn { padding: 6px 14px; font-size: var(--fs-xs); border-color: var(--border); }
 
 /* ---- reading progress bar ---- */
 .read-progress { position: fixed; top: 0; inset-inline: 0; height: 3px; z-index: 60; background: transparent; pointer-events: none; }
@@ -563,14 +728,14 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 @keyframes routeFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 /* ---- quick check ---- */
-.quick-check { margin-top: var(--space-5); padding: var(--space-4); border-top: 3px solid var(--accent); }
-.quick-check.right { border-top-color: var(--success); }
-.quick-check.wrong { border-top-color: var(--warm); }
+.quick-check { margin-top: var(--space-5); padding: var(--space-4); border-radius: var(--radius-lg); }
+.quick-check.right { border-color: var(--success); }
+.quick-check.wrong { border-color: var(--warm); }
 .quick-check-title { display: block; color: var(--accent); margin-bottom: var(--space-2); font-size: var(--fs-sm); }
-.quick-check-q { margin: 0 0 var(--space-3); font-weight: 600; }
+.quick-check-q { margin: 0 0 var(--space-3); font-weight: 700; color: var(--text); font-size: var(--fs-md); }
 .quick-check-opts { display: flex; flex-direction: column; gap: 8px; }
-.quick-check-opt { text-align: start; padding: 10px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--bg-elev); color: var(--text); font-size: var(--fs-sm); transition: all var(--transition); cursor: pointer; }
-.quick-check-opt:hover:not(:disabled) { border-color: var(--accent); }
+.quick-check-opt { text-align: start; padding: 12px 16px; border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--bg-elev); color: var(--text); font-size: var(--fs-sm); transition: all var(--transition); cursor: pointer; }
+.quick-check-opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
 .quick-check-opt:disabled { cursor: default; }
 .quick-check-opt.correct { border-color: var(--success); background: color-mix(in srgb, var(--success) 12%, transparent); font-weight: 700; }
 .quick-check-opt.picked-wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
@@ -579,12 +744,11 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 
 /* ---- next-up navigation ---- */
 .section-nav-v2 { margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); }
-.nextup { display: flex; flex-direction: column; gap: 6px; padding: var(--space-4); color: var(--text); border-inline-start: 3px solid var(--accent); transition: transform var(--transition), box-shadow var(--transition); }
+.nextup { display: flex; flex-direction: column; gap: 6px; padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); color: var(--text); transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out); }
 .nextup:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow); }
-.nextup.done { border-inline-start-color: var(--success); }
 .nextup-label { font-size: var(--fs-xs); color: var(--accent); font-weight: 700; }
 .nextup.done .nextup-label { color: var(--success); }
-.nextup-title { font-weight: 700; font-size: var(--fs-md); }
+.nextup-title { font-weight: 700; font-size: var(--fs-lg); }
 .nextup-lead { font-size: var(--fs-sm); color: var(--text-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .section-nav-row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .prevlink { font-size: var(--fs-sm); color: var(--text-soft); }
@@ -592,11 +756,11 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 
 /* ---- people filter chips ---- */
 .people-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: var(--space-3) 0 var(--space-4); }
-.people-chip { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text-soft); font-size: var(--fs-xs); font-weight: 600; cursor: pointer; transition: all var(--transition); }
+.people-chip { padding: 6px 13px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text-soft); font-size: var(--fs-xs); font-weight: 600; cursor: pointer; transition: all var(--transition); }
 .people-chip:hover { border-color: var(--accent); }
-.people-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.people-chip.active { background: var(--ink); border-color: var(--ink); color: var(--ink-contrast); }
 .section-emoji { font-size: 0.9em; }
-.section-lead { font-size: var(--fs-md); color: var(--text-soft); margin-top: var(--space-2); }
+.section-lead { font-size: var(--fs-md); color: var(--text-soft); margin-top: var(--space-2); max-width: 66ch; }
 /* Content headings were promoted h3/h4 -> h2/h3 for correct hierarchy; keep the
    previous visual sizes so reading sub-headings don't balloon to page-title size. */
 .section-content h2 { font-size: var(--fs-lg); margin-top: var(--space-5); }
@@ -606,25 +770,30 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 /* ============================================================
    Content blocks: callouts, quotes, images, people, myths
    ============================================================ */
+/* A callout is a tinted panel — the tint is its kind (key idea, fact, warning,
+   note), and the icon takes the same colour. No coloured edge any more: four
+   kinds of left border on one page read as four severities of the same thing. */
 .callout {
+  --callout: var(--blue);
   display: flex; gap: 12px; align-items: flex-start;
-  padding: var(--space-3) var(--space-4); margin: var(--space-4) 0;
-  border-radius: var(--radius); border: 1px solid var(--border);
-  background: var(--bg-elev-2);
+  padding: var(--space-4); margin: var(--space-4) 0;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--callout) 11%, var(--bg-elev));
 }
-.callout-icon { font-size: 1.2rem; flex-shrink: 0; }
+.callout-icon { font-size: 1.25rem; flex-shrink: 0; color: var(--callout); margin-top: 2px; }
 .callout-title { display: block; margin-bottom: 4px; }
 .callout p { margin: 0; }
-.callout.key { border-inline-start: 4px solid var(--accent); }
-.callout.fact { border-inline-start: 4px solid var(--warm); }
-.callout.warn { border-inline-start: 4px solid var(--danger); }
-.callout.note { border-inline-start: 4px solid var(--blue); }
+.callout.key { --callout: var(--accent); }
+.callout.fact { --callout: var(--warm); }
+.callout.warn { --callout: var(--danger); }
+.callout.note { --callout: var(--blue); }
 
+/* A quotation is set as a quotation: larger, heavier, and hung on one rule. */
 .pull-quote {
-  margin: var(--space-5) 0; padding: var(--space-4) var(--space-5);
-  border-inline-start: 4px solid var(--violet);
-  background: var(--violet-soft); border-radius: var(--radius);
-  font-size: var(--fs-md); color: var(--text);
+  margin: var(--space-5) 0; padding: var(--space-2) var(--space-5);
+  border-inline-start: 3px solid var(--violet);
+  font-size: var(--fs-lg); font-weight: 600; line-height: 1.6; color: var(--text);
+  text-wrap: balance;
 }
 
 .img-block { margin: var(--space-5) 0; text-align: center; }
@@ -645,7 +814,7 @@ html.is-scrolling .scroll-overlay-thumb:hover,
    and margin in the pixels (scripts/paper-backing.mjs), which is what keeps
    their black labels readable in the dark theme and under a force-dark browser.
    So: no background and no padding here, or it would double the margin. */
-.img-block.transparent img { border: none; padding: 0; max-height: 480px; background: var(--figure-paper); }
+.img-block.transparent img { border: none; padding: 0; max-height: 480px; background: var(--figure-paper); border-radius: var(--radius-sm); }
 .img-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0; margin: var(--space-2) auto 0; max-width: 640px; }
 .img-legend li { margin: 0; }
 .img-legend-term { display: inline-block; font-size: var(--fs-xs); font-weight: 600; color: var(--text-soft); background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 11px; }
@@ -681,7 +850,7 @@ html.is-scrolling .scroll-overlay-thumb:hover,
 .link-cards-title { display: block; margin-bottom: var(--space-3); font-size: var(--fs-md); }
 
 .people-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
-.person-card { display: flex; gap: var(--space-3); padding: var(--space-3); }
+.person-card { display: flex; gap: var(--space-3); padding: var(--space-4); }
 .person-photo { position: relative; width: 72px; height: 72px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--accent-soft); }
 .person-photo img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; }
 .person-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; color: var(--accent); }
@@ -989,7 +1158,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .quiz-sort-label { font-size: var(--fs-sm); color: var(--text-muted); font-weight: 600; }
 .quiz-sort-btn { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text-soft); font-size: var(--fs-sm); font-weight: 600; transition: all var(--transition); }
 .quiz-sort-btn:hover { background: var(--surface-hover); }
-.quiz-sort-btn.active { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+.quiz-sort-btn.active { background: var(--ink); border-color: var(--ink); color: var(--ink-contrast); }
 .quiz-topbar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-2); }
 .quiz-progress, .quiz-score { font-size: var(--fs-sm); color: var(--text-soft); }
 .quiz-dots { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-4); }
@@ -997,7 +1166,8 @@ button.sf-toast:hover { border-color: var(--danger); }
 .quiz-dot.current { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .quiz-dot.ok { background: var(--success); border-color: var(--success); }
 .quiz-dot.no { background: var(--danger); border-color: var(--danger); }
-.quiz-card { padding: var(--space-4); }
+.quiz-card { padding: var(--space-5); border-radius: var(--radius-lg); }
+@media (max-width: 520px) { .quiz-card { padding: var(--space-4); } }
 .quiz-title { margin: var(--space-2) 0; font-size: var(--fs-lg); }
 .quiz-researcher { font-size: var(--fs-sm); color: var(--text-muted); }
 .quiz-h { display: inline-block; font-weight: 700; color: var(--text); margin-bottom: 4px; font-size: var(--fs-sm); }
@@ -1036,7 +1206,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .assess-q legend { font-weight: 600; font-size: var(--fs-md); padding: 0 6px; display: flex; align-items: center; gap: 8px; }
 .assess-qnum { width: 24px; height: 24px; border-radius: 7px; background: var(--accent); color: var(--accent-contrast); display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-sm); font-weight: 700; }
 .assess-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: var(--space-3); }
-.assess-opt { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; font-size: var(--fs-sm); transition: all var(--transition); }
+.assess-opt { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; font-size: var(--fs-sm); transition: all var(--transition); }
 .assess-opt:hover { border-color: var(--accent); }
 .assess-opt.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
 .assess-opt input { accent-color: var(--accent); }
@@ -1067,12 +1237,17 @@ button.sf-toast:hover { border-color: var(--danger); }
 .only-mobile { display: none; }
 .only-desktop { display: inline-flex; }
 
+/* A phone's top bar is a little shorter; everything that offsets by the bar
+   reads this, so it is changed here and nowhere else. */
+@media (max-width: 860px) { :root { --nav-h: 58px; } }
+
 @media (max-width: 860px) {
   .only-mobile { display: inline-flex; }
   .only-desktop { display: none; }
   .bball-conditions { grid-template-columns: 1fr; }
   .bball-vs { justify-self: center; }
   .sidebar {
+    background: var(--bg-elev);
     position: fixed; inset-inline-start: 0; top: 0; z-index: 50;
     /* dvh matches the *visible* viewport so the bottom isn't hidden behind
        the mobile browser's toolbars (100vh is too tall on phones). */
@@ -1089,19 +1264,13 @@ button.sf-toast:hover { border-color: var(--danger); }
   .side-nav { margin-top: 0; }
   .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
   .collapse-btn { display: none; }
-  .page { padding: var(--space-4) var(--space-3); }
+  .page { padding: var(--space-4) var(--space-3) var(--space-5); }
   /* The hero bleeds edge-to-edge by cancelling .page's padding, so it has to
      track the line above — with the desktop values it over-cancelled by 6.4px
      a side and ran off the right edge, invisibly, because html/body carry
      overflow-x:hidden (which also pins scrollWidth, so the usual overflow
      check reports clean — compare against .page's box instead). */
   .hero-cinema { margin: 0 0 var(--space-4); }
-  /* Drop the hero's own logo on phones. The navbar already shows it two
-     centimetres above, and the block it sits in — logo, tagline, headline,
-     three buttons — is 236px of a 633px hero, tall enough to cover the bottom
-     of the open page and with it the translator credit. Losing the duplicate
-     buys back ~74px and clears the page. */
-  .hero-cinema .hero-cinema-logo { display: none; }
   .spider-wrap { grid-template-columns: 1fr; }
   .section-nav { flex-direction: column; }
   .section-nav .btn { max-width: none; }
@@ -1112,20 +1281,26 @@ button.sf-toast:hover { border-color: var(--danger); }
    ============================================================ */
 .club-lead { font-size: var(--fs-md); }
 
+/* The club in four numbers, as tiles. The first is set in ink — the number of
+   books is the one the other three are counts OF. */
 .club-stats {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-3); margin: var(--space-5) 0;
 }
 .club-stat {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: var(--space-3); background: var(--bg-elev-2);
-  border: 1px solid var(--border); border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  padding: var(--space-4); background: var(--bg-elev);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
 }
 .club-stat-n {
-  font-size: var(--fs-xl); font-weight: 700; line-height: 1;
-  color: var(--accent); font-variant-numeric: tabular-nums;
+  font-size: var(--fs-2xl); font-weight: 700; line-height: 1;
+  color: var(--text); font-variant-numeric: tabular-nums;
 }
-.club-stat-l { font-size: var(--fs-sm); color: var(--text-muted); text-align: center; }
+.club-stat-l { font-size: var(--fs-sm); color: var(--text-muted); }
+.club-stat:first-child { background: var(--ink); border-color: var(--ink); }
+.club-stat:first-child .club-stat-n { color: var(--ink-contrast); }
+.club-stat:first-child .club-stat-l { color: color-mix(in srgb, var(--ink-contrast) 70%, transparent); }
+@media (max-width: 620px) { .club-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* ---- seasons timeline ---- */
 .season-list { list-style: none; margin: var(--space-4) 0 0; padding: 0; position: relative; }
@@ -1143,13 +1318,13 @@ button.sf-toast:hover { border-color: var(--danger); }
 .season-done .season-dot { border-color: var(--success); background: var(--success); }
 .season-current .season-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 
-.season-body { display: flex; gap: var(--space-4); padding: var(--space-4); align-items: flex-start; }
-.season-cover { flex-shrink: 0; width: 86px; aspect-ratio: 2 / 3; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm); }
+.season-body { display: flex; gap: var(--space-4); padding: var(--space-4); align-items: flex-start; border-radius: var(--radius-lg); }
+.season-cover { flex-shrink: 0; width: 86px; aspect-ratio: 2 / 3; border-radius: 6px; overflow: hidden; box-shadow: var(--shadow); }
 .season-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .season-info { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .season-info h3 { margin: 4px 0 0; }
 .season-author { font-size: var(--fs-sm); color: var(--text-muted); }
-.season-dates { font-size: var(--fs-sm); color: var(--text-soft); margin: 4px 0 0; }
+.season-dates { display: flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--text-soft); margin: 4px 0 0; }
 .season-note { margin: var(--space-2) 0 0; font-size: var(--fs-sm); }
 .season-open { margin-top: var(--space-2); font-weight: 600; font-size: var(--fs-sm); align-self: flex-start; }
 .pill.season-pill { align-self: flex-start; }
@@ -1185,7 +1360,7 @@ button.sf-toast:hover { border-color: var(--danger); }
 .club-member-line { font-size: var(--fs-xs); color: var(--text-muted); }
 
 .club-cta { margin-top: var(--space-5); }
-.club-cta-actions { margin-top: var(--space-3); }
+.club-cta-actions { margin-top: var(--space-3); display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 @media (max-width: 620px) {
   .season-body { flex-direction: column; }
@@ -1279,12 +1454,18 @@ button.sf-toast:hover { border-color: var(--danger); }
    ============================================================ */
 .search-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 12px; border-radius: 999px;
-  border: 1px solid var(--border-strong); background: var(--bg-elev);
+  padding: 7px 12px; border-radius: 999px;
+  border: 1px solid var(--border); background: transparent;
   color: var(--text-muted); font-size: var(--fs-sm); font-weight: 600;
   transition: all var(--transition);
 }
-.search-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.search-btn:hover { border-color: var(--border-strong); color: var(--text); background: var(--surface-hover); }
+/* The word and the key cap need a laptop's width: under 1100px the bar holds
+   the four destinations too, and the magnifier alone says "search". */
+@media (max-width: 1099px) {
+  .search-btn-label, .search-btn kbd { display: none; }
+  .search-btn { padding: 0; width: 40px; height: 40px; justify-content: center; border-color: transparent; color: var(--text); font-size: 1.1rem; }
+}
 .search-btn kbd {
   font: inherit; font-size: var(--fs-xs); padding: 1px 6px; border-radius: 5px;
   background: var(--bg-elev-2); border: 1px solid var(--border);
@@ -1365,8 +1546,6 @@ button.sf-toast:hover { border-color: var(--danger); }
 .sp-foot-count { margin-inline-start: auto; }
 
 @media (max-width: 720px) {
-  .search-btn-label, .search-btn kbd { display: none; }
-  .search-btn { padding: 8px 10px; }
   .sp-hit-meta { display: none; }
 }
 
@@ -1380,9 +1559,25 @@ button.sf-toast:hover { border-color: var(--danger); }
 html[data-presenting] { font-size: 21px; }
 html[data-presenting] .navbar,
 html[data-presenting] .sidebar,
+html[data-presenting] .dock,
 html[data-presenting] .site-footer,
 html[data-presenting] .read-progress,
 html[data-presenting] .scroll-overlay { display: none; }
+/* The game runs on its own stage (pages/Game.jsx sets this while a game is in
+   play): the whole window is the board, so the site's chrome steps aside the
+   same way it does for the projector. */
+html[data-stage] .navbar,
+html[data-stage] .sidebar,
+html[data-stage] .dock,
+html[data-stage] .crumbs,
+html[data-stage] .site-footer,
+html[data-stage] .scroll-overlay { display: none; }
+html[data-stage] .page { max-width: none; padding: 0; }
+html[data-stage] .app-main { padding-bottom: 0; }
+/* The table is dark whatever the theme, so the ground under it is too: the page
+   fades in on arrival, and for that third of a second a light body would flash
+   through the board. */
+html[data-stage], html[data-stage] body { background: #100d09; }
 
 html[data-presenting] .app-body { padding: 0; }
 html[data-presenting] .app-main { margin: 0; width: 100%; }
@@ -1532,7 +1727,8 @@ html[data-presenting] img { margin-inline: auto; }
 /* ============================================================
    Club verdict + "the book under scrutiny"
    ============================================================ */
-.verdict { padding: var(--space-4); margin: var(--space-5) 0; border-top: 3px solid var(--accent); }
+.verdict { padding: var(--space-5); margin: var(--space-5) 0; border-radius: var(--radius-lg); }
+@media (max-width: 620px) { .verdict { padding: var(--space-4); } }
 .verdict-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
 .verdict-stars { display: inline-flex; align-items: baseline; gap: 8px; color: var(--warm); font-size: var(--fs-md); letter-spacing: 2px; }
 .verdict-num { color: var(--text-soft); font-size: var(--fs-sm); letter-spacing: 0; font-variant-numeric: tabular-nums; }
@@ -1546,7 +1742,7 @@ html[data-presenting] img { margin-inline: auto; }
 .verdict-cell p { margin: 0; font-size: var(--fs-sm); }
 
 /* claim → critique → response */
-.debate { padding: var(--space-4); margin: var(--space-4) 0; }
+.debate { padding: var(--space-4); margin: var(--space-4) 0; border-radius: var(--radius-lg); }
 /* debate-topic is an h2 (major subsection); this beats `.section-content h2` so
    the card title keeps its compact size and no top margin inside the card. */
 .debate .debate-topic { font-size: var(--fs-md); margin: 0 0 var(--space-3); }
@@ -1574,7 +1770,7 @@ html[data-presenting] img { margin-inline: auto; }
    ============================================================ */
 .xbook { margin-top: var(--space-6); }
 .xbook-lead { color: var(--text-soft); max-width: 62ch; }
-.xbook-card { padding: var(--space-4); margin-bottom: var(--space-4); }
+.xbook-card { padding: var(--space-4); margin-bottom: var(--space-4); border-radius: var(--radius-lg); }
 .xbook-card.caution { border-inline-start: 3px solid var(--warm); }
 .xbook-theme { margin: 0 0 var(--space-4); font-size: var(--fs-md); }
 
@@ -1855,36 +2051,74 @@ html[data-presenting] img { margin-inline: auto; }
    also stack it on tablets, which have the room for two. */
 
 /* ============================================================
-   Sticky in-book navigation bar (phones/tablets) — PLAN-onboarding §6a
+   THE BOTTOM PILL (phones/tablets) — one floating bar, two contents.
+
+   `.dock` (components/Dock.jsx) is the site: Home · Books · Game · Club.
+   `.section-bar` (BookSection, portalled to <body>) is the section being read:
+   previous · the book's sections · next. They share one geometry and never show
+   together — while a section is open the pill is about the section, and the
+   dock steps aside (`body:has(.section-bar) .dock`).
+
+   Floating, not docked edge to edge: it sits clear of the home indicator by its
+   own gap plus the safe-area inset, and the page shows around it, which is what
+   tells a reader the page carries on underneath.
    ============================================================ */
-.section-bar { display: none; }
+.dock, .section-bar { display: none; }
 @media (max-width: 860px) {
-  .section-bar {
-    position: fixed; inset-inline: 0; bottom: 0; z-index: 35;
-    display: flex; align-items: stretch; gap: 1px;
-    background: color-mix(in srgb, var(--bg-elev) 94%, transparent);
-    backdrop-filter: saturate(140%) blur(10px);
-    border-top: 1px solid var(--border);
-    /* Clear of the iOS home indicator; 0 everywhere else. */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+  .dock, .section-bar {
+    position: fixed; z-index: 36;
+    inset-inline: var(--dock-gap); bottom: calc(var(--dock-gap) + env(safe-area-inset-bottom, 0px));
+    /* A tablet does not need a 800px-wide bar: capped and centred (both insets
+       plus auto margins centre a fixed element). */
+    max-width: 520px; margin-inline: auto;
+    height: var(--dock-h); padding: 6px; gap: 4px;
+    display: flex; align-items: stretch;
+    border-radius: 22px;
+    background: var(--glass);
+    -webkit-backdrop-filter: saturate(170%) blur(18px);
+    backdrop-filter: saturate(170%) blur(18px);
+    border: 1px solid color-mix(in srgb, var(--border-strong) 55%, transparent);
+    box-shadow: var(--shadow-lg);
   }
+  .section-bar { z-index: 35; }
+
+  .dock-link {
+    flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    border-radius: 16px; color: var(--text-muted);
+    font-size: 0.7rem; font-weight: 600; line-height: 1.2;
+    transition: background var(--transition), color var(--transition);
+  }
+  .dock-link:hover { text-decoration: none; }
+  .dock-icon { display: grid; place-items: center; font-size: 1.3rem; line-height: 1; }
+  .dock-link.active { color: var(--text); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+  .dock-link.active .dock-icon { color: var(--accent); }
+
   .section-bar-btn {
-    flex: 1; min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
-    gap: 6px; padding: 0 8px; color: var(--text-soft); font-weight: 600; font-size: var(--fs-sm);
+    flex: 1; min-width: 0; display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; padding: 0 8px; border-radius: 16px;
+    color: var(--text-soft); font-weight: 600; font-size: var(--fs-sm);
     transition: background var(--transition), color var(--transition);
   }
   .section-bar-btn:hover { background: var(--surface-hover); color: var(--text); text-decoration: none; }
-  .section-bar-btn.mid { color: var(--accent); flex: 1.2; }
+  /* The way back to the book's contents is the bar's one filled button. */
+  .section-bar-btn.mid { flex: 1.25; background: var(--ink); color: var(--ink-contrast); }
+  .section-bar-btn.mid:hover { background: var(--ink); color: var(--ink-contrast); }
   /* An absent prev/next keeps its slot so «الأقسام» stays centred rather than
      sliding under the reader's thumb on the first and last sections. */
   .section-bar-btn.is-empty { pointer-events: none; }
 
-  /* The bar is fixed, so it would sit on top of the last line of the article
-     and the footer disclaimer. The height is reserved at the end of this file,
-     scoped with `:has()` to pages that actually render the bar. */
+  /* While a section is open, the pill is the section's. */
+  body:has(.section-bar) .dock { display: none; }
+
+  /* The pill is fixed, so it would sit on top of the last lines of the page.
+     Reserve its height — on every page now, since every page has one or the
+     other. (This used to be scoped with `:has()` to section pages, when they
+     were the only ones with a bar.) */
+  .app-main { padding-bottom: calc(var(--dock-h) + var(--dock-gap) * 2 + env(safe-area-inset-bottom, 0px)); }
 }
 /* Presentation mode hides the chrome; this is chrome. */
 html[data-presenting] .section-bar { display: none; }
+html[data-presenting] .app-main { padding-bottom: 0; }
 
 /* ============================================================
    Touch targets — LAST BLOCK IN THE FILE, deliberately
@@ -1934,7 +2168,8 @@ html[data-presenting] .section-bar { display: none; }
   .btn { min-height: 44px; }
   .book-stats a, .fact-teaser-foot a { min-height: 44px; display: inline-flex; align-items: center; }
   .see-all, .xbook-link, .season-open { min-height: 44px; display: inline-flex; align-items: center; }
-  .sitenav-chip { min-height: 44px; }
+  .topnav-link { min-height: 40px; }
+  .people-chip { min-height: 44px; }
   .fl-tie a { min-height: 44px; display: inline-flex; align-items: center; }
   /* The site's only off-site links. They sit in a list, not in a sentence, so
      they can take the full target height without disturbing any prose. */
@@ -1968,7 +2203,8 @@ html[data-presenting] .section-bar { display: none; }
 @media (max-width: 520px) {
   .navbar { gap: var(--space-2); padding: 0 var(--space-3); }
   .brand-text { display: none; }
-  .brand, .brand-logo { width: 44px; height: 44px; flex-shrink: 0; }
+  .brand, .brand-logo { width: 40px; height: 40px; flex-shrink: 0; }
+  .nav-actions { gap: 2px; }
 }
 
 /* Range sliders in the figures. The 2026-07-30 pass raised the figure *buttons*
@@ -2007,17 +2243,6 @@ html[data-presenting] .section-bar { display: none; }
    `.only-mobile { display: none }` in this file, because at equal specificity
    the later rule wins and the control leaks onto desktop. Check any such rule
    with `getComputedStyle(el).display` at 1280px, not by reading. */
-
-/* Narrow phones: reserve the sticky in-book bar's height so it can't cover the
-   last line of the footer. `:has()` scopes it to pages that actually render the
-   bar — it is portalled to <body> and only exists on a section, so applying the
-   padding unconditionally left ~56px of dead space at the foot of Home, Books
-   and About. */
-@media (max-width: 860px) {
-  body:has(.section-bar) .app-main {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-  }
-}
 
 /* Members' reviews on a book's landing (BookSection → MemberReviews). */
 .member-reviews { margin: var(--space-6) 0 var(--space-4); }

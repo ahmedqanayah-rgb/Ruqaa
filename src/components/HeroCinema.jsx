@@ -290,15 +290,22 @@ export default function HeroCinema() {
         <div className="hero-cinema-scrim" aria-hidden />
 
         {/* brand + CTAs — always readable over the scrim */}
-        <div className="hero-cinema-content" dir="auto">
-          <img className="hero-logo hero-cinema-logo" src="./images/logo.png" alt={t(ui.siteTitle)} />
-          <span className="pill">{t(ui.siteTagline)}</span>
+        {/* `dir` from the app, not "auto": the arrow below mirrors itself by the
+            document's direction, and `auto` would pick this block's from its
+            first strong character instead — the same answer today, but only by
+            coincidence of the copy. */}
+        <div className="hero-cinema-content" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+          {/* No logo here any more: the top bar shows it a few centimetres
+              above on every screen size, and on a phone the block it sat in
+              was tall enough to cover the foot of the open page. */}
+          <span className="eyebrow">{t(ui.siteTagline)}</span>
           <h1>{t({ ar: 'نقرأ الكتاب… ثم نعيشه', en: 'We read the book… then we live it' })}</h1>
           {!showVideo && (
             <div className="hero-actions fade-in">
-              <Link className="btn primary" to={`/book/${book.id}`}>{t(ui.actions.openBook)} →</Link>
-              <Link className="btn" to="/books">{t(ui.nav.books)}</Link>
-              <Link className="btn ghost" to="/about">{t(ui.nav.about)}</Link>
+              <Link className="btn primary" to={`/book/${book.id}`}>
+                {t(ui.actions.openBook)} <span className="arrow" aria-hidden>→</span>
+              </Link>
+              <Link className="btn" to="/books">{t(ui.labels.ourBooks)}</Link>
             </div>
           )}
         </div>

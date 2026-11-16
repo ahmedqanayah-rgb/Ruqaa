@@ -52,7 +52,7 @@ export function bookStats(book) {
 
 export function toSkeleton(book) {
   return {
-    ...pick(book, ['id', 'title', 'subtitle', 'author', 'authorPhoto', 'cover', 'blurb', 'accent', 'groups']),
+    ...pick(book, ['id', 'title', 'subtitle', 'author', 'authorPhoto', 'cover', 'blurb', 'tone', 'groups']),
     sections: book.sections.map((s) => {
       const tabs = (s.blocks || []).find((b) => b.type === 'tabs')
       return {

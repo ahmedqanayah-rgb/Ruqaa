@@ -4,9 +4,22 @@ import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
 import { club } from '../data/club.js'
 import { heroScene } from '../data/heroScene.js'
-import Icon from '../components/Icon.jsx'
 import HeroCinema from '../components/HeroCinema.jsx'
+import BookPoster from '../components/BookPoster.jsx'
+import DiceArt from '../components/DiceArt.jsx'
 
+const L = (ar, en) => ({ ar, en })
+
+/*
+ * HOME IS A FRONT DOOR: the hero, the shelf, and the way into game night.
+ *
+ * It was cut down to the hero and the book row on 2026-08-03 at the club's
+ * request ("simpler, not more explained"), and that rule still holds — nothing
+ * here explains the site. The one addition since is the game's card, because a
+ * thing the club plays together on a call needs a door on the page everyone
+ * opens first. If something else ever wants to live here, something has to
+ * leave.
+ */
 export default function Home() {
   const { t } = useApp()
   // Feature the season the club is actually reading — not whichever book
@@ -14,12 +27,10 @@ export default function Home() {
   // truth for that, so the front page can't drift from the About page.
   const currentId = club.seasons?.find((s) => s.status === 'current')?.bookId
   const featured = books.find((b) => b.id === currentId) || books[0]
-  // Show up to three books in the sliding list, current one first; a "see all"
-  // card follows so the rest are one tap away. The row scroll-snaps and is
-  // RTL-aware (flex + dir).
+  // Up to three posters, the current book first; «كلّ الكتب» in the heading
+  // carries the rest. The row scroll-snaps on a phone and is RTL-aware.
   const ordered = featured ? [featured, ...books.filter((b) => b.id !== featured.id)] : books
   const shown = ordered.slice(0, 3)
-  const hasMore = books.length > shown.length
 
   return (
     <div className="home">
@@ -27,8 +38,7 @@ export default function Home() {
           true; `enabled: false` is the kill switch back to this one. */}
       {heroScene.enabled ? <HeroCinema /> : (
       <section className="hero">
-        <img className="hero-logo" src="./images/logo.png" alt={t(ui.siteTitle)} />
-        <span className="pill">{t(ui.siteTagline)}</span>
+        <span className="eyebrow">{t(ui.siteTagline)}</span>
         <h1>{t({ ar: 'نقرأ الكتاب… ثم نعيشه', en: 'We read the book… then we live it' })}</h1>
         <p className="hero-lead">
           {t({
@@ -38,42 +48,41 @@ export default function Home() {
         </p>
         <div className="hero-actions">
           <Link className="btn primary" to={`/book/${featured.id}`}>
-            <Icon name="📖" /> {t(featured.title)} →
+            {t(featured.title)} <span className="arrow" aria-hidden>→</span>
           </Link>
           <Link className="btn" to="/books">{t(ui.nav.books)}</Link>
-          <Link className="btn ghost" to="/about">{t(ui.nav.about)}</Link>
         </div>
       </section>
       )}
 
-      <section className="books-section">
+      <section className="shelf">
         <div className="section-head-row">
           <h2>{t(ui.labels.ourBooks)}</h2>
-          <Link to="/books" className="see-all">{t(ui.labels.allBooks)} →</Link>
+          <Link to="/books" className="see-all">
+            {t(ui.labels.allBooks)} <span className="arrow" aria-hidden>→</span>
+          </Link>
         </div>
-        <div className="book-carousel" role="list">
+        <div className="shelf-row" role="list">
           {shown.map((b) => (
-            <Link key={b.id} to={`/book/${b.id}`} className="book-card card carousel-card" role="listitem">
-              <div className="book-cover">
-                <img src={t(b.cover)} alt={t(b.title)} loading="lazy" onError={(e) => { e.currentTarget.style.opacity = 0 }} />
-              </div>
-              <div className="book-info">
-                <h3>{t(b.title)}</h3>
-                <span className="book-author">{t({ ar: 'تأليف', en: 'by' })} {t(b.author)}</span>
-                <p>{t(b.blurb)}</p>
-                <span className="book-open">{t(ui.actions.openBook)} →</span>
-              </div>
-            </Link>
+            <div key={b.id} className="shelf-item" role="listitem">
+              <BookPoster book={b} />
+            </div>
           ))}
-          {hasMore && (
-            <Link to="/books" className="book-card card carousel-card ghost-card" role="listitem">
-              <div className="soon">
-                <span aria-hidden>→</span>
-                <p>{t(ui.labels.allBooks)}</p>
-              </div>
-            </Link>
-          )}
         </div>
+      </section>
+
+      <section className="game-promo-wrap">
+        <Link to="/game" className="game-promo">
+          <DiceArt className="game-promo-art" />
+          <span className="game-promo-body">
+            <span className="eyebrow">{t(L('لعبة النادي', 'The club game'))}</span>
+            <strong className="game-promo-title">{t(ui.game.title)}</strong>
+            <span className="game-promo-text">{t(ui.game.tagline)}</span>
+            <span className="btn game-promo-cta">
+              {t(ui.game.play)} <span className="arrow" aria-hidden>→</span>
+            </span>
+          </span>
+        </Link>
       </section>
     </div>
   )

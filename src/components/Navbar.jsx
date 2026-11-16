@@ -1,26 +1,35 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
+import { destinations } from '../data/nav.js'
 import Icon from './Icon.jsx'
-import SiteNav from './SiteNav.jsx'
 
-export default function Navbar({ onMenu, onSearch }) {
+/*
+ * THE TOP BAR. Brand at the start, the four destinations in the middle, the
+ * controls at the end.
+ *
+ * The destinations show here from 861px up. Below that the bar cannot hold them
+ * — measured at 375px it was already over-full with the brand and three
+ * controls — so a phone gets them in the dock at the bottom of the screen
+ * instead (Dock.jsx), where a thumb reaches, and this bar keeps only the brand
+ * and the controls.
+ *
+ * `inBook` adds the contents button on phones. Outside a book there is nothing
+ * left for a drawer to hold (the dock has the destinations), so the hamburger
+ * exists only where it means one thing: this book's sections.
+ */
+export default function Navbar({ onMenu, onSearch, inBook }) {
   const { t, theme, toggleLang, toggleTheme, togglePresenting } = useApp()
+  const { pathname } = useLocation()
   // Show the platform's own modifier so the hint doesn't lie on Windows.
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '')
   return (
     <header className="navbar">
-      {/* Deliberately unlabelled again. It briefly read «☰ أقسام الكتاب», which
-          was wrong twice over: this opens the *site* drawer — every book, the
-          top-level links, the whole tree — not one book's sections, and the
-          sticky in-book bar already carries that exact icon and wording for a
-          different destination (the book landing). Two identical-looking
-          controls that go to different places is worse than one glyph. The
-          label also only ever appeared between 521 and 860px, which is
-          precisely where the bar is on screen too. */}
-      <button className="icon-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.openMenu)}>
-        <Icon name="☰" className="hamburger" />
-      </button>
+      {inBook && (
+        <button className="icon-btn only-mobile" onClick={onMenu} aria-label={t(ui.actions.bookMenu)}>
+          <Icon name="☰" className="hamburger" />
+        </button>
+      )}
 
       <Link to="/" className="brand">
         <img className="brand-logo" src="./images/logo.png" alt={t(ui.siteTitle)} />
@@ -30,28 +39,36 @@ export default function Navbar({ onMenu, onSearch }) {
         </span>
       </Link>
 
-      {/* The site map lives INSIDE the bar, not on a second row under it.
-          It hides itself on narrow screens — see SiteNav — where the drawer
-          carries the same destinations. */}
-      <SiteNav />
+      <nav className="topnav" aria-label={t({ ar: 'التنقّل الرئيسي', en: 'Main' })}>
+        {destinations.map((d) => {
+          const active = d.isActive(pathname)
+          return (
+            <Link key={d.to} to={d.to} className={`topnav-link ${active ? 'active' : ''}`}
+              aria-current={active ? 'page' : undefined}>
+              <Icon name={d.icon} /> {t(d.label)}
+            </Link>
+          )
+        })}
+      </nav>
 
-      <button className="search-btn" onClick={onSearch} aria-label={t(ui.actions.search)}>
-        <Icon name="🔍" />
-        <span className="search-btn-label">{t(ui.actions.search)}</span>
-        <kbd aria-hidden>{isMac ? '⌘' : 'Ctrl '}K</kbd>
-      </button>
-
-      <button className="pill-btn" onClick={toggleLang} aria-label={t(ui.actions.switchLangAria)}>
-        <Icon name="🌐" /> {t(ui.actions.switchLang)}
-      </button>
-      <button className="icon-btn" onClick={toggleTheme}
-        aria-label={t(theme === 'light' ? ui.actions.darkMode : ui.actions.lightMode)}>
-        <Icon name={theme === 'light' ? '🌜' : '☀️'} />
-      </button>
-      <button className="icon-btn not-mobile" onClick={togglePresenting}
-        aria-label={t(ui.actions.present)} title={t(ui.actions.present)}>
-        <Icon name="📽️" />
-      </button>
+      <div className="nav-actions">
+        <button className="search-btn" onClick={onSearch} aria-label={t(ui.actions.search)}>
+          <Icon name="🔍" />
+          <span className="search-btn-label">{t(ui.actions.search)}</span>
+          <kbd aria-hidden>{isMac ? '⌘' : 'Ctrl '}K</kbd>
+        </button>
+        <button className="pill-btn" onClick={toggleLang} aria-label={t(ui.actions.switchLangAria)}>
+          <Icon name="🌐" /> {t(ui.actions.switchLang)}
+        </button>
+        <button className="icon-btn" onClick={toggleTheme}
+          aria-label={t(theme === 'light' ? ui.actions.darkMode : ui.actions.lightMode)}>
+          <Icon name={theme === 'light' ? '🌜' : '☀️'} />
+        </button>
+        <button className="icon-btn not-mobile" onClick={togglePresenting}
+          aria-label={t(ui.actions.present)} title={t(ui.actions.present)}>
+          <Icon name="📽️" />
+        </button>
+      </div>
     </header>
   )
 }

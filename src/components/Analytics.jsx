@@ -50,7 +50,14 @@ import { Analytics } from '@vercel/analytics/react'
  */
 export default function SiteAnalytics() {
   const { pathname, search } = useLocation()
-  const path = pathname + search
+  /* The game is the one page whose query is NOT an address worth counting: a
+     game in play keeps its whole state in `?g=…` (lib/game/engine.js), and that
+     state includes the players' names. Opening or refreshing such a link must
+     log `/game` and nothing more — both because one row per game state is
+     noise, and because the members' names have no business in an analytics
+     dashboard. (Moves made DURING a game never reach here at all: the game
+     writes the URL with replaceState, which the router does not hear.) */
+  const path = pathname === '/game' ? pathname : pathname + search
 
   return <Analytics route={path} path={path} beforeSend={beforeSend} />
 }

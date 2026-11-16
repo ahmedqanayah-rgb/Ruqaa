@@ -3,6 +3,7 @@ import { useLocation, useNavigationType } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import Navbar from './Navbar.jsx'
+import Dock from './Dock.jsx'
 import Sidebar from './Sidebar.jsx'
 import Breadcrumb from './Breadcrumb.jsx'
 import SearchPalette from './SearchPalette.jsx'
@@ -13,15 +14,21 @@ import { prefetchBook } from '../data/books.js'
 export default function Layout({ children }) {
   const { t, presenting, setPresenting, togglePresenting } = useApp()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  /* The sidebar starts COLLAPSED to a 64px icon rail. The top-level
-     destinations moved into the navbar, so what the rail hides is the active
-     book's section tree — one click away on the rail's own toggle, and listed
-     in full on the book landing. This state lives in Layout and Layout never
-     unmounts, so a reader who opens it keeps it open for the sitting; on phones
-     the sidebar is a drawer and ignores this entirely. */
+  /* The sidebar starts COLLAPSED to a 64px rail of book covers. What the rail
+     hides is the active book's section tree — one click away on the rail's own
+     toggle, and listed in full on the book landing. This state lives in Layout
+     and Layout never unmounts, so a reader who opens it keeps it open for the
+     sitting; on phones the sidebar is a drawer and ignores this entirely. */
   const [collapsed, setCollapsed] = useState(true)
   const [searchOpen, setSearchOpen] = useState(false)
   const loc = useLocation()
+  /* THE SIDEBAR BELONGS TO THE BOOKS. It used to stand beside every page, where
+     all it held was a second copy of the destinations in the bar above it. The
+     destinations live in the top bar and the phone's dock now, so the sidebar
+     is what is left: the books and their section trees — and it shows only
+     where that is the question, inside a book. Home, the shelf, the club page
+     and the game get the full width. */
+  const inBook = loc.pathname.startsWith('/book/')
   const navType = useNavigationType()
   const mainRef = useRef(null)
   const positions = useRef(new Map())
@@ -166,29 +173,34 @@ export default function Layout({ children }) {
       <a className="skip-link" href="#main">
         {t(ui.actions.skipToContent)}
       </a>
-      {/* ONE bar. The site map used to sit on a second row beneath this one;
-          the club asked for them merged, so the chips now ride inside the
-          navbar itself. They cannot share a line on a phone — measured at
-          375px the navbar is already 8px over-full before a single chip — so
-          below 1024px the chips hide and the drawer carries those same
-          destinations. See SiteNav for what that trades away. */}
-      <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} />
-      <Breadcrumb />
+      {/* ONE bar at the top, and on a phone one dock at the bottom. The four
+          destinations (data/nav.js) ride in the bar from 861px up and in the
+          dock below that — a phone's bar cannot hold them, and the bottom of
+          the screen is where a thumb is anyway. */}
+      <Navbar onMenu={() => setDrawerOpen(true)} onSearch={() => setSearchOpen(true)} inBook={inBook} />
       <div className="app-body">
-        <Sidebar
-          open={drawerOpen}
-          collapsed={collapsed}
-          onClose={() => setDrawerOpen(false)}
-          onToggleCollapse={() => setCollapsed((c) => !c)}
-        />
+        {inBook && (
+          <Sidebar
+            open={drawerOpen}
+            collapsed={collapsed}
+            onClose={() => setDrawerOpen(false)}
+            onToggleCollapse={() => setCollapsed((c) => !c)}
+          />
+        )}
         <main className="app-main" id="main" ref={mainRef} tabIndex={-1}>
-          <div className="page fade-in" key={loc.pathname}>{children}</div>
+          {/* The breadcrumb rides INSIDE the page so it shares the article's
+              measure; it renders only on a book's section (see Breadcrumb). */}
+          <div className="page fade-in" key={loc.pathname}>
+            <Breadcrumb />
+            {children}
+          </div>
           <footer className="site-footer">
             <p>{t(ui.footer.built)}</p>
             <p className="muted">{t(ui.footer.note)}</p>
           </footer>
         </main>
       </div>
+      <Dock />
       <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
       <ScrollOverlay />
       {presenting && (

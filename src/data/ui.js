@@ -9,6 +9,20 @@ export const ui = {
     home: { ar: 'الرئيسية', en: 'Home' },
     books: { ar: 'الكتب', en: 'Books' },
     about: { ar: 'عن النادي', en: 'About the Club' },
+    // The short forms the navigation uses — a tab has room for one word.
+    club: { ar: 'النادي', en: 'Club' },
+    game: { ar: 'اللعبة', en: 'Game' },
+  },
+
+  // The club's dice game (pages/Game.jsx). «رُقعة» is also the Arabic word for
+  // a game board, so the name is the club's own.
+  game: {
+    title: { ar: 'رُقعة النرد', en: 'Ruqʿa Dice' },
+    tagline: {
+      ar: 'لعبة ليلة النادي: نردٌ، وأسئلةٌ غريبة من كتبنا، ونقاطٌ تُحسب أمام الجميع.',
+      en: 'The club’s game night: a die, odd questions from our books, and a score everyone can see.',
+    },
+    play: { ar: 'العبوا الآن', en: 'Play now' },
   },
 
   actions: {
@@ -17,6 +31,7 @@ export const ui = {
     lightMode: { ar: 'الوضع الفاتح', en: 'Light mode' },
     darkMode: { ar: 'الوضع الداكن', en: 'Dark mode' },
     openMenu: { ar: 'فتح القائمة', en: 'Open menu' },
+    bookMenu: { ar: 'أقسام الكتاب', en: 'Book contents' },
     closeMenu: { ar: 'إغلاق القائمة', en: 'Close menu' },
     openBook: { ar: 'افتح الكتاب', en: 'Open the book' },
     search: { ar: 'بحث', en: 'Search' },

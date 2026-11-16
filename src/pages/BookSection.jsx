@@ -17,6 +17,7 @@ const FocusLab = lazy(() => import('../components/FocusLab.jsx'))
 import RichText from '../components/RichText.jsx'
 import Icon from '../components/Icon.jsx'
 import { scroller, onPageScroll } from '../lib/scroll.js'
+import { toneStyle } from '../lib/tone.js'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -126,16 +127,19 @@ function FactRotator({ book }) {
   const f = facts[i]
   return (
     <div className="fact-teaser">
+      <span className="eyebrow">{t(L('من الكتاب', 'From the book'))}</span>
       <div className="fact-teaser-body">
         <RichText as="p" value={f} />
       </div>
       <div className="fact-teaser-foot">
         <button className="btn ghost fact-teaser-btn" onClick={reroll}>
-          🎲 {t(L('حقيقة أخرى', 'Another fact'))}
+          <Icon name="🎲" /> {t(L('حقيقة أخرى', 'Another fact'))}
         </button>
         {/* «الحقائق الصادمة» is not a section any more — the facts live in the
             game, which is also where this teaser's text comes from. */}
-        <Link to={`/book/${book.id}/activities?open=myth-or-fact`}>{t(L('العب بها كلّها ←', 'Play them all →'))}</Link>
+        <Link to={`/book/${book.id}/activities?open=myth-or-fact`}>
+          {t(L('العب بها كلّها', 'Play them all'))} <span className="arrow" aria-hidden>→</span>
+        </Link>
       </div>
     </div>
   )
@@ -157,20 +161,24 @@ function countExperts(book) {
 /* What a section card advertises under its title. Prose sections get a read
    time; the interactive ones say what they actually contain, which is more use
    than a blanket "interactive". */
+/* `icon` is a key into components/Icon.jsx, so the mark is a line drawing in the
+   text colour like every other icon on the site, not an emoji typed into the
+   label. */
 function sectionMeta(section, minutes) {
-  if (minutes) return { ar: `⏱ ~${minutes} د قراءة`, en: `⏱ ~${minutes} min read` }
+  if (minutes) return { icon: '⏱', text: { ar: `~${minutes} د قراءة`, en: `~${minutes} min read` } }
   if (section.kind === 'quiz' && section.studies)
-    return { ar: `🔬 ${section.studies.length} دراسة`, en: `🔬 ${section.studies.length} studies` }
+    return { icon: '🔬', text: { ar: `${section.studies.length} دراسة`, en: `${section.studies.length} studies` } }
   if (section.kind === 'myth-game' && section.items)
-    return { ar: `🎲 ${section.items.length} عبارة`, en: `🎲 ${section.items.length} statements` }
+    return { icon: '🎲', text: { ar: `${section.items.length} عبارة`, en: `${section.items.length} statements` } }
   if (section.kind === 'activities' && section.parts)
-    return { ar: `🎯 ${section.parts.length} أنشطة`, en: `🎯 ${section.parts.length} activities` }
-  return { ar: '🎮 تفاعلي', en: '🎮 Interactive' }
+    return { icon: '🎯', text: { ar: `${section.parts.length} أنشطة`, en: `${section.parts.length} activities` } }
+  return { icon: '🎯', text: { ar: 'تفاعلي', en: 'Interactive' } }
 }
 
 function SectionCard({ book, section, index, minutes }) {
   const { t, visited } = useApp()
   const { seen: seenUnits, total: totalUnits, done: seen } = sectionProgress(book, section, visited)
+  const meta = sectionMeta(section, minutes)
   return (
     <Link to={`/book/${book.id}/${section.slug}`}
       className={`section-card card rich ${seen ? 'seen' : ''}`}>
@@ -187,7 +195,7 @@ function SectionCard({ book, section, index, minutes }) {
           time are enough to choose by, and a two-line summary on each of 23
           cards turned the list into something to read rather than scan. The
           lead still opens the section itself and still previews the next one. */}
-      <span className="section-card-meta">{t(sectionMeta(section, minutes))}</span>
+      <span className="section-card-meta"><Icon name={meta.icon} /> {t(meta.text)}</span>
     </Link>
   )
 }
@@ -266,6 +274,28 @@ function MemberReviews({ book }) {
  * book; once they have an opinion, it is theirs and we stop moving it.
  */
 const landingGroups = new Map() // bookId → { open: Set<number>, touched: boolean }
+
+/* The landing's rows, from a book's `groups`: a titled group stays itself, and a
+   RUN of consecutive solo entries (`{ slug }`) becomes one row of cards.
+
+   Each solo used to be a section of its own holding a grid of one card, so a
+   book whose tabs are all solo — every book, since the chapters were folded
+   into panels — showed its three or four cards stacked down one edge of the
+   page with the rest of the width empty. One grid lets them sit side by side
+   where there is room and still stack on a phone.
+
+   `index` is the entry's position in `groups` (the first one's, for a run), so
+   the open/closed state keyed on it means what it meant before. */
+function landingRows(groups) {
+  const rows = []
+  groups.forEach((g, index) => {
+    const last = rows[rows.length - 1]
+    if (!g.slug) rows.push({ ...g, index })
+    else if (last?.solos) last.solos.push(g.slug)
+    else rows.push({ solos: [g.slug], index })
+  })
+  return rows
+}
 
 function BookLanding({ book }) {
   const { t, lang, visited } = useApp()
@@ -346,14 +376,17 @@ function BookLanding({ book }) {
   })
 
   return (
-    <div className="book-landing">
+    <div className="book-landing wide-page" style={toneStyle(book)}>
+      {/* The header is painted in the book's own tone (lib/tone.js) — the one
+          place on a book's pages that is: everything below it is the reading
+          UI, which stays the club's colours so the figures' palette holds. */}
       <header className="book-hero">
         <div className="book-hero-cover">
           <img src={t(book.cover)} alt={t(book.title)}
             onError={(e) => { e.currentTarget.style.opacity = 0 }} />
         </div>
         <div className="book-hero-body">
-          <span className="pill">{t({ ar: 'كتاب', en: 'Book' })}</span>
+          <span className="eyebrow">{t({ ar: 'كتاب', en: 'Book' })}</span>
           <h1>{t(book.title)}</h1>
           {/* t(), not the object: a subtitle may exist in one language only (the
               Varoufakis edition in Arabic carries none), and `{ar:''}` is truthy. */}
@@ -370,7 +403,7 @@ function BookLanding({ book }) {
                 with 3 tabs. Calling them «أقسام» read as a section count and
                 matched neither. It is the same number the progress ring counts
                 against, so the two now describe the same thing. */}
-            <span role="listitem">📚 {t({ ar: `${total} جزءاً للقراءة`, en: `${total} parts to read` })}</span>
+            <span role="listitem"><Icon name="📚" /> {t({ ar: `${total} جزءاً للقراءة`, en: `${total} parts to read` })}</span>
             {/* findByKind returns the PART (for its data) and the SECTION it
                 lives in (for the URL) — these are activities inside one tab now,
                 not sections of their own. */}
@@ -378,19 +411,19 @@ function BookLanding({ book }) {
               <Link role="listitem" to={`/book/${book.id}/${studiesSec.section.slug}?open=${studiesSec.part.id || ''}`}>
                 {/* `countLabel` lets a quiz say what it holds — the Varoufakis
                     book's are experiments and episodes, not studies. */}
-                🔬 {studiesSec.part.studies.length} {t(studiesSec.part.countLabel || L('دراسة', 'studies'))}
+                <Icon name="🔬" /> {studiesSec.part.studies.length} {t(studiesSec.part.countLabel || L('دراسة', 'studies'))}
               </Link>
             )}
             {labSec && (
               <Link role="listitem" to={`/book/${book.id}/${labSec.section.slug}?open=${labSec.part.id || ''}`}>
-                🧪 {t({ ar: '٧ ألعاب', en: '7 games' })}
+                <Icon name="🧪" /> {t({ ar: '٧ ألعاب', en: '7 games' })}
               </Link>
             )}
-            {experts > 0 && <span role="listitem">👥 {t({ ar: `${experts}+ شخصية`, en: `${experts}+ people` })}</span>}
+            {experts > 0 && <span role="listitem"><Icon name="👥" /> {t({ ar: `${experts}+ شخصية`, en: `${experts}+ people` })}</span>}
           </div>
           {ctaSlug && (
             <Link className="btn primary book-start" to={`/book/${book.id}/${ctaSlug}`}>
-              {t(ctaLabel)} <span aria-hidden>→</span>
+              {t(ctaLabel)} <span className="arrow" aria-hidden>→</span>
             </Link>
           )}
           {seenCount > 0 && (
@@ -413,13 +446,15 @@ function BookLanding({ book }) {
           Reordered in the JSX rather than with CSS `order` so the reading order
           a screen reader gets stays the same as the one everyone else sees. */}
       {book.groups ? (
-        book.groups.map((g, gi) => {
-          // Solo entry: just the card. No header, no fold — there is nothing to
-          // unfold, and a one-item accordion only hides it.
-          if (g.slug) {
-            return bySlug.has(g.slug)
+        landingRows(book.groups).map((g) => {
+          const gi = g.index
+          // Solo entries: just their cards. No header, no fold — there is
+          // nothing to unfold, and a one-item accordion only hides it.
+          if (g.solos) {
+            const slugs = g.solos.filter((sl) => bySlug.has(sl))
+            return slugs.length
               ? <section key={gi} className="landing-group">
-                  <div className="section-cards">{renderCard(g.slug)}</div>
+                  <div className="section-cards">{slugs.map(renderCard)}</div>
                 </section>
               : null
           }
@@ -593,13 +628,13 @@ function BookPage({ book, slug }) {
     <article key={section.slug} className="section-page route-fade"
       onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <ReadingProgress />
-      {/* The breadcrumb that used to sit here moved into `SiteNav`, which now
-          shows the same trail on every page beside the rest of the site map.
-          Two trails a few pixels apart would be worse than either alone. */}
+      {/* No breadcrumb here: components/Breadcrumb.jsx shows the trail under
+          the top bar on every page. Two trails a few pixels apart would be
+          worse than either alone. */}
       <header className="section-head">
         <span className="section-index">
           {idx + 1} / {book.sections.length}
-          {minutes && <span className="section-readtime"> · ⏱ {t({ ar: `~${minutes} د قراءة`, en: `~${minutes} min read` })}</span>}
+          {minutes && <span className="section-readtime"> · {t({ ar: `~${minutes} د قراءة`, en: `~${minutes} min read` })}</span>}
         </span>
         <h1><Icon name={section.icon} className="section-emoji" /> {t(section.title)}</h1>
         {section.lead && <p className="section-lead">{t(section.lead)}</p>}
@@ -619,7 +654,7 @@ function BookPage({ book, slug }) {
           </Link>
         ) : (
           <Link className="nextup card done" to={`/book/${book.id}`}>
-            <span className="nextup-label">🎉 {t(L('أنهيت أقسام الكتاب', 'You’ve reached the end'))}</span>
+            <span className="nextup-label"><Icon name="✓" /> {t(L('أنهيت أقسام الكتاب', 'You’ve reached the end'))}</span>
             <span className="nextup-title">{t(L('عُد إلى فهرس الكتاب', 'Back to the book’s index'))}</span>
           </Link>
         )}
@@ -667,7 +702,7 @@ function BookPage({ book, slug }) {
           </Link>
         ) : <span className="section-bar-btn is-empty" aria-hidden />}
         <Link className="section-bar-btn mid" to={`/book/${book.id}`}>
-          <span aria-hidden>☰</span> {t(ui.labels.sections)}
+          <Icon name="☰" /> {t(ui.labels.sections)}
         </Link>
         {next ? (
           <Link className="section-bar-btn" to={`/book/${book.id}/${next.slug}`}>

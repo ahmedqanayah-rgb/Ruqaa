@@ -168,7 +168,10 @@ export const whyWeSleep = {
     'كتابٌ يثبت أن النوم أقوى وأرخص دواءٍ وقائيّ نملكه — يعيد كلّ ليلةٍ ضبط الدماغ والجسد والعاطفة.',
     'A book proving sleep is the most powerful, cheapest preventive medicine we have — resetting brain, body and emotion every night.'
   ),
-  accent: 'var(--accent)',
+  /* The book's colour world — its cover's midnight sky and its moon. Read by
+     lib/tone.js and set as --tone / --tone-2 / --tone-spark wherever the book
+     is shown: its poster, its landing's header, its tiles on the game board. */
+  tone: { from: '#24327a', to: '#0c1232', spark: '#f3c94d' },
   verdict,
   /* `{ slug }` is a solo entry — a top-level tab with no group header. See
      entrySlugs in data/books.js. */

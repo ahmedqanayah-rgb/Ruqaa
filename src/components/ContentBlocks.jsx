@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { imageDims } from '../data/imageDims.js'
 import RichText from './RichText.jsx'
+import Icon from './Icon.jsx'
 import Collapsible from './Collapsible.jsx'
 import LoadBoundary from './LoadBoundary.jsx'
 
@@ -88,7 +89,9 @@ function Callout({ block }) {
   const icons = { note: 'ℹ️', key: '🔑', warn: '⚠️', fact: '💡', quote: '❝' }
   return (
     <div className={`callout ${variant}`}>
-      <span className="callout-icon" aria-hidden>{icons[variant] || icons.note}</span>
+      {/* Through Icon, so the mark is a line drawing in the callout's own
+          colour rather than an emoji with a palette of its own. */}
+      <Icon name={icons[variant] || icons.note} className="callout-icon" />
       <div>
         {block.title && <strong className="callout-title"><RichText value={block.title} /></strong>}
         <RichText as="p" value={block.text} />

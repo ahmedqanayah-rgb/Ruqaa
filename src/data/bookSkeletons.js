@@ -25,7 +25,11 @@ export const bookSkeletons = [
       "ar": "كتابٌ يثبت أن النوم أقوى وأرخص دواءٍ وقائيّ نملكه — يعيد كلّ ليلةٍ ضبط الدماغ والجسد والعاطفة.",
       "en": "A book proving sleep is the most powerful, cheapest preventive medicine we have — resetting brain, body and emotion every night."
     },
-    "accent": "var(--accent)",
+    "tone": {
+      "from": "#24327a",
+      "to": "#0c1232",
+      "spark": "#f3c94d"
+    },
     "groups": [
       {
         "slug": "author"
@@ -215,7 +219,11 @@ export const bookSkeletons = [
       "ar": "تحقيقٌ عالميّ في أسباب انهيار انتباهنا — اثنا عشر سبباً خارجياً تسرق تركيزنا، وكيف نستعيده فرداً وجماعة.",
       "en": "A global investigation into why our attention collapsed — twelve external forces stealing our focus, and how to reclaim it as individuals and together."
     },
-    "accent": "var(--accent)",
+    "tone": {
+      "from": "#b02d7c",
+      "to": "#2f37a6",
+      "spark": "#ff9a6b"
+    },
     "groups": [
       {
         "slug": "author"
@@ -475,7 +483,11 @@ export const bookSkeletons = [
       "ar": "وزير مالية اليونان السابق يشرح لابنته المراهقة الاقتصاد بلا مصطلحات: من أين جاءت اللامساواة، وكيف يخلق المصرفيون المال من العدم، ولماذا لا يمكن أن يكون المال بلا سياسة — بقصصٍ من فاوست وأوديب و«ماتريكس».",
       "en": "Greece’s former finance minister explains the economy to his teenage daughter without jargon: where inequality came from, how bankers create money from thin air, and why money can never be free of politics — through stories from Faust, Oedipus and The Matrix."
     },
-    "accent": "var(--accent)",
+    "tone": {
+      "from": "#c9281f",
+      "to": "#7d1410",
+      "spark": "#ffd7a1"
+    },
     "groups": [
       {
         "slug": "author"

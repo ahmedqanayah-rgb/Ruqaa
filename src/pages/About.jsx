@@ -5,6 +5,7 @@ import { ui } from '../data/ui.js'
 import { getBook, clubTotals } from '../data/books.js'
 import { club } from '../data/club.js'
 import WorldReach from '../components/WorldReach.jsx'
+import Icon from '../components/Icon.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -79,17 +80,17 @@ function Season({ season }) {
           <span className="season-author">{t(L('تأليف', 'by'))} {t(book.author)}</span>
           {(season.start || season.end) && (
             <p className="season-dates">
-              📅 {t(season.start)}{season.end ? ` — ${t(season.end)}` : ''}
+              <Icon name="🗓️" /> {t(season.start)}{season.end ? ` — ${t(season.end)}` : ''}
             </p>
           )}
           {!season.start && (
             <p className="season-dates muted">
-              📅 {t(L('المواعيد تُعلَن قريباً', 'Dates to be announced'))}
+              <Icon name="🗓️" /> {t(L('المواعيد تُعلَن قريباً', 'Dates to be announced'))}
             </p>
           )}
           {season.note && <p className="season-note">{t(season.note)}</p>}
           <Link className="season-open" to={`/book/${book.id}`}>
-            {t(ui.actions.openBook)} →
+            {t(ui.actions.openBook)} <span className="arrow" aria-hidden>→</span>
           </Link>
         </div>
       </div>
@@ -103,7 +104,7 @@ export default function About() {
 
   return (
     <div className="prose-page club-page">
-      <span className="pill">{t(ui.nav.about)}</span>
+      <span className="eyebrow">{t(ui.nav.about)}</span>
       <h1>{t(L('عن نادي «رُقعة»', 'About the Ruqʿa Club'))}</h1>
       <p className="club-lead">{t(club.intro)}</p>
 
@@ -168,7 +169,7 @@ export default function About() {
       )}
 
       <div className="callout key club-cta">
-        <span className="callout-icon" aria-hidden>📖</span>
+        <Icon name="📖" className="callout-icon" />
         <div>
           <strong>{t(L('تريد أن تبدأ؟', 'Want to jump in?'))}</strong>
           <p>{t(L(
@@ -176,7 +177,8 @@ export default function About() {
             'Every book here stands on its own — open any book and start from “Start here”, or try the studies as a guessing game.'
           ))}</p>
           <div className="club-cta-actions">
-            <Link className="btn primary" to="/books">{t(ui.labels.allBooks)} →</Link>
+            <Link className="btn primary" to="/books">{t(ui.labels.allBooks)} <span className="arrow" aria-hidden>→</span></Link>
+            <Link className="btn" to="/game"><Icon name="🎲" /> {t(ui.game.title)}</Link>
           </div>
         </div>
       </div>

@@ -260,7 +260,8 @@ export const stolenFocus = {
   verdict,
   // Members' own reviews, shown on the landing after the verdict.
   reviews,
-  accent: 'var(--accent)',
+  /* The book's colour world — the glowing sphere on its cover (see lib/tone.js). */
+  tone: { from: '#b02d7c', to: '#2f37a6', spark: '#ff9a6b' },
   /* `{ slug }` is a solo entry — a top-level tab with no group header. See
      entrySlugs in data/books.js. */
   groups: [

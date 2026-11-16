@@ -45,11 +45,11 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
   const toggleBook = toggleIn(setOpenBooks)
   const toggleGroup = toggleIn(setOpenGroups)
 
-  const topLinks = [
-    { to: '/', label: ui.nav.home, icon: '🏠', end: true },
-    { to: '/books', label: ui.nav.books, icon: '📚' },
-    { to: '/about', label: ui.nav.about, icon: 'ℹ️' },
-  ]
+  /* No Home / Books / About links here any more. The sidebar only exists inside
+     a book now (see Layout), and those destinations are in the top bar and the
+     phone's dock — listing them a third time made the rail five icons of which
+     three were duplicates. What is left is what only this panel has: the books
+     and their section trees. */
 
   const sectionLink = (book, s) => {
     // Same definition of "read" as the card and the ring — see sectionUnits.
@@ -77,16 +77,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }) 
             <span aria-hidden>✕</span>
           </button>
 
-          <nav className="side-nav">
-            <span className="side-heading">{t(ui.labels.browse)}</span>
-            {topLinks.map((l) => (
-              <NavLink key={l.to} to={l.to} end={l.end} onClick={onClose}
-                className={({ isActive }) => `side-link ${isActive ? 'active' : ''}`}>
-                <Icon name={l.icon} className="side-icon" />
-                <span className="side-text">{t(l.label)}</span>
-              </NavLink>
-            ))}
-
+          <nav className="side-nav" aria-label={t(ui.labels.booksList)}>
             <span className="side-heading">{t(ui.labels.booksList)}</span>
             {books.map((book) => {
               const isActiveBook = book.id === activeBookId
