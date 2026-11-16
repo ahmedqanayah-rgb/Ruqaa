@@ -5,6 +5,7 @@ import { POINTS, cardContent } from '../../lib/game/engine.js'
 import { effectLine, effectMood } from '../../lib/game/effects.js'
 import { sfx } from '../../lib/game/sfx.js'
 import { toneStyle } from '../../lib/tone.js'
+import { GAME_ART } from '../../data/gameArt.js'
 import RichText from '../RichText.jsx'
 import Icon from '../Icon.jsx'
 import { SQUARE } from './Board.jsx'
@@ -72,12 +73,22 @@ export default function GameCard({ state, decks, dispatch, player, color, label 
     : card.kind === 'finish' ? SQUARE.finish.icon
     : SQUARE[card.kind]?.icon
   const stake = card.kind === 'mcq' || card.kind === 'tf' || card.kind === 'dare' ? POINTS[card.kind] : null
+  /* The photograph across the top: the book's own for its questions, the
+     kind's for everything else. A book that has not been given one simply
+     keeps the plain band in its tone. */
+  const art = card.kind === 'mcq' ? decks.art[card.book]
+    : card.kind === 'finish' ? GAME_ART.win
+    : GAME_ART[card.kind]
 
   return (
     <div className="gm-overlay" role="dialog" aria-modal="true" aria-label={t(kindLabel)}>
       <article className={`gm-card kind-${card.kind} ${revealed ? (card.right ? 'is-right' : 'is-wrong') : ''}`}
         style={toneStyle(book)}>
-        <header className="gm-card-head">
+        <header className={`gm-card-head ${art ? 'has-art' : ''}`}>
+          {art && (
+            <img className="gm-card-art" src={art} alt="" decoding="async"
+              onError={(e) => { e.currentTarget.hidden = true }} />
+          )}
           <span className="gm-card-kind"><Icon name={kindIcon} /> {t(kindLabel)}</span>
           {/* A myth-or-fact statement names its book too: half the fun is the
               room guessing which of the three would say such a thing. */}

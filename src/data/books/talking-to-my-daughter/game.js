@@ -14,6 +14,9 @@ const L = (ar, en) => ({ ar, en })
 const q = (id, text, opts, why) => ({ id, q: text, opts, why })
 
 export const gameIcon = '⚖️'
+/* The photograph across this book's question cards (see data/gameArt.js for
+   the rest of the set, and for why the path is written out in full). */
+export const gameArt = './images/game/talking-to-my-daughter.webp'
 
 export const gameDeck = [
   q('td-first-writing',

@@ -38,11 +38,14 @@ const bookIdOf = (path) => path.split('/').slice(-2)[0]
 function buildDecks() {
   const mcq = {}
   const icon = {}
+  const art = {}
   const tf = {}
   for (const [path, mod] of Object.entries(deckFiles)) {
     const id = bookIdOf(path)
     mcq[id] = mod.gameDeck || []
     icon[id] = mod.gameIcon || '📖'
+    // Optional: a book with no picture of its own gets its tone as the band.
+    art[id] = mod.gameArt || null
   }
   for (const [path, mod] of Object.entries(mythFiles)) {
     const id = bookIdOf(path)
@@ -52,7 +55,7 @@ function buildDecks() {
   }
   // Registry order, and only the books that have questions.
   const playable = books.filter((b) => mcq[b.id]?.length).map((b) => b.id)
-  return { books: playable, mcq, icon, tf, luck: luckCards, dare: dares }
+  return { books: playable, mcq, icon, art, tf, luck: luckCards, dare: dares }
 }
 
 const decks = buildDecks()

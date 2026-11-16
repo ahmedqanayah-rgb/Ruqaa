@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useApp } from '../../context/AppContext.jsx'
 import { ui } from '../../data/ui.js'
 import { ranking } from '../../lib/game/engine.js'
+import { GAME_ART } from '../../data/gameArt.js'
 import Icon from '../Icon.jsx'
 import { Token } from './parts.jsx'
 
@@ -79,6 +80,11 @@ export default function GameOver({ state, dispatch, colors, labels }) {
     <div className="gm-overlay is-over" role="dialog" aria-modal="true" aria-label={t(L('النتيجة', 'The result'))}>
       <Confetti colors={colors} />
       <article className="gm-card kind-over">
+        {/* The winner's table across the top, with the crown standing on its
+            lower edge. If the picture is missing it hides itself and the crown
+            sits at the top of the card, as it did before there was a picture. */}
+        <img className="gm-over-art" src={GAME_ART.win} alt="" decoding="async"
+          onError={(e) => { e.currentTarget.hidden = true }} />
         <div className="gm-crown"><Icon name="👑" /></div>
         <p className="gm-over-label">
           {t(winners.length > 1 ? L('تعادلٌ على القمّة', 'A tie at the top') : L('الفائز', 'The winner'))}

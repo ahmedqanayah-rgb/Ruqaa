@@ -506,50 +506,79 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
 .poster-ghost p { margin: 0; color: inherit; font-size: var(--fs-sm); }
 .poster-ghost-plus { font-size: 2rem; line-height: 1; font-weight: 300; }
 
-/* ---- the game's door on Home -------------------------------------------
-   An ink card in BOTH themes: it is a poster for something to do, not a panel
-   of the page, so it keeps its own dark ground the way a book keeps its tone. */
-.game-promo {
-  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
-  gap: var(--space-5); padding: var(--space-5) var(--space-6);
-  border-radius: var(--radius-xl); overflow: hidden; color: #f6f1e7;
-  background: #17130e;
+/* ---- the game's door (Home's card, and the top of the game's setup screen) ----
+   A PHOTOGRAPH of the club's table (components/GameCover.jsx) under a veil, with
+   the words set on the bare wood. Dark in BOTH themes: it is a poster for
+   something to do, not a panel of the page, so it keeps its own ground the way
+   a book keeps its tone.
+
+   Three layers, back to front: the picture (`.game-cover`, z -2), the veil
+   (`::before`, z -1), the words. `isolation` keeps those negative z-indexes
+   inside the card instead of under the page.
+
+   THE PICTURE HAS A SIDE. In the wide cover the pieces are on the right and the
+   left is bare wood, which is where a left-to-right page puts its words. In
+   Arabic the words start on the right, so the picture is MIRRORED — it has no
+   lettering in it for exactly that reason — and the veil comes from the other
+   side. The phone's poster is pieces-above, words-below, and is never mirrored. */
+.game-promo, .gm-hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center;
+  border-radius: var(--radius-xl); color: #f6f1e7; background: #17130e;
   border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+}
+.game-promo {
+  /* Not wider than about 3:1 — the cover's pieces fill most of its height, and
+     a flatter strip cuts the dice off the top and the saucer off the bottom. */
+  aspect-ratio: 3.1 / 1; min-height: 300px;
+  padding: var(--space-5) var(--space-6);
   box-shadow: var(--shadow);
   transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out);
 }
 .game-promo:hover { text-decoration: none; transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-/* The camel glow behind the dice. A pseudo-element rather than a background
-   gradient because it has to sit behind the ART, and the art is on the right in
-   Arabic and the left in English — `inset-inline-start` follows it, and a
-   gradient's `at 12% 50%` cannot. */
-.game-promo::before {
-  content: ''; position: absolute; inset-block: -45%; inset-inline-start: -8%; width: min(70%, 520px);
-  background: radial-gradient(closest-side, rgba(165, 133, 91, 0.5), transparent);
-  pointer-events: none;
+
+.game-cover { position: absolute; inset: 0; z-index: -2; display: block; }
+.game-cover img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 30%;
+  transition: transform 700ms var(--ease-out);
 }
-.game-promo > * { position: relative; }
-.game-promo-art { width: clamp(150px, 24vw, 240px); height: auto; }
-.game-promo-body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.game-promo .eyebrow { color: #d9bd8d; }
+.game-promo::before, .gm-hero::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(14, 11, 7, 0.88) 0%, rgba(14, 11, 7, 0.62) 36%, rgba(14, 11, 7, 0) 64%);
+}
+html[dir='rtl'] .game-promo::before, html[dir='rtl'] .gm-hero::before {
+  background: linear-gradient(270deg, rgba(14, 11, 7, 0.88) 0%, rgba(14, 11, 7, 0.62) 36%, rgba(14, 11, 7, 0) 64%);
+}
+/* The mirror goes on the WRAPPER, which flips about its own centre; the <img>
+   inside is then free to be zoomed about any point (the hover below, the
+   phone's close-up on the setup screen) in the picture's own coordinates,
+   without the two transforms having to be multiplied out by hand. */
+html[dir='rtl'] .game-cover { transform: scaleX(-1); }
+.game-promo:hover .game-cover img { transform: scale(1.04); }
+
+.game-promo-body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: min(46ch, 54%); }
+.game-promo .eyebrow { color: #e3c999; }
 .game-promo-title { font-size: var(--fs-2xl); line-height: 1.2; color: #fff; }
-.game-promo-text { color: #cfc5b3; font-size: var(--fs-md); max-width: 46ch; }
+.game-promo-text { color: #e4dccb; font-size: var(--fs-md); }
 .game-promo-cta { margin-top: var(--space-3); background: #f6f1e7; color: #17130e; border-color: transparent; }
 .game-promo:hover .game-promo-cta { background: #fff; }
+
+/* A phone gets the POSTER: pieces in the upper half of the picture, the words
+   on the bare wood below them. No mirroring — top and bottom read the same in
+   either direction — so the rules above are undone here rather than left to
+   flip a picture that has no side. */
 @media (max-width: 620px) {
-  .game-promo { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) var(--space-4) var(--space-5); }
-  .game-promo-art { width: 150px; }
+  .game-promo {
+    aspect-ratio: 4 / 5; min-height: 0; align-items: flex-end;
+    padding: var(--space-4) var(--space-4) var(--space-5);
+  }
+  .game-promo .game-cover, html[dir='rtl'] .game-promo .game-cover { transform: none; }
+  .game-promo .game-cover img { object-position: center top; }
+  .game-promo::before, html[dir='rtl'] .game-promo::before {
+    background: linear-gradient(0deg, rgba(14, 11, 7, 0.94) 0%, rgba(14, 11, 7, 0.74) 30%, rgba(14, 11, 7, 0) 60%);
+  }
+  .game-promo-body { max-width: none; }
 }
-/* The mark itself (components/DiceArt.jsx). Fixed colours: it is always drawn
-   on the ink card or the game's own dark stage. */
-.dice-art-body { fill: #f6f1e7; }
-.dice-art-pip { fill: #17130e; }
-.dice-art-b .dice-art-body { fill: var(--brand); }
-.dice-art-b .dice-art-pip { fill: #fff; }
-.dice-art-tile { fill: none; stroke: var(--brand); stroke-width: 2; }
-.game-promo:hover .dice-art-a { transform: translate(78px, 70px) rotate(-22deg); }
-.game-promo:hover .dice-art-b { transform: translate(156px, 94px) rotate(26deg); }
-.dice-art-a, .dice-art-b { transition: transform 420ms var(--ease-out); }
 
 /* ============================================================
    Book landing + section pages

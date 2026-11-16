@@ -6,7 +6,7 @@ import { club } from '../data/club.js'
 import { heroScene } from '../data/heroScene.js'
 import HeroCinema from '../components/HeroCinema.jsx'
 import BookPoster from '../components/BookPoster.jsx'
-import DiceArt from '../components/DiceArt.jsx'
+import GameCover from '../components/GameCover.jsx'
 
 const L = (ar, en) => ({ ar, en })
 
@@ -73,7 +73,7 @@ export default function Home() {
 
       <section className="game-promo-wrap">
         <Link to="/game" className="game-promo">
-          <DiceArt className="game-promo-art" />
+          <GameCover poster />
           <span className="game-promo-body">
             <span className="eyebrow">{t(L('لعبة النادي', 'The club game'))}</span>
             <strong className="game-promo-title">{t(ui.game.title)}</strong>

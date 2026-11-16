@@ -48,25 +48,15 @@
    ============================================================ */
 .gm-setup { display: flex; flex-direction: column; gap: var(--space-4); }
 
-/* The same ink card as the game's door on Home, so the door and the room
-   behind it look like one place. */
-.gm-hero {
-  position: relative; overflow: hidden;
-  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-5);
-  padding: var(--space-5) var(--space-6); border-radius: var(--radius-xl);
-  background: #17130e; color: #f6f1e7;
-  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
-}
-.gm-hero::before {
-  content: ''; position: absolute; inset-block: -45%; inset-inline-start: -8%; width: min(70%, 520px);
-  background: radial-gradient(closest-side, rgba(165, 133, 91, 0.5), transparent);
-  pointer-events: none;
-}
-.gm-hero > * { position: relative; }
-.gm-hero-art { width: clamp(120px, 20vw, 210px); height: auto; }
-.gm-hero .eyebrow { color: #d9bd8d; }
+/* The top of the setup screen is the SAME card as the game's door on Home —
+   the same photograph, veil and mirroring, all in components.css under
+   `.game-promo, .gm-hero` — so the door and the room behind it are one place.
+   Only its size is its own. */
+.gm-hero { aspect-ratio: 3.4 / 1; min-height: 260px; padding: var(--space-5) var(--space-6); }
+.gm-hero-body { max-width: min(48ch, 54%); }
+.gm-hero .eyebrow { color: #e3c999; }
 .gm-hero h1 { color: #fff; margin: 4px 0 6px; font-size: var(--fs-display); }
-.gm-hero p { color: #cfc5b3; margin: 0; font-size: var(--fs-md); max-width: 50ch; }
+.gm-hero p { color: #e4dccb; margin: 0; font-size: var(--fs-md); }
 
 .gm-setup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
 .gm-panel { padding: var(--space-5); border-radius: var(--radius-lg); }
@@ -137,8 +127,18 @@
      intrinsic width is twenty characters (~309px) however small `min-width`
      says it may shrink. The panel measured 445px in a 375px phone. */
   .gm-setup-grid { grid-template-columns: minmax(0, 1fr); }
-  .gm-hero { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) var(--space-4) var(--space-5); }
-  .gm-hero-art { width: 130px; }
+  /* On a phone the setup screen has a form to get to, so its cover is a short
+     strip of the picture — the side with the pieces — and the words sit under
+     it on the card's own ground, not over the photograph. (Home's card, which
+     has nothing below it to hurry to, gets the tall poster instead.) */
+  .gm-hero { display: block; aspect-ratio: auto; min-height: 0; padding: 0; }
+  .gm-hero::before { display: none; }
+  .gm-hero .game-cover { position: relative; z-index: 0; height: 170px; overflow: hidden; }
+  /* A close-up of the pieces: the strip is nearly the picture's own shape, so
+     without the zoom a third of it would be the bare wood left for words that,
+     on a phone, are not there. */
+  .gm-hero .game-cover img { transform: scale(1.42); transform-origin: 80% 38%; }
+  .gm-hero-body { max-width: none; padding: var(--space-4); }
   .gm-panel { padding: var(--space-4); }
   .gm-start { width: 100%; }
 }
@@ -182,8 +182,15 @@
   height: 100vh; height: 100dvh;
   display: grid; grid-template-rows: auto minmax(0, 1fr);
   color: var(--gm-text);
+  /* THE CLUB'S TABLE: a photograph of the same dark boards as the homepage
+     hero (`--gm-table-img`, set by the stage from data/gameArt.js), under a
+     veil dark enough that the squares and the scores are what is read — the
+     wood is felt, not looked at. The plain colour underneath is what shows if
+     the picture has not arrived, or never does. */
   background:
-    radial-gradient(110% 80% at 50% 0%, #2c2217 0%, #15110b 55%, var(--gm-table) 100%);
+    linear-gradient(180deg, rgba(14, 11, 7, 0.66) 0%, rgba(14, 11, 7, 0.82) 100%),
+    var(--gm-table-img, none) center / cover no-repeat,
+    var(--gm-table);
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   /* A drag on the board must not pull the page (or pull-to-refresh the game). */
   overscroll-behavior: none; touch-action: manipulation;
@@ -390,9 +397,49 @@
 /* The band across the top says what kind of card it is, in the colour that
    kind of square wears on the board — a book's question in the book's tone. */
 .gm-card-head {
+  position: relative; isolation: isolate;
   display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 14px 18px;
   background: linear-gradient(135deg, var(--tone), var(--tone-2)); color: #fff;
+  --band: var(--tone-2);
 }
+/* WITH A PHOTOGRAPH the band grows into a strip of the club's table — the
+   book's own objects for its questions, the kind's for the rest — and the
+   chips sit along its foot, on a veil of the band's own colour. The picture is
+   decoration and is sized like it: tall enough to be seen, never so tall that
+   a phone has to scroll to reach the answers. */
+.gm-card-head.has-art { min-height: clamp(104px, 21vh, 190px); align-items: flex-end; flex-wrap: nowrap; padding: 44px 14px 12px; overflow: hidden; }
+/* Nudged up and in a little: the objects sit across the middle of the picture,
+   and the chips take the foot of the band, so an untouched picture has its
+   subject half under the labels. */
+.gm-card-art { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transform: scale(1.12) translateY(-7%); }
+/* `hidden` is how a picture that failed to load takes itself away (see the
+   card). The attribute alone would lose to the `display` implied above, so it
+   is spelled out — the same trap as `.section-cards[hidden]`. */
+.gm-card-art[hidden], .gm-over-art[hidden] { display: none; }
+.gm-card-head.has-art::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(0deg, color-mix(in srgb, var(--band) 94%, transparent) 0%, color-mix(in srgb, var(--band) 58%, transparent) 24%, transparent 58%);
+}
+/* One row along the foot, whatever the book is called: a long title is cut
+   with an ellipsis rather than pushing the player's name onto a second line and
+   doubling the height of the labels over the picture. The points move to the
+   top corner, out of that row. */
+.gm-card-head.has-art .gm-card-kind {
+  display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  background: rgba(14, 11, 7, 0.55); color: #fff; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.gm-card-head.has-art .gm-card-kind .icon { margin-inline-end: 6px; }
+.gm-card-head.has-art .gm-card-book { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-card-head.has-art .gm-card-who { flex-shrink: 0; }
+.gm-card-head.has-art .gm-card-book,
+.gm-card-head.has-art .gm-card-who { color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); }
+.gm-card-head.has-art .gm-card-stake {
+  position: absolute; top: 12px; inset-inline-end: 14px;
+  background: rgba(14, 11, 7, 0.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.gm-card.kind-tf .gm-card-head { --band: #1a1611; }
+.gm-card.kind-luck .gm-card-head, .gm-card.kind-finish .gm-card-head { --band: #6f552f; }
+.gm-card.kind-dare .gm-card-head { --band: #4a379f; }
 .gm-card.kind-tf .gm-card-head { background: #1a1611; color: #f6f1e7; }
 .gm-card.kind-luck .gm-card-head { background: linear-gradient(135deg, #e3c999, #a5855b); color: #1a1611; }
 .gm-card.kind-dare .gm-card-head { background: linear-gradient(135deg, #9b87ea, #5b45ba); color: #fff; }
@@ -475,8 +522,14 @@
 .gm-link-note { margin: 0; font-size: var(--fs-sm); color: #81776a; }
 
 /* ---- the result ---- */
-.gm-card.kind-over { width: min(620px, 100%); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: clamp(22px, 5vw, 40px); text-align: center; overflow: visible; }
-.gm-crown { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem; background: linear-gradient(155deg, #e3c999, #a5855b); color: #1a1611; box-shadow: 0 10px 24px -8px rgba(165, 133, 91, 0.8); }
+.gm-card.kind-over { --pad: clamp(22px, 5vw, 40px); width: min(620px, 100%); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 var(--pad) var(--pad); text-align: center; }
+/* The winner's table, edge to edge across the top of the card (the negative
+   margin cancels the card's side padding), with the crown overlapping its foot. */
+.gm-over-art { display: block; width: calc(100% + 2 * var(--pad)); max-width: none; height: clamp(110px, 20vh, 170px); object-fit: cover; margin-inline: calc(-1 * var(--pad)); }
+.gm-crown { position: relative; margin-top: -38px; width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem; background: linear-gradient(155deg, #e3c999, #a5855b); color: #1a1611; border: 4px solid var(--gm-paper); box-shadow: 0 10px 24px -8px rgba(165, 133, 91, 0.8); }
+/* No picture (it failed to load and hid itself): the crown has nothing to stand
+   on, so it comes back down into the card. */
+.gm-over-art[hidden] + .gm-crown { margin-top: var(--pad); }
 .gm-over-label { margin: 10px 0 0; font-size: var(--fs-sm); font-weight: 700; color: #8a6a39; }
 .gm-over-name { margin: 0 0 12px; font-size: clamp(2rem, 1.2rem + 4vw, 3.2rem); line-height: 1.25; overflow-wrap: anywhere; }
 .gm-final { list-style: none; margin: 0 0 18px; padding: 0; width: 100%; display: grid; gap: 8px; }

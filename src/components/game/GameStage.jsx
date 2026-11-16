@@ -5,6 +5,7 @@ import { ui } from '../../data/ui.js'
 import { books } from '../../data/books.js'
 import { buildBoard } from '../../lib/game/engine.js'
 import { sfx, setMuted } from '../../lib/game/sfx.js'
+import { GAME_ART } from '../../data/gameArt.js'
 import Icon from '../Icon.jsx'
 import Board, { SQUARE } from './Board.jsx'
 import GameCard from './GameCard.jsx'
@@ -168,6 +169,17 @@ export default function GameStage({ state, dispatch, decks }) {
     }
   }, [])
 
+  /* Fetch the cards' pictures while the first turn is being played, so the
+     first card of each kind opens with its picture already there instead of
+     painting it in a beat late. One request each, and only once the game has
+     actually started — the setup screen downloads none of them. */
+  useEffect(() => {
+    const urls = [GAME_ART.tf, GAME_ART.luck, GAME_ART.dare, GAME_ART.win,
+      ...state.settings.books.map((b) => decks.art[b])].filter(Boolean)
+    const warm = setTimeout(() => urls.forEach((src) => { new Image().src = src }), 1200)
+    return () => clearTimeout(warm)
+  }, [state.settings.books, decks.art])
+
   useEffect(() => {
     const onChange = () => setFull(!!document.fullscreenElement)
     document.addEventListener('fullscreenchange', onChange)
@@ -194,7 +206,7 @@ export default function GameStage({ state, dispatch, decks }) {
   const showCard = phase === 'play' && state.card && (step === 'card' || step === 'reveal')
 
   return (
-    <div className="gm-stage" lang={lang}>
+    <div className="gm-stage" lang={lang} style={{ '--gm-table-img': `url("${GAME_ART.table}")` }}>
       <header className="gm-top">
         <button type="button" className="gm-icon" onClick={() => setDialog('exit')}
           aria-label={t(L('إنهاء اللعبة', 'End the game'))}>

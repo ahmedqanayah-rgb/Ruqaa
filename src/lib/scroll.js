@@ -45,7 +45,7 @@ export function onPageScroll(fn) {
 
 /*
  * Subscribe to ANY scrolling in the document, the page and every inner scroller
- * alike — the sidebar, the search results, the book carousel.
+ * alike — the sidebar, the search results, the shelf row on Home.
  *
  * One capture-phase listener does it. Scroll events do not bubble up from an
  * element, so a normal listener on `document` hears nothing from them; but

@@ -102,7 +102,7 @@ export default function SearchPalette({ open, onClose }) {
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="sp-inputrow">
-          <span className="sp-icon" aria-hidden>🔍</span>
+          <Icon name="🔍" className="sp-icon" />
           <input
             ref={inputRef}
             className="sp-input"

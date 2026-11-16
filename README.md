@@ -1,9 +1,13 @@
 # Ruqʿa — Reading Club / رُقعة — نادي القراءة
 
 A bilingual (Arabic RTL / English LTR), responsive React site for a book‑reading
-club. Books covered so far: **Why We Sleep / لماذا ننام** (Matthew Walker) and
-**Stolen Focus / تركيزنا المسلوب** (Johann Hari). Content is data‑driven so more
-books can be added as new entries.
+club. Books covered so far: **Why We Sleep / لماذا ننام** (Matthew Walker),
+**Stolen Focus / تركيزنا المسلوب** (Johann Hari) and **Talking to My Daughter About
+the Economy / الاقتصاد كما أشرحه لابنتي** (Yanis Varoufakis). Content is data‑driven
+so more books can be added as new entries.
+
+> This README is an overview. `CLAUDE.md` is the maintained, detailed record of how
+> the site is built and why — trust it (and the actual tree) over the lists below.
 
 The summaries are made by club members for discussion and are not affiliated with
 the authors or publishers.
@@ -27,8 +31,15 @@ client‑side, and all state is kept in memory (no localStorage/sessionStorage).
 
 ## What's inside
 
-- **Global features:** collapsible sidebar (right in Arabic, left in English,
-  drawer on mobile), AR⇄EN language switch (translates *everything*, including
+- **Navigation:** four destinations — Home, Books, Game, Club — in a top bar, and
+  on phones in a floating dock at the bottom of the screen. Inside a book, a
+  sidebar (a drawer on phones) lists the books and their sections.
+- **Ruqʿa Dice / رُقعة النرد** (`/#/game`) — the club's dice board game, made to be
+  played together on a video call: one person shares their screen, everyone
+  answers out loud. Questions with silly wrong answers from every book, the
+  books' myth‑or‑fact statements, luck cards and dares; the score is kept on
+  screen and the whole game is stored in the page's link, so a refresh resumes it.
+- **Global features:** AR⇄EN language switch (translates *everything*, including
   chart labels, tooltips and image captions), dark/light theme toggle. Direction
   and theme are driven from `<html>`; all colors come from CSS variables in
   `src/styles/tokens.css` so the whole look can be re‑skinned centrally.

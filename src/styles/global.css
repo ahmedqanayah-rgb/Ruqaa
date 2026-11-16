@@ -67,8 +67,8 @@ bdi, .isolate { unicode-bidi: isolate; }
    is zero always, so there is no appear/disappear reflow to avoid.
 
    The INNER scrollers keep their native bars and the fade below. They sit
-   inside their own boxes — the sidebar, the search results, the book carousel —
-   so they never pushed the page around, and `.is-scrolling` (set on <html> by
+   inside their own boxes — the sidebar, the search results — so they never
+   pushed the page around, and `.is-scrolling` (set on <html> by
    Layout, including a capture-phase listener so inner scrollers are heard)
    fades them the cheap way. */
 body { scrollbar-width: none; }

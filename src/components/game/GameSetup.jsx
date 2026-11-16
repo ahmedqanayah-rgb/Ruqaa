@@ -4,7 +4,7 @@ import { books } from '../../data/books.js'
 import { LENGTHS, TIMERS, MIN_PLAYERS, MAX_PLAYERS, NAME_MAX } from '../../lib/game/engine.js'
 import { toneStyle } from '../../lib/tone.js'
 import Icon from '../Icon.jsx'
-import DiceArt from '../DiceArt.jsx'
+import GameCover from '../GameCover.jsx'
 import { Token, TOKEN_COLORS, tokenLabels, GameRules } from './parts.jsx'
 
 const L = (ar, en) => ({ ar, en })
@@ -60,7 +60,7 @@ export default function GameSetup({ state, dispatch, decks }) {
   return (
     <form className="wide-page gm-setup" onSubmit={start}>
       <header className="gm-hero">
-        <DiceArt className="gm-hero-art" />
+        <GameCover />
         <div className="gm-hero-body">
           <span className="eyebrow">{t(L('لعبة النادي', 'The club game'))}</span>
           <h1>{t(ui.game.title)}</h1>

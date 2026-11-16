@@ -29,6 +29,12 @@ scripts/<name>.mjs`. `process-images.mjs` and `fix-images.mjs` remove background
 flood-fill and write to `public/images/clean/`; `to-webp.mjs <dir>` converts a directory in
 place; `gen-image-dims.mjs` regenerates `src/data/imageDims.js`.
 
+**Two families of script spend real money** — the hero's (`generate-hero-frames.mjs`,
+`generate-hero-video.mjs`) and the dice game's `generate-game-art.mjs`. All of them call
+fal.ai through `fal-client.mjs`, print the estimate and the live balance, and **do nothing
+without `--yes`**. `generate-game-art.mjs --publish-only` re-exports the game's WebPs from
+their masters for free.
+
 Data checks, none wired into a test runner (there isn't one) — run them by hand:
 ```bash
 node scripts/check-image-refs.mjs
@@ -150,6 +156,12 @@ their own chunks, and these are loaded lazily:
   was never in the entry to begin with. Verify with the built graph instead: `registry-*.js`
   must not statically import `charts-*.js`.
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
+- **The dice game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its board, its
+  questions from every book and its own stylesheet (`styles/game.css`, imported BY the page so
+  it rides in the chunk): ~43 kB gz of script and ~6 kB of CSS that a reader who came for a
+  chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
+  else of theirs; check after touching it that `Game-*.js` still does not import a book's
+  `index-*.js`.
 - **The Varoufakis book's 20 figures** (`figures/economy/EconomyFigures.jsx`, `DebtFigures.jsx`,
   and their `economy.css`) also load through their own `lazy()` in the registry, though none
   uses recharts — a reader of the other books should not download them by opening a sleep
@@ -205,6 +217,22 @@ book folder or the search index eagerly. Check that, not just the size line.
   inline content images so `ImageBlock` can emit `width`/`height` and reserve the box before
   the bytes land. Content images have genuinely different aspect ratios, so the flat
   `aspect-ratio: 2/3` that works for covers would distort them. Regenerate after adding one.
+- **The dice game's photographs** live in `public/images/game/` — ten WebPs, ~610 kB, fetched
+  by the game alone (plus the cover on Home's card, lazily). Made by
+  `scripts/generate-game-art.mjs` (FLUX.2 [pro] on fal); full-size masters stay OUTSIDE the
+  repo in `../game-art-wip/masters/`, the same split as the hero frames. Every one is the
+  hero's overhead flat-lay on the same dark table, and **none contains a word, a letter or a
+  number** — which is what lets the wide cover be mirrored for the right-to-left page
+  (`.game-cover`) and any of them be cropped to a strip. The card bands are shipped pre-cropped
+  to 3:1, because a card only ever shows a strip about that shape.
+  **Their paths are written out literally** — in `data/gameArt.js` and in each book's `game.js`
+  (`gameArt`) — because `check-image-refs` finds a shipped file by its NAME in the source; a
+  template-built path would leave all ten reported as unreferenced.
+  Four lessons are recorded in the script, each paid for: an "open book with blank pages" came
+  back with words printed on it (the cover's book is closed now); one roll of the wide cover
+  came back with a die fused to a pawn, and one magnifying glass with two handles — so LOOK at
+  every new roll before it ships; and one picture cannot be both a wide banner and a phone's
+  poster, so there are two covers, each composed for its frame.
 
 ## Fonts
 
@@ -235,6 +263,8 @@ keeps `base: './'` sub-path hosting working.
 
 - **No `localStorage`/`sessionStorage` — ever.** All state (quiz score, assessment answers,
   language, theme, figure controls) is in-memory React state. This is a hard requirement.
+  **The dice game keeps its state in the URL instead** (`#/game?g=…`, see the game's bullet
+  below) — the rule stands, and a forty-minute game played on a call still survives a refresh.
 - **Analytics: Vercel Web Analytics only** (`src/components/Analytics.jsx`, mounted in
   `main.jsx`). It renders `null` — counts are for the club in the Vercel dashboard, never shown
   to visitors. Chosen because its script is served from our own origin
@@ -251,6 +281,9 @@ keeps `base: './'` sub-path hosting working.
   path: the script already appends `location.hash` to the `path` we gave it, so folding
   double-applies and yields `/book/why-we-sleep/book/why-we-sleep`. Verify changes in `npm run
   dev`, where the debug script logs every event to the console instead of sending it.
+  **One page is logged WITHOUT its query: `/game`.** A game in play carries its whole state in
+  `?g=…`, players' names included, and neither a row per game state nor members' names belong
+  in a dashboard.
 - **The page has NO native scrollbar, on purpose.** `body::-webkit-scrollbar` is
   zero-width and `scrollbar-width: none`; `components/ScrollOverlay.jsx` draws a fixed,
   translucent thumb over the content instead, fading in while scrolling and out ~900ms
@@ -262,7 +295,8 @@ keeps `base: './'` sub-path hosting working.
   `hover: none` the thumb is indicator-only** — an `opacity: 0` element still takes pointer
   events, and a grabbable thumb leaves an invisible strip along the screen edge exactly
   where the phone back-swipe lives. **The INNER scrollers keep their native bars** (sidebar,
-  search results, book carousel).
+  search results). The one exception is Home's shelf row on a phone, which shows no bar at
+  all — the next poster peeking in from the edge is its scroll cue.
   **`html.is-scrolling` is the one visibility signal for all of them**, set by `Layout` and
   keyed by both `global.css` (native thumbs) and the overlay thumb, so one gesture fades
   everything on one timer — they were briefly two implementations at 700ms and 900ms.
@@ -302,7 +336,7 @@ keeps `base: './'` sub-path hosting working.
 - `README.md` is a good complement but its "Project structure" list predates the per-book
   `data/books/<slug>/` reorganization — trust the actual tree over it.
 
-## Current project state (last big update: 2026-10-16)
+## Current project state (last big update: 2026-11-16)
 
 - **The project is Ruqʿa / رُقعة** (`ruqaa-reading-club`) — a multi-book club site, not a
   single-book site. Keep site chrome book-agnostic. The footer carries a required
@@ -316,6 +350,86 @@ keeps `base: './'` sub-path hosting working.
   Daughter About the Economy…/` — epub, raw book text, figure PDFs, both editions of the
   Varoufakis book and the club's own companion PDF); history was rewritten on 2026-07-20 to
   purge exactly those.
+- **THE LOOK (2026-11-16): an app, not a document.** Three ideas, and all three start in
+  `styles/tokens.css`:
+  1. **Ink for action, camel for identity.** `.btn.primary` is `--ink` — near-black on the light
+     theme, near-white on the dark one. Camel (`--accent`, `--brand`) stays the club's colour for
+     links, the lit destination and progress, and no longer has to be the button too.
+  2. **White cards on paper.** `--bg-elev` is true white over the paper `--bg`. The light `--bg`
+     is still `#f7f4ee` and must stay so: it is the figures' paper (`--figure-paper`).
+  3. **Every book is its own colour world.** A book carries `tone: { from, to, spark }` in its
+     `index.js` (read off its cover; it rides in the skeleton), and `lib/tone.js` turns it into
+     `--tone` / `--tone-2` / `--tone-spark` on a component's root. A tone colours what a book
+     OWNS — its poster, the header of its landing, its squares and cards in the game — and
+     **never `--accent`**: the figures use the accent against `--danger` and `--success` as a
+     tuned set, and a red accent inside the economics book would make "accent" and "danger" the
+     same colour in a chart where they mean opposite things.
+  `.page` keeps the 900px reading measure; a page whose root is `.wide-page` (Books, a book's
+  landing, the game's setup) gets `--maxw-wide`. On a book's landing, consecutive solo `groups`
+  entries share ONE row of cards (`landingRows` in `BookSection`) — each used to be a grid of
+  one, stacked down the edge of an otherwise empty page.
+  **No webfont was added.** A display face is the obvious lever and Aref Ruqaa the obvious
+  choice, but it was tried for the hero and removed at the club's request (see
+  `fetch-fonts.mjs`), so the new look is Plex and Inter at larger sizes. Heading
+  `letter-spacing` is English-only: on Arabic it pulls joined letters into each other.
+  Collapsible HEADINGS are cards now; their BODIES are deliberately not boxed — a chapter's
+  figures were measured to fit a phone's text column, and a card's padding would take ~28px
+  off it.
+- **Navigation: four destinations, one list (`data/nav.js`)** — Home · Books · Game · Club. They
+  sit in the top bar (`Navbar.jsx`, a segmented pill) from 861px, and in **the dock**
+  (`Dock.jsx`) at the bottom of a phone, where a thumb is. The bar used to carry a chip per
+  book, which read well with two books and stopped fitting at three.
+  - **The dock and the in-book bar are ONE floating pill with two contents**, and never show
+    together: on a section page the pill is previous · sections · next (`.section-bar`, still
+    portalled to `<body>`), everywhere else it is the dock (`body:has(.section-bar) .dock`).
+    Every page reserves the pill's height (`.app-main` padding at ≤860px).
+  - **The sidebar is rendered only inside a book** (`Layout` → `inBook`). Outside one it only
+    repeated the bar. It holds the books and their section trees — no Home/Books/About links any
+    more — and still starts collapsed to a 64px rail (of covers); its state lives in `Layout`.
+    On a phone it is a drawer, opened by a hamburger that likewise exists only inside a book.
+  - **The breadcrumb shows only on a section** (`Books › book › section`) and renders INSIDE
+    `.page`, so it shares the article's measure. Everywhere else the lit destination and the
+    `<h1>` already say where you are. Still deliberately not sticky.
+  - **`.arrow`** is a glyph arrow that mirrors with the reading direction. Use it rather than
+    typing `→` after a label, which in Arabic points back the way the reader came.
+- **«رُقعة النرد» — the club's dice game** (`/game`; added 2026-11-16). «رُقعة» is also the
+  Arabic for a game board, so the name is the club's own. **Built to be played on the weekly
+  call: ONE person opens it and shares their screen; players answer out loud and the host
+  taps.** No server and nothing to join — a game that needed every member to connect a phone
+  would be the first thing on this site that could fail for a reason other than the reader's
+  own connection.
+  - **Decks are found, not registered.** Every `data/books/<slug>/game.js` (`gameDeck`,
+    `gameIcon`, optional `gameArt`) puts that book in the game, and the book's `mythOrFact.js`
+    becomes its «خرافة أم حقيقة؟» squares; luck cards and dares are club-level, in
+    `data/game/cards.js`. Adding next season's book to the game is writing that one file.
+  - **The deck rules** are at the top of `books/why-we-sleep/game.js`: option 0 is always the
+    right one (the game shuffles); the right answer is a fact THIS SITE already states; the wrong
+    answers are jokes, not plausible rivals. Where the club's own check corrected a book — the
+    23 minutes, Bitcoin's last coin — the question asks what the CHECK found.
+  - **A luck card's text never says what happens.** Its effect line is generated from `effect`
+    (`lib/game/effects.js`), so the words on the card and what the engine does cannot disagree.
+  - **The rules are a pure reducer** (`lib/game/engine.js`: no React, no DOM, no clock), and
+    **the whole game lives in the URL** — `#/game?g=…`, rewritten after every move. A refresh
+    resumes; so does Back; so can anyone the host sends the link to. `decode()` REBUILDS a state
+    field by field and clamps it, because a URL is input. It is written with
+    `history.replaceState`, not the router's navigate, on purpose: a move must not be a history
+    entry, and the router (and so Analytics) must not hear forty location changes per game.
+  - **The stage** (`components/game/GameStage.jsx`) takes the whole window: `html[data-stage]`
+    hides the chrome the way `data-presenting` does. It is **always a dark table with paper
+    cards, whatever the site's theme** (`--gm-*` in `game.css`) — it is the thing shared on a
+    call. Everything laid over it (cards, the result, dialogs) is **portalled to `<body>`**:
+    the `position: fixed`-inside-a-transform trap that the in-book bar already avoids.
+    The engine knows the rules; the stage knows TIME — `shown` is where tokens are DRAWN, and
+    it walks one square per tick toward where they ARE. The layout switches on the window's
+    SHAPE (`max-aspect-ratio: 1/1`), not its width: a phone on its side is 844px wide and needs
+    the side-by-side layout. The board's fold (columns × rows) is chosen so the squares are as
+    large as the window allows.
+  - **Sounds are synthesised** (`lib/game/sfx.js`, Web Audio), not shipped.
+  - **There is no committed test for the rules** (the project has no test runner), but the
+    reducer is pure: a throwaway Node script can import `engine.js` with the decks and play
+    thousands of games through it — that is how it was checked (3,000 games, every one ended,
+    every state survived the URL round trip).
+  - The photographs are described under **Images**.
 - **Three books are live**: `why-we-sleep`, `stolen-focus`, and since **2026-10-16**
   `talking-to-my-daughter` (Varoufakis — see its own bullet below). The first two went down
   from 19 and 24 sections on **2026-08-24**. Each book's `index.js` header lists exactly what went where.
@@ -381,8 +495,8 @@ keeps `base: './'` sub-path hosting working.
   plus a normalised overall score).
 - Stolen Focus figures live in `components/figures/stolen-focus/` (ids prefixed `sf`);
   the distracted-reading game is shared between the figure registry and the Focus Lab.
-- Sidebar derives the active book from the URL; Home shows a scroll-snap book carousel
-  (a "see all" card appears only past 3 books). The active book's sections render as
+- Sidebar derives the active book from the URL (and exists only inside a book — see
+  Navigation above). The active book's sections render as
   collapsible groups (from the book's `groups` data) — only the group holding the
   current section auto-expands; headers show visited/total counts, items show ✓ ticks.
   **A `groups` entry may instead be `{ slug }` — a SOLO top-level tab with no header**
@@ -499,13 +613,18 @@ keeps `base: './'` sub-path hosting working.
   - **Payload**: this book took the entry chunk from 309.6 → 453.9 kB gzipped, which is what
     finally forced the per-book split (same day, 2026-10-16): the entry is now 69.6 kB gz and
     each book loads on its own — see "Books registry".
-- **Home is deliberately two blocks: the hero and the book carousel.** Nothing else. Two
-  further sections were removed on 2026-08-03 at the user's request — "Ask me one" (a
-  random-study session opener, with `data/studiesPool.js` behind it) and a "how this works"
-  strip added earlier the same day. The brief was **simpler, not more explained**, so treat
-  Home as a front door rather than a place to put things: it is 1.4 screens on a phone, down
-  from 3.4. Both are in git history if they're ever wanted back. NB: Home.jsx is also where
-  the paused hero video gets restored — that work touches the top of the page.
+- **Home is three blocks: the hero, the shelf, and the game's card.** It is still a front
+  door, and the rule that cut it down on 2026-08-03 — **simpler, not more explained** — still
+  holds: nothing on it explains the site. ("Ask me one" and a "how this works" strip were
+  removed that day; both are in git history.)
+  The shelf is `BookPoster` cards — a cover standing on a stage painted in the book's own tone,
+  with its season from `club.seasons` — three across, or on a phone a scroll-snapping row that
+  BLEEDS to both screen edges so the next poster shows a sliver of itself (a row that stopped
+  neatly at the padding would look complete, and nobody would swipe it). `BookPoster` is also
+  the Books page's grid.
+  The game's card is the one addition since the cut, because a thing the club plays together
+  on a call needs a door on the page everyone opens first. If something else ever wants to live
+  here, something has to leave. NB: Home.jsx is also where the hero video is mounted.
 - **Cross-book connections.** `src/data/connections.js` + `components/BookConnections.jsx`
   render "where our books meet" at the foot of the Books page: per theme, what each book
   says side by side, then the club's synthesis. This is **original club analysis, not a
@@ -611,14 +730,6 @@ keeps `base: './'` sub-path hosting working.
   - **Full-resolution masters stay OUTSIDE the repo** in `hero-video-wip/frames/<scene>/`;
     `public/` ships only WebP. The four landscape JPEGs alone are 3.1 MB against 0.76 MB
     as WebP, and `public/` is copied verbatim into `dist`.
-
-- **The header is ONE bar.** The site map used to sit on a second row beneath the navbar;
-  the chips now ride inside it. Below 1024px they hide — the navbar alone needs ~448px and
-  the chips ~562px — and the drawer carries those destinations there. A **breadcrumb**
-  (`components/Breadcrumb.jsx`) sits under the bar and is **deliberately not sticky**:
-  pinning a second row costs a phone 67px of *every* screen of reading, and section pages
-  already carry a fixed bar at the bottom. **The sidebar starts collapsed** to a 64px rail;
-  its state lives in `Layout` and survives navigation for the sitting.
 
 - **Author and translator share ONE tab** («المؤلّف والمترجم»), two panels inside it via the
   `tabs` block; the translator biography is still `src/data/translator.js`.

@@ -26,6 +26,9 @@ const q = (id, text, opts, why) => ({ id, q: text, opts, why })
 
 /* The mark this book's squares wear on the board (a key into Icon.jsx). */
 export const gameIcon = '🌙'
+/* The photograph across this book's question cards (see data/gameArt.js for
+   the rest of the set, and for why the path is written out in full). */
+export const gameArt = './images/game/why-we-sleep.webp'
 
 export const gameDeck = [
   q('ws-spiders',
