@@ -108,7 +108,7 @@ export const connections = {
         '“Cruel optimism”: telling a drowning person to “learn to swim” while waves built to sink them keep coming. Willpower is no match for an industry designed to beat it.'
       ) },
       b: { bookId: 'talking-to-my-daughter', slug: 'review?open=oedipal-markets', says: L(
-        '«منكرو البطالة» يقولون إن العاطل لم يخفّض أجره بما يكفي — وفاروفاكيس يردّ بصيد الأيل: لا يستطيع صيّادٌ واحد أن يصيد الأيل وحده، ولا عاملٌ واحد أن يخلق الطلب على عمله.',
+        '«منكرو البطالة» يقولون إن العاطل لم يخفّض أجره بما يكفي — وفاروفاكيس يردّ باصطياد الظبي: لا يستطيع صيّادٌ واحد أن يصطاد الظبي وحده، ولا عاملٌ واحد أن يخلق الطلب على عمله.',
         'The “unemployment deniers” say the jobless just haven’t cut their price enough — and Varoufakis answers with the stag hunt: no single hunter can catch the stag alone, and no single worker can create the demand for his labour.'
       ) },
       synthesis: L(
@@ -136,7 +136,7 @@ export const connections = {
       icon: '⚙️',
       theme: L('آلاتٌ وعدت بالراحة فأتعبتنا', 'Machines that promised rest and wore us out'),
       a: { bookId: 'talking-to-my-daughter', slug: 'review?open=haunted-machines', says: L(
-        'كان يُفترض أن تحرّرنا الآلات من الكدح كما في «ستار تريك»، فصرنا كالهامستر على عجلته: نركض أسرع ولا نصل إلى مكان، لأن المنافسة تفرض على كلّ واحدٍ أن يجاري آخر آلة.',
+        'كان يُفترض أن تحرّرنا الآلات من الكدح كما في «رحلة عبر النجوم»، فصرنا كالهامستر على عجلته: نركض أسرع ولا نصل إلى مكان، لأن المنافسة تفرض على كلّ واحدٍ أن يجاري آخر آلة.',
         'Machines were meant to free us from toil, as in Star Trek; instead we are hamsters on a wheel, running faster and getting nowhere, because competition forces everyone to keep up with the latest machine.'
       ) },
       b: { bookId: 'stolen-focus', slug: 'review?open=stress-vigilance', says: L(

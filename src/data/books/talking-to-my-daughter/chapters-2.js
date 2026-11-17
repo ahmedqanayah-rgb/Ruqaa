@@ -2,6 +2,22 @@
  * «الاقتصاد كما أشرحه لابنتي» — chapters 5–8 and the epilogue. See the header
  * of chapters-1.js for the vocabulary rule.
  *
+ * PAGES 167–174, 191–198, 251–253 AND 255 OF THE ARABIC EDITION were missing
+ * from the club's scan when these chapters were first written, so their Arabic
+ * here was a rendering of the English. The club photographed those pages on
+ * 2026-11-17 (kept with the book files, outside the repo), and the wording now
+ * follows the translator's: «الظبي» and «الأرانب البرّية» for Rousseau's stag
+ * and hares, «البرّادات» for Maria's fridges, «البندورة», «منكرو البطالة»,
+ * «سوق قوّة العمل», «العبيد الآليون», «حكاية رمزية», «انكماش/تضخّم الأسعار»,
+ * the borrower «كزافييه» — and the films and tales as he gives them, each with
+ * its original title beside it the first time, as the book prints it:
+ * «المصفوفة» (The Matrix), «رحلة عبر النجوم» (Star Trek), «عدّاء النصل» (Blade
+ * Runner), «المبيد» (The Terminator), «العصيدة الحلوة» (Sweet Porridge),
+ * «الساحر المتمرّن» (The Sorcerer's Apprentice). Four section headings are his
+ * too: «قوّة العمل والمال: سلعتان مختلفتان إلى أبعد الحدود», «المصفوفة وكارل
+ * ماركس», «معدّلات الفائدة: سعر النقود في المعسكر», «الآمال الكبيرة».
+ * Page 254 was not among the photographs.
+ *
  * CHAPTER 8's ARABIC TITLE IS NOT CONFIRMED. The club's scan of the edition is
  * missing the page it opens on (its own companion PDF notes the same gap), so
  * «فيروساتٌ غبيّة؟» is a faithful rendering of "Stupid Viruses?", not a reading
@@ -16,7 +32,7 @@ export const oedipalMarkets = {
   icon: '❓',
   title: L('٥ · سوقان أوديبيّان', '5 · Two Oedipal Markets'),
   lead: L(
-    'يقول بعضهم إن البطالة لا وجود لها: العاطل لم يخفّض أجره بما يكفي. يردّ فاروفاكيس بأيلٍ وأرانب وبنبوءةٍ إغريقية — لأن سوقَي العمل والمال تحكمهما نبوءاتٌ تحقّق نفسها.',
+    'يقول بعضهم إن البطالة لا وجود لها: العاطل لم يخفّض أجره بما يكفي. يردّ فاروفاكيس بظبيٍ وأرانب برّية وبنبوءةٍ إغريقية — لأن سوق قوّة العمل وسوق المال تحكمهما نبوءاتٌ تحقّق نفسها.',
     'Some say unemployment does not exist: the jobless just haven’t cut their price far enough. Varoufakis answers with a stag, some hares and a Greek prophecy — because the labour and money markets are ruled by prophecies that fulfil themselves.'
   ),
   blocks: [
@@ -31,24 +47,38 @@ export const oedipalMarkets = {
       'On that difference **the unemployment deniers** build their case: Wasily, like Andreas, could sell his labour if he accepted fifty euros a month — so his unemployment is a choice. It is an argument that adds insult to injury: it blames the victim for being one, as the first chapter saw with the Aboriginal Australians. But its biggest flaw is practical: if every homeowner cut their price they would all find buyers eventually; if every jobless person cut their wage, there would most likely be **fewer jobs**.'
     ) },
 
-    { type: 'h', text: L('الأيل والأرانب', 'The stag and the hares') },
+    { type: 'h', text: L('الظبي والأرانب البرّية', 'The stag and the hares') },
     { type: 'p', text: L(
-      'تخيّل، مع **جان جاك روسو**، صيّادين بشباكٍ وأقواسٍ ضعيفة يطوّقون أيلاً سيُطعم القبيلة أيّاماً. التطويق بطيء، ويفشل إن انشغل صيّادٌ واحد بأرنبٍ يقفز قربه — والأرنب وجبةٌ واحدة لعائلةٍ واحدة. كلّهم يفضّلون الأيل، وكلٌّ منهم سيثبت **إن وثق بأن الآخرين سيثبتون**. لكن يكفي أن يخشى أحدهم أن يتراخى غيره حتى يلتفت إلى الأرانب، فيتبعه الجميع. **التفاؤل يحقّق نفسه، والتشاؤم كذلك.**',
+      'تخيّل، مع **جان جاك روسو**، صيّادين بشباكٍ وأقواسٍ ضعيفة يطوّقون ظبياً سيُطعم القبيلة أيّاماً. التطويق بطيء، ويفشل إن انشغل صيّادٌ واحد بأرنبٍ برّيّ يقفز قربه — والأرنب وجبةٌ واحدة لعائلةٍ واحدة. كلّهم يفضّلون الظبي، وكلٌّ منهم سيثبت **إن وثق بأن الآخرين سيثبتون**. لكن يكفي أن يخشى أحدهم أن يتراخى غيره حتى يلتفت إلى الأرانب، فيتبعه الجميع. **التفاؤل يحقّق نفسه، والتشاؤم كذلك.**',
       'Imagine, with **Jean-Jacques Rousseau**, hunters with nets and feeble bows encircling a stag that will feed the tribe for days. Encircling it takes time, and fails if a single hunter turns aside for a hare bounding nearby — and a hare is one meal for one family. They all prefer the stag, and each will hold the line **if he trusts that the others will**. But it takes only one to fear another might fumble for him to turn to the hares — and the rest follow. **Optimism fulfils itself; so does pessimism.**'
     ) },
     { type: 'figure', id: 'tdStagHunt' },
 
-    { type: 'h', text: L('لماذا لا يشبه العمل البيوت والسيارات والطماطم؟', 'Why labour isn’t like houses, cars or tomatoes') },
+    { type: 'h', text: L('لماذا لا تشبه قوّة العمل البيوت والسيارات والبندورة؟', 'Why labour isn’t like houses, cars or tomatoes') },
     { type: 'p', text: L(
-      'البيت يُشترى لعطلاته، والسيارة لقيادتها، والطماطم لأكلها: قيمتها التبادلية تأتي من قيمتها الاستعمالية. أمّا عمل فاسيلي فلا يريده أحدٌ لذاته. **ماريا** تصنع الثلّاجات، وستوظّفه فقط إن وثقت بأن خمس ثلّاجاتٍ إضافية ستجد من يشتريها بما يفوق أجره. ثم تقرأ ليلاً عنواناً: «النقابات تقبل خفض الأجور ٢٠٪ لزيادة الوظائف». هل تفرح وتوظّف؟ الأرجح أنها تفكّر: **إن قبلت النقابات بهذا فالأوضاع سيّئة جدّاً — ومن سيشتري ثلّاجاتي حين تنخفض الأجور كلّها؟** فلا توظّف أحداً.',
-      'A house is bought for its holidays, a car for the driving, tomatoes for eating: their exchange value comes from their experiential value. But nobody wants Wasily’s labour for its own sake. **Maria** makes fridges, and will hire him only if she trusts that five more fridges will find buyers for more than his wage. Then one night she reads a headline: “Unions accept 20% wage cut to boost jobs.” Does she rejoice and hire? More likely she thinks: **if the unions accept that, things must be dire — and who will buy my fridges once every wage has fallen?** So she hires no one.'
+      'بيت أندرياس في باتموس يُشترى لعطلاته وصيفه، وسيارة «فيراري» الحمراء لمتعة قيادتها — أو لمتعة أن يراك الناس تقودها — وثمار البندورة لتؤكل: القيمة التبادلية لهذه كلّها تُستمدّ من قيمتها الاستعمالية. أمّا قوّة عمل فاسيلي فلا يرغب فيها أحدٌ لذاتها. **ماريا** تملك مشروعاً لتصنيع البرّادات، وقرارها أن توظّفه مقارنةٌ بين قيمتين تبادليتين: ما ستجنيه من خمسة برّاداتٍ إضافية في الشهر، وما ستدفعه راتباً ونفقات. فالأمر كلّه معلّقٌ على ثقتها بأن خمسة أشخاصٍ على الأقلّ يحتاجون برّاداً **ويملكون ثمنه**.',
+      'Andreas’s house on Patmos is bought for its weekends and summers, a shiny red Ferrari for the joy of driving it — or of being seen driving it — and tomatoes to be eaten: the exchange value of each derives from its experiential value. But nobody wants Wasily’s labour for its own sake. **Maria** owns a business making fridges, and her decision to hire him is a comparison of two exchange values: what five more fridges a month would bring in, against his salary and the other costs. It all hangs on her confidence that at least five people not only need a fridge **but have the means to pay for one**.'
     ) },
     { type: 'p', text: L(
-      'وسوق المال مثله. لا أحد يشتري المال فيها، بل **يستأجره** — كما يستأجر صاحب العمل وقت العامل. يقول المؤمنون بالسوق إن خفض الفائدة يُرخص الاقتراض فيقترض الناس أكثر. لكن ماريا حين تقرأ «المصرف المركزي سيخفض الفائدة كثيراً» قد تفكّر: إن فعل هذا فالأمور تبدو رهيبة… انسَ الأمر. خفض الفائدة في الركود قد يُقرأ **يأساً**، فيطرد أصحاب المشاريع من صيد الأيل إلى الأرانب.',
-      'The money market is the same. Nobody buys money there; they **rent** it — just as an employer rents a worker’s time. Market believers say cutting interest rates makes borrowing cheaper, so people borrow more. But when Maria reads “Central bank to cut rates sharply”, she may think: for them to do that, things must look terrible… forget it. A rate cut in a slump can read as **desperation**, chasing entrepreneurs off the stag hunt and back to the hares.'
+      'وهنا تدور الحلقة. إن تفاءل أمثال ماريا وظّفوا أمثال فاسيلي، فزادت الدخول، فاشترى الناس برّاداتٍ ودرّاجات — وصدق تفاؤلهم. وإن تشاءموا أحجموا عن التوظيف، فركدت الدخول وركدت السوق — وصدق تشاؤمهم.',
+      'And here the loop closes. If the Marias are optimistic they hire the Wasilys, incomes rise, people buy fridges and bicycles — and their optimism is confirmed. If they are pessimistic they hold back, incomes stagnate and so does the market — and their pessimism is confirmed.'
+    ) },
+    { type: 'p', text: L(
+      'ذات ليلةٍ يجافيها النوم، فتفتح حاسوبها وتقرأ: رؤساء النقابات مستعدّون للنظر في خفض أجور أعضائهم ٢٠٪ لتعزيز فرص العمل. ينتظر منكرو البطالة أن تبتهج وتوظّف في الصباح. لكن ماريا الذكية تفكّر: **من سيملك ما يشتري به برّاداتي حين يتقاضى العمّال جميعاً أقلّ بهذا القدر؟** ثم تذهب أبعد: حتى لو وثقتُ أنا بزبائني، فسيهزّ الخبر ثقة أصحاب المشاريع الآخرين؛ وإن كفّوا عن التوظيف قلّ الزبائن — فالأفضل أن أكفّ أنا أيضاً. فلا تعرض على فاسيلي عملاً.',
+      'One sleepless night she opens her laptop and reads: union leaders are prepared to consider a 20% cut in their members’ wages to boost employment. The unemployment deniers expect her to rejoice and start hiring in the morning. But a smart Maria thinks: **who will have the money to buy my fridges once all those workers are paid that much less?** And then one step further: even if I trust my own customers, this news is bound to shake other entrepreneurs’ confidence; if they stop hiring there will be fewer customers — so I had better stop too. She offers Wasily no job.'
+    ) },
+    { type: 'p', text: L(
+      'ولهذا يخطئ منكرو البطالة: سوق قوّة العمل لا تقوم على القيمة التبادلية لقوّة العمل وحدها، بل على تفاؤل الناس أو تشاؤمهم بالاقتصاد كلّه. وأصحاب المشاريع، كصيّادي روسو، ألاعيبُ توقّعاتهم الجماعية: قد ينتهون إلى مطاردة الأرانب البرّية وهم لا يريدونها. فخفض الأجور في المجالات كلّها قد يوقف التوظيف، أو يجرّ إلى التسريح.',
+      'This is why the unemployment deniers are wrong: the labour market rests not just on the exchange value of labour but on people’s optimism or pessimism about the economy as a whole. Entrepreneurs, like Rousseau’s hunters, are the playthings of their collective expectations: they may end up chasing hares even though they would rather not. An across-the-board wage cut may well bring no new hiring — or lay-offs.'
     ) },
 
-    { type: 'h', text: L('عقدة أوديب في سوقَي العمل والمال', 'The Oedipus complex of labour and money markets') },
+    { type: 'h', text: L('قوّة العمل والمال: سلعتان مختلفتان إلى أبعد الحدود', 'Labour and money: two devilishly different commodities') },
+    { type: 'p', text: L(
+      'علّمتنا أزمتا ١٩٢٩ و٢٠٠٨ أن مجتمعات السوق ابتُليت، فوق السحر الأسود للعمل المصرفي، بشيطانين آخرين: أحدهما يتوارى في سوق قوّة العمل، وقد رأيناه للتوّ، والثاني في **سوق المال**. لا أحد يشتري المال فيها، بل **يستأجره** — كما يستأجر صاحب العمل وقت العامل. يقول المؤمنون بالسوق إن خفض الفائدة يُرخص الاقتراض فيقترض الناس أكثر. لكن ماريا حين تقرأ «المصرف المركزي سيخفض الفائدة كثيراً» قد تفكّر: إن فعل هذا فالأمور تبدو رهيبة… انسَ الأمر. خفض الفائدة في الركود قد يُقرأ **يأساً**، فيطرد أصحاب المشاريع من اصطياد الظبي إلى الأرانب البرّية.',
+      'The crises of 1929 and 2008 taught us that market societies are plagued, on top of the black magic of banking, by two more demons: one lurks in the labour market — we have just glimpsed it — and the second in **the money market**. Nobody buys money there; they **rent** it — just as an employer rents a worker’s time. Market believers say cutting interest rates makes borrowing cheaper, so people borrow more. But when Maria reads “Central bank to cut rates sharply”, she may think: for them to do that, things must look terrible… forget it. A rate cut in a slump can read as **desperation**, chasing entrepreneurs off the stag hunt and back to the hares.'
+    ) },
+
+    { type: 'h', text: L('عقدة أوديب في سوقَي قوّة العمل والمال', 'The Oedipus complex of labour and money markets') },
     { type: 'p', text: L(
       'في مسرحية **سوفوكليس** «أوديب ملكاً» تتنبّأ العرّافة للملك لايوس بأن ابنه سيقتله، فيأمر بقتل الوليد، فيُترك على جبل، فينقذه راعٍ ويربّيه ملك كورنثة. يكبر أوديب، فتتنبّأ له العرّافة بأنه سيتزوّج أمّه، فيهرب من كورنثة — فيلتقي لايوس عند مفترق طرق ويقتله في أوّل «غضبٍ مروريّ» في الأدب، ثم يحلّ لغز **أبي الهول** فيُتوَّج ملكاً على طيبة ويتزوّج أرملة الملك: أمّه. **لولا النبوءتان لما تحقّقتا.**',
       'In **Sophocles’** play Oedipus Rex, the oracle tells King Laius his son will kill him, so he orders the baby killed; the child is left on a mountain, rescued by a shepherd and raised by the king of Corinth. Grown up, Oedipus hears the oracle say he will marry his mother, so he flees Corinth — meets Laius at a crossroads and kills him in literature’s first road rage, then solves the riddle of the **Sphinx**, is crowned king of Thebes and marries the late king’s widow: his mother. **Without the two prophecies, neither would have come true.**'
@@ -57,7 +87,7 @@ export const oedipalMarkets = {
       alt: L('أبو الهول متشبّثاً بصدر أوديب في لوحةٍ زيتية', 'The Sphinx clinging to Oedipus’s chest, in an oil painting'),
       caption: L('«أوديب وأبو الهول» — غوستاف مورو، ١٨٦٤.', '“Oedipus and the Sphinx” — Gustave Moreau, 1864.') },
     { type: 'p', text: L(
-      'وهكذا سوقا العمل والمال: حين يرى أصحاب المشاريع الأجور والفائدة تنخفض، يتنبّؤون بالركود فلا يقترضون ولا يوظّفون — فتبقى الأجور والفائدة منخفضة، **وتتحقّق النبوءة**. لو كان سوفوكليس يكتب صفحات المال في الجرائد، يقول فاروفاكيس، لصار فهم محن مجتمع السوق أسهل كثيراً.',
+      'وهكذا سوقا قوّة العمل والمال: حين يرى أصحاب المشاريع الأجور والفائدة تنخفض، يتنبّؤون بالركود فلا يقترضون ولا يوظّفون — فتبقى الأجور والفائدة منخفضة، **وتتحقّق النبوءة**. لو كان سوفوكليس يكتب صفحات المال في الجرائد، يقول فاروفاكيس، لصار فهم محن مجتمع السوق أسهل كثيراً.',
       'So it is with the labour and money markets: when entrepreneurs see wages and interest rates falling, they prophesy a slump and neither borrow nor hire — so wages and rates stay low, **and the prophecy comes true**. If only Sophocles wrote the financial pages, Varoufakis says, a market society’s trials would be so much easier to understand.'
     ) },
     { type: 'imggrid', images: [
@@ -91,13 +121,17 @@ export const hauntedMachines = {
   icon: '⚙️',
   title: L('٦ · آلاتٌ مسكونة بالأشباح', '6 · Haunted Machines'),
   lead: L(
-    'من «فرانكنشتاين» إلى «ماتريكس»: نخاف مخلوقاتنا. لكن الخوف الحقيقي، عند فاروفاكيس، ليس من الآلات بل ممّن يملكها — ومن مجتمعٍ يستعملها ليستعبدنا بدل أن يحرّرنا.',
+    'من «فرانكنشتاين» إلى «المصفوفة» (The Matrix): نخاف مخلوقاتنا. لكن الخوف الحقيقي، عند فاروفاكيس، ليس من الآلات بل ممّن يملكها — ومن مجتمعٍ يستعملها ليستعبدنا بدل أن يحرّرنا.',
     'From Frankenstein to The Matrix, we fear our creations. But the real fear, for Varoufakis, is not of the machines but of who owns them — and of a society that uses them to enslave us instead of freeing us.'
   ),
   blocks: [
     { type: 'p', text: L(
       'ليلةٌ عاصفة في قصرٍ بالريف السويسري، مطلع القرن التاسع عشر: **ماري شيلي** واللورد بايرون وأصدقاؤهما يتبارون في كتابة قصص الرعب. تكتب شيلي عن الدكتور **فيكتور فرانكنشتاين**، طبيبٍ أراد أن يهزم الموت، فخاط من أشلاء الجثث جسداً وبعث فيه الحياة بالكهرباء. نهض المخلوق يبحث عن الحنان، فهرب صانعه مرتعباً. ولأن المجتمع لفظه، قتل كثيرين انتقاماً لوحدته — ومنهم زوجة فيكتور — ثم قتل صانعه نفسه في القطب الشمالي.',
       'A stormy night in a villa in the Swiss countryside, early in the nineteenth century: **Mary Shelley**, Lord Byron and their friends hold a contest to write horror stories. Shelley writes of Doctor **Victor Frankenstein**, a physician who meant to defeat death, stitched a body from corpses and woke it with electricity. The creature rose looking for affection, and its maker fled in horror. Rejected by society, it killed many in revenge for its loneliness — Victor’s wife among them — and at last killed its maker at the North Pole.'
+    ) },
+    { type: 'p', text: L(
+      'كانت تكتب والحروب النابليونية لم تنتهِ بعد، ومجتمع السوق ينبثق في بريطانيا وأمستردام وحدهما، وما زال في كلّ مكانٍ آخر احتمالاً بعيداً. ومع ذلك كانت هي وأصدقاؤها الرومانسيون يجسّون نبض التاريخ: روايتها قلقُ كاتبةٍ مرهفة ممّا ستفعله التكنولوجيا بالمجتمع.',
+      'She was writing before the Napoleonic wars had ended, when market society was emerging only in Britain and Amsterdam and was still a distant possibility everywhere else. Even so, she and her Romantic friends had a finger on history’s pulse: her novel is a sensitive writer’s anxiety about what technology would do to society.'
     ) },
     { type: 'image', src: img('frankenstein-1831.webp'),
       alt: L('نقشٌ يُظهر مخلوقاً عملاقاً ينهض وصانعه يفرّ', 'An engraving of a giant creature rising as its maker flees'),
@@ -111,27 +145,31 @@ export const hauntedMachines = {
 
     { type: 'h', text: L('متلازمة فرانكنشتاين', 'The Frankenstein syndrome') },
     { type: 'p', text: L(
-      'لم تدخل الآلات حياتنا لأنها عبقرية، بل لأن **أصحاب المشاريع المدينين** يتنافسون على الربح: من يُنتج أكثر بالعمل نفسه يبيع أرخص. تخيّل أن جيمس واط عاش في مصر الفراعنة وعرض محرّكه على الفرعون: لوضعه في قصره تحفةً يتباهى بها — فلديه مئات آلاف العبيد، ولا منافسين يطاردون الربح. ومع تتابع الاختراعات امتلكت البشرية **جيشاً من العبيد الآليين**. فلماذا لم نصل إلى عالم «ستار تريك»، حيث يخرج الطعام من فتحةٍ في الجدار ويتفرّغ البشر للفلسفة؟ لأننا نشبه **الهامستر على عجلته**: نركض أسرع، ولا نصل إلى أيّ مكان. بدل أن تخدمنا الآلات صرنا نكدّ لنحافظ عليها.',
-      'Machines did not enter our lives because they were ingenious, but because **indebted entrepreneurs** compete for profit: whoever produces more from the same labour sells cheaper. Imagine James Watt in the Egypt of the pharaohs, showing his engine to the king: it would have stood in the palace as a curiosity — he had hundreds of thousands of slaves, and no competitors chasing profit. Invention by invention, humanity acquired **an army of mechanical slaves**. So why aren’t we in the world of Star Trek, food popping out of a hole in the wall while humans do philosophy? Because we are like **hamsters on a wheel**: running faster, going nowhere. Instead of the machines serving us, we toil to keep them going.'
+      'لم تدخل الآلات حياتنا لأنها عبقرية، بل لأن **أصحاب المشاريع المدينين** يتنافسون على الربح — وبلا ربحٍ يصيرون عبيداً لدائنيهم، كما صار الدكتور فاوست عبداً لمفيستوفيليس. وللفوز بالزبائن يخفضون الأسعار، ولخفضها يعتصرون منتجاتٍ أكثر من قوّة العمل المأجورة نفسها — فيتلقّفون كلّ اختراعٍ يمنحهم أفضلية. تخيّل أن جيمس واط عاش في مصر القديمة وعرض محرّكه البخاري على الفرعون: جلّ ما كان سيناله أن يُعجَب به الحاكم ويضع محرّكاً أو اثنين في قصره ليُبهر زوّاره — فلديه مئات آلاف العبيد، ولا منافسين يطاردون الربح. والآلة الجديدة تمنح صاحبها أفضليةً تزول حالما يشتريها منافسوه، فيأتي اختراعٌ آخر… وهكذا امتلكت البشرية **جيشاً هائلاً من العبيد الآليين**.',
+      'Machines did not enter our lives because they were ingenious, but because **indebted entrepreneurs** compete for profit — without it they become slaves to their creditors, as Doctor Faustus became Mephistopheles’s. To win customers they cut prices, and to cut prices they squeeze more product out of the same waged labour — so they seize on any invention that gives an edge. Imagine James Watt in ancient Egypt, showing his steam engine to the Pharaoh: the most he could hope for is that the ruler would be impressed and put an engine or two in his palace to dazzle visitors — he had hundreds of thousands of slaves, and no competitors chasing profit. A new machine gives its owner an edge that vanishes once his rivals buy it too; then comes the next invention… and so humanity acquired **a vast army of mechanical slaves**.'
+    ) },
+    { type: 'p', text: L(
+      'فلماذا لم نبلغ عالم **«رحلة عبر النجوم» (Star Trek)**، حيث يخرج الطعام من فتحةٍ في الحائط ويتفرّغ البشر لاستكشاف الكون والنقاش؟ لأن الآلات غيّرت حياتنا ولم تقضِ على الفقر ولا الجوع ولا اللامساواة ولا الأعمال الرتيبة ولا القلق على الغد؛ بل صرنا أكثر توتّراً من أيّ وقتٍ مضى. لم نعد نقيّد الأطفال إلى أنوال المصانع، لكنّ المنافسة التي ترغم كلّ ربّ عملٍ على أحدث اختراع تقيّدنا نحن بالتكنولوجيا. نشبه **حيوانات الهامستر على عجلاتها الدوّارة**: مهما أسرعنا لا نصل إلى أيّ مكان — فالآلات لا تكدح لنا، بل نكدح نحن للحفاظ عليها. ولهذا تُقرأ رواية شيلي **حكايةً رمزية**: تحذيراً من أن التكنولوجيا، إن لم نحذر، قد تلد وحوشاً تستعبدنا بدل أن تخدمنا، وتنقلب على صانعها.',
+      'So why aren’t we in the world of **Star Trek**, food popping out of a hole in the wall while humans explore the universe and talk philosophy? Because the machines changed our lives without ending poverty, hunger, inequality, chores or anxiety about tomorrow; if anything we are more stressed than ever. We no longer chain children to factory looms, but the competition that forces every employer to adopt the latest invention shackles the rest of us to technology. We are like **hamsters on their spinning wheels**: however fast we run, we get nowhere — the machines are not slaving for us; we are working furiously to keep them going. That is why Shelley’s novel reads as **an allegory**: a warning that technology, if we are not careful, may breed monsters that enslave us instead of serving us, and turn on their maker.'
     ) },
 
-    { type: 'h', text: L('من «ماتريكس» إلى ماركس', 'The Matrix and Karl Marx') },
+    { type: 'h', text: L('المصفوفة وكارل ماركس', 'The Matrix and Karl Marx') },
     { type: 'p', text: L(
-      'من حكاية «القِدر السحرية» للأخوين غريم و«الساحر المتدرّب» لغوته إلى «بليد رانر» و«المدمّر»: نحن نخاف مخلوقاتنا. وأصدق وريثٍ لـ«فرانكنشتاين»، في رأيه، هو **«ماتريكس»**: أرضٌ استولت عليها الآلات، لكنها تُبقي البشر أحياء في حاضناتٍ تأكل حرارة أجسادهم طاقةً، وتُسقط في عقولهم واقعاً افتراضياً كي لا يموتوا يأساً ولا يعرفوا أنهم عبيد. الفيلم مخيف لأنه يتحدّث عن الحاضر: خوفنا من استعبادٍ تامٍّ إلى حدّ أننا لا نشعر به — وربّما حدث فعلاً ولا سبيل لنا إلى معرفته.',
-      'From the Brothers Grimm’s Sweet Porridge and Goethe’s The Sorcerer’s Apprentice to Blade Runner and The Terminator: we fear our creations. Their truest heir to Frankenstein, he thinks, is **The Matrix**: an Earth the machines have taken, keeping humans alive in pods whose body heat they harvest as power, while beaming a virtual world into their minds so they neither die of despair nor know they are slaves. The film frightens because it is about the present: our fear of an enslavement so complete we cannot feel it — and which may already have happened, with no way of knowing.'
+      'من حكاية الأخوين غريم «العصيدة الحلوة» (Sweet Porridge) و«الساحر المتمرّن» (The Sorcerer’s Apprentice) لغوته إلى أفلامٍ مثل «عدّاء النصل» (Blade Runner) و«المبيد» (The Terminator): قصصنا تقول إننا نخاف مخلوقاتنا. مخلوق فرانكنشتاين يقتل لقلقه الوجوديّ الذي لا يُحتمل، وآلات «المبيد» تسعى إلى إبادتنا لتستولي على الكوكب. أمّا أجدر وريثٍ لرواية شيلي، في رأيه، فيمضي أبعد: **«المصفوفة» (The Matrix)** — أرضٌ استولت عليها الآلات فعلاً، لكنها تُبقي البشر أحياء في حاضناتٍ تأكل حرارة أجسادهم طاقةً، وتُسقط في عقولهم واقعاً افتراضياً كي لا يموتوا يأساً ولا يعرفوا أنهم عبيد. الفيلم مخيف لأنه يتحدّث عن الحاضر: خوفنا من استعبادٍ تامٍّ إلى حدّ أننا لا نشعر به — وربّما حدث فعلاً ولا سبيل لنا إلى معرفته.',
+      'From the Brothers Grimm’s Sweet Porridge and Goethe’s The Sorcerer’s Apprentice to films like Blade Runner and The Terminator: our stories say we fear our creations. Frankenstein’s creature kills out of unbearable existential angst; the Terminator’s machines want to exterminate us to take the planet. But the worthiest heir to Shelley’s novel, he thinks, goes further: **The Matrix** — an Earth the machines have already taken, keeping humans alive in pods whose body heat they harvest as power, while beaming a virtual world into their minds so they neither die of despair nor know they are slaves. The film frightens because it is about the present: our fear of an enslavement so complete we cannot feel it — and which may already have happened, with no way of knowing.'
     ) },
     { type: 'imggrid', images: [
-      { src: img('the-matrix.webp'), alt: L('ملصق فيلم «ماتريكس»', 'Poster for The Matrix'),
-        caption: L('**«ماتريكس»** (١٩٩٩): البشر بطّاريات، والعالم الذي يرونه وهم.', '**The Matrix** (1999): humans as batteries, and the world they see an illusion.') },
-      { src: img('blade-runner.webp'), alt: L('ملصق فيلم «بليد رانر»', 'Poster for Blade Runner'),
-        caption: L('**«بليد رانر»** (١٩٨٢): آلاتٌ لا تُميَّز عن البشر — فما الإنسان؟', '**Blade Runner** (1982): machines you cannot tell from people — so what is a human?') },
-      { src: img('the-terminator.webp'), alt: L('ملصق فيلم «المدمّر»', 'Poster for The Terminator'),
-        caption: L('**«المدمّر»** (١٩٨٤): آلاتٌ تريد إبادتنا.', '**The Terminator** (1984): machines out to wipe us out.') },
-      { src: img('star-trek.webp'), alt: L('ملصق «ستار تريك»', 'A Star Trek poster'),
-        caption: L('**«ستار تريك»**: الحلم المعاكس — آلاتٌ تُنتج كلّ شيء، وبشرٌ تحرّروا من الحاجة.', '**Star Trek**: the opposite dream — machines that make everything, and humans freed from want.') },
+      { src: img('the-matrix.webp'), alt: L('ملصق فيلم «المصفوفة»', 'Poster for The Matrix'),
+        caption: L('**«المصفوفة» (The Matrix)** (١٩٩٩): البشر بطّاريات، والعالم الذي يرونه وهم.', '**The Matrix** (1999): humans as batteries, and the world they see an illusion.') },
+      { src: img('blade-runner.webp'), alt: L('ملصق فيلم «عدّاء النصل»', 'Poster for Blade Runner'),
+        caption: L('**«عدّاء النصل» (Blade Runner)** (١٩٨٢): آلاتٌ لا تُميَّز عن البشر — فما الإنسان؟', '**Blade Runner** (1982): machines you cannot tell from people — so what is a human?') },
+      { src: img('the-terminator.webp'), alt: L('ملصق فيلم «المبيد»', 'Poster for The Terminator'),
+        caption: L('**«المبيد» (The Terminator)** (١٩٨٤): آلاتٌ تريد إبادتنا.', '**The Terminator** (1984): machines out to wipe us out.') },
+      { src: img('star-trek.webp'), alt: L('ملصق «رحلة عبر النجوم»', 'A Star Trek poster'),
+        caption: L('**«رحلة عبر النجوم» (Star Trek)**: الحلم المعاكس — آلاتٌ تُنتج كلّ شيء، وبشرٌ تحرّروا من الحاجة.', '**Star Trek**: the opposite dream — machines that make everything, and humans freed from want.') },
     ] },
     { type: 'p', text: L(
-      'كتب **كارل ماركس** أن الآلات — وسائل الإنتاج المُنتَجة — هي «القوّة التي علينا أن ننحني لها»، و«ماتريكس» يصوّر اكتمال هذا المسار. لكن ماركس رأى في الاقتصاد **صمّام أمان**: ميلاً إلى الأزمة يمنع الآلات من الاستيلاء الكامل على العمل البشريّ قبل أن يقع.',
+      'كتب **كارل ماركس** أن الآلات — وسائل الإنتاج المُنتَجة — هي «القوّة التي علينا أن ننحني لها»، و«المصفوفة» يصوّر اكتمال هذا المسار. لكن ماركس رأى في الاقتصاد **صمّام أمان**: ميلاً إلى الأزمة يمنع الآلات من الاستيلاء الكامل على العمل البشريّ قبل أن يقع.',
       '**Karl Marx** wrote that machines — the produced means of production — are “the force we must bow to”, and The Matrix depicts that process completed. But Marx also saw a **safety valve** in the economy: a tendency to crisis that stops machines from taking over human labour entirely before it gets there.'
     ) },
     { type: 'imggrid', images: [
@@ -158,17 +196,17 @@ export const hauntedMachines = {
 
     { type: 'h', text: L('المقاومة ليست عبثاً', 'Resistance is never futile') },
     { type: 'p', text: L(
-      'في زمن شيلي حطّم **اللوديون** — عمّالٌ إنجليز — الأنوال البخارية. وهم من أكثر من أُسيء فهمهم: لم يعادوا الآلات، بل أن يملكها قلّةٌ قليلة. وفي مصانع القمصان في بنغلاديش اليوم آلاف العمّال لا الروبوتات، في مشهدٍ يشبه **«الأزمنة الحديثة»** لشارلي شابلن (١٩٣٦)، حيث يُضطرّ العامل إلى مجاراة خطّ التجميع حتى يصير آلةً هو نفسه. والمفارقة: تنظيم العمّال في **نقابات** للمطالبة بأجورٍ أعلى وساعاتٍ أقلّ هو ترياق متلازمة إيكاروس، لأن الأجور هي ما يشتري البضائع. وحين يقول «البورغ» في «ستار تريك» للبشر «ستُستَوعَبون، والمقاومة عبث» — فالجواب: **المقاومة ليست عبثاً أبداً.**',
+      'في زمن شيلي حطّم **اللوديون** — عمّالٌ إنجليز — الأنوال البخارية. وهم من أكثر من أُسيء فهمهم: لم يعادوا الآلات، بل أن يملكها قلّةٌ قليلة. وفي مصانع القمصان في بنغلاديش اليوم آلاف العمّال لا الروبوتات، في مشهدٍ يشبه **«الأزمنة الحديثة»** لشارلي شابلن (١٩٣٦)، حيث يُضطرّ العامل إلى مجاراة خطّ التجميع حتى يصير آلةً هو نفسه. والمفارقة: تنظيم العمّال في **نقابات** للمطالبة بأجورٍ أعلى وساعاتٍ أقلّ هو ترياق متلازمة إيكاروس، لأن الأجور هي ما يشتري البضائع. وحين يقول «البورغ» في «رحلة عبر النجوم» للبشر «ستُستَوعَبون، والمقاومة عبث» — فالجواب: **المقاومة ليست عبثاً أبداً.**',
       'In Shelley’s time the **Luddites** — English workers — smashed the steam looms. They are among history’s most misunderstood: their quarrel was not with machines but with how few people owned them. In Bangladesh’s T-shirt factories today there are thousands of workers, not robots — a scene out of Charlie Chaplin’s **Modern Times** (1936), where a worker forced to keep up with the assembly line turns into a machine himself. The irony: workers organising in **unions** for higher pay and shorter hours is the antidote to the Icarus syndrome, because wages are what buy the goods. And when the Borg tell humans in Star Trek “you will be assimilated, resistance is futile” — the answer is: **resistance is never futile.**'
     ) },
 
     { type: 'h', text: L('سرّ القيمة التبادلية: البشر', 'The secret of exchange value: humans') },
     { type: 'p', text: L(
-      'أغلى ما في الإنتاج اليوم التصميم: من نحو ٦٠٠ جنيه ثمن «آيفون» يذهب أقلّ من ١٥٠ إلى المصنع الصيني الذي جمّعه، ويبقى الباقي لـ«أبل» ثمناً لملكيّتها الفكرية. فإن صارت الآلات تصمّم الآلات، فهل نعيش كسقراط في الساحة، أم كبطّاريات «ماتريكس»؟ يرى أن الجواب يتوقّف على من يملك. فحلم كلّ ربّ عمل ليس عالماً بلا عمل، بل أن يستبدل **عمّاله هو** بالروبوتات بينما يواصل منافسوه توظيف البشر الذين يشترون بضاعته.',
+      'أغلى ما في الإنتاج اليوم التصميم: من نحو ٦٠٠ جنيه ثمن «آيفون» يذهب أقلّ من ١٥٠ إلى المصنع الصيني الذي جمّعه، ويبقى الباقي لـ«أبل» ثمناً لملكيّتها الفكرية. فإن صارت الآلات تصمّم الآلات، فهل نعيش كسقراط في الساحة، أم كبطّاريات «المصفوفة»؟ يرى أن الجواب يتوقّف على من يملك. فحلم كلّ ربّ عمل ليس عالماً بلا عمل، بل أن يستبدل **عمّاله هو** بالروبوتات بينما يواصل منافسوه توظيف البشر الذين يشترون بضاعته.',
       'The most valuable part of production today is design: of the roughly £600 an iPhone costs, less than £150 goes to the Chinese factory that assembled it, and Apple keeps the rest for its intellectual property. If machines come to design machines, will we live like Socrates in the agora, or like batteries in The Matrix? That, he says, depends on who owns them. Every employer’s dream is not a world without work but to replace **his own** workers with robots while his competitors keep employing the humans who buy his goods.'
     ) },
     { type: 'p', text: L(
-      'وماذا عن من يقول: لنصِر نحن آلات؟ في **«بليد رانر»** يطارد ريك ديكارد آلاتٍ لا تُميَّز عن البشر. ويطلب فاروفاكيس من ابنته أن تتخيّل استبدال أعضائها قطعةً قطعة — سمّاعة، فقدمٌ إلكترونية، فقلبٌ آلي، فشرائح في الدماغ — حتى نقطةٍ لا نعرفها تكفّ عندها عن أن تكون كسينيا. وإن صار البشر جميعاً كذلك، صار الاقتصاد **كأحشاء ساعة**: تبادلٌ للطاقة بين التروس بلا قيمةٍ تبادلية، لأن لا أحد هناك ليُقيّم شيئاً. مدنٌ كخلايا النحل، لا مجتمعات.',
+      'وماذا عن من يقول: لنصِر نحن آلات؟ في **«عدّاء النصل» (Blade Runner)** يطارد ريك ديكارد آلاتٍ لا تُميَّز عن البشر. ويطلب فاروفاكيس من ابنته أن تتخيّل استبدال أعضائها قطعةً قطعة — سمّاعة، فقدمٌ إلكترونية، فقلبٌ آلي، فشرائح في الدماغ — حتى نقطةٍ لا نعرفها تكفّ عندها عن أن تكون كسينيا. وإن صار البشر جميعاً كذلك، صار الاقتصاد **كأحشاء ساعة**: تبادلٌ للطاقة بين التروس بلا قيمةٍ تبادلية، لأن لا أحد هناك ليُقيّم شيئاً. مدنٌ كخلايا النحل، لا مجتمعات.',
       'And those who say: let us become machines ourselves? In **Blade Runner**, Rick Deckard hunts machines indistinguishable from people. Varoufakis asks his daughter to imagine her parts replaced one by one — a hearing aid, a bionic foot, a mechanical heart, chips in the brain — until some point we cannot name where she stops being Xenia. If all humans became like that, the economy would be **like the inside of a clock**: energy passing between gears with no exchange value, because no one is there to value anything. Cities like beehives, not societies.'
     ) },
 
@@ -191,7 +229,7 @@ export const apoliticalMoney = {
   ),
   blocks: [
     { type: 'p', text: L(
-      'سنة ١٩٤١ أسر الألمان ضابطاً بريطانياً اسمه **ريتشارد رادفورد**، درس الاقتصاد، فدوّن بعد الحرب ما رآه في معسكر الأسرى الغربيين. كان الصليب الأحمر يرسل إلى الجميع طروداً متماثلة فيها طعامٌ وقهوةٌ وشاي وشوكولاتة وسجائر. وأوّل من رأى الفرصة ضبّاطٌ فرنسيون أذكياء: الفرنسيّ يحبّ القهوة ولا يبالي بالشاي، والإنجليزيّ عكسه.',
+      'سنة ١٩٤١ أسر الألمان ضابطاً بريطانياً اسمه **ريتشارد رادفورد**، درس الاقتصاد، فدوّن بعد الحرب ما رآه في معسكر الأسرى الغربيين. كان الصليب الأحمر يرسل إلى الجميع طروداً متماثلة فيها طعامٌ وقهوةٌ وشاي وشوكولا وسجائر. وأوّل من رأى الفرصة ضبّاطٌ فرنسيون أذكياء: الفرنسيّ يحبّ القهوة ولا يبالي بالشاي، والإنجليزيّ عكسه.',
       'In 1941 the Germans captured a British officer named **Richard Radford**, a trained economist, who after the war wrote down what he saw in the camp for Western prisoners. The Red Cross sent everyone identical parcels — food, coffee, tea, chocolate, cigarettes. The first to see an opportunity were some shrewd French officers: a Frenchman loves coffee and cares little for tea, an Englishman the reverse.'
     ) },
 
@@ -203,21 +241,31 @@ export const apoliticalMoney = {
 
     { type: 'h', text: L('عملةٌ مسرطِنة: السجائر', 'A carcinogenic currency: cigarettes') },
     { type: 'p', text: L(
-      'ثم ثقلت المقايضة المباشرة — شايٌ بقهوةٍ بشوكولاتة — فبرزت سلعةٌ وسيطة: **السجائر**. فهي تدوم ولا تفسد، وتُحمل في الجيب، وتُقسَّم، ويرغب فيها الجميع: المدخّن لنيكوتينها، وغير المدخّن لقيمتها التبادلية. وصار لها ثلاثة أدوار: سلعةٌ تُستهلك، و**وسيلة تبادلٍ ومقياسٌ للأسعار**، و**مخزنٌ للقيمة** يُدّخر ليومٍ عصيب. ومع الادّخار جاء الإقراض بفائدة — ومعه خطر ألّا يسدّد المقترض، أو أن يدخّن السجائر كلّها.',
+      'ثم ثقلت المقايضة المباشرة — شايٌ بقهوةٍ بشوكولا — فبرزت سلعةٌ وسيطة: **السجائر**. فهي تدوم ولا تفسد، وتُحمل في الجيب، وتُقسَّم، ويرغب فيها الجميع: المدخّن لنيكوتينها، وغير المدخّن لقيمتها التبادلية. وصار لها ثلاثة أدوار: سلعةٌ تُستهلك، و**وسيلة تبادلٍ ومقياسٌ للأسعار**، و**مخزنٌ للقيمة** يُدّخر ليومٍ عصيب. ومع الادّخار جاء الإقراض بفائدة — ومعه خطر ألّا يسدّد المقترض، أو أن يدخّن السجائر كلّها.',
       'Then direct barter — tea for coffee for chocolate — grew cumbersome, and one go-between commodity emerged: **cigarettes**. They keep, fit in a pocket, divide easily, and everyone wants them: smokers for the nicotine, non-smokers for their exchange value. They took on three roles: a good to consume, **a medium of exchange and a measure of prices**, and **a store of value** saved for a rainy day. With saving came lending at interest — and with it the risk that a borrower would not pay back, or would smoke the lot.'
     ) },
 
     { type: 'h', text: L('التضخّم والانكماش في المعسكر', 'Inflation and deflation in the camp') },
     { type: 'p', text: L(
-      'سمع فاروفاكيس صغيراً أن ورقة الألف دراخما لا تكلّف طباعتها إلا عشرين دراخما، فلم يفهم: كيف تساوي ألفاً؟ المعسكر يفسّرها: حين زاد الصليب الأحمر السجائر في الطرود صارت كلّ سيجارةٍ تشتري أقلّ — **تضخّم**. وفي ليلةٍ قصف فيها الحلفاء المنطقة، دخّن الأسرى المرتعبون سيجارةً تلو الأخرى، فقلّت السجائر في الصباح وارتفعت قيمتها: بعد أن كان لوح الشوكولاتة بخمس سجائر صار بواحدة — **انكماش**. فقيمة العملة لا علاقة لها بكلفة صنعها، بل **بندرتها**.',
-      'As a boy Varoufakis heard that a thousand-drachma note cost only twenty drachmas to print, and couldn’t understand how it could be worth a thousand. The camp explains it: when the Red Cross added cigarettes to the parcels, each cigarette bought less — **inflation**. And on a night when Allied bombers hit the area, terrified prisoners smoked one cigarette after another; by morning there were far fewer and each was worth more: a chocolate bar that cost five cigarettes now cost one — **deflation**. A currency’s value has nothing to do with what it costs to make, only with **how scarce it is**.'
+      'سمع فاروفاكيس صغيراً أن ورقة الألف دراخما لا تكلّف طباعتها إلا عشرين دراخما، فلم يفهم: كيف تساوي ألفاً؟ المعسكر يفسّرها: حين زاد الصليب الأحمر السجائر في الطرود صارت كلّ سيجارةٍ تشتري أقلّ — **تضخّم الأسعار**: ارتفاعٌ عامّ فيها لأن في المنظومة نقوداً أكثر. وفي ليلةٍ قصف فيها الحلفاء المنطقة، دخّن الأسرى المرتعبون سيجارةً تلو الأخرى، فقلّت السجائر في الصباح وارتفعت قيمتها: بعد أن كان لوح الشوكولا بخمس سجائر صار بواحدة — **انكماش الأسعار**: انخفاضها كلّها لأن النقود تضاءلت قياساً إلى السلع. فقيمة العملة لا علاقة لها بكلفة صنعها، بل **بندرتها**.',
+      'As a boy Varoufakis heard that a thousand-drachma note cost only twenty drachmas to print, and couldn’t understand how it could be worth a thousand. The camp explains it: when the Red Cross added cigarettes to the parcels, each cigarette bought less — **price inflation**: a general rise in prices because there is more money in the system. And on a night when Allied bombers hit the area, terrified prisoners smoked one cigarette after another; by morning there were far fewer and each was worth more: a chocolate bar that cost five cigarettes now cost one — **price deflation**: every price falling because money has shrunk relative to goods. A currency’s value has nothing to do with what it costs to make, only with **how scarce it is**.'
     ) },
     { type: 'figure', id: 'tdCigaretteCamp' },
 
-    { type: 'h', text: L('سعر الفائدة، وتوقّعاتٌ كبرى', 'Interest rates, and great expectations') },
+    { type: 'h', text: L('معدّلات الفائدة: سعر النقود في المعسكر', 'Interest rates: the price of money in the camp') },
     { type: 'p', text: L(
-      'كان «مصرفيّو» المعسكر يُقرضون عشر سجائر ويطلبون اثنتي عشرة الشهر القادم: ٢٠٪. فإن توقّعوا وصول سجائر كثيرة تُفقد كلَّ سيجارة ١٠٪ من قيمتها، طلبوا ٣٠٪. وهذا ما تعنيه نشرة الأخبار حين تقول إن الفائدة سترتفع لأن التضخّم يتسارع. والطقس لا يبالي بتوقّعاتنا، أمّا الاقتصاد فيتشكّل بها: حين تقدّم الألمان في روسيا استقرّت الأسعار لأن الأسر سيطول، وحين اقترب الحلفاء لم يعد أحدٌ يريد الادّخار. ولمّا توقّفت الطرود دخّن الأسرى ما ادّخروا، و**تبخّرت الديون حرفياً** — وانهار اقتصاد المعسكر قبل أن تُفتح أبوابه. اقتصادٌ نقديّ لا يعيش إن عرف الجميع أن نهايته قريبة.',
-      'The camp’s “bankers” lent ten cigarettes and asked for twelve next month: 20%. If they expected a flood of cigarettes that would cost each one 10% of its value, they asked 30%. That is what the news means when it says rates will rise because inflation is picking up. The weather doesn’t care what we expect; an economy is shaped by it: when the Germans advanced in Russia prices settled, because captivity would be long; when the Allies drew near, no one wanted to save. When the parcels stopped, prisoners smoked their savings and **the debts literally went up in smoke** — the camp’s economy collapsed before its gates were opened. A monetised economy cannot survive if everyone knows its end is near.'
+      'طوال ١٩٤٢، حين لم يكن أحدٌ يعرف كيف ستنتهي الحرب والأسرى يخشون أن يطول أسرهم سنوات، كانت الأسعار في المعسكر مستقرّة. فوثق أدهى العقول التجارية وأصحاب المدّخرات المتراكمة بأن اقتصاده البدائيّ باقٍ، وصاروا — أجل — **مصرفيين** يعرضون القروض. فإن نفدت قهوة **كزافييه** ولم يملك سجائر تكفي لشراء غيرها، اقترض عشر سجائر على أن يردّها اثنتي عشرة حين يصله طرد «الصليب الأحمر» في الشهر التالي: فائدةٌ شهرية باهظة، ٢٠٪. وسيقبل، إن كان انتظار شهرٍ بلا قهوة أثقل عليه من خسارة سيجارتين.',
+      'All through 1942, when nobody could tell how the war would end and the prisoners feared years more of captivity, prices in the camp were stable. So the shrewdest business minds, and those with the most saved up, trusted that its primitive economy would last — and became, yes, **bankers**, offering loans. If **Xavier** ran out of coffee and had too few cigarettes to buy more, he could borrow ten, on condition that he repay twelve when his Red Cross parcel arrived next month: an exorbitant monthly interest of 20%. He would accept, if a month without coffee pained him more than the loss of two cigarettes.'
+    ) },
+    { type: 'p', text: L(
+      'وما يتوقّعه المصرفيون لكمّية المال يغيّر الفائدة: إن توقّعوا وصول سجائر كثيرة تُفقد كلَّ سيجارة ١٠٪ من قيمتها، لم يعودوا يقبلون بـ٢٠٪ وطلبوا ٣٠٪ ليحفظوا ربحهم. والقاعدة عامّة: **كلفة المال المقترَض — الفائدة — تتوقّف على ما يُتوقَّع للأسعار، تضخّماً أو انكماشاً.** وهذا ما تعنيه نشرة الأخبار المملّة حين تقول إن أسعار الفائدة قد ترتفع لأن التضخّم آخذٌ في الارتفاع — ومعسكر رادفورد هو كلّ ما تحتاجه لتفهمها.',
+      'And what the bankers expect of the quantity of money changes the rate: if they anticipate a flood of cigarettes that would cost each one 10% of its value, 20% no longer does and they ask 30% to keep their profit. The rule is general: **the cost of borrowed money — interest — depends on what prices are expected to do, inflation or deflation.** That is all a dull news report means when it says rates will probably rise because inflation is picking up — and Radford’s camp is all you need to follow it.'
+    ) },
+
+    { type: 'h', text: L('الآمال الكبيرة', 'Great expectations') },
+    { type: 'p', text: L(
+      'الطقس لا يبالي بما نظنّه فيه: إن كانت السماء ستمطر فستمطر، مهما قال مكتب الأرصاد الجوّية ومهما توقّعنا. أمّا الاقتصاد — كما عرفنا من حكاية روسو عن اصطياد الظبي ومن السوقين الأوديبيّين — فيتأثّر بما نفكّر فيه، ويهتزّ به، بل **يتشكّل** به. حين تقدّم الألمان في روسيا استقرّت الأسعار لأن الأسر سيطول، وحين اقترب الحلفاء لم يعد أحدٌ يريد الادّخار. ولمّا توقّفت الطرود دخّن الأسرى ما ادّخروا، و**تبخّرت الديون حرفياً** — وانهار اقتصاد المعسكر قبل أن تُفتح أبوابه. اقتصادٌ نقديّ لا يعيش إن عرف الجميع أن نهايته قريبة.',
+      'The weather doesn’t care what we think of it: if it is going to rain it will rain, whatever the Met Office says and whatever we expect. But the economy — as Rousseau’s stag hunt and the two Oedipal markets showed — is influenced, buffeted and indeed **shaped** by what we think of it. When the Germans advanced in Russia prices settled, because captivity would be long; when the Allies drew near, no one wanted to save. When the parcels stopped, prisoners smoked their savings and **the debts literally went up in smoke** — the camp’s economy collapsed before its gates were opened. A monetised economy cannot survive if everyone knows its end is near.'
     ) },
 
     { type: 'h', text: L('من السجائر إلى المال السياسي', 'From cigarettes to political money') },
@@ -272,7 +320,7 @@ export const stupidViruses = {
   icon: '🌳',
   title: L('٨ · فيروساتٌ غبيّة؟', '8 · Stupid Viruses?'),
   lead: L(
-    'في «ماتريكس» يقول العميل سميث إن البشر فيروس: لا يتوازنون مع بيئتهم بل يستهلكونها حتى يفنوها. ويخشى فاروفاكيس أنه محقّ — ما دام مجتمع السوق لا يرى في الغابة إلا ما يُباع منها.',
+    'في «المصفوفة» (The Matrix) يقول العميل سميث إن البشر فيروس: لا يتوازنون مع بيئتهم بل يستهلكونها حتى يفنوها. ويخشى فاروفاكيس أنه محقّ — ما دام مجتمع السوق لا يرى في الغابة إلا ما يُباع منها.',
     'In The Matrix, Agent Smith says humans are a virus: they don’t find a balance with their environment, they consume it until it is gone. Varoufakis fears he is right — so long as market society sees in a forest only what can be sold of it.'
   ),
   blocks: [
@@ -338,7 +386,7 @@ export const epilogue = {
 
     { type: 'h', text: L('الحرّية والمول', 'Freedom and the mall') },
     { type: 'p', text: L(
-      'يستعير من هنري ديفيد ثورو صورة السعادة فراشةً: كلّما طاردتها هربت، وإن انشغلت بغيرها حطّت على كتفك. وأشدّ ما يخيفه أن يكون ألعوبةً بأيدي قوىً لا يراها — ولهذا نحبّ أفلاماً مثل «ماتريكس» و«في فور فانديتا». ومجتمعات السوق لا تصنع آلاتٍ وثروةً وديوناً فحسب، بل **تصنع فينا الرغبات** التي تُديمها. والمثال الأوضح **المول**: عمارته وموسيقاه وتصميمه كلّها لتخدير العقل ودفعنا إلى الخروج محمّلين بما لم نحتجه. ويضيف أداتين أخريين للتلقين: الإعلام، و— أقواها — **علم الاقتصاد نفسه**.',
+      'يستعير من هنري ديفيد ثورو صورة السعادة فراشةً: كلّما طاردتها هربت، وإن انشغلت بغيرها حطّت على كتفك. وأشدّ ما يخيفه أن يكون ألعوبةً بأيدي قوىً لا يراها — ولهذا نحبّ أفلاماً مثل «المصفوفة» و«في فور فانديتا». ومجتمعات السوق لا تصنع آلاتٍ وثروةً وديوناً فحسب، بل **تصنع فينا الرغبات** التي تُديمها. والمثال الأوضح **المول**: عمارته وموسيقاه وتصميمه كلّها لتخدير العقل ودفعنا إلى الخروج محمّلين بما لم نحتجه. ويضيف أداتين أخريين للتلقين: الإعلام، و— أقواها — **علم الاقتصاد نفسه**.',
       'He borrows Henry David Thoreau’s image of happiness as a butterfly: chase it and it eludes you; turn to other things and it settles on your shoulder. What frightens him most is being the plaything of forces he cannot see — which is why we love films like The Matrix and V for Vendetta. Market societies manufacture not only machines, wealth and debt but **the desires in us** that keep them going. The clearest example is **the mall**: its architecture, music and design all meant to numb the mind and send us out laden with things we never needed. He adds two more tools of indoctrination: the media, and — the most potent — **economics itself**.'
     ) },
 

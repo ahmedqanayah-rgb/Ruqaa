@@ -310,16 +310,16 @@ export function TdStagHunt() {
   const stag = firstOut.length === 0
   return (
     <FigureFrame number={5}
-      title={L('صيد الأيل', 'The stag hunt')}
-      caption={L('حرّك الثقة: كم يثق كلّ صيّادٍ بأن الآخرين سيثبتون في الدائرة. لكلٍّ منهم عتبته، والأيل لا يُصاد إلا بالستّة. ثم جرّب خبر «النقابات تقبل خفض الأجور ٢٠٪» — هكذا يقرأه أصحاب العمل: الأوضاع سيّئة. **التفاؤل والتشاؤم كلاهما يحقّق نفسه.**',
-                   'Move the confidence: how far each hunter trusts the others to hold the circle. Each has a threshold, and the stag needs all six. Then try the headline “unions accept a 20% wage cut” — which is how employers read it: things must be bad. **Optimism and pessimism both fulfil themselves.**')}>
+      title={L('اصطياد الظبي', 'The stag hunt')}
+      caption={L('حرّك الثقة: كم يثق كلّ صيّادٍ بأن الآخرين سيثبتون في الدائرة. لكلٍّ منهم عتبته، والظبي لا يُصطاد إلا بالستّة. ثم جرّب خبر «النقابات مستعدّة لخفض الأجور ٢٠٪» — هكذا يقرأه أصحاب المشاريع: الأوضاع سيّئة. **التفاؤل والتشاؤم كلاهما يحقّق نفسه.**',
+                   'Move the confidence: how far each hunter trusts the others to hold the circle. Each has a threshold, and the stag needs all six. Then try the headline “unions ready to see wages fall 20%” — which is how employers read it: things must be bad. **Optimism and pessimism both fulfil themselves.**')}>
       <div className="td-stag">
         <label className="sf-slider">
           <span className="sf-slider-lbl">{t(L('الثقة بأن الجميع سيثبتون', 'Confidence that everyone holds the line'))}: <b>{pct(c)}</b></span>
           <input type="range" min="0" max="100" value={conf} onChange={(e) => setConf(+e.target.value)} />
         </label>
         <button className={`sf-preset ${news ? 'active' : ''}`} onClick={() => setNews((n) => !n)}>
-          {t(L('خبر: «النقابات تقبل خفض الأجور ٢٠٪»', 'Headline: “unions accept a 20% wage cut”'))}
+          {t(L('خبر: «النقابات مستعدّة لخفض الأجور ٢٠٪»', 'Headline: “unions ready to see wages fall 20%”'))}
         </button>
         <div className="td-hunters" aria-hidden>
           {HUNTERS.map((h, i) => {
@@ -335,9 +335,9 @@ export function TdStagHunt() {
         </div>
         <p className={`td-readout ${stag ? 'good' : 'bad'}`} role="status">
           <RichText value={stag
-            ? L('**صِيد الأيل.** كلٌّ منهم وثق بالآخرين فثبت — فصدقت ثقته. عند ماريا: يوظّف الجميع، فيكسب العمّال، فيشترون الثلّاجات.',
+            ? L('**اصطِيد الظبي.** كلٌّ منهم وثق بالآخرين فثبت — فصدقت ثقته. عند ماريا: يوظّف الجميع، فيكسب العمّال، فيشترون البرّادات.',
                 'The stag is caught. Each trusted the others and held — so the trust came true. For Maria: everyone hires, workers earn, and they buy the fridges.')
-            : L(`**يأكلون الأرانب.** ${firstOut.length === HUNTERS.length ? 'لم يثبت أحد.' : `انسحب ${firstOut.length} أوّلاً، ورأى الباقون أن الأيل سيفلت فتبعوهم.`} عند ماريا: لا يوظّف أحد، فلا يكسب أحد، فلا يشتري أحد — وصدق التشاؤم.`,
+            : L(`**يأكلون الأرانب البرّية.** ${firstOut.length === HUNTERS.length ? 'لم يثبت أحد.' : `انسحب ${firstOut.length} أوّلاً، ورأى الباقون أن الظبي سيفلت فتبعوهم.`} عند ماريا: لا يوظّف أحد، فلا يكسب أحد، فلا يشتري أحد — وصدق التشاؤم.`,
                 `**They eat hare.** ${firstOut.length === HUNTERS.length ? 'Nobody held.' : `${firstOut.length} broke away first; the rest saw the stag would escape and followed.`} For Maria: nobody hires, nobody earns, nobody buys — and the pessimism came true.`)} />
         </p>
       </div>
@@ -435,10 +435,10 @@ export function TdCigaretteCamp() {
   const price = 5 * supply / 100
   const events = {
     parcels: { apply: (s) => Math.min(s * 1.5, 400),
-      line: L('وصلت طرود الصليب الأحمر وفيها سجائر إضافية، والقهوة والشوكولاتة كما هي. **كلّ سيجارة تشتري الآن أقلّ**: تضخّم.',
+      line: L('وصلت طرود الصليب الأحمر وفيها سجائر إضافية، والقهوة والشوكولا كما هي. **كلّ سيجارة تشتري الآن أقلّ**: تضخّم الأسعار.',
               'Red Cross parcels arrive with extra cigarettes and the same coffee and chocolate. **Each cigarette now buys less**: inflation.') },
     bombing: { apply: (s) => Math.max(s * 0.2, 5),
-      line: L('ليلةٌ تحت القصف، والأسرى يدخّنون سيجارةً تلو الأخرى. في الصباح قلّت السجائر كثيراً: **صار لوح الشوكولاتة بسيجارةٍ واحدة**. انكماش.',
+      line: L('ليلةٌ تحت القصف، والأسرى يدخّنون سيجارةً تلو الأخرى. في الصباح قلّت السجائر كثيراً: **صار لوح الشوكولا بسيجارةٍ واحدة**. انكماش الأسعار.',
               'A night under the bombs, prisoners smoking one cigarette after another. By morning there are far fewer: **a chocolate bar now costs a single cigarette**. Deflation.') },
   }
   const fire = (k) => { setSupply((s) => events[k].apply(s)); setLast(k) }
@@ -450,7 +450,7 @@ export function TdCigaretteCamp() {
                    'In Radford’s camp cigarettes were the money and the Red Cross — without knowing it — was the central bank. A cigarette’s value has nothing to do with what it cost to make, only with **how scarce it is**. Below is the book’s own sum: a lender adds to his interest whatever value he expects a cigarette to lose.')}>
       <div className="td-camp">
         <div className="td-camp-price" role="status">
-          <span>{t(L('ثمن لوح الشوكولاتة', 'Price of a chocolate bar'))}</span>
+          <span>{t(L('ثمن لوح الشوكولا', 'Price of a chocolate bar'))}</span>
           <b>{price % 1 ? price.toFixed(1) : price}</b>
           <span>{t(L('سيجارة', 'cigarettes'))}</span>
         </div>
@@ -463,7 +463,7 @@ export function TdCigaretteCamp() {
           <button className="sf-preset" onClick={() => { setSupply(100); setLast(null) }}>{t(L('الوضع العادي', 'Back to normal'))}</button>
         </div>
         <p className="td-readout"><RichText value={last ? events[last].line
-          : L('في الأيام العادية: خمس سجائر للوح الشوكولاتة.', 'On an ordinary day: five cigarettes for a chocolate bar.')} /></p>
+          : L('في الأيام العادية: خمس سجائر للوح الشوكولا.', 'On an ordinary day: five cigarettes for a chocolate bar.')} /></p>
 
         <div className="td-camp-loan">
           <label className="sf-slider">
@@ -562,7 +562,7 @@ const HALPEVAM = {
         'You chose the wall. You will live the best life by your own standards **as they are today** — and those standards will never change again. No disappointment, no conflict, no “I want this, but should I?”. That, Varoufakis says, is what market society attempts: to satisfy your preferences — a goal that should never be met.'),
   stay: L('رفضت الحائط — وربّما يصعب عليك أن تقول لماذا. جواب الكتاب: السعادة الحقيقية ليست إشباع رغباتٍ ثابتة، بل **صيرورة** — ما سمّاه اليونان «يودايمونيا»، الازدهار — تتغيّر فيها رغباتك نفسها بالاحتكاك بعالمٍ يرفض أن يمنحك كلّ شيء.',
           'You refused the wall — and may find it hard to say why. The book’s answer: real happiness is not satisfying fixed desires but **becoming** — what the Greeks called eudaimonia, flourishing — in which your desires themselves change against a world that refuses to give you everything.'),
-  secret: L('ماذا لو نُقلت إليه دون أن تعلم — أنت وكلّ البشر؟ لا أحد سيلاحظ شيئاً إلا ارتفاع السعادة. فإن أثار ذلك اشمئزازك، فقد اتّفقنا: **إشباع الرغبات مهمّ جداً، لكنه ليس كلّ شيء.** ولا فرق كبيراً بينه وبين «ماتريكس».',
+  secret: L('ماذا لو نُقلت إليه دون أن تعلم — أنت وكلّ البشر؟ لا أحد سيلاحظ شيئاً إلا ارتفاع السعادة. فإن أثار ذلك اشمئزازك، فقد اتّفقنا: **إشباع الرغبات مهمّ جداً، لكنه ليس كلّ شيء.** ولا فرق كبيراً بينه وبين «المصفوفة».',
             'What if you were moved there without knowing — you and every human? Nobody would notice anything but rising happiness. If that disgusts you, we agree: **satisfying preferences matters enormously, but it is not everything.** And it is not so different from the Matrix.'),
 }
 export function TdHalpevam() {

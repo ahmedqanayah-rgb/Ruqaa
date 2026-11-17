@@ -480,7 +480,7 @@ export const bookSkeletons = [
       "en": "./images/talking-to-my-daughter-cover-en.jpg"
     },
     "blurb": {
-      "ar": "وزير مالية اليونان السابق يشرح لابنته المراهقة الاقتصاد بلا مصطلحات: من أين جاءت اللامساواة، وكيف يخلق المصرفيون المال من العدم، ولماذا لا يمكن أن يكون المال بلا سياسة — بقصصٍ من فاوست وأوديب و«ماتريكس».",
+      "ar": "وزير مالية اليونان السابق يشرح لابنته المراهقة الاقتصاد بلا مصطلحات: من أين جاءت اللامساواة، وكيف يخلق المصرفيون المال من العدم، ولماذا لا يمكن أن يكون المال بلا سياسة — بقصصٍ من فاوست وأوديب و«المصفوفة».",
       "en": "Greece’s former finance minister explains the economy to his teenage daughter without jargon: where inequality came from, how bankers create money from thin air, and why money can never be free of politics — through stories from Faust, Oedipus and The Matrix."
     },
     "tone": {
@@ -607,7 +607,7 @@ export const bookSkeletons = [
                   "en": "5 · Two Oedipal Markets"
                 },
                 "lead": {
-                  "ar": "يقول بعضهم إن البطالة لا وجود لها: العاطل لم يخفّض أجره بما يكفي. يردّ فاروفاكيس بأيلٍ وأرانب وبنبوءةٍ إغريقية — لأن سوقَي العمل والمال تحكمهما نبوءاتٌ تحقّق نفسها.",
+                  "ar": "يقول بعضهم إن البطالة لا وجود لها: العاطل لم يخفّض أجره بما يكفي. يردّ فاروفاكيس بظبيٍ وأرانب برّية وبنبوءةٍ إغريقية — لأن سوق قوّة العمل وسوق المال تحكمهما نبوءاتٌ تحقّق نفسها.",
                   "en": "Some say unemployment does not exist: the jobless just haven’t cut their price far enough. Varoufakis answers with a stag, some hares and a Greek prophecy — because the labour and money markets are ruled by prophecies that fulfil themselves."
                 }
               },
@@ -619,7 +619,7 @@ export const bookSkeletons = [
                   "en": "6 · Haunted Machines"
                 },
                 "lead": {
-                  "ar": "من «فرانكنشتاين» إلى «ماتريكس»: نخاف مخلوقاتنا. لكن الخوف الحقيقي، عند فاروفاكيس، ليس من الآلات بل ممّن يملكها — ومن مجتمعٍ يستعملها ليستعبدنا بدل أن يحرّرنا.",
+                  "ar": "من «فرانكنشتاين» إلى «المصفوفة» (The Matrix): نخاف مخلوقاتنا. لكن الخوف الحقيقي، عند فاروفاكيس، ليس من الآلات بل ممّن يملكها — ومن مجتمعٍ يستعملها ليستعبدنا بدل أن يحرّرنا.",
                   "en": "From Frankenstein to The Matrix, we fear our creations. But the real fear, for Varoufakis, is not of the machines but of who owns them — and of a society that uses them to enslave us instead of freeing us."
                 }
               },
@@ -643,7 +643,7 @@ export const bookSkeletons = [
                   "en": "8 · Stupid Viruses?"
                 },
                 "lead": {
-                  "ar": "في «ماتريكس» يقول العميل سميث إن البشر فيروس: لا يتوازنون مع بيئتهم بل يستهلكونها حتى يفنوها. ويخشى فاروفاكيس أنه محقّ — ما دام مجتمع السوق لا يرى في الغابة إلا ما يُباع منها.",
+                  "ar": "في «المصفوفة» (The Matrix) يقول العميل سميث إن البشر فيروس: لا يتوازنون مع بيئتهم بل يستهلكونها حتى يفنوها. ويخشى فاروفاكيس أنه محقّ — ما دام مجتمع السوق لا يرى في الغابة إلا ما يُباع منها.",
                   "en": "In The Matrix, Agent Smith says humans are a virus: they don’t find a balance with their environment, they consume it until it is gone. Varoufakis fears he is right — so long as market society sees in a forest only what can be sold of it."
                 }
               },

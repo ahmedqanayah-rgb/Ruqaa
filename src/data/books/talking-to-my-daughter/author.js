@@ -22,7 +22,7 @@ export const author = {
 
     { type: 'h', text: L('من إسكس إلى سيدني وأثينا', 'From Essex to Sydney and Athens') },
     { type: 'p', text: L(
-      'درس الاقتصاد والرياضيات في بريطانيا: البكالوريوس في **جامعة إسكس**، ثم ماجستير الإحصاء الرياضيّ في **جامعة برمنغهام** (١٩٨٢)، ثم الدكتوراه في الاقتصاد من إسكس (١٩٨٧). درّس في إسكس وإيست أنغليا وكامبريدج، ثم في **جامعة سيدني** بين ١٩٨٨ و٢٠٠٠ — ولهذا نشأت ابنته في أستراليا — ثم عاد أستاذاً في **جامعة أثينا**. وتخصّصه الأصلي **نظرية الألعاب**، التي ألّف فيها كتاباً جامعياً، وهي ظاهرةٌ في هذا الكتاب: صيد الأيل في الفصل الخامس مسألةٌ من مسائلها.',
+      'درس الاقتصاد والرياضيات في بريطانيا: البكالوريوس في **جامعة إسكس**، ثم ماجستير الإحصاء الرياضيّ في **جامعة برمنغهام** (١٩٨٢)، ثم الدكتوراه في الاقتصاد من إسكس (١٩٨٧). درّس في إسكس وإيست أنغليا وكامبريدج، ثم في **جامعة سيدني** بين ١٩٨٨ و٢٠٠٠ — ولهذا نشأت ابنته في أستراليا — ثم عاد أستاذاً في **جامعة أثينا**. وتخصّصه الأصلي **نظرية الألعاب**، التي ألّف فيها كتاباً جامعياً، وهي ظاهرةٌ في هذا الكتاب: اصطياد الظبي في الفصل الخامس مسألةٌ من مسائلها.',
       'He studied economics and mathematics in Britain: a first degree at the **University of Essex**, an MSc in mathematical statistics at the **University of Birmingham** (1982), and a doctorate in economics from Essex (1987). He taught at Essex, East Anglia and Cambridge, then at the **University of Sydney** from 1988 to 2000 — which is why his daughter grew up in Australia — before returning as a professor at the **University of Athens**. His field is **game theory**, on which he co-wrote a textbook, and it shows in this book: the stag hunt in chapter five is one of its classic problems.'
     ) },
 

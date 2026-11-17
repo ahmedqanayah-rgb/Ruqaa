@@ -60,7 +60,7 @@ const QUICK = {
     q: L('لماذا قد لا يخلق خفضُ الأجور كلّها وظائف؟', 'Why might cutting every wage create no jobs?'),
     opts: [L('لأن العمّال يرفضون العمل', 'Because workers refuse to work'), L('لأن أرباب العمل يتوقّعون زبائن أقلّ فيُحجمون', 'Because employers expect fewer customers and hold back'), L('لأن القانون يحدّد الأجور', 'Because the law fixes wages')],
     correct: 1,
-    note: L('كماريا: إن قبلت النقابات خفض الأجور فالأوضاع سيّئة، ومن سيشتري حين تنخفض الأجور كلّها؟ النبوءة تحقّق نفسها.', 'Like Maria: if the unions accept a cut, things are bad — and who will buy once every wage falls? The prophecy fulfils itself.'),
+    note: L('كماريا: إن كانت النقابات مستعدّة لخفض الأجور فالأوضاع سيّئة، ومن سيملك ما يشتري به البرّادات حين تنخفض الأجور كلّها؟ النبوءة تحقّق نفسها.', 'Like Maria: if the unions are ready to take a cut, things are bad — and who will have the money to buy fridges once every wage falls? The prophecy fulfils itself.'),
   },
   'haunted-machines': {
     q: L('ماذا يقترح فاروفاكيس لكي يصير البشر أسياد آلاتهم؟', 'What does Varoufakis propose so humanity masters its machines?'),
@@ -70,7 +70,7 @@ const QUICK = {
   },
   'apolitical-money': {
     q: L('ماذا حدث للأسعار في المعسكر بعد ليلة القصف؟', 'What happened to prices in the camp after the night of the bombing?'),
-    opts: [L('ارتفعت', 'They rose'), L('انخفضت: صار لوح الشوكولاتة بسيجارةٍ واحدة', 'They fell: a chocolate bar cost a single cigarette'), L('لم تتغيّر', 'Nothing changed')],
+    opts: [L('ارتفعت', 'They rose'), L('انخفضت: صار لوح الشوكولا بسيجارةٍ واحدة', 'They fell: a chocolate bar cost a single cigarette'), L('لم تتغيّر', 'Nothing changed')],
     correct: 1,
     note: L('دخّن الأسرى المرتعبون سجائرهم، فقلّت وارتفعت قيمة كلٍّ منها: انكماش. قيمة العملة في ندرتها، لا في كلفتها.', 'Terrified prisoners smoked their cigarettes, so there were fewer and each was worth more: deflation. A currency’s value lies in its scarcity, not its cost.'),
   },
@@ -193,7 +193,7 @@ export const talkingToMyDaughter = {
   authorPhoto: './images/characters/yanis-varoufakis.webp',
   cover: L('./images/talking-to-my-daughter-cover-ar.jpg', './images/talking-to-my-daughter-cover-en.jpg'),
   blurb: L(
-    'وزير مالية اليونان السابق يشرح لابنته المراهقة الاقتصاد بلا مصطلحات: من أين جاءت اللامساواة، وكيف يخلق المصرفيون المال من العدم، ولماذا لا يمكن أن يكون المال بلا سياسة — بقصصٍ من فاوست وأوديب و«ماتريكس».',
+    'وزير مالية اليونان السابق يشرح لابنته المراهقة الاقتصاد بلا مصطلحات: من أين جاءت اللامساواة، وكيف يخلق المصرفيون المال من العدم، ولماذا لا يمكن أن يكون المال بلا سياسة — بقصصٍ من فاوست وأوديب و«المصفوفة».',
     'Greece’s former finance minister explains the economy to his teenage daughter without jargon: where inequality came from, how bankers create money from thin air, and why money can never be free of politics — through stories from Faust, Oedipus and The Matrix.'
   ),
   verdict,
