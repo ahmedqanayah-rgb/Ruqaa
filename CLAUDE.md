@@ -167,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~101 kB gz of script and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~108 kB gz of script and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -487,6 +487,18 @@ keeps `base: './'` sub-path hosting working.
     to the end of the last board ends the game. The end screen hands out titles from per-player
     tallies. **The `why` after a round is the point of it** — a reading club plays to read — which
     is why an untimed result waits for everyone.
+  - **Every question has a hint to buy** (2026-11-17, the club: "i want the hint option for all
+    questions"). A right answer is worth **2 steps and each hint costs one** (never below 1), so a
+    bare right answer is always worth the most — the scoring had to rise from 1 to 2 for that, or
+    a hint would have cost the whole prize. What a hint is depends on the kind (`maxHints` in
+    engine.js): 50:50 for `mcq`/`graph` (`fiftyFifty`), the person's role line for `face`, a
+    written nudge for `tf` (64 of them, `tfHints` in each book's `game.js`, keyed by the
+    statement's English so a reworded statement fails `decks.js` instead of losing its hint), a
+    range for `num` (`numRange`), the next clue early for `who` (worth what waiting would be),
+    one lie struck out in the white lie's vote (`bluffHint`), and the picture round's own ladder.
+    A hint is written into the player's entry the moment it is bought (`rv: { s, h }`) and rides
+    on the answer (`h`); the engine takes the larger, so neither a refresh nor a forged answer
+    undoes it. The result marks a hinted answer with 💡.
   - **The deck rules** are at the top of `books/why-we-sleep/game.js`, and they answer the club's
     verdict on the first deck ("so obvious"): every wrong answer must be one a half-informed
     player could believe, and the fun lives in the setup and the `why`, not in silly options.

@@ -81,6 +81,56 @@ const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who'
 const CLOCKED = (k, id) => k === 'who' || (k === 'mini' && id !== 'stag' && id !== 'auction')
 
 /*
+ * HINTS — EVERY QUESTION HAS ONE TO BUY (the club asked: "i want the hint option
+ * for all questions"). A right answer is worth 2 steps, and each hint costs one
+ * of them, never below 1 — so a bare right answer is always worth the most:
+ *   mcq, graph   50:50 — two wrong options taken away (`fiftyFifty`)
+ *   face         the person's role, from their card (`tag`)
+ *   tf           a nudge written for the statement (`hint`, tfHints in game.js)
+ *   num          a range the number lies in (`numRange`)
+ *   who          the next clue, now — worth what waiting for it would be
+ *   bluff        (the vote) one lie struck out (`bluffHint`)
+ *   pic          its own ladder of hints and options (`picPrize`)
+ * A hint is written into the player's entry the moment it is bought (`rv`), so
+ * a refresh cannot undo it, and the answer carries it too (`h`).
+ */
+export function maxHints(ch) {
+  switch (ch?.k) {
+    case 'mcq': case 'graph': case 'face': case 'tf': case 'num': return 1
+    case 'who': return 2
+    case 'bluff': return ch.s === 1 ? 1 : 0
+    default: return 0
+  }
+}
+const prize = (h) => Math.max(1, 2 - (h || 0))
+
+/* 50:50: the two wrong options a hint takes away (deck indices). */
+export const fiftyFifty = (ch) => shuffled([1, 2, 3], seeded(ch.seed, 'fifty')).slice(0, 2)
+
+/* A range the number lies in — never centred on it, rounded to two figures. */
+export function numRange(item, ch) {
+  const r = seeded(ch.seed, 'range')
+  const a = Math.abs(item.a)
+  const round = (x, up) => {
+    if (x <= 0) return 0
+    const step = 10 ** Math.max(0, Math.floor(Math.log10(x)) - 1)
+    return (up ? Math.ceil(x / step) : Math.floor(x / step)) * step
+  }
+  let lo = round(a * (0.45 + 0.3 * r()), false)
+  let hi = round(a * (1.3 + 0.5 * r()), true)
+  if (hi <= a) hi = round(a + 1, true)
+  if (lo >= a) lo = Math.max(0, round(a - 1, false))
+  return item.a < 0 ? [-hi, -lo] : [lo, hi]
+}
+
+/* The white lie's vote: the one lie a hint strikes out for player `pid` —
+   never the truth, never their own. */
+export function bluffHint(ch, pid) {
+  const lies = (ch.o || []).map((o, i) => i).filter((i) => !ch.o[i].t && !ch.o[i].p?.includes(pid))
+  return lies.length ? lies[Math.floor(seeded(ch.seed, 'lie', pid)() * lies.length)] : null
+}
+
+/*
  * «خمّن الصورة» — a picture round. Two kinds of question:
  *   name  "who / what is this?" — answered by TYPING, judged by match.js. Help
  *         costs: each hint −1, showing the four options −1 (`op`); a right
@@ -275,6 +325,14 @@ export function readAnswer(core, raw, pid, rv) {
   // An untimed round (`t1` null) has no deadline to hold an answer's time to.
   const hi = ch.t1 == null ? ch.t0 + T.untimed : ch.t1 + T.grace
   const at = isNum(raw.at) ? Math.max(ch.t0, Math.min(raw.at, hi)) : ch.t1 ?? ch.t0
+  // Hints bought: what the answer says, or what the entry recorded when they
+  // were bought — whichever is more. (A picture round keeps its own, in `v`.)
+  const most = maxHints(ch)
+  if (most) {
+    const seen = rv && rv.s === raw.s ? rv : {}
+    const h = Math.max(0, Math.min(most, Math.max(Number.isInteger(raw.h) ? raw.h : 0, Number.isInteger(seen.h) ? seen.h : 0)))
+    if (h) return { v, at, h }
+  }
   return { v, at }
 }
 
@@ -614,7 +672,7 @@ function reveal(core, answers, at, decks) {
     case 'mcq': case 'graph': case 'tf': case 'face': {
       const right = ch.k === 'tf' ? (item.isMyth ? 0 : 1) : 0
       const ok = alive.filter((p) => answers[p.id]?.v === right)
-      for (const p of ok) { give(p.id, 1); tally(p.id, 0) }
+      for (const p of ok) { give(p.id, prize(answers[p.id].h)); tally(p.id, 0) }
       // Speed counts where there is something to weigh — not on a coin toss.
       if (ch.k !== 'tf' && alive.length >= 3 && ok.length) {
         const first = ok.reduce((a, b) => (answers[b.id].at < answers[a.id].at ? b : a))
@@ -629,8 +687,8 @@ function reveal(core, answers, at, decks) {
       for (const p of alive) {
         const a = answers[p.id]
         if (!a || a.v !== 0) continue
-        // Worth more the fewer clues you needed.
-        give(p.id, 3 - Math.min(2, Math.floor((a.at - ch.t0) / T.clue)))
+        // Worth more the fewer clues you needed — waited for, or bought early.
+        give(p.id, 3 - Math.min(2, Math.max(Math.floor((a.at - ch.t0) / T.clue), a.h || 0)))
         tally(p.id, 0)
       }
       if (aw[active]) give(active, 1)
@@ -649,12 +707,13 @@ function reveal(core, answers, at, decks) {
       break
     }
     case 'num': {
-      const rows = alive.filter((p) => answers[p.id]).map((p) => ({ id: p.id, off: Math.abs(answers[p.id].v - item.a) })).sort((a, b) => a.off - b.off)
+      const rows = alive.filter((p) => answers[p.id]).map((p) => ({ id: p.id, off: Math.abs(answers[p.id].v - item.a), h: answers[p.id].h || 0 })).sort((a, b) => a.off - b.off)
       if (rows.length) {
         const best = rows[0].off
         const second = rows.find((r) => r.off > best)?.off
         for (const r of rows) {
-          if (r.off === best) { give(r.id, best === 0 ? 3 : 2); tally(r.id, 0) } else if (alive.length >= 4 && r.off === second) give(r.id, 1)
+          // The closest moves 2 (an exact hit 3), the runner-up 1 — a hint less.
+          if (r.off === best) { give(r.id, Math.max(1, (best === 0 ? 3 : 2) - r.h)); tally(r.id, 0) } else if (alive.length >= 4 && r.off === second) give(r.id, 1 - r.h)
         }
         if (aw[active]) give(active, 1)
       }
@@ -666,7 +725,7 @@ function reveal(core, answers, at, decks) {
         const a = answers[p.id]
         if (!a) continue
         const picked = ch.o[a.v]
-        if (picked.t) { give(p.id, 2); tally(p.id, 0) } else if (picked.p) for (const author of picked.p) { give(author, 1); tally(author, 2) }
+        if (picked.t) { give(p.id, prize(a.h)); tally(p.id, 0) } else if (picked.p) for (const author of picked.p) { give(author, 1); tally(author, 2) }
       }
       break
     }
@@ -710,8 +769,9 @@ function reveal(core, answers, at, decks) {
     default:
   }
 
+  // Each answer as [value, ms after the round opened] — and the hints bought, if any.
   const a = {}
-  for (const p of P) if (answers[p.id]) a[p.id] = [answers[p.id].v, Math.round(answers[p.id].at - ch.t0)]
+  for (const p of P) if (answers[p.id]) a[p.id] = [answers[p.id].v, Math.round(answers[p.id].at - ch.t0), ...(answers[p.id].h ? [answers[p.id].h] : [])]
   return {
     ...core,
     players: P.map((p) => {

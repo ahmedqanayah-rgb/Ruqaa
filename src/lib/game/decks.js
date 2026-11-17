@@ -32,8 +32,9 @@ export function assembleDecks({ order, games, myths, luck, dares }) {
       pic: (deck.pic || []).map((item) => ({ ...item, book: id })),
       face: deck.face || [],
       // The myth deck has no ids of its own; its order in the file is stable
-      // enough to be one.
-      tf: (myths[id]?.mythOrFact || []).map((item, i) => ({ ...item, id: `${id}:tf:${i}` })),
+      // enough to be one. Its hints live in the game's deck, by statement.
+      tf: (myths[id]?.mythOrFact || []).map((item, i) => ({ ...item, id: `${id}:tf:${i}`, hint: deck.tfHints?.[item.statement?.en] })),
+      tfHints: deck.tfHints || {},
     }
     books.push(id)
     byBook[id] = entry
@@ -86,7 +87,14 @@ export function lintDecks(decks) {
       check(item.q.ar.includes('____') && item.q.en.includes('____'), `${item.id}: the question needs a ____ blank in both languages`)
       check(Array.isArray(item.decoys) && item.decoys.length >= 2 && item.decoys.every(both), `${item.id}: needs at least 2 bilingual decoys`)
     }
-    for (const item of D.tf) check(both(item.statement) && typeof item.isMyth === 'boolean', `${item.id}: malformed myth-or-fact item`)
+    for (const item of D.tf) {
+      check(both(item.statement) && typeof item.isMyth === 'boolean', `${item.id}: malformed myth-or-fact item`)
+      // Every question has a hint to buy — a myth-or-fact statement's is written for it.
+      check(both(item.hint), `${item.id}: no hint (tfHints in ${book}/game.js, keyed by "${item.statement?.en?.slice(0, 40)}…")`)
+    }
+    for (const key of Object.keys(D.tfHints)) {
+      check(D.tf.some((item) => item.statement?.en === key), `${book}: a myth-or-fact hint matches no statement: "${key.slice(0, 50)}…"`)
+    }
     for (const item of D.pic) {
       id(item, book)
       check(item.kind === 'name' || item.kind === 'book', `${item.id}: kind must be 'name' or 'book'`)

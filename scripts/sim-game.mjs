@@ -34,7 +34,7 @@ import fs from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { makeMailbox, newer as serverNewer } from '../api/_mailbox.js'
 import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE } from '../src/lib/game/net.js'
-import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, MAX_PLAYERS } from '../src/lib/game/engine.js'
+import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, MAX_PLAYERS } from '../src/lib/game/engine.js'
 import { assembleDecks, lintDecks } from '../src/lib/game/decks.js'
 import { SQUARES, TYPES, lastOf, typeAt } from '../src/lib/game/board.js'
 import { rng } from '../src/lib/game/rand.js'
@@ -71,6 +71,7 @@ function syntheticDecks() {
       },
     }
     myths[id] = { mythOrFact: Array.from({ length: 4 }, (_, i) => ({ statement: text(`s${i}`), isMyth: i % 2 === 0, explain: text('x') })) }
+    games[id].gameDeck.tfHints = Object.fromEntries(myths[id].mythOrFact.map((m) => [m.statement.en, text('hint')]))
   }
   const luck = [
     { kind: 'move', n: 3 }, { kind: 'move', n: -3 }, { kind: 'others', n: -2 }, { kind: 'all', n: 1 }, { kind: 'again' },
@@ -339,7 +340,12 @@ class Bot {
           this.answerPlan = { at: ch.t0 + (slow ? 90_000 + rand() * 60_000 : late ? span - 1500 + rand() * 1200 : 600 + rand() * span * 0.8), skip: skip && !slow }
         }
         if (this.answerPlan.skip || now < this.answerPlan.at || (ch.t1 != null && now > ch.t1)) break
-        room.setMine({ a: { s: slot, v: botAnswer(core, rand, this.me), at: now } })
+        // Now and then a hint is bought first: recorded in the entry (as the
+        // phone does the moment it is tapped), and sometimes also in the answer.
+        const most = maxHints(ch)
+        const h = most && rand() < 0.3 ? 1 + Math.floor(rand() * most) : 0
+        if (h && mine.rv?.s !== slot) { room.setMine({ rv: { s: slot, h } }); break }
+        room.setMine({ a: { s: slot, v: botAnswer(core, rand, this.me), at: now, ...(h && rand() < 0.5 ? { h } : {}) } })
         this.sent = slot
         break
       }

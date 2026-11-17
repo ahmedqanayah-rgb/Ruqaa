@@ -444,4 +444,49 @@ const faces = [
       'A Syrian novelist and translator (1954–2022) who translated books on economics, politics, philosophy and history from English — among them the Arabic edition of Varoufakis’s book.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces }
+/* ----------------------- myth-or-fact hints -----------------------
+   One nudge per statement of this book's «خرافة أم حقيقة؟» deck
+   (mythOrFact.js), bought for a step in the game. Keyed by the statement's
+   English text, so a reworded statement fails decks.js's check instead of
+   silently losing its hint. A hint points at the reasoning — never says
+   "myth" or "fact". */
+const tfHints = {
+  'Banks lend out depositors’ money, and cannot lend more than has been deposited with them.':
+    L('تذكّر مريم: كتب المصرفيّ نصف مليون في حسابها — فمن أين جاء المال؟', 'Remember Miriam: the banker typed half a million into her account — so where did the money come from?'),
+  'Cutting all wages puts the unemployed back to work.':
+    L('تذكّر ماريا وبرّاداتها: من سيشتريها إن انخفضت أجور الجميع؟', 'Remember Maria and her fridges: who will buy them if everyone\'s wages fall?'),
+  'Lowering interest rates always pushes entrepreneurs to borrow and invest.':
+    L('ماذا يقرأ صاحب المشروع في خفضٍ مذعورٍ للفائدة؟', 'What does an entrepreneur read into a panicked rate cut?'),
+  'A banknote is worth what it cost to print.':
+    L('ورقة الألف دراخما كلّفت طباعتها عشرين.', 'A thousand-drachma note cost twenty to print.'),
+  'The Luddites opposed machines because they hated technology.':
+    L('اسأل: من كان يملك الآلات، ومن جاع بسببها؟', 'Ask who owned the machines — and who went hungry because of them.'),
+  'Most of the world’s currencies today are backed by the gold their states hold.':
+    L('تذكّر قرار نيكسون عام ١٩٧١.', 'Remember Nixon\'s decision in 1971.'),
+  'Bitcoin will reach its maximum supply of 21 million around 2032.':
+    L('مكافأة التعدين تنقص إلى النصف كلّ أربع سنواتٍ تقريباً — فمتى تنفد حقاً؟', 'The mining reward halves roughly every four years — so when does it really run out?'),
+  'Easter Islanders abandoned their island after cutting down every tree and starving.':
+    L('هل ما زال للرابانوي أحفادٌ يعيشون في الجزيرة اليوم؟', 'Do the Rapanui still have descendants living on the island today?'),
+  'Islam is the only religion that has forbidden charging interest on loans.':
+    L('تذكّر لماذا طالب جمهور مارلو بعقاب فاوستوس.', 'Remember why Marlowe\'s audience wanted Faustus punished.'),
+  'The earliest writing in Mesopotamia was records of grain in storehouses.':
+    L('تذكّر صَدَفة السيد نابوك.', 'Remember Mr Nabuk\'s shell.'),
+  'The word “credit” comes from a Latin verb meaning “to believe”.':
+    L('الدَّين والنقد كلاهما يقوم على الثقة بأن الوعد سيُوفى.', 'Debt and money both rest on trust that a promise will be kept.'),
+  'In its Greek origin, the word “economy” means the laws of running a household.':
+    L('«أويكوس» بيت، و«نوموس» قانون.', 'Oikos is a household; nomos is a law.'),
+  'Cigarettes became the currency of a Second World War prisoner-of-war camp.':
+    L('تُحفظ، وتُحمل، وتُقسَّم، ويريدها الجميع — حتى من لا يدخّن.', 'They keep, they carry, they divide, and everyone wants them — even non-smokers.'),
+  'Lenders raise interest rates when they expect inflation to rise.':
+    L('المال الذي سيُردّ إليك سيشتري أقلّ.', 'The money you get back will buy less.'),
+  'Insolvent debtors were imprisoned in early Victorian Britain.':
+    L('قبل «المسؤولية المحدودة» كان الدَّين يلاحق صاحبه شخصياً.', 'Before limited liability, a debt followed its owner personally.'),
+  'Ecuador amended its constitution to recognise rights belonging to nature itself.':
+    L('الغابة محميّةٌ لذاتها، مهما كانت «قيمتها التبادلية».', 'The rainforest protected for its own sake, whatever its “exchange value”.'),
+  'In ancient Athens, an “idiotis” was someone who minded only his own business.':
+    L('من لا يشارك في شؤون المدينة — والكلمة غيّرت معناها لاحقاً في الإنجليزية.', 'Someone who took no part in the city\'s affairs — the word changed its meaning later, in English.'),
+  'Varoufakis wrote this book in Greek in nine days.':
+    L('كتبه في بيت العائلة في إيجينا، بلا خطّة وبلا هوامش.', 'He wrote it at the family house on Aegina, with no plan and no footnotes.'),
+}
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces, tfHints }

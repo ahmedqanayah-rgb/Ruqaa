@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
 import Icon from '../Icon.jsx'
 import RichText from '../RichText.jsx'
-import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, faceChoices, parseNumber, actingHost } from '../../lib/game/engine.js'
+import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, faceChoices, parseNumber, actingHost, maxHints, fiftyFifty, numRange, bluffHint } from '../../lib/game/engine.js'
 import MiniChart from './MiniChart.jsx'
 import MiniPlay, { NumPad } from './Minis.jsx'
 import { PicPlay } from './PicRound.jsx'
@@ -12,11 +12,16 @@ import { L, KindHead, TimeBar } from './parts.jsx'
 /*
  * A ROUND, WHILE IT IS PLAYED — on every phone at once.
  *
- * Every answer goes into this player's own entry as { s, v, at }: `s` names
- * the stage it answers (turn and stage), so a late answer to the last round can
- * never be counted in this one; `v` is the answer; `at` the room's time, which
- * is what "fastest" is decided by. One answer per stage — there is no taking
- * it back, which is part of the game.
+ * Every answer goes into this player's own entry as { s, v, at, h }: `s`
+ * names the stage it answers (game, turn and stage), so a late answer to the
+ * last round can never be counted in this one; `v` is the answer; `at` the
+ * room's time, which is what "fastest" is decided by; `h` the hints bought.
+ * One answer per stage — there is no taking it back, which is part of the game.
+ *
+ * EVERY QUESTION HAS A HINT TO BUY (engine.js → `maxHints` says what each kind
+ * offers): a right answer is worth 2 steps and each hint costs one. A hint is
+ * written into the player's entry the moment it is bought (`rv`), so a refresh
+ * cannot undo it.
  *
  * Options are reported by their index in the DECK (where the right one is
  * always 0) and shown in the order `optionOrder` deals for this round — the
@@ -25,13 +30,14 @@ import { L, KindHead, TimeBar } from './parts.jsx'
  */
 export const LETTERS = [L('أ', 'A'), L('ب', 'B'), L('ج', 'C'), L('د', 'D')]
 
-export function Options({ order, render, onPick, picked, chart = false }) {
+/* `gone`: options a hint has struck out (50:50). */
+export function Options({ order, render, onPick, picked, chart = false, gone = [] }) {
   const { t } = useApp()
   return (
     <div className={`gm-opts ${chart ? 'is-charts' : ''}`}>
       {order.map((index, k) => (
-        <button key={index} type="button" className={`gm-opt ${picked === index ? 'is-picked' : ''}`}
-          disabled={picked != null} onClick={() => onPick(index)}>
+        <button key={index} type="button" className={`gm-opt ${picked === index ? 'is-picked' : ''} ${gone.includes(index) ? 'is-gone' : ''}`}
+          disabled={picked != null || gone.includes(index)} onClick={() => onPick(index)}>
           <span className="gm-opt-letter">{t(LETTERS[k])}</span>
           <span className="gm-opt-text">{render(index)}</span>
         </button>
@@ -48,6 +54,29 @@ export function FaceImage({ item, small = false }) {
     </div>
   )
 }
+
+const COST = L('−١', '−1')
+const stepsWord = (n) => L(n === 1 ? 'خطوةٌ واحدة' : n === 2 ? 'خطوتان' : `${n} خطوات`, `${n} step${n > 1 ? 's' : ''}`)
+
+/* A question's hint: what a right answer is worth now, the button that buys
+   the hint, and — once bought — what it gave. */
+function HintBar({ label, h, most, onBuy, worth, worthLabel, children }) {
+  const { t } = useApp()
+  return (
+    <div className="gm-hintbar">
+      {worth != null && (
+        <p className="gm-prize">{t(L(`${worthLabel?.ar || 'إن أصبت'}: ${stepsWord(worth).ar}`, `${worthLabel?.en || 'If you’re right'}: ${stepsWord(worth).en}`))}</p>
+      )}
+      {h < most && (
+        <button type="button" className="gm-btn gm-hint-btn" onClick={onBuy}>
+          <Icon name="💡" /> {t(label)} <b dir="ltr">{t(COST)}</b>
+        </button>
+      )}
+      {children}
+    </div>
+  )
+}
+const HintCard = ({ children }) => <p className="gm-hint-card"><Icon name="💡" /><span>{children}</span></p>
 
 /* After answering: what you said, and how many are still thinking. */
 function Waiting({ core, entries, children }) {
@@ -74,9 +103,22 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
   const [text, setText] = useState('')
   const [num, setNum] = useState('')
 
+  /* Hints bought this stage: this tab's own count, or what the entry recorded. */
+  const most = maxHints(ch)
+  const rv = entries[me]?.d?.rv
+  const recorded = rv && rv.s === slot && Number.isInteger(rv.h) ? rv.h : 0
+  const [bought, setBought] = useState(0)
+  const h = Math.min(most, Math.max(bought, recorded))
+  const buy = () => {
+    if (mine || h >= most) return
+    setBought(h + 1)
+    room.setMine({ rv: { s: slot, h: h + 1 } })
+  }
+  const worth = Math.max(1, 2 - h)
+
   const submit = (v) => {
     if (mine) return
-    room.setMine({ a: { s: slot, v, at: Math.round(room.now()) } })
+    room.setMine({ a: { s: slot, v, at: Math.round(room.now()), ...(h ? { h } : {}) } })
   }
   const timer = <TimeBar now={now} t0={ch.t0} t1={ch.t1} />
   const head = <div className="gm-sheet-head"><KindHead ch={ch} decks={decks} books={books} />{ch.k !== 'mini' && timer}</div>
@@ -89,7 +131,8 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       body = (
         <>
           <p className="gm-q"><RichText value={item.q} /></p>
-          <Options order={order} picked={mine?.v} onPick={submit} render={(i) => t(item.opts[i])} />
+          {!mine && <HintBar label={L('احذف إجابتين', 'Remove two answers')} h={h} most={most} onBuy={buy} worth={worth} />}
+          <Options order={order} picked={mine?.v} onPick={submit} gone={h ? fiftyFifty(ch) : []} render={(i) => t(item.opts[i])} />
         </>
       )
       break
@@ -101,7 +144,8 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
         <>
           {item.chart && <MiniChart spec={item.chart} />}
           <p className="gm-q"><RichText value={item.q} /></p>
-          <Options order={order} picked={mine?.v} onPick={submit} chart={charts}
+          {!mine && <HintBar label={L('احذف إجابتين', 'Remove two answers')} h={h} most={most} onBuy={buy} worth={worth} />}
+          <Options order={order} picked={mine?.v} onPick={submit} chart={charts} gone={h ? fiftyFifty(ch) : []}
             render={(i) => (item.opts[i].chart ? <MiniChart spec={item.opts[i].chart} small /> : t(item.opts[i]))} />
         </>
       )
@@ -111,6 +155,11 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       body = (
         <>
           <p className="gm-q is-statement"><RichText value={item.statement} /></p>
+          {!mine && item.hint && (
+            <HintBar label={L('تلميح', 'Hint')} h={h} most={most} onBuy={buy} worth={worth}>
+              {h > 0 && <HintCard><RichText value={item.hint} /></HintCard>}
+            </HintBar>
+          )}
           <div className="gm-pair">
             <button type="button" className={`gm-choice ${mine?.v === 0 ? 'is-picked' : ''}`} disabled={!!mine} onClick={() => submit(0)}>
               <strong>{t(L('خرافة', 'Myth'))}</strong>
@@ -125,9 +174,14 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
     }
     case 'num': {
       const value = parseNumber(num)
+      const [lo, hi] = numRange(item, ch)
       body = mine ? null : (
         <>
           <p className="gm-q"><RichText value={item.q} /></p>
+          <HintBar label={L('أعطني نطاقاً', 'Give me a range')} h={h} most={most} onBuy={buy}
+            worth={worth} worthLabel={L('إن كنتَ الأقرب', 'If you’re the closest')}>
+            {h > 0 && <HintCard>{t(L(`الجواب بين ${lo.toLocaleString('en')} و${hi.toLocaleString('en')}`, `The answer is between ${lo.toLocaleString('en')} and ${hi.toLocaleString('en')}`))}{item.unit && <> {t(item.unit)}</>}</HintCard>}
+          </HintBar>
           <output className="gm-readout" dir="ltr">{num || '–'}{item.unit && <small> {t(item.unit)}</small>}</output>
           <NumPad value={num} onChange={setNum} max={7} dot={!!item.dot} />
           <button type="button" className="gm-btn is-main is-wide" disabled={value == null} onClick={() => submit(value)}>{t(L('هذا تخميني', 'That’s my guess'))}</button>
@@ -139,15 +193,22 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
     case 'who': {
       const people = whoChoices(ch, decks)
       const order = optionOrder(ch, people.length)
-      const shown = Math.min(3, 1 + Math.floor(Math.max(0, now - ch.t0) / T.clue))
-      const worth = 3 - (shown - 1)
+      // Clues arrive one by one — or sooner, bought, for what waiting would cost.
+      const timed = Math.floor(Math.max(0, now - ch.t0) / T.clue)
+      const shown = Math.min(3, 1 + Math.max(timed, h))
+      const worthWho = 3 - (shown - 1)
       body = (
         <>
           <ol className="gm-clues">
             {item.clues.slice(0, shown).map((clue, i) => <li key={i} className={i === shown - 1 ? 'is-new' : ''}><RichText value={clue} /></li>)}
             {shown < 3 && <li className="gm-clue-next">{t(L(`التلميح التالي بعد ${Math.max(0, Math.ceil((ch.t0 + shown * T.clue - now) / 1000))} ث`, `Next clue in ${Math.max(0, Math.ceil((ch.t0 + shown * T.clue - now) / 1000))}s`))}</li>}
           </ol>
-          {!mine && <p className="gm-worth">{t(L(`أجِب الآن: ${worth === 1 ? 'خطوةٌ واحدة' : worth === 2 ? 'خطوتان' : '٣ خطوات'} إن أصبت`, `Answer now: ${worth} step${worth > 1 ? 's' : ''} if you’re right`))}</p>}
+          {!mine && <p className="gm-worth">{t(L(`أجِب الآن: ${worthWho === 1 ? 'خطوةٌ واحدة' : worthWho === 2 ? 'خطوتان' : '٣ خطوات'} إن أصبت`, `Answer now: ${worthWho} step${worthWho > 1 ? 's' : ''} if you’re right`))}</p>}
+          {!mine && shown < 3 && (
+            <button type="button" className="gm-btn gm-hint-btn" onClick={() => { if (h < most) { setBought(shown); room.setMine({ rv: { s: slot, h: shown } }) } }}>
+              <Icon name="💡" /> {t(L('التلميح التالي الآن', 'Next clue now'))} <b dir="ltr">{t(COST)}</b>
+            </button>
+          )}
           <Options order={order} picked={mine?.v} onPick={submit} render={(i) => t(people[i].name)} />
         </>
       )
@@ -159,6 +220,11 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
         <>
           <FaceImage item={item} />
           <p className="gm-q">{t(L('من هذا؟', 'Who is this?'))}</p>
+          {!mine && (
+            <HintBar label={L('تلميح', 'Hint')} h={h} most={most} onBuy={buy} worth={worth}>
+              {h > 0 && <HintCard>{t(item.tag)}</HintCard>}
+            </HintBar>
+          )}
           <Options order={optionOrder(ch, people.length)} picked={mine?.v} onPick={submit} render={(i) => t(people[i].name)} />
         </>
       )
@@ -179,16 +245,19 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
           )
       } else {
         const label = (o) => (o.t ? t(item.truth) : o.p ? o.x : t(item.decoys[o.d]))
+        const struck = bluffHint(ch, me)
         body = (
           <>
             <p className="gm-q">{before}<span className="gm-blank">؟</span>{after}</p>
-            <p className="gm-hint-dark">{t(L('واحدةٌ فقط هي الحقيقة. اخترها — خطوتان إن أصبت.', 'Only one is the truth. Pick it — two steps if you’re right.'))}</p>
+            <p className="gm-hint-dark">{t(L('واحدةٌ فقط هي الحقيقة. اخترها.', 'Only one is the truth. Pick it.'))}</p>
+            {!mine && iAnswer && struck != null && <HintBar label={L('احذف كذبة', 'Strike out a lie')} h={h} most={most} onBuy={buy} worth={worth} />}
             <div className="gm-opts">
               {ch.o.map((o, i) => {
                 const own = o.p?.includes(me)
+                const gone = h > 0 && i === struck
                 return (
-                  <button key={i} type="button" className={`gm-opt ${mine?.v === i ? 'is-picked' : ''} ${own ? 'is-own' : ''}`}
-                    disabled={!!mine || own || !iAnswer} onClick={() => submit(i)}>
+                  <button key={i} type="button" className={`gm-opt ${mine?.v === i ? 'is-picked' : ''} ${own ? 'is-own' : ''} ${gone ? 'is-gone' : ''}`}
+                    disabled={!!mine || own || gone || !iAnswer} onClick={() => submit(i)}>
                     <span className="gm-opt-letter">{t(LETTERS[i] || L(String(i + 1), String(i + 1)))}</span>
                     <span className="gm-opt-text"><bdi>{label(o)}</bdi>{own && <small> — {t(L('كذبتك', 'your lie'))}</small>}</span>
                   </button>

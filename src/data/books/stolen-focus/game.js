@@ -488,4 +488,49 @@ const faces = [
       'A British journalist and author, born in 1979, of bestselling books on addiction, depression and attention, and of TED talks watched by tens of millions.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces }
+/* ----------------------- myth-or-fact hints -----------------------
+   One nudge per statement of this book's «خرافة أم حقيقة؟» deck
+   (mythOrFact.js), bought for a step in the game. Keyed by the statement's
+   English text, so a reworded statement fails decks.js's check instead of
+   silently losing its hint. A hint points at the reasoning — never says
+   "myth" or "fact". */
+const tfHints = {
+  'Human attention is now shorter than a goldfish’s.':
+    L('كيف يمكن أصلاً قياس «مدى انتباه» سمكةٍ ذهبية؟', 'How would anyone measure a goldfish\'s “attention span” in the first place?'),
+  'Some people are genuinely good at cognitive multitasking.':
+    L('الدماغ يبدّل بسرعةٍ بين المهامّ — وكلّ تبديلٍ يترك أثراً.', 'The brain switches fast between tasks — and every switch leaves a residue.'),
+  'Anyone with enough willpower can focus.':
+    L('من يقف في الجهة الأخرى من شاشتك؟ وكم مهندساً يعمل ليبقيك فيها؟', 'Who is on the other side of your screen — and how many engineers work to keep you there?'),
+  'Technology is neutral — what matters is how you use it.':
+    L('التمرير اللانهائي والمكافآت المتغيّرة لم توضع هناك صدفة.', 'Infinite scroll and variable rewards were not put there by accident.'),
+  'ADHD is purely genetic.':
+    L('فكّر في أثر الضغط والصدمات وقلّة النوم وسوء الغذاء على الانتباه.', 'Think what stress, trauma, poor sleep and poor diet do to attention.'),
+  'Children are safer at home in front of screens.':
+    L('ما الذي يبني ضبط النفس والتركيز عند الطفل: اللعب الحرّ أم المشاهدة؟', 'What builds a child\'s self-control and focus: free play, or watching?'),
+  'It is established science that regaining focus after an interruption takes 23 minutes — Michael Posner’s figure.':
+    L('تحقّق النادي من الرقم… ومن صاحبه.', 'The club checked the number — and whose it is.'),
+  'The median time a college student spends focused on one thing is 19 seconds.':
+    L('قيس ببرنامج تتبّعٍ على أجهزتهم أنفسهم، لا بسؤالهم.', 'Measured with tracking software on their own machines, not by asking them.'),
+  'The average American touches their phone more than 2,600 times every 24 hours.':
+    L('لا تعدّ مرّات الاستخدام — عُدّ اللمسات: كلّ نقرةٍ وكلّ سحبة.', 'Don\'t count sessions — count touches: every tap and every swipe.'),
+  'Working amid email and phone interruptions drops cognitive performance by the equivalent of ten IQ points.':
+    L('دراسةٌ أُجريت لشركة HP قارنت الأثر بتدخين الحشيش.', 'A study done for HP compared the effect with smoking cannabis.'),
+  'The information an average person consumes daily rose from 40 newspapers’ worth to 174 in about twenty years.':
+    L('من ١٩٨٦ إلى ٢٠٠٧: صعود الإنترنت كلّه يقع بينهما.', 'From 1986 to 2007: the whole rise of the internet falls between them.'),
+  'Staying awake about nineteen hours leaves your cognition equivalent to someone over the legal drink-drive limit.':
+    L('الرقم نفسه ورد في كتاب النادي الأوّل.', 'The same number appears in the club\'s first book.'),
+  'The very same sugarcane farmers scored about thirteen IQ points lower before harvest than after being paid.':
+    L('القلق المالي يأكل «عرض النطاق الذهني» — والمزارع نفسه قبل الحصاد وبعده.', 'Money worries eat “mental bandwidth” — and it is the same farmer before and after the harvest.'),
+  'The average American’s book reading has fallen to about seventeen minutes a day.':
+    L('قارن دقائق القراءة بساعات الشاشة.', 'Compare the minutes of reading with the hours of screens.'),
+  'How long a trending topic stays in the top 50 fell from 17.5 hours to 11.9 in three years.':
+    L('سونه ليمان قاس «الانتباه الجماعي» على تويتر.', 'Sune Lehmann measured “collective attention” on Twitter.'),
+  'In some southern US states, about 30% of boys are diagnosed with ADHD before turning eighteen.':
+    L('النسب تختلف كثيراً بين ولايةٍ وأخرى — وهذا بالذات ما يثير الجدل.', 'The rates vary hugely from state to state — which is exactly what stirs the debate.'),
+  'By 2003, only 10% of US children still played freely outdoors on a regular basis.':
+    L('جيلٌ واحد كان كافياً لينتقل اللعب إلى داخل البيوت.', 'A single generation was enough to move play indoors.'),
+  'Microsoft Japan’s move to a four-day week raised productivity by 40%.':
+    L('الإرهاق قابلٌ للعكس: امنح الانتباه ظروفه، يعُد.', 'Exhaustion is reversible: give attention its conditions and it comes back.'),
+}
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces, tfHints }

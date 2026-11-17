@@ -39,8 +39,16 @@
      face   { id, img, name, tag, about, f? }   «من هذا؟» — a portrait and four
             names of the same sex (`f`: a woman); `tag` + `about` are the
             person's card, read after the answer. One face per person, no pairs
-            and no group photos, and never the book's private people
+            and no group photos, and never the book's private people. Its role
+            line (`tag`) is also its hint
+     tfHints { [statement.en]: L(ar, en) }   one hint per statement of the
+            myth-or-fact deck — a nudge toward the reasoning, never "myth" or
+            "fact". decks.js refuses a statement without one
    The book's myth-or-fact deck becomes its «خرافة أم حقيقة؟» rounds.
+   EVERY QUESTION HAS A HINT TO BUY (engine.js → `maxHints`): a right answer is
+   2 steps and a hint costs one. Most hints need nothing written — 50:50 for
+   `mcq` and `graph`, a range for `num`, the next clue for `who` — so a new
+   question of those kinds gets its hint for free.
    ========================================================================== */
 import { curve, poly } from '../../../lib/game/chart.js'
 
@@ -495,4 +503,69 @@ const faces = [
       'A Syrian translator born in Damascus (1961), living in Bulgaria. He studied mechanical engineering, not literature, and has brought dozens of books into Arabic — among them Why We Sleep and Stolen Focus.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces }
+/* ----------------------- myth-or-fact hints -----------------------
+   One nudge per statement of this book's «خرافة أم حقيقة؟» deck
+   (mythOrFact.js), bought for a step in the game. Keyed by the statement's
+   English text, so a reworded statement fails decks.js's check instead of
+   silently losing its hint. A hint points at the reasoning — never says
+   "myth" or "fact". */
+const tfHints = {
+  'Lost sleep can be fully repaid over the weekend.':
+    L('فكّر في النوم العميق الذي فاتك ليلة الثلاثاء: هل تُعيده إليك ليلة السبت؟', 'Think of the deep sleep you missed on Tuesday night: does Saturday night bring it back?'),
+  'A meaningful share of people genuinely need only four or five hours.':
+    L('الطفرة الجينية التي تسمح بذلك موجودةٌ فعلاً — والسؤال: كم من الناس يحملها؟', 'The gene mutation that allows it does exist — the question is how many people carry it.'),
+  'Pre-industrial tribes sleep under seven hours, so the eight-hour figure is a modern invention.':
+    L('انظر إلى الوقت الذي يمنحونه للنوم، لا إلى ما يقيسه الجهاز وحده — ثم إلى متوسّط أعمارهم.', 'Look at the time they allow for sleep, not only what the device measures — and then at how long they live.'),
+  'A drink before bed improves sleep.':
+    L('أن تغيب عن الوعي بسرعة شيء، وأن تنام نوماً حقيقياً شيءٌ آخر.', 'Passing out quickly is one thing; real sleep is another.'),
+  'Sleeping pills produce natural sleep.':
+    L('قارن التخدير بالنوم: هل تتشابه موجات الدماغ فيهما؟', 'Compare sedation with sleep: do the brain\'s waves look alike?'),
+  'If evening coffee does not keep you awake, it is not affecting your sleep.':
+    L('نصف الكافيين ما يزال في دمك بعد خمس ساعاتٍ أو ستّ.', 'Half the caffeine is still in your blood five or six hours later.'),
+  'Sleep is a state of rest in which the brain shuts down.':
+    L('في نوم الأحلام تنشط بعض مناطق الدماغ أكثر ممّا تنشط وأنت مستيقظ.', 'In dream sleep some regions of the brain are more active than when you are awake.'),
+  'Sleepwalking is a person acting out a dream.':
+    L('السير النومي يحدث في النوم العميق — فهل نحلم فيه أحلاماً لها قصّة؟', 'Sleepwalking happens in deep sleep — do we dream stories there?'),
+  'Pulling an all-nighter to study beats sleeping.':
+    L('الدماغ يحتاج النوم مرّتين: قبل التعلّم ليستقبل، وبعده ليحفظ.', 'The brain needs sleep twice: before learning, to take it in, and after, to keep it.'),
+  'Running on little sleep is a sign of strength and commitment.':
+    L('فكّر فيما يحدث لحكمك الأخلاقي — ولقلبك — حين تقلّ ساعات نومك.', 'Think what happens to your judgement — and your heart — when sleep runs short.'),
+  'Early school start times teach teenagers discipline.':
+    L('ساعة المراهق البيولوجية متأخّرةٌ نحو ثلاث ساعات — هل تُصلح الإرادةُ ساعةً بيولوجية؟', 'A teenager\'s body clock runs about three hours late — can discipline reset a biological clock?'),
+  'A daytime nap is a sign of laziness.':
+    L('وكالة «ناسا» قاست قيلولة طيّاريها بالدقيقة.', 'NASA timed its pilots\' naps to the minute.'),
+  'Older people naturally need less sleep.':
+    L('فرّق بين أن تحتاج أقلّ، وأن تقدر على أقلّ.', 'There is a difference between needing less and managing to get less.'),
+  'After 19 to 24 hours awake, your performance matches being over the legal drink-drive limit.':
+    L('عُدّ: من السابعة صباحاً حتى الثانية فجراً كم ساعة؟ ثم تذكّر حالك في آخر الليل.', 'Count: from seven in the morning to two at night is how many hours? Now remember how you felt by then.'),
+  'Drowsy driving kills more people than alcohol and drugs combined.':
+    L('الغفوة الخاطفة ثانيةٌ أو ثانيتان — كم متراً تقطع سيّارةٌ مسرعة في ثانيتين؟', 'A microsleep lasts a second or two — how far does a fast car travel in two seconds?'),
+  'A hereditary disease exists that stops sleep entirely, killing the patient within about ten months.':
+    L('تذكّر مايكل كورك، معلّم الموسيقى في الكتاب.', 'Remember Michael Corke, the music teacher in the book.'),
+  'Losing a single hour to the spring clock change raises the heart-attack rate.':
+    L('تجربةٌ طبيعية على مئات الملايين من الناس، مرّتين في السنة.', 'A natural experiment on hundreds of millions of people, twice a year.'),
+  'Both Chernobyl and the Exxon Valdez trace back to sleep-deprived workers in the small hours.':
+    L('انظر إلى الساعة التي وقعت فيها كوارث كثيرة: أدنى نقطةٍ في ساعة الجسم.', 'Look at the hour so many disasters struck: the lowest point of the body clock.'),
+  'A single four-hour night drops your natural killer cells by around 70%.':
+    L('لهذا صنّفت منظّمة الصحّة العالمية العمل الليلي مسرطِناً محتملاً.', 'This is why the WHO classes night-shift work as a probable carcinogen.'),
+  'One week of five-hour nights is enough to push a healthy young man into the pre-diabetic range.':
+    L('الجسم المحروم من النوم يعجز عن التعامل مع السكّر — والأمر يُقاس بالأيام لا بالسنين.', 'A sleep-deprived body struggles with sugar — and it is measured in days, not years.'),
+  'Short sleep lowers the satiety hormone and raises the hunger one, so you eat more and crave worse.':
+    L('هرمونا الشبع والجوع: «اللبتين» و«الغريلين».', 'The fullness and hunger hormones: leptin and ghrelin.'),
+  'Dolphins and ducks sleep with one half of the brain at a time.':
+    L('كيف ينام كائنٌ لا يستطيع أن يتوقّف عن السباحة؟', 'How does an animal that can never stop swimming sleep at all?'),
+  'People who genuinely thrive on six hours through a genetic mutation are rarer than lightning-strike victims.':
+    L('الطفرة موجودةٌ فعلاً — لكن فكّر كم هي نادرة.', 'The mutation is real — but think how rare it is.'),
+  'The content of a dream can now be read off a brain scan.':
+    L('العلماء يطابقون أنماط نشاط الدماغ مع ما يراه الحالم.', 'Scientists match patterns of brain activity to what the dreamer is seeing.'),
+  'Alien-abduction accounts are explained by sleep paralysis, which affects one in four healthy people.':
+    L('ماذا لو استيقظ عقلك قبل أن يُفكّ شللُ عضلات نوم الأحلام؟', 'What if your mind woke before dream sleep\'s muscle paralysis lifted?'),
+  'Residents on 30-hour shifts make 460% more diagnostic errors.':
+    L('تذكّر الجرّاح الذي أنشأ نظام «الإقامة» — وما الذي أبقاه مستيقظاً.', 'Remember the surgeon who created the residency system — and what kept him awake.'),
+  'Delaying the school start time raised SAT scores by 212 points in one district.':
+    L('ساعة المراهق متأخّرةٌ ثلاث ساعات — فماذا يحدث إن تأخّر بدء الدوام المدرسي قليلاً؟', 'A teenager\'s clock runs three hours late — so what happens when school starts a little later?'),
+  'Sleep loss costs the US economy more than $411 billion a year.':
+    L('أخطاء، وحوادث، وغياب، وعملٌ متعب — اجمعها على مستوى بلدٍ كامل.', 'Mistakes, accidents, sick days, tired work — add them up across a whole country.'),
+}
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces, tfHints }

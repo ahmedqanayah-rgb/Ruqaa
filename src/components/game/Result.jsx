@@ -35,6 +35,7 @@ function Pickers({ core, labels, v, fast }) {
         <span key={p.id} className="gm-picker">
           <Mini player={p} labels={labels} index={i} />
           {fast === p.id && <Icon name="⚡" />}
+          {core.res.a[p.id]?.[2] > 0 && <Icon name="💡" className="gm-used-hint" />}
         </span>
       ))}
     </span>
@@ -71,6 +72,7 @@ function Rows({ core, labels, rows }) {
           <li key={row.id} className={row.best ? 'is-best' : ''}>
             <Mini player={p} labels={labels} index={i} />
             <bdi className="gm-rows-name">{p.name}</bdi>
+            {core.res.a[row.id]?.[2] > 0 && <Icon name="💡" className="gm-used-hint" />}
             <span className="gm-rows-value" dir="ltr">{row.value}</span>
             <Steps n={core.res.aw[row.id] || 0} />
           </li>
