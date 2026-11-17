@@ -151,6 +151,12 @@ export const KIND = {
     how: L('صاحب الدور يؤدّي التحدّي بصوته في المكالمة، والبقيّة يحكمون من هواتفهم. إن نجح تقدّم خطوتين.',
       'Whoever’s turn it is performs the dare out loud on the call; everyone else judges from their phone. A pass is worth two steps.'),
   },
+  pic: {
+    icon: '🖼️', tone: 'pic',
+    title: L('خمّن الصورة', 'Picture this'),
+    how: L('صورةٌ من كتبنا: شخص، أو حدث، أو لوحة. سمِّها، أو قل من أيّ كتابٍ هي. التلميح والخيارات متاحة — لكن كلّ عونٍ يكلّف خطوة.',
+      'A picture from our books — a person, an event or a painting. Name it, or say which book it is from. Hints and options are there, but every bit of help costs a step.'),
+  },
   luck: { icon: '🍀', tone: 'luck', title: L('حظّ', 'Chance'), how: null },
   mini: { icon: '🧪', tone: 'lab', title: L('المختبر', 'The Lab'), how: null },
 }

@@ -9,7 +9,9 @@
  * becomes its «خرافة أم حقيقة؟» questions. `books` keeps the registry's order,
  * which is also the order of the board's three zones.
  */
-const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf']
+import { matchesName } from './match.js'
+
+const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf', 'pic']
 
 export function assembleDecks({ order, games, myths, luck, dares }) {
   const books = []
@@ -26,6 +28,8 @@ export function assembleDecks({ order, games, myths, luck, dares }) {
       who: deck.who || [],
       graph: deck.graph || [],
       bluff: deck.bluff || [],
+      // Pictures carry their book: a "which book?" question needs to know it.
+      pic: (deck.pic || []).map((item) => ({ ...item, book: id })),
       // The myth deck has no ids of its own; its order in the file is stable
       // enough to be one.
       tf: (myths[id]?.mythOrFact || []).map((item, i) => ({ ...item, id: `${id}:tf:${i}` })),
@@ -82,6 +86,25 @@ export function lintDecks(decks) {
       check(Array.isArray(item.decoys) && item.decoys.length >= 2 && item.decoys.every(both), `${item.id}: needs at least 2 bilingual decoys`)
     }
     for (const item of D.tf) check(both(item.statement) && typeof item.isMyth === 'boolean', `${item.id}: malformed myth-or-fact item`)
+    for (const item of D.pic) {
+      id(item, book)
+      check(item.kind === 'name' || item.kind === 'book', `${item.id}: kind must be 'name' or 'book'`)
+      check(typeof item.img === 'string' && item.img.startsWith('./images/'), `${item.id}: needs an ./images/ picture`)
+      check(Array.isArray(item.hints) && item.hints.length >= 1 && item.hints.length <= 3 && item.hints.every(both), `${item.id}: needs 1–3 bilingual hints`)
+      check(both(item.why), `${item.id}: why must be bilingual`)
+      if (item.q) check(both(item.q), `${item.id}: q must be bilingual`)
+      if (item.kind === 'name') {
+        check(both(item.name), `${item.id}: name must be bilingual`)
+        check(Array.isArray(item.opts) && item.opts.length === 4 && item.opts.every(both), `${item.id}: needs exactly 4 bilingual options`)
+        const aliases = [item.name?.ar, item.name?.en, ...(item.aliases || [])]
+        // The checker must accept the answer in both languages…
+        check(matchesName(item.name.ar, aliases) && matchesName(item.name.en, aliases), `${item.id}: the checker rejects its own name`)
+        // …and must never accept a wrong option as right.
+        for (const opt of (item.opts || []).slice(1)) {
+          check(!matchesName(opt.ar, aliases) && !matchesName(opt.en, aliases), `${item.id}: the wrong option "${opt.en}" would be marked right`)
+        }
+      }
+    }
   }
   const EFFECTS = ['move', 'others', 'all', 'again', 'skip', 'steal', 'swap', 'loan']
   for (const card of decks.luck) {

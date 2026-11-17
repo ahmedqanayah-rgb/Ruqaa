@@ -29,6 +29,11 @@
      bluff  { id, q (with ____), truth, alt?: [also counts as true], decoys, why }
             players type lies that fit the blank, then hunt for the truth;
             `decoys` are the house's lies when there are few players
+     pic    { id, kind: 'name', img, name, aliases, opts: [right, …3], hints, why, q?, view? }
+            { id, kind: 'book', img, hints, why, q? }
+            a picture already on the site; "name" is answered by TYPING
+            (lib/game/match.js), with hints and the options for sale at a step
+            each; list every acceptable short form in `aliases`
    The book's myth-or-fact deck becomes its «خرافة أم حقيقة؟» rounds.
    ========================================================================== */
 import { curve, poly } from '../../../lib/game/chart.js'
@@ -38,6 +43,15 @@ const mcq = (id, q, opts, why) => ({ id, q, opts, why })
 const num = (id, q, a, extra, why) => ({ id, q, a, ...extra, why })
 const who = (id, name, clues, why, img) => ({ id, name, clues, why, ...(img ? { img } : {}) })
 const bluff = (id, q, truth, alt, decoys, why) => ({ id, q, truth, alt, decoys, why })
+
+/* «خمّن الصورة» — pictures already on this site. `name` rounds are answered by
+   typing (lib/game/match.js forgives typos and spellings; every acceptable short
+   form goes in `aliases`, and decks.js checks no wrong option would pass);
+   `book` rounds ask which of the club's books the picture is from. `view`
+   zooms past a printed title or margin. */
+const picName = (id, img, name, aliases, wrong, hints, why, extra = {}) => ({ id, kind: 'name', img, name, aliases, opts: [name, ...wrong], hints, why, ...extra })
+const picBook = (id, img, hints, why, extra = {}) => ({ id, kind: 'book', img, hints, why, ...extra })
+const WHO = L('من هذا؟', 'Who is this?')
 
 /* The mark this book's squares wear on the board (a key into Icon.jsx). */
 export const gameIcon = '🌙'
@@ -366,4 +380,51 @@ const bluffs = [
     L('ناموا فيها جيّداً. النوم استثمارٌ في الإنتاج، لا خصمٌ منه.', 'Slept well. Sleep as an investment in output, not a cost to it.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs }
+/* ------------------------------- pictures ------------------------------- */
+const pics = [
+  picName('ws-p-spider', './images/clean/spider/caffeine.webp', L('الكافيين', 'Caffeine'),
+    ['caffeine', 'كافيين', 'الكافيين', 'كافين', 'coffee', 'قهوة', 'القهوة'],
+    [L('LSD', 'LSD'), L('الماريجوانا', 'Marijuana'), L('الأمفيتامين', 'Amphetamine')],
+    [L('المخدّر الإدماني الوحيد الذي نقدّمه للأطفال بلا قلق.', 'The only addictive drug we happily give children.'),
+      L('أغلبنا يتناول شيئاً منه قبل التاسعة صباحاً.', 'Most of us have some before nine in the morning.')],
+    L('الكافيين — شبكته أسوأ حتى من شبكة LSD.', 'Caffeine — a worse web even than LSD’s.'),
+    { q: L('أعطت «ناسا» عنكبوتاً مخدّراً فنسج هذه الشبكة. أيّ مخدّر؟', 'NASA gave a spider a drug and it spun this. Which drug?') }),
+  picName('ws-p-edison', './images/characters/thomas-edison.webp', L('توماس إديسون', 'Thomas Edison'),
+    ['Edison', 'إديسون', 'اديسون', 'thomas edison'],
+    [L('نيكولا تسلا', 'Nikola Tesla'), L('ألكسندر غراهام بل', 'Alexander Graham Bell'), L('هنري فورد', 'Henry Ford')],
+    [L('سخر من النوم علناً — وغفا سرّاً.', 'He mocked sleep in public — and napped in secret.'),
+      L('كان يغفو ممسكاً كراتٍ فولاذية فوق صحونٍ معدنية.', 'He napped holding steel balls over metal pans.')],
+    L('توماس إديسون، وقيلولة الكرات الفولاذية.', 'Thomas Edison, and his steel-ball nap.'), { q: WHO }),
+  picName('ws-p-freud', './images/characters/sigmund-freud.webp', L('زيغموند فرويد', 'Sigmund Freud'),
+    ['Freud', 'فرويد', 'sigmund freud', 'سيغموند فرويد'],
+    [L('كارل يونغ', 'Carl Jung'), L('إيفان بافلوف', 'Ivan Pavlov'), L('ألفرد أدلر', 'Alfred Adler')],
+    [L('يشبّه ووكر تفسيرات أتباعه للأحلام بقراءة الأبراج.', 'Walker likens his followers’ dream readings to horoscopes.'),
+      L('صاحب «تفسير الأحلام» (١٨٩٩).', 'He wrote The Interpretation of Dreams (1899).')],
+    L('فرويد: أعاد الأحلام إلى الدماغ، بنظريةٍ لا تُختبر.', 'Freud: he put dreams back in the brain, with a theory no one can test.'), { q: WHO }),
+  picName('ws-p-mendeleev', './images/characters/dmitri-mendeleev.webp', L('ديمتري مندلييف', 'Dmitri Mendeleev'),
+    ['Mendeleev', 'Mendeleyev', 'مندلييف', 'مندليف', 'dmitri mendeleev'],
+    [L('ليو تولستوي', 'Leo Tolstoy'), L('فيودور دوستويفسكي', 'Fyodor Dostoevsky'), L('إيفان بافلوف', 'Ivan Pavlov')],
+    [L('كيميائيّ روسيّ.', 'A Russian chemist.'), L('جاءه جدوله في حلم سنة ١٨٦٩.', 'His table came to him in a dream in 1869.')],
+    L('مندلييف، والجدول الدوري الذي رآه في المنام.', 'Mendeleev, and the periodic table he saw in a dream.'), { q: WHO }),
+  picName('ws-p-walker', './images/characters/matthew-walker.webp', L('ماثيو ووكر', 'Matthew Walker'),
+    ['Walker', 'ووكر', 'والكر', 'matthew walker', 'ماثيو ووكر'],
+    [L('أندرو هوبرمان', 'Andrew Huberman'), L('راسل فوستر', 'Russell Foster'), L('تشارلز تشايزلر', 'Charles Czeisler')],
+    [L('محاضرته في TED تسمّي النوم «قوّةً خارقة».', 'His TED talk calls sleep a superpower.'), L('كتب كتاب النادي الأوّل.', 'He wrote the club’s first book.')],
+    L('ماثيو ووكر، صاحب «لماذا ننام».', 'Matthew Walker, who wrote Why We Sleep.'), { q: WHO }),
+  picName('ws-p-mccartney', './images/characters/paul-mccartney.webp', L('بول مكارتني', 'Paul McCartney'),
+    ['McCartney', 'مكارتني', 'ماكارتني', 'paul mccartney', 'بول مكارتني'],
+    [L('جون لينون', 'John Lennon'), L('ميك جاغر', 'Mick Jagger'), L('كيث ريتشاردز', 'Keith Richards')],
+    [L('جاءه لحنٌ في نومه.', 'A melody came to him in his sleep.'), L('استيقظ ولحن «Yesterday» في رأسه.', 'He woke up with “Yesterday” in his head.')],
+    L('بول مكارتني — ولحنٌ من الحلم صار من أشهر أغاني «البيتلز».', 'Paul McCartney — and a tune from a dream became one of the Beatles’ best known.'), { q: WHO }),
+  picBook('ws-p-bird', './images/anatomical/half-sleeping-bird.webp',
+    [L('هذا الطائر نائم — بنصف دماغه.', 'This bird is asleep — with half its brain.')],
+    L('من «لماذا ننام»: الطيور والدلافين تنام بنصف دماغٍ في كلّ مرّة.', 'From Why We Sleep: birds and dolphins sleep one half of the brain at a time.')),
+  picBook('ws-p-parks', './images/characters/kenneth-parks.webp',
+    [L('قاد سيّارته ٢٣ كيلومتراً دون أن يستيقظ.', 'He drove 23 kilometres without waking up.')],
+    L('كينيث باركس، من «لماذا ننام»: أشهر قضايا السير النومي.', 'Kenneth Parks, from Why We Sleep: the most famous sleepwalking case.')),
+  picBook('ws-p-kleitman', './images/characters/nathaniel-kleitman.webp',
+    [L('أمضى أسابيع في كهفٍ سنة ١٩٣٨.', 'He spent weeks in a cave in 1938.')],
+    L('ناثانيال كلايتمان، الأب المؤسّس لعلم النوم — من «لماذا ننام».', 'Nathaniel Kleitman, the founding father of sleep science — from Why We Sleep.')),
+]
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics }

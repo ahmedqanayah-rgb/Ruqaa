@@ -6,6 +6,7 @@ import RichText from '../RichText.jsx'
 import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, parseNumber } from '../../lib/game/engine.js'
 import MiniChart from './MiniChart.jsx'
 import MiniPlay, { NumPad } from './Minis.jsx'
+import { PicPlay } from './PicRound.jsx'
 import { L, KindHead, TimeBar } from './parts.jsx'
 
 /*
@@ -24,7 +25,7 @@ import { L, KindHead, TimeBar } from './parts.jsx'
  */
 export const LETTERS = [L('أ', 'A'), L('ب', 'B'), L('ج', 'C'), L('د', 'D')]
 
-function Options({ order, render, onPick, picked, chart = false }) {
+export function Options({ order, render, onPick, picked, chart = false }) {
   const { t } = useApp()
   return (
     <div className={`gm-opts ${chart ? 'is-charts' : ''}`}>
@@ -211,6 +212,12 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       }
       break
     }
+    case 'pic':
+      body = <>
+        <PicPlay core={core} entries={entries} room={room} me={me} decks={decks} mine={mine} submit={submit} Options={Options} />
+        {mine && <Waiting core={core} entries={entries} />}
+      </>
+      break
     case 'mini':
       body = <MiniPlay ch={ch} room={room} mine={mine} submit={submit} now={now} />
       if (['stag', 'auction'].includes(ch.id)) body = <>{timer}{mine ? <Waiting core={core} entries={entries} /> : body}</>

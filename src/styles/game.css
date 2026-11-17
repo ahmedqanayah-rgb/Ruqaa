@@ -41,6 +41,7 @@
   --gm-bluff: #8e4ec6;
   --gm-luck: #e0a400;
   --gm-dare: #e5484d;
+  --gm-pic: #d9822b;
   /* the charts' three lines */
   --gm-ch-a: #3e63dd;
   --gm-ch-b: #e5484d;
@@ -357,6 +358,7 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
 .gm-sheet.tone-dare { --tone: var(--gm-dare); }
 .gm-sheet.tone-luck { --tone: var(--gm-luck); }
 .gm-sheet.tone-lab { --tone: var(--gm-lab); }
+.gm-sheet.tone-pic { --tone: var(--gm-pic); }
 .gm-sheet-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; flex-wrap: wrap; }
 .gm-sheet-head .gm-kind { flex: 1; min-width: 0; }
 .gm-sheet-body { padding: 6px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -451,6 +453,26 @@ button.gm-opt:not(:disabled):active { transform: scale(0.99); }
 .gm-who-card { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 18px; background: var(--gm-good-soft); }
 .gm-who-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
 .gm-who-card strong { font-size: 1.2rem; }
+
+/* «خمّن الصورة» — the picture, the help, the ladder */
+.gm-pic { position: relative; overflow: hidden; border-radius: 18px; background: var(--gm-paper-2); aspect-ratio: 4 / 3; max-height: 34dvh; margin: 0 auto; width: 100%; }
+.gm-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gm-prize { margin: 0; font-size: var(--fs-sm); font-weight: 700; color: var(--gm-pic); }
+.gm-pic-form { display: flex; gap: 8px; }
+.gm-pic-form .gm-input { flex: 1; min-width: 0; }
+.gm-pic-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.gm-pic-tools .gm-btn { min-height: 44px; font-size: 0.95rem; }
+.gm-pic-tools .gm-btn b { color: var(--gm-bad); font-variant-numeric: tabular-nums; }
+.gm-hints { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.gm-hints li { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 8px 12px; border-radius: 14px; background: #fff7e3; line-height: 1.6; animation: gmRise 260ms ease-out both; }
+.gm-hints .icon { width: 18px; height: 18px; flex-shrink: 0; margin-top: 3px; color: #b07a00; }
+.gm-rows.is-pic li { flex-wrap: wrap; }
+.gm-rows.is-pic .gm-rows-name { white-space: normal; display: flex; flex-direction: column; }
+.gm-said-small { font-size: var(--fs-xs); color: var(--gm-ink-soft); font-weight: 400; }
+.gm-rows.is-pic li > .icon { width: 20px; height: 20px; stroke-width: 2.6; }
+.gm-rows.is-pic li.is-best > .icon { color: var(--gm-good); }
+.gm-rows.is-pic li:not(.is-best) > .icon { color: var(--gm-bad); }
+.gm-accept { min-height: 36px; padding: 4px 12px; font-size: 0.85rem; }
 
 /* the white lie */
 .gm-blank { display: inline-block; min-width: 3.4em; margin: 0 4px; padding: 0 8px; border-bottom: 2.5px solid var(--gm-bluff); color: var(--gm-bluff); text-align: center; }

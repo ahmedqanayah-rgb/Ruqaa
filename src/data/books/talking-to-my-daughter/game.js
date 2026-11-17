@@ -18,6 +18,15 @@ const num = (id, q, a, extra, why) => ({ id, q, a, ...extra, why })
 const who = (id, name, clues, why, img) => ({ id, name, clues, why, ...(img ? { img } : {}) })
 const bluff = (id, q, truth, alt, decoys, why) => ({ id, q, truth, alt, decoys, why })
 
+/* «خمّن الصورة» — pictures already on this site. `name` rounds are answered by
+   typing (lib/game/match.js forgives typos and spellings; every acceptable short
+   form goes in `aliases`, and decks.js checks no wrong option would pass);
+   `book` rounds ask which of the club's books the picture is from. `view`
+   zooms past a printed title or margin. */
+const picName = (id, img, name, aliases, wrong, hints, why, extra = {}) => ({ id, kind: 'name', img, name, aliases, opts: [name, ...wrong], hints, why, ...extra })
+const picBook = (id, img, hints, why, extra = {}) => ({ id, kind: 'book', img, hints, why, ...extra })
+const WHO = L('من هذا؟', 'Who is this?')
+
 export const gameIcon = '⚖️'
 
 /* ------------------------------- questions ------------------------------- */
@@ -308,4 +317,78 @@ const bluffs = [
     L('مرساته — بلا مقابل. ولو عرض خمسة يوروهات لربّما لم تقفز.', 'His anchor — for nothing. Had he offered five euros, she might not have jumped.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs }
+/* ------------------------------- pictures ------------------------------- */
+const pics = [
+  picName('td-p-marx', './images/characters/karl-marx.webp', L('كارل ماركس', 'Karl Marx'),
+    ['Marx', 'ماركس', 'karl marx', 'كارل ماركس'],
+    [L('تشارلز داروين', 'Charles Darwin'), L('ليو تولستوي', 'Leo Tolstoy'), L('فريدريك إنجلز', 'Friedrich Engels')],
+    [L('يقول فاروفاكيس إنه يسكن كلّ أفكاره.', 'Varoufakis says he haunts all his thinking.'),
+      L('كتب أن الآلات «القوّة التي علينا أن ننحني لها».', 'He wrote that machines are “the force we must bow to”.')],
+    L('كارل ماركس — «الشبح» الحاضر في كلّ فكرة.', 'Karl Marx — the “spectre” behind every thought.'), { q: WHO }),
+  picName('td-p-smith', './images/characters/adam-smith.webp', L('آدم سميث', 'Adam Smith'),
+    ['Smith', 'سميث', 'adam smith', 'آدم سميث'],
+    [L('ديفيد هيوم', 'David Hume'), L('جون لوك', 'John Locke'), L('إسحاق نيوتن', 'Isaac Newton')],
+    [L('الأب المؤسّس لعلم الاقتصاد.', 'The founding father of economics.'), L('صاحب «اليد الخفية».', 'The man behind the “invisible hand”.')],
+    L('آدم سميث، صاحب «ثروة الأمم».', 'Adam Smith, author of The Wealth of Nations.'), { q: WHO }),
+  picName('td-p-keynes', './images/characters/john-maynard-keynes.webp', L('جون ماينارد كينز', 'John Maynard Keynes'),
+    ['Keynes', 'كينز', 'كينيز', 'john maynard keynes', 'جون ماينارد كينز'],
+    [L('ونستون تشرشل', 'Winston Churchill'), L('فريدريش هايك', 'Friedrich Hayek'), L('ميلتون فريدمان', 'Milton Friedman')],
+    [L('ما يصحّ على شركةٍ، قال، لا يصحّ على الاقتصاد كلّه.', 'What holds for one firm, he said, does not hold for the whole economy.'),
+      L('كتب سنة ١٩٣٠ مقالةً عن «أحفادنا».', 'In 1930 he wrote an essay about “our grandchildren”.')],
+    L('كينز و«مغالطة التركيب».', 'Keynes, and the fallacy of composition.'), { q: WHO }),
+  picName('td-p-varoufakis', './images/characters/yanis-varoufakis.webp', L('يانيس فاروفاكيس', 'Yanis Varoufakis'),
+    ['Varoufakis', 'فاروفاكيس', 'yanis varoufakis', 'يانيس فاروفاكيس', 'يانيس'],
+    [L('ألكسيس تسيبراس', 'Alexis Tsipras'), L('توما بيكيتي', 'Thomas Piketty'), L('سلافوي جيجك', 'Slavoj Žižek')],
+    [L('وزير مالية اليونان ستّة أشهر سنة ٢٠١٥.', 'Greece’s finance minister for six months in 2015.'), L('كتب كتاب النادي الثالث في تسعة أيام.', 'He wrote the club’s third book in nine days.')],
+    L('يانيس فاروفاكيس.', 'Yanis Varoufakis.'), { q: WHO }),
+  picName('td-p-shelley', './images/characters/mary-shelley.webp', L('ماري شيلي', 'Mary Shelley'),
+    ['Mary Shelley', 'ماري شيلي', 'Shelley', 'شيلي'],
+    [L('جين أوستن', 'Jane Austen'), L('شارلوت برونتي', 'Charlotte Brontë'), L('إميلي ديكنسون', 'Emily Dickinson')],
+    [L('بدأت في ليلةٍ عاصفة بسويسرا قصّة رعب.', 'On a stormy night in Switzerland she began a horror story.'), L('صنعت فرانكنشتاين.', 'She made Frankenstein.')],
+    L('ماري شيلي — وهي في كتابين من كتب النادي.', 'Mary Shelley — who appears in two of the club’s books.'), { q: WHO }),
+  picName('td-p-oedipus', './images/economy/oedipus-sphinx-moreau.webp', L('أوديب وأبو الهول', 'Oedipus and the Sphinx'),
+    ['Oedipus', 'أوديب', 'اوديب', 'Sphinx', 'the sphinx', 'أبو الهول', 'ابو الهول'],
+    [L('برسيوس وميدوسا', 'Perseus and Medusa'), L('ثيسيوس والمينوتور', 'Theseus and the Minotaur'), L('أوديسيوس والعملاق', 'Odysseus and the Cyclops')],
+    [L('حلّ لغزاً فصار ملكاً — وتزوّج أمّه.', 'He solved a riddle, became king — and married his own mother.'), L('لوحةٌ لغوستاف مورو، ١٨٦٤.', 'A painting by Gustave Moreau, 1864.')],
+    L('أوديب وأبو الهول: نبوءةٌ تحقّق نفسها، كسوقَي قوّة العمل والمال.', 'Oedipus and the Sphinx: a prophecy that fulfils itself, like the labour and money markets.'),
+    { q: L('من في هذه اللوحة؟', 'Who is in this painting?') }),
+  picName('td-p-mephisto', './images/economy/mephistopheles-delacroix.webp', L('ميفستوفيليس', 'Mephistopheles'),
+    ['Mephisto', 'mephistopheles', 'ميفستوفيليس', 'مفيستوفيليس', 'ميفيستوفيليس', 'ميفستو', 'the devil', 'devil', 'satan', 'الشيطان', 'شيطان', 'ابليس'],
+    [L('بروميثيوس', 'Prometheus'), L('إيكاروس', 'Icarus'), L('دراكولا', 'Dracula')],
+    [L('وقّع فاوست معه عقداً بدمه.', 'Faust signed a contract with him, in blood.'), L('رسمه دولاكروا لـ«فاوست» غوته.', 'Delacroix drew him for Goethe’s Faust.')],
+    L('ميفستوفيليس يطير فوق المدينة — دولاكروا، ١٨٢٨.', 'Mephistopheles flying over the city — Delacroix, 1828.'),
+    { q: L('من هذا الطائر في السماء؟', 'Who is this, flying over the town?'), view: { pos: '50% 34%', zoom: 1.25 } }),
+  picName('td-p-fleet', './images/economy/first-fleet.webp', L('الأسطول الأوّل', 'The First Fleet'),
+    ['first fleet', 'the first fleet', 'الأسطول الأول', 'الاسطول الاول', 'first fleet australia'],
+    [L('كولومبوس يصل إلى أمريكا', 'Columbus reaching America'), L('سفينة «ماي فلاور»', 'The Mayflower'), L('فاسكو دا غاما يبلغ الهند', 'Vasco da Gama reaching India')],
+    [L('به يبدأ الفصل الأوّل: لماذا غزا البريطانيون أستراليا، لا العكس؟', 'The first chapter starts here: why did the British invade Australia, and not the other way round?'),
+      L('ميناء جاكسون، يناير ١٧٨٨.', 'Port Jackson, January 1788.')],
+    L('الأسطول الأوّل يدخل ميناء جاكسون، ١٧٨٨.', 'The First Fleet entering Port Jackson, 1788.'),
+    { q: L('أيّ حدثٍ هذا؟', 'What event is this?'), view: { pos: '50% 40%', zoom: 1.4 } }),
+  picName('td-p-nixon', './images/economy/nixon.webp', L('ريتشارد نيكسون', 'Richard Nixon'),
+    ['Nixon', 'نيكسون', 'richard nixon', 'ريتشارد نيكسون'],
+    [L('جون كينيدي', 'John F. Kennedy'), L('رونالد ريغان', 'Ronald Reagan'), L('ليندون جونسون', 'Lyndon Johnson')],
+    [L('سنة ١٩٧١ فكّ الدولار عن الذهب.', 'In 1971 he cut the dollar loose from gold.'), L('رئيسٌ أمريكيّ استقال سنة ١٩٧٤.', 'A US president who resigned in 1974.')],
+    L('نيكسون — في ركن النادي «من خارج الكتاب» بعد الفصل السابع.', 'Nixon — in the club’s “from outside the book” aside after chapter seven.'), { q: WHO }),
+  picName('td-p-sirens', './images/economy/ulysses-sirens-waterhouse.webp', L('أوليسيس والحوريّات', 'Ulysses and the Sirens'),
+    ['Ulysses', 'Odysseus', 'أوليسيس', 'أوديسيوس', 'عوليس', 'يوليسيس', 'sirens', 'الحوريات', 'السيرينات'],
+    [L('جيسون والأرغونوتيون', 'Jason and the Argonauts'), L('سفينة نوح', 'Noah’s Ark'), L('الهولندي الطائر', 'The Flying Dutchman')],
+    [L('ربط نفسه إلى الصاري ليسمع غناءهنّ وينجو.', 'He had himself tied to the mast so he could hear their song and live.'), L('من أوديسة هوميروس.', 'From Homer’s Odyssey.')],
+    L('أوليسيس والحوريّات — ووترهاوس، ١٨٩١.', 'Ulysses and the Sirens — Waterhouse, 1891.'),
+    { q: L('من هؤلاء؟', 'Who are these?') }),
+  picName('td-p-bretton', './images/economy/bretton-woods-1944.webp', L('مؤتمر بريتون وودز', 'The Bretton Woods conference'),
+    ['Bretton Woods', 'بريتون وودز', 'bretton woods conference'],
+    [L('مؤتمر يالطا', 'The Yalta conference'), L('مؤتمر فرساي للسلام', 'The Versailles peace conference'), L('تأسيس الأمم المتحدة', 'The founding of the United Nations')],
+    [L('يوليو ١٩٤٤: أُعيد فيه ربط عملات العالم بالدولار، والدولار بالذهب.', 'July 1944: the world’s currencies tied to the dollar, and the dollar to gold.'),
+      L('فندقٌ في نيوهامبشير.', 'A hotel in New Hampshire.')],
+    L('بريتون وودز، ١٩٤٤ — في ركن النادي «من خارج الكتاب».', 'Bretton Woods, 1944 — in the club’s “from outside the book” aside.'),
+    { q: L('أيّ اجتماعٍ هذا؟', 'What gathering is this?') }),
+  picBook('td-p-matrix', './images/economy/the-matrix.webp',
+    [L('العميل سميث يسمّي البشر فيروساً.', 'Agent Smith calls humans a virus.')],
+    L('«المصفوفة» — من «الاقتصاد كما أشرحه لابنتي».', 'The Matrix — from Talking to My Daughter About the Economy.')),
+  picBook('td-p-nabuk', './images/characters/mr-nabuk.webp',
+    [L('قايض قمحه بصَدَفةٍ منقوشة.', 'He traded his grain for an engraved shell.')],
+    L('السيد نابوك — من «الاقتصاد كما أشرحه لابنتي».', 'Mr Nabuk — from Talking to My Daughter About the Economy.')),
+]
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics }

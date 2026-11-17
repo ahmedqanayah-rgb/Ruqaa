@@ -17,6 +17,15 @@ const num = (id, q, a, extra, why) => ({ id, q, a, ...extra, why })
 const who = (id, name, clues, why, img) => ({ id, name, clues, why, ...(img ? { img } : {}) })
 const bluff = (id, q, truth, alt, decoys, why) => ({ id, q, truth, alt, decoys, why })
 
+/* «خمّن الصورة» — pictures already on this site. `name` rounds are answered by
+   typing (lib/game/match.js forgives typos and spellings; every acceptable short
+   form goes in `aliases`, and decks.js checks no wrong option would pass);
+   `book` rounds ask which of the club's books the picture is from. `view`
+   zooms past a printed title or margin. */
+const picName = (id, img, name, aliases, wrong, hints, why, extra = {}) => ({ id, kind: 'name', img, name, aliases, opts: [name, ...wrong], hints, why, ...extra })
+const picBook = (id, img, hints, why, extra = {}) => ({ id, kind: 'book', img, hints, why, ...extra })
+const WHO = L('من هذا؟', 'Who is this?')
+
 export const gameIcon = '🎯'
 
 /* ------------------------------- questions ------------------------------- */
@@ -281,4 +290,49 @@ const bluffs = [
     L('غير متوقّعة: المكافأة المتغيّرة — والتطبيقات تعرفها جيّداً.', 'Unpredictable: the variable reward — and apps know it well.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs }
+/* ------------------------------- pictures ------------------------------- */
+const pics = [
+  picName('sf-p-provincetown', './images/provincetown.jpg', L('بروفينستاون', 'Provincetown'),
+    ['Provincetown', 'بروفينستاون', 'بروفنستاون', 'بروفينس تاون'],
+    [L('نانتوكيت', 'Nantucket'), L('كي ويست', 'Key West'), L('مارثاز فينيارد', 'Martha’s Vineyard')],
+    [L('أمضى فيها هاري ثلاثة أشهر بلا هاتفٍ ذكيّ.', 'Hari spent three months here without a smartphone.'),
+      L('بلدةٌ ساحلية في ماساتشوستس.', 'A seaside town in Massachusetts.')],
+    L('بروفينستاون: عاد إليه تركيزه هنا — حتى رجع إلى بيته.', 'Provincetown: his focus came back here — until he went home.'),
+    { q: L('ما هذا المكان؟', 'Where is this?') }),
+  picName('sf-p-hari', './images/characters/johann-hari.webp', L('يوهان هاري', 'Johann Hari'),
+    ['Hari', 'هاري', 'johann hari', 'johan hari', 'يوهان هاري', 'جوهان هاري'],
+    [L('نيكولاس كار', 'Nicholas Carr'), L('مالكوم غلادويل', 'Malcolm Gladwell'), L('كال نيوبورت', 'Cal Newport')],
+    [L('حاور أكثر من ٢٥٠ خبيراً لكتابٍ واحد.', 'He interviewed more than 250 experts for one book.'), L('كتب كتاب النادي الثاني.', 'He wrote the club’s second book.')],
+    L('يوهان هاري، صاحب «تركيزنا المسلوب».', 'Johann Hari, who wrote Stolen Focus.'), { q: WHO }),
+  picName('sf-p-csikszentmihalyi', './images/characters/mihaly-csikszentmihalyi.webp', L('ميهالي تشيكزينتميهالي', 'Mihaly Csikszentmihalyi'),
+    ['Csikszentmihalyi', 'تشيكزينتميهالي', 'mihaly csikszentmihalyi', 'chiksentmihalyi', 'csikszentmihaly', 'ميهالي'],
+    [L('دانيال كانمان', 'Daniel Kahneman'), L('فيكتور فرانكل', 'Viktor Frankl'), L('أبراهام ماسلو', 'Abraham Maslow')],
+    [L('سمّى الحالة التي يختفي فيها الزمن.', 'He named the state in which time disappears.'), L('أبو «التدفّق».', 'The father of “flow”.')],
+    L('تشيكزينتميهالي — اسمٌ يستحقّ وحده خطوةً إضافية.', 'Csikszentmihalyi — a name worth an extra step by itself.'), { q: WHO }),
+  picName('sf-p-skinner', './images/characters/bf-skinner.webp', L('ب. ف. سكنر', 'B. F. Skinner'),
+    ['Skinner', 'سكنر', 'سكينر', 'bf skinner', 'b f skinner'],
+    [L('إيفان بافلوف', 'Ivan Pavlov'), L('جون واتسون', 'John B. Watson'), L('زيغموند فرويد', 'Sigmund Freud')],
+    [L('جعل الحمام ينقر بهوس.', 'He made pigeons peck obsessively.'), L('استعارت التطبيقات «مكافأته المتغيّرة».', 'Apps borrowed his variable reward.')],
+    L('سكنر: من قفص الحمام إلى جيبك.', 'Skinner: from the pigeon’s cage to your pocket.'), { q: WHO }),
+  picName('sf-p-elvis', './images/characters/elvis-presley.webp', L('إلفيس بريسلي', 'Elvis Presley'),
+    ['Elvis', 'إلفيس', 'الفيس', 'elvis presley', 'presley', 'بريسلي'],
+    [L('جوني كاش', 'Johnny Cash'), L('فرانك سيناترا', 'Frank Sinatra'), L('بادي هولي', 'Buddy Holly')],
+    [L('وعدٌ بزيارة بيته «غريسلاند» يفتتح كتاباً.', 'A promise to visit his house, Graceland, opens a book.'), L('ملك الروك آند رول.', 'The King of rock and roll.')],
+    L('إلفيس: في غريسلاند حدّق الزوّار في شاشاتهم بدل البيت.', 'Elvis: at Graceland, visitors stared at their screens instead of his house.'), { q: WHO }),
+  picName('sf-p-harris', './images/characters/tristan-harris.webp', L('تريستان هاريس', 'Tristan Harris'),
+    ['Tristan Harris', 'تريستان هاريس', 'Harris', 'هاريس'],
+    [L('آزا راسكن', 'Aza Raskin'), L('جارون لانير', 'Jaron Lanier'), L('مارك زوكربيرغ', 'Mark Zuckerberg')],
+    [L('عمل مصمّماً في غوغل.', 'He used to design products at Google.'), L('قاد حملة «الوقت المُحسَن الاستخدام».', 'He led the “Time Well Spent” campaign.')],
+    L('تريستان هاريس: من داخل الصناعة إلى فضحها.', 'Tristan Harris: from inside the industry to exposing it.'), { q: WHO }),
+  picBook('sf-p-mark', './images/characters/gloria-mark.webp',
+    [L('قاست كم يبقى موظّف المكتب مركّزاً فعلاً.', 'She measured how long office workers really stay focused.')],
+    L('غلوريا مارك، من «تركيزنا المسلوب».', 'Gloria Mark, from Stolen Focus.')),
+  picBook('sf-p-skenazy', './images/characters/lenore-skenazy.webp',
+    [L('تركت ابنها ذا التسع سنوات يعود وحده بالمترو.', 'She let her nine-year-old ride the subway home alone.')],
+    L('لينور سكينازي، من «تركيزنا المسلوب».', 'Lenore Skenazy, from Stolen Focus.')),
+  picBook('sf-p-jazz', './images/flow/jazz-piano.webp',
+    [L('عازفٌ غائبٌ في عزفه: الحالة التي يختفي فيها الزمن.', 'A musician lost in his playing: the state in which time disappears.')],
+    L('من «تركيزنا المسلوب»: حالة التدفّق.', 'From Stolen Focus: the state of flow.')),
+]
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics }

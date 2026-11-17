@@ -98,7 +98,7 @@ if (lint.length) {
   process.exit(1)
 }
 const count = (kind) => decks.books.reduce((n, b) => n + decks.byBook[b][kind].length, 0)
-console.log(`decks: ${decks.books.length} books · ${count('mcq')} questions · ${count('tf')} myth/fact · ${count('num')} numbers · ${count('who')} people · ${count('graph')} graphs · ${count('bluff')} bluffs · ${decks.luck.length} chance · ${decks.dares.length} dares`)
+console.log(`decks: ${decks.books.length} books · ${count('mcq')} questions · ${count('tf')} myth/fact · ${count('num')} numbers · ${count('who')} people · ${count('graph')} graphs · ${count('bluff')} bluffs · ${count('pic')} pictures · ${decks.luck.length} chance · ${decks.dares.length} dares`)
 
 /* ------------------------- small checks, up front ------------------------- */
 const fail = (msg) => { console.error(`✗ ${msg}`); process.exit(1) }
@@ -190,6 +190,15 @@ function botAnswer(core, rand, me) {
       if (ch.s === 0) return rand() < 0.1 ? item.truth.en : LIES[pick(LIES.length)]
       { const mine = ch.o.map((o, i) => i).filter((i) => !ch.o[i].p?.includes(me)); return mine[pick(mine.length)] }
     case 'dare': return ch.s === 0 ? 1 : pick(2)
+    case 'pic': {
+      const h = pick((ch.nh || 0) + 1)
+      if (ch.pk === 'book') return { b: pick(decks.books.length), h }
+      const r = rand()
+      if (r < 0.3) return { t: rand() < 0.5 ? item.name.en : item.name.ar, h, op: 0 }
+      if (r < 0.45) return { t: `${item.aliases?.[0] || item.name.en}e`, h, op: 0 } // a typo
+      if (r < 0.8) return { o: pick(4), h, op: 1 }
+      return { t: 'no idea at all', h, op: 0 }
+    }
     case 'mini':
       switch (ch.id) {
         case 'stag': return rand() < 0.7 ? 1 : 0

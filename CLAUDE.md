@@ -165,7 +165,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~72 kB gz of script and ~7 kB of CSS that a reader who came for a
+  it rides in the chunk): ~82 kB gz of script and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -444,8 +444,11 @@ keeps `base: './'` sub-path hosting working.
     zone's book (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
     (`num`), who is it? (`who` — three clues, the sooner you answer the more it is worth; the
     book's MAIN people only, at the club's request), read the chart (`graph` — hand-rolled SVG
-    in `MiniChart.jsx`; never recharts here), a white lie (`bluff`, Fibbage-style: write a lie,
-    then find the truth), the Lab (`mini`: count the sheep, the vigilance test, the digits,
+    in `MiniChart.jsx`; never recharts here), picture this (`pic` — a picture already on the
+    site: a person, a painting, an event; "who/what is this?" is answered by TYPING, or "which
+    book is it from?" by three buttons; a hint or the four options can be bought for a step
+    each, so a bare typed answer is worth the most), a white lie (`bluff`, Fibbage-style: write
+    a lie, then find the truth), the Lab (`mini`: count the sheep, the vigilance test, the digits,
     Stroop, the one arrow — and from the Varoufakis book the stag hunt and an auction of
     Achilles' armour, which test each other rather than anyone's attention), a dare (performed
     on the call, judged on the phones), or chance. **The only currency is squares**; the first
@@ -455,6 +458,15 @@ keeps `base: './'` sub-path hosting working.
     player could believe, and the fun lives in the setup and the `why`, not in silly options.
     Option 0 is the right one; the game deals options in a seeded order, the same on every phone
     so "the second one!" means the same to everyone. `lib/game/decks.js` checks every shape.
+  - **Typed answers are judged by `lib/game/match.js`, not by AI** (asked about 2026-11-17).
+    It forgives what people actually get wrong — Arabic letter forms, diacritics, «ال»/"the",
+    either language, a few letters off, vowels in transliterations — and checks only against
+    the deck's `aliases`, so it never guesses; `decks.js` refuses a deck in which a WRONG option
+    would pass. Whatever it still misses, **the host accepts by hand** on the result screen
+    (`acc` in the host's entry → `acceptStep` in the engine), the way a quizmaster would. An AI
+    judge was considered and not built: members' answers would go to an outside company, it
+    needs a paid key on Vercel, it adds waiting and a way to fail on the night, and its verdict
+    would have to be made once and shared because the phones must agree.
   - **A chance card's text never says what happens.** Its effect line is generated from
     `effect` (`lib/game/effects.js`), so the words on the card and what the engine does cannot
     disagree. No card can carry anyone over the finish line.

@@ -1,6 +1,7 @@
 import { TYPES, LAST, zoneOf } from './board.js'
 import { MINIS, miniScore, rankAwards, AUCTION, STAG } from './minis.js'
 import { hash32, seeded, shuffled, range } from './rand.js'
+import { matchesName } from './match.js'
 
 /*
  * «رُقعة النرد» — THE RULES. One pure function, `advance(core, entries, env)`:
@@ -54,12 +55,26 @@ export const T = {
   grace: 2000, // after a deadline, for answers still in the air
   clue: 7000, // between clues in «من هو؟»
   minReveal: 2500, // a result cannot be skipped faster than this
-  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 24000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000 },
+  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 24000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000, pic: 45000, picBook: 22000 },
   dwell: { luck: 10000, bluff: 22000, default: 16000 }, // a result moves on by itself
 }
 
 /* The mix of question kinds on a book square, drawn without replacement. */
-const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph']
+const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic']
+
+/*
+ * «خمّن الصورة» — a picture round. Two kinds of question:
+ *   name  "who / what is this?" — answered by TYPING, judged by match.js. Help
+ *         costs: each hint −1, showing the four options −1 (`op`); a right
+ *         answer is worth 3 minus the help, never less than 1.
+ *   book  "which of our books is it from?" — three buttons; each hint −1 from 2.
+ * The pictures are the site's own (portraits, paintings, the spider webs…).
+ */
+export const picPrize = (ch, v) => (ch.pk === 'book' ? Math.max(1, 2 - (v.h || 0)) : Math.max(1, 3 - (v.h || 0) - (v.op ? 1 : 0)))
+export const picPool = (core, decks) => playBooks(core, decks).flatMap((b) => decks.byBook[b].pic || [])
+export const picRight = (ch, item, v, decks) => (ch.pk === 'book'
+  ? v.b === decks.books.indexOf(item.book)
+  : v.o != null ? v.o === 0 : matchesName(v.t, [item.name.ar, item.name.en, ...(item.aliases || [])]))
 
 const isNum = (x) => typeof x === 'number' && Number.isFinite(x)
 export const clampPos = (p) => Math.max(0, Math.min(LAST, p))
@@ -176,7 +191,7 @@ export function expected(core) {
 
 /* One player's answer to the current stage, checked — a phone can send
    anything. Returns { v, at } or null. */
-export function readAnswer(core, raw, pid) {
+export function readAnswer(core, raw, pid, rv) {
   const ch = core.ch
   if (!ch || !raw || raw.s !== slotOf(core)) return null
   const int = (lo, hi) => (Number.isInteger(raw.v) && raw.v >= lo && raw.v <= hi ? raw.v : null)
@@ -193,6 +208,24 @@ export function readAnswer(core, raw, pid) {
       }
       break
     case 'dare': v = ch.s === 0 ? (raw.v === 1 ? 1 : null) : int(0, 1); break
+    case 'pic': {
+      const a = raw.v
+      if (!a || typeof a !== 'object') break
+      /* Help is recorded in the player's entry the moment it is asked for
+         (`rv`), so a refresh cannot wipe it; the answer's own count can only
+         add to that. */
+      const seen = rv && rv.s === raw.s ? rv : {}
+      const h = Math.max(0, Math.min(ch.nh || 0, Math.max(Number.isInteger(a.h) ? a.h : 0, Number.isInteger(seen.h) ? seen.h : 0)))
+      if (ch.pk === 'book') {
+        if (Number.isInteger(a.b) && a.b >= 0 && a.b <= 9) v = { b: a.b, h }
+        break
+      }
+      const op = a.op || seen.op ? 1 : 0
+      const t = typeof a.t === 'string' ? cleanText(a.t, LIE_MAX) : ''
+      if (t) v = { t, h, op }
+      else if (op && Number.isInteger(a.o) && a.o >= 0 && a.o <= 3) v = { o: a.o, h, op }
+      break
+    }
     case 'mini':
       if (ch.id === 'stag') v = int(0, 1)
       else if (ch.id === 'auction') v = int(0, AUCTION.max)
@@ -210,7 +243,7 @@ export function answersNow(core, entries) {
   const want = expected(core)
   const out = {}
   for (const pid of want) {
-    const a = readAnswer(core, entries[pid]?.d?.a, pid)
+    const a = readAnswer(core, entries[pid]?.d?.a, pid, entries[pid]?.d?.rv)
     if (a) out[pid] = a
   }
   return out
@@ -375,8 +408,16 @@ function challenge(core, to, landed, decks) {
     ch = { k: 'dare', id: dares[draw(`dare:${dares.length}`, dares.length)].id, t1: t0 + T.dur.dare }
   } else {
     let k = KBAG[draw('k', KBAG.length)]
-    if (!D[k]?.length || (k === 'who' && D.who.length < 4)) k = 'mcq'
-    ch = { k, id: D[k][draw(`${k}:${book}`, D[k].length)].id, book, t1: t0 + T.dur[k] }
+    const pics = k === 'pic' ? picPool(core, decks) : null
+    if (k === 'pic' && pics.length) {
+      /* A picture can come from ANY book in play, not just this zone's — and
+         the card does not name a book, which would answer "which book?". */
+      const item = pics[draw(`pic:${pics.length}`, pics.length)]
+      ch = { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: t0 + (item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
+    } else {
+      if (k === 'pic' || !D[k]?.length || (k === 'who' && D.who.length < 4)) k = 'mcq'
+      ch = { k, id: D[k][draw(`${k}:${book}`, D[k].length)].id, book, t1: t0 + T.dur[k] }
+    }
   }
   return { ...core, cur, phase: 'play', t: t0, ch: { ...ch, s: 0, t0, seed: hash32(`${core.seed}|${core.n}|ch`) } }
 }
@@ -518,6 +559,18 @@ function reveal(core, answers, at, decks) {
       if (aw[active]) give(active, 1)
       break
     }
+    case 'pic': {
+      x.c = {}
+      for (const p of alive) {
+        const a = answers[p.id]
+        if (!a) continue
+        const right = picRight(ch, item, a.v, decks)
+        x.c[p.id] = right ? 1 : 0
+        if (right) { give(p.id, picPrize(ch, a.v)); tally(p.id, 0) }
+      }
+      if (aw[active]) give(active, 1)
+      break
+    }
     case 'num': {
       const rows = alive.filter((p) => answers[p.id]).map((p) => ({ id: p.id, off: Math.abs(answers[p.id].v - item.a) })).sort((a, b) => a.off - b.off)
       if (rows.length) {
@@ -616,7 +669,36 @@ export function mayMoveOn(core, env) {
   return [core.players[upNext(core).turn].id, actingHost(core, env)]
 }
 
+/* The host overrules the checker: a typed answer it marked wrong ("Steinbek's
+   novel", a nickname nobody listed) is accepted by hand from the result
+   screen, and earns what it would have earned. Read from the acting host's
+   entry (`acc: { n, p: [player ids] }`) — an input like any other, so every
+   phone applies the same acceptance. */
+function acceptStep(core, entries, env) {
+  if (core.res?.k !== 'pic' || core.ch.pk === 'book') return null
+  const acc = entries[actingHost(core, env)]?.d?.acc
+  if (!acc || acc.n !== core.n || !Array.isArray(acc.p)) return null
+  const done = core.res.x.ok || []
+  const add = acc.p.filter((pid) => typeof pid === 'string' && !done.includes(pid) && core.res.x.c?.[pid] === 0 && core.res.a[pid]?.[0]?.t)
+  if (!add.length) return null
+  const aw = { ...core.res.aw }
+  const c = { ...core.res.x.c }
+  const active = turnPlayer(core).id
+  const steps = {}
+  for (const pid of add) {
+    let n = picPrize(core.ch, core.res.a[pid][0])
+    if (pid === active && !aw[active]) n += 1 // it is their square
+    steps[pid] = n
+    aw[pid] = (aw[pid] || 0) + n
+    c[pid] = 2
+  }
+  const players = core.players.map((p) => (steps[p.id] ? { ...p, pos: clampPos(p.pos + steps[p.id]), st: p.st.map((v, k) => (k === 0 ? v + 1 : v)) } : p))
+  return seal(core, { ...core, players, res: { ...core.res, aw, x: { ...core.res.x, c, ok: [...done, ...add] } } })
+}
+
 function revealStep(core, entries, env) {
+  const accepted = acceptStep(core, entries, env)
+  if (accepted) return accepted
   const dwell = T.dwell[core.res.k] || T.dwell.default
   const up = upNext(core)
   let at = null

@@ -12,8 +12,8 @@ const RULES = [
     'On your turn you roll and move. The square you land on opens a round that EVERYONE plays at the same moment, each on their own phone.'),
   L('النقاط هنا خطوات: كلّ إجابةٍ صحيحة تقدّمك على اللوح. وأسرع إجابةٍ صحيحة تأخذ خطوةً إضافية، ولصاحب الخانة خطوةٌ أخرى إن أصاب.',
     'Points are steps: every right answer moves your token. The fastest right answer earns an extra step, and the player whose square it is gets one more if they get it right.'),
-  L('الجولات: أسئلة من الكتب، وخرافة أم حقيقة، وأرقام (الأقرب يفوز)، ومن هو؟ (كلّما عرفتَ أبكر ربحت أكثر)، ورسوم بيانية، وكذبة بيضاء، والمختبر، وتحدّيات يحكم فيها الجميع، وبطاقات حظّ.',
-    'Rounds: questions from the books, myth or fact, numbers (closest wins), who is it? (the sooner you know, the more you win), charts, a white lie, the Lab, dares the room judges, and chance cards.'),
+  L('الجولات: أسئلة من الكتب، وخرافة أم حقيقة، وأرقام (الأقرب يفوز)، ومن هو؟ (كلّما عرفتَ أبكر ربحت أكثر)، ورسوم بيانية، وخمّن الصورة (اكتب الاسم بنفسك، أو اشترِ تلميحاً أو الخيارات بخطوة)، وكذبة بيضاء، والمختبر، وتحدّيات يحكم فيها الجميع، وبطاقات حظّ.',
+    'Rounds: questions from the books, myth or fact, numbers (closest wins), who is it? (the sooner you know, the more you win), charts, picture this (type the name yourself, or buy a hint or the options for a step), a white lie, the Lab, dares the room judges, and chance cards.'),
   L('أوّل من يصل إلى منارة الكتب في آخر الطريق يُنهي اللعبة ويفوز.',
     'The first to reach the lighthouse of books at the end of the road ends the game, and wins.'),
 ]

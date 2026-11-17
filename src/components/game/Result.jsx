@@ -6,6 +6,7 @@ import { T, turnPlayer, optionOrder, whoChoices, mayMoveOn, upNext } from '../..
 import { effectLine, effectMood } from '../../lib/game/effects.js'
 import { sheepPlan, memoryDigits, MEMORY, AUCTION } from '../../lib/game/minis.js'
 import MiniChart from './MiniChart.jsx'
+import { PicResult } from './PicRound.jsx'
 import { LETTERS } from './Challenge.jsx'
 import { L, KindHead, Token, TOKEN_COLORS, Steps } from './parts.jsx'
 
@@ -229,6 +230,10 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
     case 'mini':
       body = <MiniResult core={core} labels={labels} />
       break
+    case 'pic':
+      body = <PicResult core={core} room={room} me={me} decks={decks} labels={labels} />
+      why = item.why
+      break
     case 'luck': {
       const mood = effectMood(item.effect)
       body = (
@@ -267,7 +272,7 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
             ))}
           </ul>
         )}
-        {res.k !== 'luck' && res.k !== 'dare' && res.k !== 'mini' && movers.length === 0 && (
+        {!['luck', 'dare', 'mini', 'pic'].includes(res.k) && movers.length === 0 && (
           <p className="gm-hint-dark">{t(L('لم يتقدّم أحد هذه المرّة.', 'Nobody moves this time.'))}</p>
         )}
         {why && <div className="gm-why"><Icon name="💡" /><RichText value={why} /></div>}
