@@ -46,7 +46,7 @@ export const LIE_MAX = 48
 /* Every duration, in milliseconds. The stage reads these too, so what is drawn
    and what is decided run on one set of numbers. */
 export const T = {
-  dice: 1500, // the die tumbles
+  dice: 2300, // the die is shaken, thrown and read (lib/game/throw.js)
   hop: 300, // a token crosses one square
   repay: 900, // a debt is collected before the move
   card: 2800, // "you landed on…" before a challenge opens
@@ -71,7 +71,11 @@ const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who'
  * The pictures are the site's own (portraits, paintings, the spider webs…).
  */
 export const picPrize = (ch, v) => (ch.pk === 'book' ? Math.max(1, 2 - (v.h || 0)) : Math.max(1, 3 - (v.h || 0) - (v.op ? 1 : 0)))
-export const picPool = (core, decks) => playBooks(core, decks).flatMap((b) => decks.byBook[b].pic || [])
+export const picPool = (core, decks) => {
+  const books = playBooks(core, decks)
+  // "Which book is it from?" is no question when only one book is in play.
+  return books.flatMap((b) => (decks.byBook[b].pic || []).filter((item) => books.length > 1 || item.kind !== 'book'))
+}
 export const picRight = (ch, item, v, decks) => (ch.pk === 'book'
   ? v.b === decks.books.indexOf(item.book)
   : v.o != null ? v.o === 0 : matchesName(v.t, [item.name.ar, item.name.en, ...(item.aliases || [])]))

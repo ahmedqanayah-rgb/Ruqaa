@@ -9,6 +9,7 @@ import { LAST, zoneOf } from '../../lib/game/board.js'
 import { T, turnPlayer, answersNow, expected, slotOf } from '../../lib/game/engine.js'
 import { sfx, setMuted } from '../../lib/game/sfx.js'
 import Board from './Board.jsx'
+import DieThrow from './DieThrow.jsx'
 import Challenge from './Challenge.jsx'
 import Result from './Result.jsx'
 import GameOver from './GameOver.jsx'
@@ -26,7 +27,7 @@ import { L, Die, Token, TOKEN_COLORS, tokenLabels, useNow, KIND, MINI, KindHead,
  * timer run out together. The engine records WHEN things happened (`rolledAt`,
  * a challenge's `t0`), and this file only decides what to draw at that moment:
  *
- *   rolledAt ──die tumbles── (debt collected) ──token walks── landed ──card── t0 ──round── t1
+ *   rolledAt ──die thrown── (debt collected) ──token walks── landed ──card── t0 ──round── t1
  *
  * The overlays are portalled to <body> — the `position: fixed`-inside-a-
  * transform trap the site's in-book bar already avoids.
@@ -82,6 +83,19 @@ function useWakeLock() {
   }, [])
 }
 
+/* A nudge when the game is waiting for YOU — for a laptop where the game is one
+   tab among several (the call in another): the tab's title says so, and an
+   Android phone gives one short buzz. */
+function useNudge(text) {
+  useEffect(() => {
+    if (!text) return undefined
+    const was = document.title
+    document.title = `${text} — ${was}`
+    try { navigator.vibrate?.(70) } catch { /* not offered: fine */ }
+    return () => { document.title = was }
+  }, [text])
+}
+
 function LandedCard({ core, decks }) {
   const { t } = useApp()
   const ch = core.ch
@@ -115,12 +129,11 @@ export default function Stage({ room, snap, me, decks, code }) {
   const sheet = sheetAt(core, now)
   const zoneIcons = decks.books.map((b) => decks.byBook[b].icon)
 
-  /* ---- sounds, once per event ---- */
+  /* ---- sounds, once per event (the die makes its own: DieThrow) ---- */
   const heard = useRef({})
   const once = (key, play) => { if (heard.current[key]) return; heard.current[key] = true; play() }
   useEffect(() => {
     const key = `${core.g}:${core.n}`
-    if (core.rolledAt && core.phase !== 'roll' && now - core.rolledAt < 2500) once(`roll${key}`, sfx.roll)
     if (sheet === 'challenge') once(`card${key}:${core.ch?.s}`, sfx.card)
     if (sheet === 'result') {
       once(`res${key}`, () => {
@@ -158,6 +171,8 @@ export default function Stage({ room, snap, me, decks, code }) {
   /* ---- who has answered this stage (a tick on their chip) ---- */
   const answered = core.phase === 'play' && now >= core.ch.t0 ? answersNow(core, entries) : {}
   const slot = core.phase === 'play' ? slotOf(core) : null
+  const owed = sheet === 'challenge' && !answered[me] && expected(core).includes(me)
+  useNudge(core.phase === 'roll' && myTurn ? t(L('دورك!', 'Your turn!')) : owed ? t(L('جولة!', 'A round!')) : null)
 
   const overlay = sheet && !(peek && sheet === 'result') && createPortal(
     <div className="gm-overlay" role="dialog" aria-modal="true">
@@ -189,7 +204,11 @@ export default function Stage({ room, snap, me, decks, code }) {
 
       <div className="gm-board-wrap">
         <Board players={players} targets={targets} activeId={active?.id} me={me} zoneIcons={zoneIcons}
-          label={t(L('لوح اللعب', 'The game board'))} />
+          label={t(L('لوح اللعب', 'The game board'))}>
+          {core.rolledAt && core.phase !== 'roll' && core.die ? (
+            <DieThrow key={`${core.g}:${core.n}`} room={room} seed={core.seed} turn={core.n} value={core.die} rolledAt={core.rolledAt} />
+          ) : null}
+        </Board>
       </div>
 
       <aside className="gm-side">
@@ -209,7 +228,7 @@ export default function Stage({ room, snap, me, decks, code }) {
         <div className="gm-dock">
           {core.phase === 'roll' && myTurn
             ? <button type="button" className="gm-roll" onClick={roll}><Die value={core.die || 6} spin={core.n} /> <span>{t(L('ارمِ النرد', 'Roll the die'))}</span></button>
-            : <span className={`gm-dock-die ${rolling ? 'is-rolling' : ''}`}><Die value={core.die || 1} spin={core.rolledAt && core.phase !== 'roll' ? core.n : core.n - 1} rolling={rolling} /></span>}
+            : <span className={`gm-dock-die ${rolling ? 'is-away' : ''}`}><Die value={core.die || 1} spin={core.rolledAt && core.phase !== 'roll' ? core.n : core.n - 1} /></span>}
           {status && <p className="gm-status" role="status">{t(status)}</p>}
           {sheet === 'result' && peek && (
             <button type="button" className="gm-btn" onClick={() => setPeek(false)}>{t(L('عُد إلى النتيجة', 'Back to the result'))}</button>

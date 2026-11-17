@@ -226,8 +226,46 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
 .gm-die-face.f5 { transform: rotateY(-90deg) translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f3 { transform: rotateX(90deg) translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f4 { transform: rotateX(-90deg) translateZ(calc(var(--die) / 2)); }
-.gm-die.is-rolling { animation: gmShake 0.5s ease-in-out 3; }
-@keyframes gmShake { 0%, 100% { transform: none; } 25% { transform: translate(-3px, -4px) rotate(-6deg); } 75% { transform: translate(3px, -2px) rotate(6deg); } }
+
+/* THE THROWN DIE (DieThrow.jsx, lib/game/throw.js): a layer over the board,
+   with the camera above its middle — so a die high in the air is nearer, and
+   bigger. Its edge is 16cqw (DIE in throw.js) and every face is pushed out by
+   half of that. Per frame only transform and opacity are written.
+   NEVER GIVE THE CUBE ITSELF AN OPACITY (or `will-change: opacity`, a filter,
+   an overflow…): those flatten a `preserve-3d` element into one plane, and the
+   die is drawn as a single face seen edge-on — it vanishes mid-throw. The
+   whole layer fades instead; it was never part of the cube's 3D. */
+.gm-throw { position: absolute; inset: 0; z-index: 4; pointer-events: none; perspective: 176cqw; opacity: 0; }
+.gm-throw-halo, .gm-throw-shadow, .gm-throw-die { position: absolute; left: 0; top: 0; width: 16cqw; height: 16cqw; }
+.gm-throw-halo, .gm-throw-shadow { will-change: transform, opacity; }
+.gm-throw-halo { border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 220, 130, 0.95), rgba(255, 214, 120, 0.55) 55%, rgba(255, 214, 120, 0)); }
+.gm-throw-shadow { border-radius: 26%; background: rgba(8, 6, 20, 0.8); filter: blur(1.1cqw); }
+.gm-throw-die { transform-style: preserve-3d; will-change: transform; }
+.gm-throw-face {
+  position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden;
+  display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 15%; gap: 5%; border-radius: 18%;
+  background: radial-gradient(130% 130% at 30% 25%, #fffdf8 0%, #f5eee1 55%, #e6dbc6 100%);
+  box-shadow: inset 0 0 0 0.25cqw rgba(120, 100, 70, 0.16), inset 0 -0.6cqw 1cqw rgba(110, 90, 60, 0.16);
+}
+.gm-throw-face i { border-radius: 50%; }
+.gm-throw-face i.on {
+  background: radial-gradient(circle at 42% 38%, #3d352c 0%, #15110d 62%);
+  box-shadow: inset 0 0.25cqw 0.35cqw rgba(0, 0, 0, 0.55), 0 0.12cqw 0 rgba(255, 255, 255, 0.8);
+}
+.gm-throw-face.f1 i.on { background: radial-gradient(circle at 42% 38%, #ef5a5f 0%, #9b1c22 70%); transform: scale(1.3); }
+/* The light: each face darkened by how far it turns away from the top left. */
+.gm-throw-face b { position: absolute; inset: 0; background: #1d160c; opacity: 0; }
+.gm-throw-face.f1 { transform: translateZ(8cqw); }
+.gm-throw-face.f6 { transform: rotateY(180deg) translateZ(8cqw); }
+.gm-throw-face.f2 { transform: rotateY(90deg) translateZ(8cqw); }
+.gm-throw-face.f5 { transform: rotateY(-90deg) translateZ(8cqw); }
+.gm-throw-face.f3 { transform: rotateX(90deg) translateZ(8cqw); }
+.gm-throw-face.f4 { transform: rotateX(-90deg) translateZ(8cqw); }
+/* Inside, three planes through the middle in the colour of the rounded edges,
+   so the gaps the rounded corners leave never show the board through the die. */
+.gm-throw-core { position: absolute; inset: 3%; background: #e2d6bf; }
+.gm-throw-core.is-x { transform: rotateY(90deg); }
+.gm-throw-core.is-y { transform: rotateX(90deg); }
 
 /* ============================================================
    The stage
@@ -314,6 +352,7 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
 .gm-roll .gm-die { --die: 40px; }
 @keyframes gmBreathe { 50% { transform: scale(1.025); } }
 .gm-dock-die { flex-shrink: 0; }
+.gm-dock-die.is-away { visibility: hidden; } /* while the die is out on the board */
 .gm-status { margin: 0; flex: 1; font-size: var(--fs-sm); color: var(--gm-muted); line-height: 1.5; }
 
 /* On a landscape screen (a laptop, a tablet on its side): the board on one

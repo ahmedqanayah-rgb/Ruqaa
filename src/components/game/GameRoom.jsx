@@ -28,11 +28,18 @@ function useRoom(code, me, decks) {
     const next = new Room({
       code, me, send: httpSend, create: handoff?.create || null,
       advance: (core, entries, env) => advance(core, entries, { ...env, decks }),
+      // Twice as often while a roll is awaited: the die's shake (lib/game/throw.js)
+      // covers about half a second, and the others should catch the throw from its start.
+      pace: (r) => (r.core?.phase === 'roll' ? 450 : 1000),
     })
     next.start()
     if (handoff?.name) next.setMine({ name: handoff.name, j: Math.round(next.now()), left: null })
     setRoom(next)
-    return () => next.close()
+    /* Back from the call app: a hidden tab's timers are slowed to a crawl, so
+       catch up at once rather than on the next (late) tick. */
+    const wake = () => { if (document.visibilityState === 'visible') { next.step(); next.flush() } }
+    document.addEventListener('visibilitychange', wake)
+    return () => { document.removeEventListener('visibilitychange', wake); next.close() }
   }, [code, me, decks])
   const subscribe = useCallback((fn) => (room ? room.subscribe(fn) : () => {}), [room])
   const snap = useSyncExternalStore(subscribe, () => (room ? room.snapshot() : EMPTY))

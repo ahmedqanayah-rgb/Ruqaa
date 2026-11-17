@@ -38,22 +38,23 @@ export function Who({ player, label, className = '' }) {
   )
 }
 
-/* ---- the die: a real cube, turned to the face that was rolled ----
-   Six faces placed in 3D; the cube is rotated so the rolled one faces the
-   viewer. `spin` counts rolls, and each roll adds whole turns on top of the
-   last rotation, so the cube always tumbles FORWARD — and a second 4 in a row
-   still visibly rolls instead of sitting still.
+/* ---- the small die: a real cube, turned to the face that was rolled ----
+   The one in the roll button and under the board, showing the last roll. (The
+   die THROWN across the board is DieThrow.jsx.) Six faces placed in 3D; the
+   cube is rotated so the rolled one faces the viewer, and each roll adds whole
+   turns on top of the last rotation (`spin` counts rolls), so it always turns
+   forward to its new face.
 
    A picture, not text: it must not mirror in a right-to-left page (a die's
    pips are not a sentence), hence `dir="ltr"`. */
-const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] }
+export const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] }
 const FACE_TURN = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] }
 
-export function Die({ value = 1, spin = 0, rolling = false }) {
+export function Die({ value = 1, spin = 0 }) {
   const [x, y] = FACE_TURN[value] || FACE_TURN[1]
   const turns = spin * 720
   return (
-    <span className={`gm-die ${rolling ? 'is-rolling' : ''}`} dir="ltr" aria-hidden>
+    <span className="gm-die" dir="ltr" aria-hidden>
       <span className="gm-die-cube" style={{ transform: `rotateX(${x + turns}deg) rotateY(${y + turns}deg)` }}>
         {[1, 2, 3, 4, 5, 6].map((face) => (
           <span key={face} className={`gm-die-face f${face}`}>

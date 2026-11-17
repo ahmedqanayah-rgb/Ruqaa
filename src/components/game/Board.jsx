@@ -59,7 +59,7 @@ function useWalk(targets, quiet) {
   return shown
 }
 
-export default function Board({ players, targets, activeId, me, zoneIcons, quiet = false, label }) {
+export default function Board({ players, targets, activeId, me, zoneIcons, quiet = false, label, children }) {
   const shown = useWalk(targets, quiet)
   const labels = useMemo(() => tokenLabels(players.map((p) => p.name)), [players])
 
@@ -103,6 +103,7 @@ export default function Board({ players, targets, activeId, me, zoneIcons, quiet
             style={{ left: `${spot.x * 100}%`, top: `${spot.y * 100}%` }} />
         )
       })}
+      {children}
     </div>
   )
 }

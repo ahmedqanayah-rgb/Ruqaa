@@ -165,7 +165,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~82 kB gz of script and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~87 kB gz of script and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -412,7 +412,8 @@ keeps `base: './'` sub-path hosting working.
     `vite.config.js` mounts the same handler on the dev and preview servers). It does not know
     the game: per room it keeps the newest "core" (the game's state), one small "entry" per
     player (that player's own inputs) and when each was last heard from, and every poll
-    (about once a second) is a two-way sync. **Nothing there is durable, and the game does not
+    (about once a second — twice while a roll is awaited, so the throw reaches every phone in
+    time) is a two-way sync. **Nothing there is durable, and the game does not
     need it to be**: rooms live in the instance's memory, an instance may be recycled or be one
     of several, so every reply names its instance and says what it lacks, and the phones keep
     sending it until each instance they have heard from holds it (`peers` in `lib/game/net.js`).
@@ -420,6 +421,10 @@ keeps `base: './'` sub-path hosting working.
     moving part that could be down while the club waits on a call. Same origin, so the site
     still makes no third-party request. No accounts: whoever has the code can join (up to 8);
     rooms are forgotten three hours after the last move.
+    **The function runs in Frankfurt** (`vercel.json`: `"regions": ["fra1"]`, the file's only
+    setting; JSON allows no comment, so the reason is here). Vercel's default is Washington
+    (iad1), and the members join from Syria, Turkey, Germany, the UK, the UAE and Malaysia
+    (`club.reach`): every poll was an ocean crossing. Hobby allows one region, any one.
   - **The rules run on every phone** — `lib/game/engine.js`, `advance(core, entries, env)`, pure.
     Phones agree because (1) the clock only ever GATES a step and never goes into a result —
     every time written into a core comes from an entry or a deadline already in it; (2) chance
@@ -477,7 +482,24 @@ keeps `base: './'` sub-path hosting working.
     where a thumb is. The layout switches on the window's SHAPE (`min-aspect-ratio: 1/1`), not
     its width. `Board` draws tokens where they ARE by the rules but walks them there a square at
     a time; `targetsAt` in `Stage.jsx` decides what to draw at each moment of a turn.
+  - **The die is THROWN, by a real little physics simulation** (`lib/game/throw.js`, drawn by
+    `DieThrow.jsx`; added 2026-11-17 when the club asked for a better roll): a cube under
+    gravity, struck at its corners by the board and its frame (restitution, friction), shaken in
+    the hand first and then thrown, bouncing, tipping over its edges and settling. The rules
+    decide the number; the cube is thrown unlabelled and then its faces are LABELLED so the one
+    on top is the rolled number (any of the cube's 24 turns leaves the motion unchanged). Every
+    phone shows the same throw: it is seeded by the room, the loop uses only + − × ÷ and √ (no
+    trig — identical in every engine), and the frame is read off the room's clock. The timeline
+    is `T.dice` (2300 ms): a 560 ms shake — which is also the time the roll takes to reach the
+    other phones — the flight, and at least 480 ms to read the die. Its knocks are scheduled at
+    the simulated impacts. **Never give `.gm-throw-die` an opacity, `will-change: opacity`, a
+    filter or an overflow**: each flattens its `preserve-3d`, and the die vanishes mid-throw as
+    a single face seen edge-on. The layer fades instead. Reduced motion: no throw, the die
+    simply appears settled. To judge a change by eye, freeze `performance.now` in the page and
+    step it — the throw reads only that and the room's clock.
   - **Sounds are synthesised** (`lib/game/sfx.js`, Web Audio), not shipped.
+  - **A nudge when the game waits for you**: the tab's title says «دورك!» / «جولة!» and an
+    Android phone buzzes once — for a laptop with the call in another tab.
   - **Testing**: `node scripts/sim-game.mjs` for the rules and the network; for the screens,
     `npm run dev` and open the game in several tabs (with `--host`, phones on the same Wi-Fi can
     join). To look at one kind of round without waiting for the die, POST a hand-made core to
