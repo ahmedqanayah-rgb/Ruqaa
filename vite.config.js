@@ -1,9 +1,37 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { handleRoom } from './api/_mailbox.js'
+
+/*
+ * The game's one endpoint, on the dev and preview servers. In production
+ * `api/room.js` is a Vercel Function; locally there is no Vercel, so the very
+ * same `handleRoom` is mounted here as a middleware — `npm run dev` (and
+ * `npm run preview`) can host a real multi-phone game, and with `--host` the
+ * phones on the same Wi-Fi can join it.
+ */
+function roomApi() {
+  const mount = (server) => {
+    server.middlewares.use('/api/room', (req, res) => {
+      res.setHeader('Cache-Control', 'no-store')
+      if (req.method !== 'POST') { res.statusCode = 405; return res.end() }
+      let raw = ''
+      req.on('data', (chunk) => { raw += chunk; if (raw.length > 64_000) { raw = ''; req.destroy() } })
+      req.on('end', () => {
+        let body = null
+        try { body = JSON.parse(raw) } catch { /* answered as a bad request below */ }
+        const out = handleRoom(body)
+        res.statusCode = out.status
+        res.setHeader('Content-Type', 'application/json; charset=utf-8')
+        res.end(JSON.stringify(out.json))
+      })
+    })
+  }
+  return { name: 'ruqaa-room-api', configureServer: mount, configurePreviewServer: mount }
+}
 
 // Base is relative so the built site can be hosted from any sub-path.
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), roomApi()],
   base: './',
   build: {
     /*

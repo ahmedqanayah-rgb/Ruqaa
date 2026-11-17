@@ -1,150 +1,201 @@
 /* ============================================================
-   «رُقعة النرد» — the club's dice game (pages/Game.jsx).
+   «رُقعة النرد» — the club's board game (pages/Game.jsx).
 
    Imported by the game's page, so it rides in the game's lazy chunk: nobody who
    came to read a chapter downloads a board game's stylesheet.
 
    TWO WORLDS IN ONE FILE.
-   - The SETUP screen (`.gm-setup`) is an ordinary page of the site: it uses the
+   - The ENTRY page (`.gm-entry`) is an ordinary page of the site: it uses the
      site's tokens and follows the light/dark theme.
-   - The STAGE (`.gm-stage`) and everything laid over it (`.gm-overlay`) do NOT
-     follow the theme. The table is always dark and the cards are always paper,
-     the way a real table and real cards are. It is the thing being shared on a
-     call, and large light shapes on a dark ground are what survives video
-     compression. Its colours are the `--gm-*` set below, and it never reads
-     `--text`/`--bg`.
+   - The ROOM (`.gm-room` — lobby and game) and everything laid over it
+     (`.gm-overlay`) do NOT follow the theme. It is the painted board's own
+     night, with paper cards on it, the way a real board and real cards are.
+     Its colours are the `--gm-*` set below, and it never reads `--text`/`--bg`.
+
+   PHONE FIRST. Every player holds the game in one hand, upright, on a call:
+   the board fills the width, everything tappable is at least 44px, and the
+   round cards rise from the bottom where a thumb is.
    ============================================================ */
 :root {
-  --gm-table: #100d09;
-  --gm-panel: rgba(246, 241, 231, 0.06);
-  --gm-line: rgba(246, 241, 231, 0.14);
+  --gm-night: #121029;
+  --gm-night-2: #1d1a42;
   --gm-text: #f6f1e7;
-  --gm-muted: #b5aa95;
-  --gm-gold: #d9bd8d;
+  --gm-muted: #b8b2d8;
+  --gm-line: rgba(246, 241, 231, 0.14);
+  --gm-panel: rgba(255, 255, 255, 0.06);
+  --gm-gold: #f2c45a;
   --gm-paper: #fbf8f2;
+  --gm-paper-2: #f2ecdf;
   --gm-ink: #1a1611;
-  --gm-ink-soft: #4f473c;
+  --gm-ink-soft: #5a5246;
   --gm-rule: #e4dccb;
   --gm-good: #1f7a52;
-  --gm-good-soft: #e2f5ea;
+  --gm-good-soft: #dff3e8;
   --gm-bad: #b8443a;
-  --gm-bad-soft: #fbe6e3;
+  --gm-bad-soft: #fbe4e0;
+  /* the board's three regions, and the special squares */
+  --gm-zone-0: #3b42a8;
+  --gm-zone-1: #c13d8f;
+  --gm-zone-2: #158aa6;
+  --gm-lab: #12a594;
+  --gm-bluff: #8e4ec6;
+  --gm-luck: #e0a400;
+  --gm-dare: #e5484d;
+  /* the charts' three lines */
+  --gm-ch-a: #3e63dd;
+  --gm-ch-b: #e5484d;
+  --gm-ch-c: #12a594;
 }
 
-/* The site sets a colour on every <p>, <li> and <strong> from the THEME. On the
-   dark table and the paper cards that is the wrong colour half the time (dark
-   text on the table in the light theme, pale text on a card in the dark one),
-   so inside the game those elements take their colour from where they sit.
-   The element list is in `:where()` so the whole selector weighs exactly ONE
-   class: enough to beat the site's bare `p {}` and `strong {}`, and no more
-   than any single-class rule below, which therefore still wins by coming
-   later. (Wrapping the `.gm-*` half in `:where()` too drops it to zero, and
-   then the site's rules win — the scoreboard was dark text on the dark table.) */
-.gm-stage :where(p, li, strong, small, span, h1, h2, h3),
-.gm-overlay :where(p, li, strong, small, span, h1, h2, h3) { color: inherit; }
+/* The site sets a colour on every <p>, <li> and <strong> from the THEME. In
+   the room that is the wrong colour half the time, so inside it those elements
+   take their colour from where they sit. One class of weight (see the old
+   lesson in git history: wrapping the `.gm-*` half in `:where()` too drops it
+   to zero, and the site's rules win). */
+.gm-room :where(p, li, strong, small, span, h1, h2, h3, b, label),
+.gm-overlay :where(p, li, strong, small, span, h1, h2, h3, b, label) { color: inherit; }
 
 /* ============================================================
-   Setup — an ordinary page
+   The entry page — an ordinary page of the site
    ============================================================ */
-.gm-setup { display: flex; flex-direction: column; gap: var(--space-4); }
-
-/* The top of the setup screen is the SAME card as the game's door on Home —
-   the same photograph, veil and mirroring, all in components.css under
-   `.game-promo, .gm-hero` — so the door and the room behind it are one place.
-   Only its size is its own. */
-.gm-hero { aspect-ratio: 3.4 / 1; min-height: 260px; padding: var(--space-5) var(--space-6); }
-.gm-hero-body { max-width: min(48ch, 54%); }
+.gm-entry { display: flex; flex-direction: column; gap: var(--space-4); }
+.gm-hero { aspect-ratio: 2.6 / 1; min-height: 240px; padding: var(--space-5) var(--space-6); }
+.gm-hero-body { max-width: min(46ch, 52%); }
 .gm-hero .eyebrow { color: #e3c999; }
 .gm-hero h1 { color: #fff; margin: 4px 0 6px; font-size: var(--fs-display); }
 .gm-hero p { color: #e4dccb; margin: 0; font-size: var(--fs-md); }
+@media (max-width: 620px) {
+  .gm-hero { aspect-ratio: 4 / 5; min-height: 0; align-items: flex-end; padding: var(--space-4); }
+  .gm-hero .game-cover, html[dir='rtl'] .gm-hero .game-cover { transform: none; }
+  .gm-hero .game-cover img { object-position: center 38%; }
+  .gm-hero::before, html[dir='rtl'] .gm-hero::before {
+    background: linear-gradient(0deg, rgba(14, 11, 30, 0.94) 0%, rgba(14, 11, 30, 0.7) 32%, rgba(14, 11, 30, 0) 62%);
+  }
+  .gm-hero-body { max-width: none; }
+}
 
-.gm-setup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
-.gm-panel { padding: var(--space-5); border-radius: var(--radius-lg); }
-.gm-panel h2 { font-size: var(--fs-lg); margin: 0 0 4px; }
-.gm-panel h2:not(:first-child) { margin-top: var(--space-5); }
-.gm-hint { color: var(--text-muted); font-size: var(--fs-sm); margin: 0 0 var(--space-3); }
-
-.gm-players { list-style: none; padding: 0; margin: 0 0 var(--space-3); display: flex; flex-direction: column; gap: 10px; }
-.gm-players li { display: flex; align-items: center; gap: 10px; margin: 0; }
-/* 16px, never smaller: iOS zooms the whole page into any input set below it,
-   and does not zoom back out. */
+.gm-entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
+@media (max-width: 760px) { .gm-entry-grid { grid-template-columns: minmax(0, 1fr); } }
+.gm-panel { padding: var(--space-5); border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 12px; }
+.gm-panel h2 { font-size: var(--fs-lg); margin: 0; display: flex; align-items: center; gap: 8px; }
+.gm-panel h2 .icon { width: 22px; height: 22px; }
+.gm-hint { color: var(--text-muted); font-size: var(--fs-sm); margin: 0; }
+.gm-fine { color: var(--text-muted); font-size: var(--fs-xs); margin: 6px 0 0; }
+.gm-field-row { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm); font-weight: 600; }
 .gm-input {
-  flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 11px 14px;
+  width: 100%; min-height: 48px; font: inherit; font-size: 1.05rem; padding: 10px 14px;
   border-radius: 14px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text);
-  transition: border-color var(--transition), background var(--transition);
 }
-.gm-input::placeholder { color: var(--text-muted); }
-.gm-input:focus { outline: none; border-color: var(--accent); background: var(--bg-elev); }
-.gm-remove {
-  width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; border: 0; background: transparent;
-  color: var(--text-muted); display: grid; place-items: center;
-  transition: background var(--transition), color var(--transition);
-}
-.gm-remove:hover:not(:disabled) { background: var(--surface-hover); color: var(--danger); }
-.gm-remove:disabled { opacity: 0.3; cursor: default; }
+.gm-input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+.gm-input[aria-invalid='true'] { border-color: var(--danger); }
+.gm-code-input { font-size: 1.5rem; letter-spacing: 0.12em; text-align: center; font-variant-numeric: tabular-nums; }
+.gm-go { align-self: flex-start; min-height: 48px; }
+.gm-error { margin: 0; color: var(--danger); font-size: var(--fs-sm); font-weight: 600; }
+.gm-code-inline { font-variant-numeric: tabular-nums; letter-spacing: 0.06em; color: var(--brand); }
+.gm-join-only { max-width: 560px; }
 
-/* A book is a switch: its cover, its name, and a tick in its own tone. */
-.gm-books { display: grid; gap: 10px; }
-.gm-book {
-  display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 8px; padding-inline: 8px 14px;
-  border-radius: 16px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text-muted);
-  font: inherit; font-weight: 700; font-size: var(--fs-sm); text-align: start;
-  transition: border-color var(--transition), background var(--transition), color var(--transition);
-}
-.gm-book img { width: 36px; height: 54px; object-fit: cover; border-radius: 4px; flex-shrink: 0; filter: grayscale(0.8); opacity: 0.6; transition: filter var(--transition), opacity var(--transition); }
-.gm-book-title { flex: 1; min-width: 0; }
-.gm-book-check {
-  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center;
-  border: 1.5px solid var(--border-strong); color: transparent; font-size: 0.85rem;
-}
-.gm-book.is-on { color: var(--text); border-color: color-mix(in srgb, var(--tone) 55%, var(--border-strong)); background: color-mix(in srgb, var(--tone) 9%, var(--bg-elev)); }
-.gm-book.is-on img { filter: none; opacity: 1; }
-.gm-book.is-on .gm-book-check { background: var(--tone); border-color: var(--tone); color: #fff; }
-
-/* Segmented choices: the game's length, the answer timer. */
-.gm-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; padding: 5px; border-radius: 18px; background: var(--bg-elev-2); margin-top: var(--space-2); }
-.gm-seg button {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  min-height: 48px; padding: 8px 6px; border-radius: 14px; border: 0; background: transparent;
-  color: var(--text-soft); font: inherit; text-align: center;
-  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
-}
-.gm-seg button strong { font-size: var(--fs-sm); color: inherit; }
-.gm-seg button small { font-size: 0.7rem; color: var(--text-muted); }
-.gm-seg button.is-on { background: var(--bg-elev); color: var(--text); box-shadow: var(--shadow-sm); }
-
-.gm-setup-foot { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
-.gm-setup-foot .gm-hint { margin: 0; }
-.gm-start { font-size: var(--fs-md); padding: 15px 36px; }
-.gm-how { margin-top: var(--space-3); }
-.gm-how h2 { font-size: var(--fs-lg); }
-.gm-rules { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 8px; max-width: 70ch; }
-.gm-rules li { margin: 0; }
-
-@media (max-width: 760px) {
-  /* minmax(0, 1fr), not 1fr. A bare `1fr` is minmax(auto, 1fr), and `auto`
-     lets the widest thing inside set the floor — here a text <input>, whose
-     intrinsic width is twenty characters (~309px) however small `min-width`
-     says it may shrink. The panel measured 445px in a 375px phone. */
-  .gm-setup-grid { grid-template-columns: minmax(0, 1fr); }
-  /* On a phone the setup screen has a form to get to, so its cover is a short
-     strip of the picture — the side with the pieces — and the words sit under
-     it on the card's own ground, not over the photograph. (Home's card, which
-     has nothing below it to hurry to, gets the tall poster instead.) */
-  .gm-hero { display: block; aspect-ratio: auto; min-height: 0; padding: 0; }
-  .gm-hero::before { display: none; }
-  .gm-hero .game-cover { position: relative; z-index: 0; height: 170px; overflow: hidden; }
-  /* A close-up of the pieces: the strip is nearly the picture's own shape, so
-     without the zoom a third of it would be the bare wood left for words that,
-     on a phone, are not there. */
-  .gm-hero .game-cover img { transform: scale(1.42); transform-origin: 80% 38%; }
-  .gm-hero-body { max-width: none; padding: var(--space-4); }
-  .gm-panel { padding: var(--space-4); }
-  .gm-start { width: 100%; }
-}
+.gm-rules { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 8px; line-height: 1.7; }
 
 /* ============================================================
-   Tokens and the die — shared by setup and stage
+   The room — always the board's night
+   ============================================================ */
+.gm-room {
+  min-height: 100vh; min-height: 100dvh;
+  color: var(--gm-text);
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(110, 90, 200, 0.28), transparent 70%),
+    linear-gradient(180deg, var(--gm-night-2), var(--gm-night));
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  /* A drag must not pull the page (or pull-to-refresh the game). */
+  overscroll-behavior: none; -webkit-tap-highlight-color: transparent;
+}
+html[data-stage], html[data-stage] body { background: var(--gm-night); }
+
+.gm-top { display: flex; align-items: center; gap: 6px; padding: 8px 10px; min-height: 56px; }
+.gm-top-title { flex: 1; display: flex; flex-direction: column; align-items: center; line-height: 1.2; min-width: 0; }
+.gm-top-title strong { font-size: var(--fs-md); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.gm-top-title small { color: var(--gm-muted); font-size: var(--fs-xs); }
+.gm-icon-btn {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 14px; border: 1px solid var(--gm-line); background: var(--gm-panel); color: var(--gm-text); cursor: pointer;
+}
+.gm-icon-btn .icon { width: 22px; height: 22px; }
+.gm-icon-btn.is-small { width: 34px; height: 34px; border-radius: 10px; }
+.gm-icon-btn.is-small .icon { width: 16px; height: 16px; }
+.gm-icon-btn.is-ink { border-color: var(--gm-rule); background: var(--gm-paper-2); color: var(--gm-ink); }
+.gm-icon-btn:active { transform: scale(0.96); }
+
+.gm-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 10px 18px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-weight: 700; font-size: 1rem;
+  border: 1.5px solid currentColor; background: transparent; color: inherit;
+}
+.gm-btn .icon { width: 20px; height: 20px; }
+.gm-btn.is-main { background: var(--gm-gold); border-color: var(--gm-gold); color: #1a1408; }
+.gm-btn.is-danger { background: var(--gm-bad); border-color: var(--gm-bad); color: #fff; }
+.gm-btn.is-wide { width: 100%; }
+.gm-btn:disabled { opacity: 0.5; cursor: default; }
+.gm-btn:not(:disabled):active { transform: scale(0.98); }
+.gm-overlay .gm-btn:not(.is-main):not(.is-danger) { color: var(--gm-ink); border-color: var(--gm-rule); background: #fff; }
+
+.gm-muted { color: var(--gm-muted); font-size: var(--fs-sm); margin: 8px 0 0; }
+
+/* ---- notices: joining, not found, full ---- */
+.gm-notice { display: grid; place-items: center; padding: 24px; }
+.gm-notice-card { width: min(100%, 420px); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.gm-notice-card > .icon { width: 44px; height: 44px; color: var(--gm-gold); }
+.gm-notice-card h1 { font-size: var(--fs-xl); margin: 0; }
+.gm-notice-card p { margin: 0; color: var(--gm-muted); line-height: 1.7; }
+.gm-notice-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.gm-spinner { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--gm-line); border-top-color: var(--gm-gold); animation: gmSpin 0.9s linear infinite; }
+@keyframes gmSpin { to { transform: rotate(360deg); } }
+.gm-name-form { width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: start; }
+.gm-name-form label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
+.gm-room .gm-input, .gm-overlay .gm-input { background: #fff; color: var(--gm-ink); border-color: var(--gm-rule); }
+
+/* ============================================================
+   The lobby
+   ============================================================ */
+.gm-lobby { display: flex; flex-direction: column; }
+.gm-lobby-body { flex: 1; width: min(100%, 560px); margin: 0 auto; padding: 4px 14px 120px; display: flex; flex-direction: column; gap: 14px; }
+.gm-code-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+  padding: 20px 16px; border-radius: 24px; background: var(--gm-panel); border: 1px solid var(--gm-line);
+}
+.gm-code-label { font-size: var(--fs-sm); color: var(--gm-muted); }
+.gm-code { font-size: clamp(2.6rem, 14vw, 3.6rem); line-height: 1.1; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; color: var(--gm-gold); }
+.gm-code-hint { font-size: var(--fs-sm); color: var(--gm-muted); }
+.gm-code-card .gm-btn { margin-top: 6px; }
+.gm-panel-dark { padding: 16px; border-radius: 20px; background: var(--gm-panel); border: 1px solid var(--gm-line); }
+.gm-panel-dark h2 { font-size: var(--fs-md); margin: 0 0 10px; }
+.gm-roster { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.gm-roster li { display: flex; align-items: center; gap: 10px; margin: 0; min-height: 44px; }
+.gm-roster li.is-away { opacity: 0.6; }
+.gm-roster-name { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-badge { font-size: var(--fs-xs); padding: 2px 8px; border-radius: 999px; background: rgba(242, 196, 90, 0.18); color: var(--gm-gold); }
+.gm-badge.is-me { background: rgba(255, 255, 255, 0.12); color: var(--gm-text); }
+.gm-badge.is-away { background: rgba(229, 72, 77, 0.18); color: #ff9b9e; }
+.gm-books { display: flex; flex-wrap: wrap; gap: 8px; }
+.gm-book-chip {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px;
+  border-radius: 999px; border: 1.5px solid var(--gm-line); background: transparent; color: var(--gm-muted);
+  font: inherit; font-weight: 600; cursor: pointer;
+}
+.gm-book-chip .icon { width: 18px; height: 18px; }
+.gm-book-chip.is-on { background: rgba(242, 196, 90, 0.16); border-color: var(--gm-gold); color: var(--gm-text); }
+.gm-book-chip:disabled { cursor: default; }
+.gm-lobby-foot {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 5;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(0deg, var(--gm-night) 60%, transparent);
+  display: flex; justify-content: center;
+}
+.gm-lobby-foot > * { width: min(100%, 532px); }
+.gm-waiting { margin: 0; text-align: center; color: var(--gm-muted); padding: 12px 0; }
+
+/* ============================================================
+   Tokens and the die
    ============================================================ */
 .gm-token {
   display: inline-grid; place-items: center; flex-shrink: 0;
@@ -152,411 +203,423 @@
   background: var(--tk); color: #1a1611; font-weight: 700; font-size: 0.95rem; line-height: 1;
   border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
+.gm-token.is-mini { width: 24px; height: 24px; font-size: 0.7rem; border-width: 1.5px; }
+.gm-who { display: inline-flex; align-items: center; gap: 6px; }
 
-/* A real cube. `--die` is its edge; every face is pushed out by half of it.
-   The faces are INK with paper pips, because the die sits on the paper-coloured
-   roll button and a white die would vanish into it. */
-.gm-die { --die: 54px; display: inline-block; width: var(--die); height: var(--die); perspective: 520px; flex-shrink: 0; }
+/* A real cube. `--die` is its edge; every face is pushed out by half of it. */
+.gm-die { --die: 46px; display: inline-block; width: var(--die); height: var(--die); perspective: 520px; flex-shrink: 0; }
 .gm-die-cube {
   display: block; position: relative; width: 100%; height: 100%;
-  transform-style: preserve-3d; transition: transform 900ms cubic-bezier(0.2, 0.75, 0.25, 1);
+  transform-style: preserve-3d; transition: transform 1100ms cubic-bezier(0.2, 0.75, 0.25, 1);
 }
 .gm-die-face {
   position: absolute; inset: 0; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   padding: 15%; gap: 7%; border-radius: 20%;
-  background: #1a1611; box-shadow: inset 0 0 0 1.5px rgba(246, 241, 231, 0.18);
+  background: #fbf8f2; box-shadow: inset 0 0 0 1.5px rgba(26, 22, 17, 0.15);
 }
 .gm-die-face i { border-radius: 50%; }
-.gm-die-face i.on { background: #f6f1e7; }
+.gm-die-face i.on { background: #1a1611; }
 .gm-die-face.f1 { transform: translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f6 { transform: rotateY(180deg) translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f2 { transform: rotateY(90deg) translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f5 { transform: rotateY(-90deg) translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f3 { transform: rotateX(90deg) translateZ(calc(var(--die) / 2)); }
 .gm-die-face.f4 { transform: rotateX(-90deg) translateZ(calc(var(--die) / 2)); }
+.gm-die.is-rolling { animation: gmShake 0.5s ease-in-out 3; }
+@keyframes gmShake { 0%, 100% { transform: none; } 25% { transform: translate(-3px, -4px) rotate(-6deg); } 75% { transform: translate(3px, -2px) rotate(6deg); } }
 
 /* ============================================================
-   The stage — the whole window, always the dark table
+   The stage
    ============================================================ */
 .gm-stage {
-  height: 100vh; height: 100dvh;
-  display: grid; grid-template-rows: auto minmax(0, 1fr);
-  color: var(--gm-text);
-  /* THE CLUB'S TABLE: a photograph of the same dark boards as the homepage
-     hero (`--gm-table-img`, set by the stage from data/gameArt.js), under a
-     veil dark enough that the squares and the scores are what is read — the
-     wood is felt, not looked at. The plain colour underneath is what shows if
-     the picture has not arrived, or never does. */
-  background:
-    linear-gradient(180deg, rgba(14, 11, 7, 0.66) 0%, rgba(14, 11, 7, 0.82) 100%),
-    var(--gm-table-img, none) center / cover no-repeat,
-    var(--gm-table);
-  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
-  /* A drag on the board must not pull the page (or pull-to-refresh the game). */
-  overscroll-behavior: none; touch-action: manipulation;
-  -webkit-user-select: none; user-select: none;
+  height: 100vh; height: 100dvh; min-height: 0;
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  -webkit-user-select: none; user-select: none; touch-action: manipulation;
 }
+.gm-board-wrap { min-height: 0; display: grid; place-items: center; padding: 0 8px; container-type: size; }
 
-.gm-top { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
-.gm-top-title { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
-.gm-top-title strong { font-size: var(--fs-md); }
-.gm-top-title span { font-size: var(--fs-xs); color: var(--gm-muted); }
-.gm-top-actions { margin-inline-start: auto; display: flex; gap: 6px; }
-.gm-icon {
-  width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%;
-  display: grid; place-items: center; font-size: 1.1rem;
-  border: 1px solid var(--gm-line); background: var(--gm-panel); color: var(--gm-text);
-  transition: background var(--transition);
+/* THE BOARD: the painting, and the squares drawn over its road. It is a size
+   container, so a square is "so many hundredths of the board" whatever the
+   board's size; `--step` (set by Board.jsx) is the distance between two
+   squares in those units. */
+.gm-board {
+  position: relative; width: min(100cqw, 75cqh); aspect-ratio: 3 / 4;
+  container-type: inline-size; border-radius: 18px; overflow: hidden;
+  background: #262252; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
-.gm-icon:hover { background: rgba(246, 241, 231, 0.14); }
-.gm-icon.is-text { font-weight: 700; font-size: 0.85rem; }
-
-/* Wide: the board, with the scores and the turn beside it.
-   Tall (anything taller than it is wide — a phone, a tablet upright, a narrow
-   window): scores above, board in the middle, the die under the thumb.
-   Keyed on the SHAPE of the window, not its width: a phone turned sideways is
-   844px wide and needs the side-by-side layout, or its board is a strip. */
-.gm-main {
-  min-height: 0; padding: 0 14px 14px; display: grid; gap: 14px;
-  grid-template-columns: minmax(0, 1fr) clamp(210px, 28vw, 330px);
-  grid-template-rows: minmax(0, 1fr) auto;
-  grid-template-areas: 'table scores' 'table turn';
+.gm-board-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.gm-sq {
+  position: absolute; width: calc(var(--step) * 0.6); aspect-ratio: 1; transform: translate(-50%, -50%);
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--sq, var(--gm-zone-0)); color: #fff;
+  border: max(1.5px, 0.45cqw) solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0.5cqw 1.2cqw rgba(0, 0, 0, 0.35);
 }
-.gm-table { grid-area: table; min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; }
-.gm-scores { grid-area: scores; }
-.gm-turn { grid-area: turn; }
-
-.gm-scores { list-style: none; margin: 0; padding: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; }
-.gm-scores::-webkit-scrollbar { display: none; }
-.gm-score {
-  display: flex; align-items: center; gap: 10px; margin: 0; padding: 9px 14px 9px 9px; padding-inline: 9px 14px;
-  border-radius: 999px; background: var(--gm-panel); border: 1px solid var(--gm-line);
-  transition: background var(--transition), border-color var(--transition);
-}
-.gm-score.is-turn { background: rgba(217, 189, 141, 0.18); border-color: var(--gm-gold); }
-.gm-score-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
-.gm-score-n { font-size: 1.5rem; line-height: 1; font-variant-numeric: tabular-nums; animation: gmPop 420ms var(--ease-out); }
-@keyframes gmPop { 0% { transform: scale(1.7); color: var(--gm-gold); } 100% { transform: none; } }
-.gm-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(246, 241, 231, 0.12); color: var(--gm-muted); white-space: nowrap; }
-.gm-badge.is-debt { background: rgba(239, 111, 97, 0.2); color: #ffb0a6; }
-.gm-badge.is-done { color: var(--gm-gold); }
-
-.gm-turn {
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px;
-  border-radius: 24px; background: var(--gm-panel); border: 1px solid var(--gm-line);
-}
-.gm-turn-who { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.gm-turn-who > span:last-child { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
-.gm-turn-who small { font-size: var(--fs-xs); color: var(--gm-muted); }
-.gm-turn-who strong { font-size: var(--fs-lg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gm-notices { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: var(--fs-sm); color: var(--gm-gold); }
-.gm-notices li { margin: 0; }
-
-/* The one button of the game. Chunky, with a lip it sinks onto when pressed —
-   it is a physical thing to hit, not a link to follow. */
-.gm-roll {
-  display: flex; align-items: center; justify-content: center; gap: 16px;
-  padding: 14px 18px; border: 0; border-radius: 20px;
-  background: var(--gm-paper); color: var(--gm-ink);
-  font: inherit; font-weight: 700; font-size: var(--fs-lg);
-  box-shadow: 0 6px 0 #c4b89f, 0 16px 26px rgba(0, 0, 0, 0.4);
-  transition: transform 90ms ease, box-shadow 90ms ease, opacity var(--transition);
-}
-.gm-roll:hover:not(:disabled) { background: #fff; }
-.gm-roll:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 #c4b89f, 0 8px 14px rgba(0, 0, 0, 0.4); }
-.gm-roll:disabled { cursor: default; opacity: 0.78; }
-.gm-roll-label { min-width: 4ch; text-align: start; }
-
-/* ---- the board ---- */
-.gm-boardwrap { min-width: 0; min-height: 0; height: 100%; display: grid; place-items: center; overflow: hidden; }
-.gm-board { position: relative; flex: none; }
-/* The track: a soft line from each square's centre to the next one's. */
-.gm-link {
-  position: absolute; width: var(--cell); height: calc(var(--cell) * 0.1); margin-top: calc(var(--cell) * -0.05);
-  background: var(--gm-line); border-radius: 999px;
-}
-.gm-link.is-down { width: calc(var(--cell) * 0.1); height: var(--cell); margin-top: 0; margin-inline-start: calc(var(--cell) * -0.05); }
-
-.gm-sq { position: absolute; width: var(--cell); height: var(--cell); padding: calc(var(--cell) * 0.07); }
-.gm-sq-face {
-  position: relative; width: 100%; height: 100%;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding-top: calc(var(--cell) * 0.09);
-  border-radius: calc(var(--cell) * 0.22);
-  background: #2a231a; border: 1px solid var(--gm-line); color: var(--gm-text);
-  box-shadow: 0 calc(var(--cell) * 0.04) 0 rgba(0, 0, 0, 0.35);
-  transition: box-shadow var(--transition), transform var(--transition);
-}
-.gm-sq-icon { font-size: calc(var(--cell) * 0.27); }
-.gm-sq-word { font-size: max(9px, calc(var(--cell) * 0.14)); font-weight: 700; line-height: 1; }
-/* A book's squares wear its tone (set per square by lib/tone.js). */
-.gm-sq.is-book .gm-sq-face { background: linear-gradient(155deg, var(--tone), var(--tone-2)); border-color: rgba(255, 255, 255, 0.2); color: #fff; }
-.gm-sq.is-tf .gm-sq-face { background: #f6f1e7; border-color: #f6f1e7; color: #1a1611; }
-.gm-sq.is-luck .gm-sq-face { background: linear-gradient(155deg, #e3c999, #a5855b); border-color: #e3c999; color: #1a1611; }
-.gm-sq.is-dare .gm-sq-face { background: linear-gradient(155deg, #9b87ea, #5b45ba); border-color: rgba(255, 255, 255, 0.25); color: #fff; }
-.gm-sq.is-start .gm-sq-face,
-.gm-sq.is-finish .gm-sq-face { background: transparent; border: 2px dashed var(--gm-gold); color: var(--gm-gold); box-shadow: none; justify-content: center; padding-top: 0; }
-.gm-sq.is-finish .gm-sq-face { background: rgba(217, 189, 141, 0.16); border-style: solid; }
-/* Where the player whose turn it is will land — lit before their token gets
-   there, so the room can see what is coming while it walks. */
-.gm-sq.is-here .gm-sq-face { box-shadow: 0 0 0 calc(var(--cell) * 0.045) var(--gm-gold), 0 calc(var(--cell) * 0.04) 0 rgba(0, 0, 0, 0.35); }
+.gm-sq .icon, .gm-sq .icon-fallback { width: 56%; height: 56%; stroke-width: 2.2; font-size: calc(var(--step) * 0.26); line-height: 1; }
+.gm-sq.z-0 { --sq: var(--gm-zone-0); }
+.gm-sq.z-1 { --sq: var(--gm-zone-1); }
+.gm-sq.z-2 { --sq: var(--gm-zone-2); }
+.gm-sq.t-L { --sq: var(--gm-lab); }
+.gm-sq.t-B { --sq: var(--gm-bluff); }
+.gm-sq.t-C { --sq: var(--gm-luck); color: #2a1f00; }
+.gm-sq.t-D { --sq: var(--gm-dare); }
+.gm-sq.t-S { --sq: #fbf8f2; color: var(--gm-ink); }
+.gm-sq.t-F { --sq: var(--gm-gold); color: #2a1f00; width: calc(var(--step) * 0.78); }
+.gm-sq.is-here { opacity: 0.7; }
 
 .gm-token.on-board {
-  position: absolute; z-index: 2;
-  width: calc(var(--cell) * 0.4); height: calc(var(--cell) * 0.4);
-  margin-inline-start: calc(var(--cell) * -0.2); margin-top: calc(var(--cell) * -0.2);
-  font-size: calc(var(--cell) * 0.19); border-width: max(1.5px, calc(var(--cell) * 0.028));
-  /* Both spellings: the position is set with the logical property, and not
-     every engine lists that name as a transitionable one. */
-  transition: inset-inline-start 220ms var(--ease-out), left 220ms var(--ease-out), right 220ms var(--ease-out), top 220ms var(--ease-out);
+  position: absolute; z-index: 2; transform: translate(-50%, -62%);
+  width: calc(var(--step) * 0.5); height: calc(var(--step) * 0.5);
+  font-size: calc(var(--step) * 0.24); border-width: max(1.5px, 0.4cqw);
+  transition: left 240ms ease-out, top 240ms ease-out;
+  box-shadow: 0 0.8cqw 1.6cqw rgba(0, 0, 0, 0.5);
 }
-.gm-token.on-board.is-crowded { width: calc(var(--cell) * 0.32); height: calc(var(--cell) * 0.32); margin-inline-start: calc(var(--cell) * -0.16); margin-top: calc(var(--cell) * -0.16); font-size: calc(var(--cell) * 0.15); }
-.gm-token.on-board.is-turn { z-index: 3; animation: gmPulse 1.5s ease-out infinite; }
+.gm-token.on-board.is-crowded { width: calc(var(--step) * 0.38); height: calc(var(--step) * 0.38); font-size: calc(var(--step) * 0.18); }
+.gm-token.on-board.is-active { z-index: 3; animation: gmPulse 1.6s ease-out infinite; }
+.gm-token.on-board.is-me { outline: max(2px, 0.5cqw) solid var(--gm-gold); outline-offset: 1px; }
 @keyframes gmPulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tk) 75%, transparent), 0 2px 6px rgba(0, 0, 0, 0.35); }
-  100% { box-shadow: 0 0 0 calc(var(--cell) * 0.2) transparent, 0 2px 6px rgba(0, 0, 0, 0.35); }
+  0% { box-shadow: 0 0 0 0 rgba(242, 196, 90, 0.75), 0 0.8cqw 1.6cqw rgba(0, 0, 0, 0.5); }
+  100% { box-shadow: 0 0 0 3cqw rgba(242, 196, 90, 0), 0 0.8cqw 1.6cqw rgba(0, 0, 0, 0.5); }
 }
 
-.gm-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: var(--fs-xs); color: var(--gm-muted); }
-.gm-legend li { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
-.gm-legend-dot { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-size: 0.72rem; background: #2a231a; color: var(--gm-text); }
-.gm-legend .is-book .gm-legend-dot { background: linear-gradient(155deg, var(--tone), var(--tone-2)); color: #fff; }
-.gm-legend .is-tf .gm-legend-dot { background: #f6f1e7; color: #1a1611; }
-.gm-legend .is-luck .gm-legend-dot { background: linear-gradient(155deg, #e3c999, #a5855b); color: #1a1611; }
-.gm-legend .is-dare .gm-legend-dot { background: linear-gradient(155deg, #9b87ea, #5b45ba); color: #fff; }
-
-@media (max-aspect-ratio: 1/1) {
-  .gm-top { padding: 8px 10px; gap: 8px; }
-  .gm-icon { width: 40px; height: 40px; }
-  .gm-main {
-    padding: 0 10px 10px; gap: 10px;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    grid-template-areas: 'scores' 'table' 'turn';
-  }
-  /* The scores become a grid of chips with EVERYONE on screen — a score that
-     has to be scrolled to is not being kept in front of the room. Two or three
-     players share one row; four sit two by two; five or six, three across.
-     (`.n4` etc. is the player count, set by the stage.) */
-  .gm-scores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; overflow: visible; }
-  .gm-scores.n2, .gm-scores.n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gm-score { min-width: 0; padding: 5px 12px 5px 5px; padding-inline: 5px 12px; gap: 7px; }
-  .gm-score .gm-token { width: 28px; height: 28px; font-size: 0.8rem; }
-  .gm-score-name { font-size: var(--fs-sm); }
-  .gm-score-n { font-size: 1.15rem; }
-  .gm-score .gm-badge { display: none; }
-  /* The narrowest phones: three chips across leaves a name about 15px, which
-     ellipsis reduces to «ل…». Two across keeps every name whole, and costs the
-     board nothing — at this width its squares are limited by the screen's
-     width, not by the height the extra row takes. */
-  @media (max-width: 359px) { .gm-scores { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .gm-turn { grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 10px; border-radius: 22px; }
-  .gm-notices { grid-column: 1 / -1; order: 3; }
-  .gm-roll { padding: 10px 16px; gap: 12px; font-size: var(--fs-md); }
-  .gm-die { --die: 46px; }
-  .gm-legend { gap: 4px 10px; font-size: 0.68rem; }
-  .gm-legend-dot { width: 18px; height: 18px; border-radius: 6px; font-size: 0.6rem; }
+/* The players, and the die, under the board. */
+.gm-side { display: flex; flex-direction: column; gap: 8px; padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); min-width: 0; }
+.gm-strip {
+  list-style: none; margin: 0; padding: 2px; display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
 }
-/* A short, wide window — a phone on its side. Everything gives up some height. */
-@media (min-aspect-ratio: 1/1) and (max-height: 520px) {
-  .gm-top { padding: 4px 10px; }
-  .gm-icon { width: 36px; height: 36px; }
-  .gm-main { padding: 0 10px 8px; gap: 8px; }
-  .gm-score { padding-block: 4px; }
-  .gm-score .gm-token { width: 26px; height: 26px; font-size: 0.75rem; }
-  .gm-score-n { font-size: 1.1rem; }
-  .gm-turn { padding: 8px; gap: 6px; }
-  .gm-turn-who strong { font-size: var(--fs-md); }
-  .gm-roll { padding: 8px 12px; font-size: var(--fs-md); }
-  .gm-die { --die: 40px; }
-  .gm-legend { display: none; }
+.gm-strip::-webkit-scrollbar { display: none; }
+.gm-strip li {
+  position: relative; flex-shrink: 0; margin: 0; display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px 5px 5px; padding-inline: 5px 12px; border-radius: 999px;
+  background: var(--gm-panel); border: 1px solid var(--gm-line);
+}
+.gm-strip li.is-turn { border-color: var(--gm-gold); background: rgba(242, 196, 90, 0.14); }
+.gm-strip li.is-gone { opacity: 0.4; }
+.gm-strip li.is-away { opacity: 0.65; }
+.gm-strip-text { display: flex; flex-direction: column; line-height: 1.15; }
+.gm-strip-text bdi { font-weight: 700; font-size: var(--fs-sm); max-width: 9ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-strip-text small { font-size: 0.7rem; color: var(--gm-muted); font-variant-numeric: tabular-nums; }
+.gm-strip-tick { position: absolute; top: -4px; inset-inline-end: -2px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--gm-good); color: #fff; }
+.gm-strip-tick .icon { width: 12px; height: 12px; stroke-width: 3; }
+
+.gm-dock { display: flex; align-items: center; gap: 12px; min-height: 64px; }
+.gm-roll {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 64px;
+  border: 0; border-radius: 20px; cursor: pointer; font: inherit; font-weight: 700; font-size: 1.15rem;
+  background: var(--gm-gold); color: #1a1408; box-shadow: 0 8px 24px rgba(242, 196, 90, 0.3);
+  animation: gmBreathe 2s ease-in-out infinite;
+}
+.gm-roll .gm-die { --die: 40px; }
+@keyframes gmBreathe { 50% { transform: scale(1.025); } }
+.gm-dock-die { flex-shrink: 0; }
+.gm-status { margin: 0; flex: 1; font-size: var(--fs-sm); color: var(--gm-muted); line-height: 1.5; }
+
+/* On a landscape screen (a laptop, a tablet on its side): the board on one
+   side, the players and the die on the other. Switched on the window's SHAPE,
+   not its width — a phone on its side is wide but short. */
+@media (min-aspect-ratio: 1/1) and (min-width: 700px) {
+  .gm-stage { grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); grid-template-rows: auto minmax(0, 1fr); }
+  .gm-top { grid-column: 1 / -1; }
+  .gm-side { grid-column: 2; grid-row: 2; justify-content: flex-start; padding-top: 12px; }
+  .gm-strip { flex-direction: column; overflow: visible; }
+  .gm-strip li { border-radius: 16px; }
+  .gm-strip-text bdi { max-width: 18ch; }
+  .gm-dock { flex-direction: column; align-items: stretch; }
 }
 
 /* ============================================================
-   Cards, dialogs and the result — laid over the stage
+   Overlays: the round cards rise from the bottom
    ============================================================ */
 .gm-overlay {
-  position: fixed; inset: 0; z-index: 400;
-  display: grid; place-items: center; overflow-y: auto;
-  padding: clamp(10px, 3vw, 32px);
-  padding-top: max(clamp(10px, 3vw, 32px), env(safe-area-inset-top, 0px));
-  padding-bottom: max(clamp(10px, 3vw, 32px), env(safe-area-inset-bottom, 0px));
-  background: rgba(8, 6, 4, 0.74);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  animation: gmFade 160ms ease-out both;
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(9, 8, 22, 0.5); animation: gmFade 200ms ease-out both;
+  color: var(--gm-ink);
 }
 @keyframes gmFade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes gmRise { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes gmRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.gm-sheet {
+  position: relative; width: min(100%, 560px); max-height: 94dvh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--gm-paper); color: var(--gm-ink); border-radius: 28px 28px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35); animation: gmRise 260ms ease-out both;
+}
+@media (min-width: 700px) and (min-height: 600px) {
+  .gm-overlay { align-items: center; padding: 20px; }
+  .gm-sheet { border-radius: 28px; }
+}
+/* The band: a strip of the board's painting — the region the turn's square is
+   in — across the top of the card. One picture, already downloaded. */
+.gm-band { height: 72px; background-size: 100% auto; background-repeat: no-repeat; border-bottom: 3px solid var(--tone, var(--gm-zone-0)); }
+.gm-sheet.tone-book { --tone: var(--gm-zone-0); }
+.gm-sheet.tone-bluff { --tone: var(--gm-bluff); }
+.gm-sheet.tone-dare { --tone: var(--gm-dare); }
+.gm-sheet.tone-luck { --tone: var(--gm-luck); }
+.gm-sheet.tone-lab { --tone: var(--gm-lab); }
+.gm-sheet-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; flex-wrap: wrap; }
+.gm-sheet-head .gm-kind { flex: 1; min-width: 0; }
+.gm-sheet-body { padding: 6px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.gm-sheet-foot { position: sticky; bottom: 0; padding: 10px 16px 14px; background: linear-gradient(0deg, var(--gm-paper) 75%, rgba(251, 248, 242, 0)); }
+.gm-dialog { padding: 20px 18px; }
+.gm-dialog h2 { margin: 0 0 10px; font-size: var(--fs-lg); }
+.gm-dialog p { line-height: 1.7; margin: 0 0 10px; }
+.gm-dialog-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
 
-.gm-card {
-  width: min(780px, 100%); border-radius: 28px; overflow: hidden;
-  background: var(--gm-paper); color: var(--gm-ink);
-  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.75);
-  animation: gmRise 260ms var(--ease-out) both;
-}
-/* The band across the top says what kind of card it is, in the colour that
-   kind of square wears on the board — a book's question in the book's tone. */
-.gm-card-head {
-  position: relative; isolation: isolate;
-  display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 14px 18px;
-  background: linear-gradient(135deg, var(--tone), var(--tone-2)); color: #fff;
-  --band: var(--tone-2);
-}
-/* WITH A PHOTOGRAPH the band grows into a strip of the club's table — the
-   book's own objects for its questions, the kind's for the rest — and the
-   chips sit along its foot, on a veil of the band's own colour. The picture is
-   decoration and is sized like it: tall enough to be seen, never so tall that
-   a phone has to scroll to reach the answers. */
-.gm-card-head.has-art { min-height: clamp(104px, 21vh, 190px); align-items: flex-end; flex-wrap: nowrap; padding: 44px 14px 12px; overflow: hidden; }
-/* Nudged up and in a little: the objects sit across the middle of the picture,
-   and the chips take the foot of the band, so an untouched picture has its
-   subject half under the labels. */
-.gm-card-art { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transform: scale(1.12) translateY(-7%); }
-/* `hidden` is how a picture that failed to load takes itself away (see the
-   card). The attribute alone would lose to the `display` implied above, so it
-   is spelled out — the same trap as `.section-cards[hidden]`. */
-.gm-card-art[hidden], .gm-over-art[hidden] { display: none; }
-.gm-card-head.has-art::after {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(0deg, color-mix(in srgb, var(--band) 94%, transparent) 0%, color-mix(in srgb, var(--band) 58%, transparent) 24%, transparent 58%);
-}
-/* One row along the foot, whatever the book is called: a long title is cut
-   with an ellipsis rather than pushing the player's name onto a second line and
-   doubling the height of the labels over the picture. The points move to the
-   top corner, out of that row. */
-.gm-card-head.has-art .gm-card-kind {
-  display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  background: rgba(14, 11, 7, 0.55); color: #fff; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-.gm-card-head.has-art .gm-card-kind .icon { margin-inline-end: 6px; }
-.gm-card-head.has-art .gm-card-book { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gm-card-head.has-art .gm-card-who { flex-shrink: 0; }
-.gm-card-head.has-art .gm-card-book,
-.gm-card-head.has-art .gm-card-who { color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); }
-.gm-card-head.has-art .gm-card-stake {
-  position: absolute; top: 12px; inset-inline-end: 14px;
-  background: rgba(14, 11, 7, 0.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-.gm-card.kind-tf .gm-card-head { --band: #1a1611; }
-.gm-card.kind-luck .gm-card-head, .gm-card.kind-finish .gm-card-head { --band: #6f552f; }
-.gm-card.kind-dare .gm-card-head { --band: #4a379f; }
-.gm-card.kind-tf .gm-card-head { background: #1a1611; color: #f6f1e7; }
-.gm-card.kind-luck .gm-card-head { background: linear-gradient(135deg, #e3c999, #a5855b); color: #1a1611; }
-.gm-card.kind-dare .gm-card-head { background: linear-gradient(135deg, #9b87ea, #5b45ba); color: #fff; }
-.gm-card.kind-finish .gm-card-head { background: linear-gradient(135deg, #e3c999, #a5855b); color: #1a1611; }
-.gm-card-kind { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 4px 13px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); }
-.gm-card.kind-luck .gm-card-kind, .gm-card.kind-finish .gm-card-kind { background: rgba(26, 22, 17, 0.12); }
-.gm-card-book { font-size: var(--fs-sm); font-weight: 600; opacity: 0.85; }
-.gm-card-who { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
-.gm-card-who .gm-token { width: 28px; height: 28px; font-size: 0.8rem; }
-.gm-card-stake { font-weight: 700; padding: 3px 11px; border-radius: 999px; background: rgba(0, 0, 0, 0.26); color: #fff; font-variant-numeric: tabular-nums; }
+.gm-kind { display: flex; align-items: center; gap: 10px; }
+.gm-kind-mark { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center; background: var(--tone, var(--gm-zone-0)); color: #fff; }
+.gm-kind-mark .icon, .gm-kind-mark .icon-fallback { width: 22px; height: 22px; }
+.gm-kind-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.gm-kind-text strong { font-size: var(--fs-md); }
+.gm-kind-text small { font-size: var(--fs-xs); color: var(--gm-ink-soft); }
 
-.gm-timer { height: 8px; background: var(--gm-rule); }
-.gm-timer i { display: block; height: 100%; background: var(--gm-ink); transition: width 1s linear, background var(--transition); }
-.gm-timer i.is-low { background: var(--gm-bad); }
+.gm-landed { padding: 14px 16px 22px; display: flex; flex-direction: column; gap: 10px; }
+.gm-landed .gm-kind-mark { animation: gmPop 500ms ease-out both; }
+@keyframes gmPop { 0% { transform: scale(0.4) rotate(-12deg); } 70% { transform: scale(1.15); } 100% { transform: none; } }
+.gm-landed-who { margin: 0; color: var(--gm-ink-soft); font-size: var(--fs-sm); }
+.gm-landed-how { margin: 0; font-size: 1.05rem; line-height: 1.7; }
 
-.gm-card-body { display: flex; flex-direction: column; gap: 16px; padding: clamp(18px, 4vw, 34px); }
-/* The type is sized for a shared screen: this is read by people watching a
-   video of someone else's window. */
-.gm-q { margin: 0; font-size: clamp(1.25rem, 0.9rem + 1.6vw, 1.9rem); font-weight: 700; line-height: 1.5; text-wrap: balance; }
-.gm-q strong { font-weight: 700; }
+/* ---- the clock ---- */
+.gm-time { position: relative; flex-basis: 100%; height: 10px; border-radius: 999px; background: var(--gm-rule); overflow: hidden; }
+.gm-time-fill { position: absolute; inset: 0; transform-origin: left; background: var(--tone, var(--gm-zone-0)); transition: transform 200ms linear; }
+html[dir='rtl'] .gm-time-fill { transform-origin: right; }
+.gm-time b { position: absolute; inset-inline-end: 6px; top: -3px; font-size: 0.65rem; line-height: 16px; color: var(--gm-ink); font-variant-numeric: tabular-nums; }
+.gm-time.is-low .gm-time-fill { background: var(--gm-bad); }
+.gm-sheet-body > .gm-time { flex-basis: auto; }
 
-.gm-opts { display: grid; gap: 10px; }
-.gm-opts.is-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* ---- a question and its options ---- */
+.gm-q { margin: 0; font-size: 1.12rem; line-height: 1.65; font-weight: 600; }
+.gm-q.is-small { font-size: var(--fs-md); font-weight: 600; color: var(--gm-ink-soft); }
+.gm-q.is-statement { font-size: 1.25rem; padding: 14px 16px; border-radius: 18px; background: var(--gm-paper-2); }
+.gm-opts { display: grid; gap: 8px; }
+.gm-opts.is-charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .gm-opt {
-  display: flex; align-items: center; gap: 14px; text-align: start;
-  padding: 13px 16px; border-radius: 18px; border: 2px solid var(--gm-rule);
-  background: #fff; color: var(--gm-ink);
-  font: inherit; font-size: clamp(1rem, 0.86rem + 0.7vw, 1.3rem); font-weight: 600; line-height: 1.5;
-  box-shadow: 0 4px 0 var(--gm-rule);
-  transition: transform 90ms ease, box-shadow 90ms ease, border-color var(--transition), background var(--transition), opacity var(--transition);
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 12px;
+  border-radius: 18px; border: 1.5px solid var(--gm-rule); background: #fff; color: var(--gm-ink);
+  font: inherit; font-size: 1rem; line-height: 1.5; text-align: start; cursor: pointer;
 }
-.gm-opt:hover:not(:disabled) { border-color: var(--gm-ink); box-shadow: 0 4px 0 var(--gm-ink); }
-.gm-opt:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--gm-ink); }
+button.gm-opt:not(:disabled):active { transform: scale(0.99); }
 .gm-opt:disabled { cursor: default; }
+.gm-opt.is-picked { border-color: var(--gm-ink); background: var(--gm-paper-2); box-shadow: inset 0 0 0 1.5px var(--gm-ink); }
+.gm-opt.is-own { opacity: 0.55; }
+.gm-opts.is-charts .gm-opt { flex-direction: column; align-items: stretch; padding: 8px; }
 .gm-opt-letter {
-  width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center;
-  background: var(--gm-ink); color: var(--gm-paper); font-weight: 700; font-size: 1.05rem;
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; display: grid; place-items: center;
+  background: var(--gm-paper-2); font-weight: 700; font-size: 0.95rem;
 }
-.gm-opt-text { min-width: 0; }
-.gm-opt.is-right { border-color: var(--gm-good); background: var(--gm-good-soft); box-shadow: 0 4px 0 var(--gm-good); }
+.gm-opt-letter .icon { width: 18px; height: 18px; stroke-width: 2.6; }
+.gm-opt-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.gm-opt-text small { color: var(--gm-ink-soft); }
+.gm-opts.is-result .gm-opt { cursor: default; }
+.gm-opt.is-right { border-color: var(--gm-good); background: var(--gm-good-soft); }
 .gm-opt.is-right .gm-opt-letter { background: var(--gm-good); color: #fff; }
-.gm-opt.is-wrong { border-color: var(--gm-bad); background: var(--gm-bad-soft); box-shadow: 0 4px 0 var(--gm-bad); }
-.gm-opt.is-wrong .gm-opt-letter { background: var(--gm-bad); color: #fff; }
-.gm-opt.is-dim { opacity: 0.45; box-shadow: none; }
-.gm-opt.is-pass, .gm-opt.is-fail { justify-content: center; }
-.gm-opt.is-pass { border-color: var(--gm-good); color: var(--gm-good); box-shadow: 0 4px 0 var(--gm-good); }
-.gm-opt.is-fail { border-color: var(--gm-rule); color: var(--gm-ink-soft); }
+.gm-opt.is-wrong { border-color: var(--gm-bad); background: var(--gm-bad-soft); }
+.gm-by { display: block; font-size: var(--fs-xs); color: var(--gm-ink-soft); margin-top: 2px; }
+.gm-pickers { display: flex; flex-wrap: wrap; gap: 3px; justify-content: flex-end; max-width: 45%; }
+.gm-picker { position: relative; }
+.gm-picker .icon { position: absolute; top: -6px; inset-inline-end: -6px; width: 14px; height: 14px; color: #c98a00; stroke-width: 2.6; }
 
-.gm-reveal { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding-top: 14px; border-top: 2px dashed var(--gm-rule); animation: gmRise 240ms var(--ease-out) both; }
-.gm-verdict { margin: 0; font-weight: 700; font-size: var(--fs-lg); }
-.gm-card.is-right .gm-verdict { color: var(--gm-good); }
-.gm-card.is-wrong .gm-verdict { color: var(--gm-bad); }
-.gm-why { margin: 0; font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem); line-height: 1.75; color: var(--gm-ink-soft); }
-.gm-why strong { color: var(--gm-ink); }
-.gm-effect { margin: 0; font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem); font-weight: 700; line-height: 1.35; }
-.mood-good .gm-effect { color: var(--gm-good); }
-.mood-bad .gm-effect { color: var(--gm-bad); }
-.gm-card-body.is-finish { align-items: center; text-align: center; }
-.gm-card-body.is-finish .gm-effect { color: #8a6a39; font-size: clamp(2rem, 1.2rem + 4vw, 3.4rem); }
-.gm-judge-note { margin: 0; color: #81776a; font-size: var(--fs-sm); }
-
-.gm-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 46px; padding: 10px 22px; border-radius: 999px;
-  border: 2px solid #d5cab4; background: transparent; color: var(--gm-ink);
-  font: inherit; font-weight: 700; font-size: var(--fs-base);
-  transition: background var(--transition), border-color var(--transition), transform 90ms ease;
+.gm-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gm-choice {
+  min-height: 84px; border-radius: 20px; border: 1.5px solid var(--gm-rule); background: #fff; color: var(--gm-ink);
+  font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px;
 }
-.gm-btn:hover { background: #f1ebde; }
-.gm-btn:active { transform: scale(0.97); }
-.gm-btn.is-main { background: var(--gm-ink); border-color: var(--gm-ink); color: var(--gm-paper); }
-.gm-btn.is-main:hover { background: #3a3126; border-color: #3a3126; }
-.gm-btn.is-danger { border-color: var(--gm-bad); color: var(--gm-bad); }
-.gm-btn.is-danger:hover { background: var(--gm-bad-soft); }
+.gm-choice strong { font-size: 1.15rem; }
+.gm-choice small { color: var(--gm-ink-soft); font-size: var(--fs-xs); line-height: 1.4; text-align: center; }
+.gm-choice .icon { width: 28px; height: 28px; }
+.gm-choice.is-big { min-height: 150px; }
+.gm-choice.is-picked { border-color: var(--gm-ink); box-shadow: inset 0 0 0 1.5px var(--gm-ink); background: var(--gm-paper-2); }
+.gm-choice.is-yes { color: var(--gm-good); border-color: color-mix(in srgb, var(--gm-good) 40%, white); }
+.gm-choice.is-no { color: var(--gm-bad); border-color: color-mix(in srgb, var(--gm-bad) 40%, white); }
+.gm-choice:disabled { cursor: default; }
 
-/* Rules and the "end the game?" dialog: plain paper cards. */
-.gm-card.kind-rules { width: min(640px, 100%); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: clamp(20px, 4vw, 34px); }
-.gm-card.kind-rules h2 { margin: 0; font-size: var(--fs-xl); }
-.gm-card .gm-rules { color: var(--gm-ink-soft); }
-.gm-link-note { margin: 0; font-size: var(--fs-sm); color: #81776a; }
+.gm-wait { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 10px 0 4px; color: var(--gm-ink-soft); }
+.gm-wait > .icon { width: 30px; height: 30px; color: var(--gm-good); stroke-width: 2.6; }
+.gm-wait p { margin: 0; }
+.gm-said { margin: 0; font-weight: 600; color: var(--gm-ink); }
+.gm-hint-dark { margin: 0; color: var(--gm-ink-soft); font-size: var(--fs-sm); line-height: 1.6; }
+.gm-muted-dark { margin: 0; text-align: center; color: var(--gm-ink-soft); font-size: var(--fs-sm); }
+.gm-worth { margin: 0; font-size: var(--fs-sm); font-weight: 700; color: var(--gm-zone-1); }
 
-/* ---- the result ---- */
-.gm-card.kind-over { --pad: clamp(22px, 5vw, 40px); width: min(620px, 100%); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 var(--pad) var(--pad); text-align: center; }
-/* The winner's table, edge to edge across the top of the card (the negative
-   margin cancels the card's side padding), with the crown overlapping its foot. */
-.gm-over-art { display: block; width: calc(100% + 2 * var(--pad)); max-width: none; height: clamp(110px, 20vh, 170px); object-fit: cover; margin-inline: calc(-1 * var(--pad)); }
-.gm-crown { position: relative; margin-top: -38px; width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem; background: linear-gradient(155deg, #e3c999, #a5855b); color: #1a1611; border: 4px solid var(--gm-paper); box-shadow: 0 10px 24px -8px rgba(165, 133, 91, 0.8); }
-/* No picture (it failed to load and hid itself): the crown has nothing to stand
-   on, so it comes back down into the card. */
-.gm-over-art[hidden] + .gm-crown { margin-top: var(--pad); }
-.gm-over-label { margin: 10px 0 0; font-size: var(--fs-sm); font-weight: 700; color: #8a6a39; }
-.gm-over-name { margin: 0 0 12px; font-size: clamp(2rem, 1.2rem + 4vw, 3.2rem); line-height: 1.25; overflow-wrap: anywhere; }
-.gm-final { list-style: none; margin: 0 0 18px; padding: 0; width: 100%; display: grid; gap: 8px; }
-.gm-final li { display: grid; grid-template-columns: auto minmax(0, 1.1fr) minmax(0, 2fr) auto; align-items: center; gap: 10px; margin: 0; padding: 8px 14px 8px 8px; padding-inline: 8px 14px; border-radius: 999px; background: #f1ebde; text-align: start; }
-.gm-final li.is-winner { background: #1a1611; color: #f6f1e7; }
+/* «من هو؟» — the clues arrive one by one */
+.gm-clues { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: clue; }
+.gm-clues li { margin: 0; padding: 10px 14px; border-radius: 16px; background: var(--gm-paper-2); line-height: 1.6; counter-increment: clue; }
+.gm-clues li::before { content: counter(clue) ' · '; font-weight: 700; color: var(--gm-zone-1); }
+.gm-clues li.is-new { animation: gmRise 300ms ease-out both; }
+.gm-clues li.gm-clue-next { background: transparent; border: 1.5px dashed var(--gm-rule); color: var(--gm-ink-soft); font-size: var(--fs-sm); }
+.gm-clues li.gm-clue-next::before { content: none; }
+.gm-who-card { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 18px; background: var(--gm-good-soft); }
+.gm-who-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.gm-who-card strong { font-size: 1.2rem; }
+
+/* the white lie */
+.gm-blank { display: inline-block; min-width: 3.4em; margin: 0 4px; padding: 0 8px; border-bottom: 2.5px solid var(--gm-bluff); color: var(--gm-bluff); text-align: center; }
+.gm-fill { color: var(--gm-good); background: var(--gm-good-soft); padding: 0 6px; border-radius: 6px; }
+.gm-dare { margin: 0; padding: 14px 16px; border-radius: 18px; background: color-mix(in srgb, var(--gm-dare) 10%, white); border-inline-start: 4px solid var(--gm-dare); font-size: 1.08rem; line-height: 1.7; }
+.gm-verdict { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.05rem; }
+.gm-verdict .icon { width: 26px; height: 26px; stroke-width: 2.6; }
+.gm-verdict.is-pass { color: var(--gm-good); }
+.gm-verdict.is-fail { color: var(--gm-bad); }
+
+/* numbers */
+.gm-readout { display: block; text-align: center; font-size: 2.2rem; font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px 0; min-height: 56px; }
+.gm-readout small { font-size: 1rem; font-weight: 600; color: var(--gm-ink-soft); }
+.gm-readout.is-wide { letter-spacing: 0.2em; font-size: 1.8rem; }
+.gm-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.gm-pad button {
+  min-height: 54px; border-radius: 16px; border: 1.5px solid var(--gm-rule); background: #fff; color: var(--gm-ink);
+  font: inherit; font-size: 1.4rem; font-weight: 700; cursor: pointer; touch-action: manipulation;
+}
+.gm-pad button:active { background: var(--gm-paper-2); }
+.gm-pad button.is-del svg { width: 26px; height: 26px; }
+.gm-truth { margin: 0; font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--gm-good); }
+.gm-truth b { font-size: 2.2rem; }
+.gm-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.gm-rows li { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 12px; border-radius: 14px; background: #fff; border: 1px solid var(--gm-rule); }
+.gm-rows li.is-best { border-color: var(--gm-good); background: var(--gm-good-soft); }
+.gm-rows-name { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-rows-value { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* results */
+.gm-awards { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.gm-awards li { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 4px 10px 4px 4px; padding-inline: 4px 10px; border-radius: 999px; background: var(--gm-paper-2); font-weight: 600; }
+.gm-steps { font-variant-numeric: tabular-nums; color: var(--gm-good); font-weight: 700; }
+.gm-steps.is-neg { color: var(--gm-bad); }
+.gm-why { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: #fff7e3; line-height: 1.7; }
+.gm-why > .icon { width: 22px; height: 22px; flex-shrink: 0; color: #b07a00; margin-top: 3px; }
+.gm-luck { padding: 16px; border-radius: 20px; background: #fff7e3; display: flex; flex-direction: column; gap: 8px; }
+.gm-luck.is-bad { background: var(--gm-bad-soft); }
+.gm-luck.is-good { background: var(--gm-good-soft); }
+.gm-luck-who { margin: 0; color: var(--gm-ink-soft); font-size: var(--fs-sm); }
+.gm-luck-text { margin: 0; font-size: 1.15rem; line-height: 1.7; font-weight: 600; }
+.gm-luck-effect { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.gm-luck-effect .icon { width: 22px; height: 22px; }
+
+/* ============================================================
+   The Lab
+   ============================================================ */
+.gm-brief { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 10px 0; }
+.gm-brief p { margin: 0; font-size: 1.05rem; line-height: 1.75; }
+.gm-brief strong { font-size: 3rem; line-height: 1; color: var(--gm-lab); font-variant-numeric: tabular-nums; }
+.gm-ask { display: flex; flex-direction: column; gap: 10px; }
+.gm-run { display: block; text-align: center; color: var(--gm-ink-soft); font-size: var(--fs-sm); }
+
+/* count the sheep: animals cross three lanes, left to right */
+.gm-field {
+  position: relative; height: 230px; overflow: hidden; border-radius: 20px;
+  background: linear-gradient(180deg, #8fd0ef 0%, #bfe7f5 26%, #79c46b 27%, #5aa856 100%);
+}
+.gm-field-fence { position: absolute; inset-inline: 0; top: 24%; height: 10px; background: repeating-linear-gradient(90deg, #7a5a3a 0 6px, transparent 6px 26px); opacity: 0.6; }
+.gm-animal { position: absolute; left: 0; width: 76px; animation-name: gmCross; animation-timing-function: linear; animation-fill-mode: both; }
+.gm-animal.lane-0 { top: 30%; }
+.gm-animal.lane-1 { top: 52%; }
+.gm-animal.lane-2 { top: 74%; }
+.gm-animal-hop { display: block; animation-name: gmHop; animation-timing-function: ease-in-out; animation-fill-mode: both; }
+.gm-animal svg { width: 100%; height: auto; display: block; }
+/* `left`, not a transform: a percentage of `left` is the FIELD's width, which is
+   what the animals have to cross, on any screen. */
+@keyframes gmCross { from { left: -90px; } to { left: calc(100% + 10px); } }
+@keyframes gmHop { 0%, 20%, 40%, 60%, 80%, 100% { transform: translateY(0); } 10%, 30%, 50%, 70%, 90% { transform: translateY(-8px); } }
+
+/* the vigilance test: one big target */
+.gm-reflex {
+  width: 100%; min-height: 260px; border: 0; border-radius: 24px; cursor: pointer; font: inherit; color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; touch-action: manipulation;
+}
+.gm-reflex small { opacity: 0.8; }
+.gm-reflex strong { font-size: 2rem; }
+.gm-reflex.is-wait { background: #2f2b5e; }
+.gm-reflex.is-go { background: #1f9460; }
+.gm-reflex.is-early { background: var(--gm-bad); }
+.gm-reflex.is-slow { background: #6b6680; }
+.gm-reflex.is-hit { background: var(--gm-zone-0); }
+
+/* the digits */
+.gm-digits { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 0; }
+.gm-digits small { color: var(--gm-ink-soft); }
+.gm-digits strong { font-size: 6rem; line-height: 1; min-height: 1em; font-variant-numeric: tabular-nums; animation: gmPop 300ms ease-out both; }
+
+/* Stroop */
+.gm-stroop { display: flex; flex-direction: column; gap: 14px; align-items: stretch; }
+.gm-stroop-word { text-align: center; font-size: 3rem; line-height: 1.2; padding: 12px 0; letter-spacing: 0.02em; }
+.gm-stroop-word.is-no { animation: gmShake 0.3s; }
+.gm-stroop-keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gm-stroop-keys button {
+  min-height: 62px; border-radius: 18px; border: 1.5px solid var(--gm-rule); background: #fff; color: var(--gm-ink);
+  font: inherit; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; touch-action: manipulation;
+}
+.gm-stroop-keys button span { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); }
+
+/* find the one arrow */
+.gm-search { display: flex; flex-direction: column; gap: 10px; }
+.gm-search-grid { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 6px; }
+.gm-search-grid button {
+  aspect-ratio: 1; border-radius: 12px; border: 1.5px solid var(--gm-rule); background: #fff; color: var(--gm-ink);
+  display: grid; place-items: center; cursor: pointer; touch-action: manipulation;
+}
+.gm-search-grid button span { display: grid; place-items: center; }
+.gm-search-grid .icon { width: 26px; height: 26px; stroke-width: 2.4; }
+.gm-search-grid button.is-miss { background: var(--gm-bad-soft); border-color: var(--gm-bad); }
+
+/* the auction */
+.gm-bids { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.gm-bids .gm-choice { min-height: 100px; padding: 6px; }
+.gm-bids .gm-choice strong { font-size: 1.6rem; }
+@media (max-width: 420px) { .gm-bids { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ============================================================
+   Charts (MiniChart.jsx)
+   ============================================================ */
+.gm-chart { width: 100%; height: auto; display: block; border-radius: 16px; background: #fff; border: 1px solid var(--gm-rule); }
+.gm-chart.is-small { border: 0; background: transparent; }
+.gm-chart-axis { fill: none; stroke: var(--gm-ink-soft); stroke-width: 2; stroke-linecap: round; }
+.gm-chart-tick { fill: var(--gm-ink-soft); font-size: 11px; font-family: inherit; }
+.gm-chart-tick.is-strong { fill: var(--gm-ink); font-weight: 700; }
+.gm-chart-num { fill: var(--gm-ink); font-size: 12px; font-weight: 700; font-family: inherit; }
+.gm-chart-label { fill: var(--gm-ink); font-size: 12px; font-weight: 700; font-family: inherit; }
+.gm-chart-label.is-q { fill: var(--gm-bad); font-size: 15px; }
+.gm-chart-note { fill: var(--gm-ink); font-size: 12px; font-weight: 600; font-family: inherit; }
+.gm-chart-mark { stroke: var(--gm-ink-soft); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.gm-chart-ask { fill: var(--gm-bad); }
+.gm-chart-askmark { fill: #fff; font-size: 16px; font-weight: 700; font-family: inherit; }
+
+/* ============================================================
+   The end
+   ============================================================ */
+.gm-over { position: relative; width: min(100%, 560px); max-height: 100dvh; overflow-y: auto; padding: 16px; align-self: center; }
+.gm-over-card {
+  position: relative; display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 22px 16px 18px; border-radius: 28px; background: var(--gm-paper); color: var(--gm-ink);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); animation: gmRise 300ms ease-out both;
+}
+.gm-over-card > .icon { width: 52px; height: 52px; color: #c98a00; }
+.gm-over-label { margin: 8px 0 0; font-size: var(--fs-sm); font-weight: 700; color: #8a6a39; }
+.gm-over-name { margin: 0 0 14px; font-size: clamp(2rem, 1.2rem + 4vw, 3rem); line-height: 1.25; overflow-wrap: anywhere; }
+.gm-final { list-style: none; margin: 0 0 14px; padding: 0; width: 100%; display: grid; gap: 6px; }
+.gm-final li { display: grid; grid-template-columns: auto auto minmax(0, 1fr) minmax(0, 1.2fr) auto; align-items: center; gap: 10px; margin: 0; padding: 6px 12px 6px 8px; padding-inline: 8px 12px; border-radius: 999px; background: var(--gm-paper-2); text-align: start; }
+.gm-final li.is-winner { background: var(--gm-ink); color: var(--gm-text); }
+.gm-final-rank { font-weight: 700; min-width: 1.2em; text-align: center; }
 .gm-final-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gm-final-bar { height: 10px; border-radius: 999px; background: rgba(26, 22, 17, 0.1); overflow: hidden; }
-.gm-final li.is-winner .gm-final-bar { background: rgba(246, 241, 231, 0.18); }
+.gm-final-bar { height: 8px; border-radius: 999px; background: rgba(26, 22, 17, 0.1); overflow: hidden; }
+.gm-final li.is-winner .gm-final-bar { background: rgba(246, 241, 231, 0.2); }
 .gm-final-bar i { display: block; height: 100%; border-radius: 999px; min-width: 6px; }
-.gm-final-score { font-size: 1.3rem; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: end; }
-.gm-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.gm-manual { width: 100%; font: inherit; font-size: var(--fs-sm); line-height: 1.6; padding: 10px 12px; border-radius: 14px; border: 1.5px dashed #d5cab4; background: #fff; color: var(--gm-ink); resize: vertical; margin-bottom: 12px; }
+.gm-final-score { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 2ch; text-align: end; }
+.gm-titles { list-style: none; margin: 0 0 14px; padding: 0; width: 100%; display: grid; gap: 6px; text-align: start; }
+.gm-titles li { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 12px; border-radius: 14px; background: #fff7e3; line-height: 1.5; }
+.gm-titles .icon { width: 22px; height: 22px; flex-shrink: 0; color: #b07a00; }
+.gm-titles small { color: var(--gm-ink-soft); }
+.gm-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.gm-manual { width: 100%; margin-top: 10px; font: inherit; font-size: var(--fs-sm); line-height: 1.6; padding: 10px 12px; border-radius: 14px; border: 1.5px dashed #d5cab4; background: #fff; color: var(--gm-ink); }
+@media (max-width: 480px) {
+  .gm-final li { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+  .gm-final-bar { display: none; }
+  .gm-over-actions .gm-btn { flex: 1 1 100%; }
+}
 
 .gm-confetti { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
 .gm-confetti i { position: absolute; top: -6%; width: 10px; height: 16px; border-radius: 2px; animation: gmFall linear infinite; }
 @keyframes gmFall { to { top: 106%; transform: rotate(720deg) translateX(40px); } }
 
-@media (max-width: 520px) {
-  .gm-card { border-radius: 24px; }
-  .gm-card-head { padding: 12px 14px; }
-  .gm-opt { padding: 12px 13px; gap: 11px; border-radius: 16px; }
-  .gm-opt-letter { width: 34px; height: 34px; border-radius: 11px; }
-  .gm-final li { grid-template-columns: auto minmax(0, 1fr) auto; }
-  .gm-final-bar { display: none; }
-  .gm-over-actions .gm-btn { flex: 1 1 100%; }
-}
-
-/* Presentation mode scales the root font-size for the projector. The stage is
+/* Presentation mode scales the root font-size for the projector. The room is
    already sized to the window, so it must not also grow by rem: undo it here. */
 html[data-presenting][data-stage] { font-size: 16px; }

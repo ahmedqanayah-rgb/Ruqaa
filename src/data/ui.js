@@ -19,8 +19,8 @@ export const ui = {
   game: {
     title: { ar: 'رُقعة النرد', en: 'Ruqʿa Dice' },
     tagline: {
-      ar: 'لعبة ليلة النادي: نردٌ، وأسئلةٌ غريبة من كتبنا، ونقاطٌ تُحسب أمام الجميع.',
-      en: 'The club’s game night: a die, odd questions from our books, and a score everyone can see.',
+      ar: 'لعبة ليلة النادي: كلٌّ على هاتفه، ولوحٌ واحد يجمعنا، وأسئلةٌ ماكرة من كتبنا.',
+      en: 'The club’s game night: everyone on their own phone, one board between us, and sly questions from our books.',
     },
     play: { ar: 'العبوا الآن', en: 'Play now' },
   },

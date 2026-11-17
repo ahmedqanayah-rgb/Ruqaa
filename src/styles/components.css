@@ -528,9 +528,9 @@ html[dir='rtl'] .side-chev.open { transform: rotate(90deg); }
   border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
 }
 .game-promo {
-  /* Not wider than about 3:1 — the cover's pieces fill most of its height, and
-     a flatter strip cuts the dice off the top and the saucer off the bottom. */
-  aspect-ratio: 3.1 / 1; min-height: 300px;
+  /* About as wide as the painted banner (21:9 ≈ 2.36:1, cropped a little): a
+     flatter strip would cut the lighthouse's flag and the die off. */
+  aspect-ratio: 2.6 / 1; min-height: 300px;
   padding: var(--space-5) var(--space-6);
   box-shadow: var(--shadow);
   transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out);
@@ -563,17 +563,17 @@ html[dir='rtl'] .game-cover { transform: scaleX(-1); }
 .game-promo-cta { margin-top: var(--space-3); background: #f6f1e7; color: #17130e; border-color: transparent; }
 .game-promo:hover .game-promo-cta { background: #fff; }
 
-/* A phone gets the POSTER: pieces in the upper half of the picture, the words
-   on the bare wood below them. No mirroring — top and bottom read the same in
-   either direction — so the rules above are undone here rather than left to
-   flip a picture that has no side. */
+/* A phone gets the POSTER — the painted board itself (GameCover's `poster`),
+   with the words over the night valley at its foot. No mirroring: the board's
+   road runs the same way in either language, so the rules above are undone
+   here rather than left to flip a map. */
 @media (max-width: 620px) {
   .game-promo {
     aspect-ratio: 4 / 5; min-height: 0; align-items: flex-end;
     padding: var(--space-4) var(--space-4) var(--space-5);
   }
   .game-promo .game-cover, html[dir='rtl'] .game-promo .game-cover { transform: none; }
-  .game-promo .game-cover img { object-position: center top; }
+  .game-promo .game-cover img { object-position: center 38%; }
   .game-promo::before, html[dir='rtl'] .game-promo::before {
     background: linear-gradient(0deg, rgba(14, 11, 7, 0.94) 0%, rgba(14, 11, 7, 0.74) 30%, rgba(14, 11, 7, 0) 60%);
   }

@@ -1,31 +1,33 @@
 /* ============================================================================
-   «رُقعة النرد» — the luck cards and the dares (the question decks live with
+   «رُقعة النرد» — the chance cards and the dares (the question decks live with
    each book, in books/<slug>/game.js).
    ----------------------------------------------------------------------------
-   LUCK («حظّ»). `text` is the STORY ONLY — it never says what happens. What
+   CHANCE («حظّ»). `text` is the STORY ONLY — it never says what happens. What
    happens is `effect`, and the card prints that line itself from the effect
-   (lib/game/effects.js), so the words on the card and what the game
-   does cannot drift apart. Every story is a real thing from one of the books,
-   which is the point: a card that sends you back three squares for an
-   all-nighter is the book's argument, told as a board game.
+   (lib/game/effects.js), so the words on the card and what the game does
+   cannot drift apart. Every story is a real thing from one of the books, which
+   is the point: a card that sends you back three squares for an all-nighter is
+   the book's argument, told as a board game.
 
-   Effects:
+   The game's only currency is SQUARES — where you stand is your score — so
+   every effect moves tokens:
      { kind: 'move',   n }            this player moves n squares (negative = back)
-     { kind: 'score',  n }            this player's points change by n
+     { kind: 'others', n }            every OTHER player moves n squares
+     { kind: 'all',    n }            everyone moves n squares
      { kind: 'again' }                roll again
      { kind: 'skip' }                 miss the next turn
-     { kind: 'steal' }                take a point from whoever is ahead
-     { kind: 'gift' }                 give a point to whoever is last
-     { kind: 'others', n }            every OTHER player moves n squares
-     { kind: 'all',    n }            everyone's points change by n
-     { kind: 'loan',   now, later }   +now at once, -later at this player's next turn
+     { kind: 'steal',  n }            take up to n squares from whoever is furthest ahead
+     { kind: 'swap' }                 swap places with the nearest player ahead
+     { kind: 'loan',   now, later }   forward `now` at once, back `later` before the next roll
+   No card can carry anyone over the finish line: the game is not won on luck.
 
    `book` ties a card to the book its story is from: a game played with only
-   some of the books draws only their cards.
+   some of the books draws only their cards (and the cards with no book).
 
-   DARES («تحدٍّ»). Done out loud on the call; the group is the judge and the
-   host taps the verdict. Each one should take under twenty seconds, need no
-   props, and work with cameras on or off unless it says otherwise.
+   DARES («تحدٍّ»). Performed out loud on the call by whoever landed on the
+   square; everyone else is the jury and votes on their own phone (a tie
+   passes). Each one should take under twenty seconds, need no props, and work
+   with cameras on or off unless it says otherwise.
    ========================================================================== */
 
 const L = (ar, en) => ({ ar, en })
@@ -53,11 +55,11 @@ export const luckCards = [
       'Coffee in the late afternoon. Half its caffeine is still in your blood at midnight, and you are staring at the ceiling.'),
     { kind: 'skip' }),
   luck('l-ws-clocks', WS,
-    L('تقدّمت الساعة في الربيع، وسُرقت ساعةٌ من نومك.', 'The clocks went forward in spring, and an hour of your sleep was stolen.'),
-    { kind: 'score', n: -1 }),
+    L('تقدّمت الساعة في الربيع، وسُرقت ساعةٌ من نوم الجميع.', 'The clocks went forward in spring, and an hour of everyone’s sleep was stolen.'),
+    { kind: 'all', n: -1 }),
   luck('l-ws-dream', WS,
     L('حلمتَ بالحلّ، كما حلم مندلييف بجدوله الدوري.', 'You dreamed the answer, the way Mendeleev dreamed his periodic table.'),
-    { kind: 'score', n: 2 }),
+    { kind: 'move', n: 2 }),
 
   /* -------------------------- تركيزنا المسلوب -------------------------- */
   luck('l-sf-notification', SF,
@@ -74,40 +76,48 @@ export const luckCards = [
   luck('l-sf-retreat', SF,
     L('ثلاثة أشهرٍ بلا إنترنت في بروفينستاون. عاد إليك تركيزك.',
       'Three months offline in Provincetown. Your focus has come back.'),
-    { kind: 'score', n: 2 }),
+    { kind: 'move', n: 2 }),
   luck('l-sf-four-days', SF,
     L('أسبوع عملٍ من أربعة أيام: ارتفعت إنتاجيّتك ٤٠٪.', 'A four-day week: your productivity is up 40%.'),
     { kind: 'again' }),
   luck('l-sf-steal', SF,
     L('تركيزٌ مسلوب! لكنّك هذه المرّة أنت السالب.', 'Stolen focus! Only this time, you are the thief.'),
-    { kind: 'steal' }),
+    { kind: 'steal', n: 2 }),
+  luck('l-sf-outrage', SF,
+    L('منشورٌ غاضب انتشر كالنار: الخوارزمية تكافئ الغضب، والجميع توقّف ليتشاجر.',
+      'An outraged post goes viral: the algorithm rewards anger, and everyone stops to argue.'),
+    { kind: 'others', n: -1 }),
 
   /* --------------------- الاقتصاد كما أشرحه لابنتي --------------------- */
   luck('l-td-loan', TD,
-    L('كتب المصرف رقماً بجانب اسمك: مالٌ من العدم! وإن انتهت اللعبة قبل السداد تبخّر الدَّين، كما في معسكر رادفورد.',
-      'The bank typed a number next to your name: money from thin air! And if the game ends before you repay, the debt goes up in smoke — as it did in Radford’s camp.'),
+    L('كتب المصرف رقماً بجانب اسمك: مالٌ من العدم! لكنّ الدَّين يُسدَّد بفائدته قبل رميتك القادمة.',
+      'The bank typed a number next to your name: money from thin air! But the debt is repaid, with interest, before your next roll.'),
     { kind: 'loan', now: 3, later: 4 }),
   luck('l-td-bombing', TD,
     L('ليلة القصف في المعسكر: دخّن الجميع سجائرهم، فارتفعت قيمة ما بقي معك.',
       'The night of the bombing in the camp: everyone smoked their cigarettes, so what you have left is worth more.'),
-    { kind: 'score', n: 2 }),
+    { kind: 'move', n: 2 }),
   luck('l-td-sheep', TD,
     L('طردك المالك من أرضه، ووضع مكانك خروفاً.', 'The landlord has evicted you and put a sheep in your place.'),
     { kind: 'move', n: -3 }),
   luck('l-td-forest', TD,
     L('احترقت الغابة… فـ«نما» الاقتصاد. منطقٌ عجيب، لكنه في صالحك.',
       'The forest burned down… so the economy “grew”. Strange logic, but it works in your favour.'),
-    { kind: 'score', n: 1 }),
+    { kind: 'move', n: 1 }),
   luck('l-td-crash', TD,
     L('انهيار ١٩٢٩! الجميع يتراجع… إلا أنت.', 'The crash of 1929! Everyone falls back… except you.'),
     { kind: 'others', n: -2 }),
   luck('l-td-share', TD,
     L('في ماكرونيسوس تقاسم السجناء كلّ ما يصلهم، بلا مقابل.',
       'On Makronisos the prisoners shared whatever reached them, for nothing.'),
-    { kind: 'gift' }),
-  luck('l-td-inflation', TD,
-    L('تضخّم! طُبع من النقود أكثر ممّا ينبغي، وصارت نقاط الجميع أرخص.',
-      'Inflation! Too much money was printed, and everybody’s points are worth less.'),
+    { kind: 'all', n: 1 }),
+  luck('l-td-arbitrage', TD,
+    L('مراجحة! اشتريتَ الشاي رخيصاً من الفرنسيين وبعته غالياً للإنجليز.',
+      'Arbitrage! You bought tea cheap from the French and sold it dear to the English.'),
+    { kind: 'swap' }),
+  luck('l-td-stag', TD,
+    L('أحد الصيّادين خشي أن يتراخى غيره، فالتفت إلى الأرانب البرّية — وتبعه الجميع.',
+      'One hunter feared another would slacken and turned to the hares — and everyone followed.'),
     { kind: 'all', n: -1 }),
 ]
 

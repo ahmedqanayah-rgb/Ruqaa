@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext.jsx'
 import { ui } from '../../data/ui.js'
-import { ranking } from '../../lib/game/engine.js'
-import { GAME_ART } from '../../data/gameArt.js'
 import Icon from '../Icon.jsx'
-import { Token } from './parts.jsx'
-
-const L = (ar, en) => ({ ar, en })
+import { LAST } from '../../lib/game/board.js'
+import { standings, actingHost } from '../../lib/game/engine.js'
+import { L, Token, TOKEN_COLORS, copyText } from './parts.jsx'
 
 /* Forty paper scraps for the winner. Positions are rolled once per mount (so a
    re-render does not reshuffle them mid-fall) and everything else is CSS. The
@@ -23,108 +22,90 @@ function Confetti({ colors }) {
   return (
     <div className="gm-confetti" aria-hidden>
       {bits.map((b, i) => (
-        <i key={i} style={{
-          left: `${b.left}%`, background: b.color,
-          animationDelay: `${b.delay}s`, animationDuration: `${b.time}s`,
-          transform: `rotate(${b.turn}deg)`,
-        }} />
+        <i key={i} style={{ left: `${b.left}%`, background: b.color, animationDelay: `${b.delay}s`, animationDuration: `${b.time}s`, transform: `rotate(${b.turn}deg)` }} />
       ))}
     </div>
   )
 }
 
-/*
- * THE END: who won, and everyone's score, on one screen the host can leave up
- * while the room argues about it.
- *
- * A tie is a tie — two names under the crown — because the ranking does not
- * break one by the order people happened to be typed in (see `ranking`).
- *
- * «انسخ النتيجة» copies plain text for the club's chat. Same three-step
- * fallback as ResultCard, for the same reason: the clipboard API fails on more
- * devices than you would think, and a button that silently does nothing is the
- * worst outcome — the last step shows the text to be selected by hand.
- */
-export default function GameOver({ state, dispatch, colors, labels }) {
+/* The evening's titles, from the four tallies the engine keeps per player
+   (`st`: right answers, fastest answers, players fooled, lab wins). A title
+   goes to the clear leader of its tally, and only if they earned it at all. */
+const TITLES = [
+  { k: 0, icon: '📖', name: L('دودة الكتب', 'Bookworm'), why: L('أكثر الإجابات الصحيحة', 'most right answers') },
+  { k: 1, icon: '⚡', name: L('الأسرع', 'Quickest draw'), why: L('أكثر من أجاب أوّلاً وأصاب', 'most first right answers') },
+  { k: 2, icon: '🎭', name: L('سيّد الكذب الأبيض', 'Master of the white lie'), why: L('خدع أكثر اللاعبين', 'fooled the most players') },
+  { k: 3, icon: '🧪', name: L('بطل المختبر', 'Lab champion'), why: L('فاز بأكثر جولات المختبر', 'won the most Lab rounds') },
+]
+
+export default function GameOver({ room, core, me, labels }) {
   const { t } = useApp()
-  const [copied, setCopied] = useState(false)
-  const order = useMemo(() => ranking(state.players), [state.players])
-  const winners = order.filter((p) => p.winner)
-  const top = Math.max(1, order[0].score)
+  const navigate = useNavigate()
+  const [copied, setCopied] = useState(null)
+  const rows = useMemo(() => standings(core.players.filter((p) => !p.gone)), [core.players])
+  // Token letters are indexed by the room's player list, not by the ranking.
+  const labelOf = (id) => labels[core.players.findIndex((p) => p.id === id)] ?? ''
+  const winners = rows.filter((r) => r.rank === 0)
+  const isHost = actingHost(core, room.env()) === me
+  const asked = room.snapshot().entries[me]?.d?.again === core.g
+
+  const titles = TITLES.map((title) => {
+    const best = Math.max(0, ...rows.map((r) => r.st[title.k]))
+    const holders = rows.filter((r) => r.st[title.k] === best)
+    return best > 0 && holders.length === 1 ? { ...title, who: holders[0], n: best } : null
+  }).filter(Boolean)
 
   const summary = [
     `${t(ui.game.title)} — ${t(ui.siteTitle)}`,
     `${t(winners.length > 1 ? L('تعادل', 'A tie') : L('الفائز', 'Winner'))}: ${winners.map((p) => p.name).join(t(L(' و', ' & ')))}`,
-    ...order.map((p, i) => `${i + 1}. ${p.name} — ${p.score}`),
-    `${window.location.origin}${window.location.pathname}#/game`,
+    ...rows.map((r) => `${r.rank + 1}. ${r.name} — ${t(L('الخانة', 'square'))} ${Math.min(LAST, r.pos)}/${LAST}`),
+    ...titles.map((title) => `${t(title.name)}: ${title.who.name}`),
   ].join('\n')
 
-  const copy = async () => {
-    const flash = (v) => { setCopied(v); if (v === 'ok') setTimeout(() => setCopied(false), 2400) }
-    try { await navigator.clipboard.writeText(summary); flash('ok'); return } catch { /* fall through */ }
-    try {
-      const ta = document.createElement('textarea')
-      ta.value = summary
-      ta.setAttribute('readonly', '')
-      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
-      document.body.appendChild(ta)
-      ta.select()
-      const ok = document.execCommand('copy')
-      document.body.removeChild(ta)
-      if (ok) { flash('ok'); return }
-    } catch { /* fall through */ }
-    flash('manual')
-  }
-
   return (
-    <div className="gm-overlay is-over" role="dialog" aria-modal="true" aria-label={t(L('النتيجة', 'The result'))}>
-      <Confetti colors={colors} />
-      <article className="gm-card kind-over">
-        {/* The winner's table across the top, with the crown standing on its
-            lower edge. If the picture is missing it hides itself and the crown
-            sits at the top of the card, as it did before there was a picture. */}
-        <img className="gm-over-art" src={GAME_ART.win} alt="" decoding="async"
-          onError={(e) => { e.currentTarget.hidden = true }} />
-        <div className="gm-crown"><Icon name="👑" /></div>
-        <p className="gm-over-label">
-          {t(winners.length > 1 ? L('تعادلٌ على القمّة', 'A tie at the top') : L('الفائز', 'The winner'))}
-        </p>
-        <h2 className="gm-over-name">
-          {winners.map((p) => p.name).join(t(L(' و', ' & ')))}
-        </h2>
+    <div className="gm-over">
+      <Confetti colors={winners.map((w) => TOKEN_COLORS[w.c]).concat(['#f2c45a', '#fbf8f2'])} />
+      <div className="gm-over-card">
+        <Icon name="🏆" />
+        <p className="gm-over-label">{t(winners.length > 1 ? L('تعادل!', 'A tie!') : L('الفائز', 'The winner'))}</p>
+        <h1 className="gm-over-name"><bdi>{winners.map((w) => w.name).join(t(L(' و', ' & ')))}</bdi></h1>
 
         <ol className="gm-final">
-          {order.map((p) => (
-            <li key={p.index} className={p.winner ? 'is-winner' : ''}>
-              <Token color={colors[p.index]} label={labels[p.index]} />
-              <span className="gm-final-name">{p.name}</span>
-              <span className="gm-final-bar" aria-hidden>
-                <i style={{ width: `${(p.score / top) * 100}%`, background: colors[p.index] }} />
-              </span>
-              <strong className="gm-final-score">{p.score}</strong>
+          {rows.map((r) => (
+            <li key={r.id} className={r.rank === 0 ? 'is-winner' : ''}>
+              <span className="gm-final-rank" dir="ltr">{r.rank + 1}</span>
+              <Token color={TOKEN_COLORS[r.c]} label={labelOf(r.id)} />
+              <bdi className="gm-final-name">{r.id === me ? t(L('أنت', 'You')) : r.name}</bdi>
+              <span className="gm-final-bar"><i style={{ width: `${(Math.min(LAST, r.pos) / LAST) * 100}%`, background: TOKEN_COLORS[r.c] }} /></span>
+              <span className="gm-final-score" dir="ltr">{Math.min(LAST, r.pos)}</span>
             </li>
           ))}
         </ol>
 
-        {copied === 'manual' && (
-          <textarea className="gm-manual" readOnly value={summary} rows={order.length + 3}
-            aria-label={t(L('نصّ النتيجة — حدّده وانسخه', 'Result text — select and copy'))}
-            onFocus={(e) => e.target.select()} />
+        {titles.length > 0 && (
+          <ul className="gm-titles">
+            {titles.map((title) => (
+              <li key={title.k}>
+                <Icon name={title.icon} />
+                <span><strong>{t(title.name)}</strong> <bdi>{title.who.name}</bdi><small> — {t(title.why)} (<span dir="ltr">{title.n}</span>)</small></span>
+              </li>
+            ))}
+          </ul>
         )}
 
         <div className="gm-over-actions">
-          <button type="button" className="gm-btn is-main"
-            onClick={() => dispatch({ type: 'again', seed: Math.floor(Math.random() * 0xffffffff) })}>
-            <Icon name="↻" /> {t(L('جولةٌ أخرى', 'Play again'))}
+          {isHost
+            ? <button type="button" className="gm-btn is-main" disabled={asked} onClick={() => room.setMine({ again: core.g })}><Icon name="↻" /> {t(L('جولةٌ أخرى', 'Play again'))}</button>
+            : <p className="gm-muted-dark">{t(L('المضيف يقرّر إن كانت هناك جولةٌ أخرى.', 'The host decides whether there is another game.'))}</p>}
+          <button type="button" className="gm-btn" onClick={async () => setCopied((await copyText(summary)) ? 'ok' : 'manual')}>
+            <Icon name="📋" /> {t(copied === 'ok' ? L('نُسخت', 'Copied') : L('انسخ النتيجة', 'Copy the result'))}
           </button>
-          <button type="button" className="gm-btn" onClick={copy}>
-            <Icon name={copied === 'ok' ? '✓' : '📋'} /> {t(copied === 'ok' ? L('نُسخت', 'Copied') : L('انسخ النتيجة', 'Copy the result'))}
-          </button>
-          <button type="button" className="gm-btn" onClick={() => dispatch({ type: 'setup' })}>
-            {t(L('لاعبون أو كتبٌ أخرى', 'Change players or books'))}
+          <button type="button" className="gm-btn" onClick={() => { room.setMine({ left: true }); setTimeout(() => navigate('/game'), 250) }}>
+            <Icon name="🚪" /> {t(L('اخرج', 'Leave'))}
           </button>
         </div>
-      </article>
+        {copied === 'manual' && <textarea className="gm-manual" readOnly rows={6} value={summary} onFocus={(e) => e.target.select()} />}
+      </div>
     </div>
   )
 }

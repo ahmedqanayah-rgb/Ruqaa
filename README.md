@@ -26,19 +26,22 @@ npm run build    # outputs to dist/
 npm run preview  # serve the production build locally
 ```
 
-Requires Node.js 18+ (developed on Node 24). No backend — everything runs
-client‑side, and all state is kept in memory (no localStorage/sessionStorage).
+Requires Node.js 18+ (developed on Node 24). Everything runs client‑side except
+the game's one small room mailbox (`api/room.js`, a Vercel Function — `npm run dev`
+serves it too), and all state is kept in memory (no localStorage/sessionStorage).
 
 ## What's inside
 
 - **Navigation:** four destinations — Home, Books, Game, Club — in a top bar, and
   on phones in a floating dock at the bottom of the screen. Inside a book, a
   sidebar (a drawer on phones) lists the books and their sections.
-- **Ruqʿa Dice / رُقعة النرد** (`/#/game`) — the club's dice board game, made to be
-  played together on a video call: one person shares their screen, everyone
-  answers out loud. Questions with silly wrong answers from every book, the
-  books' myth‑or‑fact statements, luck cards and dares; the score is kept on
-  screen and the whole game is stored in the page's link, so a refresh resumes it.
+- **Ruqʿa Dice / رُقعة النرد** (`/#/game`) — the club's board game, played on the
+  weekly call with everyone on their own phone: one person opens a room and reads
+  out its six‑digit code, the others join, and every phone shows the same painted
+  board. Each square opens a round everybody plays at once — tricky questions from
+  every book, myth or fact, closest number, who‑is‑it, charts, a white‑lie round,
+  mini‑games, dares and chance cards. The phones keep in step through one small
+  function on the site's own server (`api/room.js`); nothing is stored on a phone.
 - **Global features:** AR⇄EN language switch (translates *everything*, including
   chart labels, tooltips and image captions), dark/light theme toggle. Direction
   and theme are driven from `<html>`; all colors come from CSS variables in

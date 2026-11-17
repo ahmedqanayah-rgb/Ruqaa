@@ -1,7 +1,8 @@
 # CLAUDE.md
 
 Bilingual (Arabic RTL / English LTR) reading-club site built with Vite + React 18. No
-backend, no build step beyond Vite. The git repo root and all commands live in this
+backend apart from ONE small serverless function — the game's room mailbox, `api/room.js` —
+and no build step beyond Vite. The git repo root and all commands live in this
 `app/` directory (the repo sits under `Ruqaa/app`, not `Ruqaa/`).
 
 ## Commands
@@ -30,10 +31,10 @@ flood-fill and write to `public/images/clean/`; `to-webp.mjs <dir>` converts a d
 place; `gen-image-dims.mjs` regenerates `src/data/imageDims.js`.
 
 **Two families of script spend real money** — the hero's (`generate-hero-frames.mjs`,
-`generate-hero-video.mjs`) and the dice game's `generate-game-art.mjs`. All of them call
+`generate-hero-video.mjs`) and the game's `generate-game-board.mjs`. All of them call
 fal.ai through `fal-client.mjs`, print the estimate and the live balance, and **do nothing
-without `--yes`**. `generate-game-art.mjs --publish-only` re-exports the game's WebPs from
-their masters for free.
+without `--yes`**. The board script's `--overlay`, `--publish` and `--publish-cover` modes are
+free: they only read a master.
 
 Data checks, none wired into a test runner (there isn't one) — run them by hand:
 ```bash
@@ -41,8 +42,13 @@ node scripts/check-image-refs.mjs
 node scripts/check-links.mjs
 node scripts/check-component-links.mjs
 node scripts/gen-book-skeletons.mjs --check
+node scripts/sim-game.mjs
 ```
-The last exits 1 if the generated skeletons/search data are stale (see "Books registry").
+`gen-book-skeletons --check` exits 1 if the generated skeletons/search data are stale (see
+"Books registry"). `sim-game` plays 200 whole games of «رُقعة النرد» over a pretend network that
+is lossy, laggy and forgetful (1–8 bots with wrong clocks, tabs reloading, players leaving, a
+mailbox that forgets) and fails unless every game ends with every phone holding the same state;
+it lints every deck first. `--synthetic` checks the engine alone, `--calm` gives timings.
 `check-image-refs` imports the full books (`data/allBooks.js`) and walks every block (paths are helper-built, so
 grepping filenames misses them), then reports refs pointing at missing files, files in
 `public/images` nothing references, and content images missing from `imageDims.js`.
@@ -156,9 +162,9 @@ their own chunks, and these are loaded lazily:
   was never in the entry to begin with. Verify with the built graph instead: `registry-*.js`
   must not statically import `charts-*.js`.
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
-- **The dice game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its board, its
-  questions from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~43 kB gz of script and ~6 kB of CSS that a reader who came for a
+- **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
+  rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
+  it rides in the chunk): ~72 kB gz of script and ~7 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -217,22 +223,21 @@ book folder or the search index eagerly. Check that, not just the size line.
   inline content images so `ImageBlock` can emit `width`/`height` and reserve the box before
   the bytes land. Content images have genuinely different aspect ratios, so the flat
   `aspect-ratio: 2/3` that works for covers would distort them. Regenerate after adding one.
-- **The dice game's photographs** live in `public/images/game/` — ten WebPs, ~610 kB, fetched
-  by the game alone (plus the cover on Home's card, lazily). Made by
-  `scripts/generate-game-art.mjs` (FLUX.2 [pro] on fal); full-size masters stay OUTSIDE the
-  repo in `../game-art-wip/masters/`, the same split as the hero frames. Every one is the
-  hero's overhead flat-lay on the same dark table, and **none contains a word, a letter or a
-  number** — which is what lets the wide cover be mirrored for the right-to-left page
-  (`.game-cover`) and any of them be cropped to a strip. The card bands are shipped pre-cropped
-  to 3:1, because a card only ever shows a strip about that shape.
-  **Their paths are written out literally** — in `data/gameArt.js` and in each book's `game.js`
-  (`gameArt`) — because `check-image-refs` finds a shipped file by its NAME in the source; a
-  template-built path would leave all ten reported as unreferenced.
-  Four lessons are recorded in the script, each paid for: an "open book with blank pages" came
-  back with words printed on it (the cover's book is closed now); one roll of the wide cover
-  came back with a die fused to a pawn, and one magnifying glass with two handles — so LOOK at
-  every new roll before it ships; and one picture cannot be both a wide banner and a phone's
-  poster, so there are two covers, each composed for its frame.
+- **The game's two paintings** live in `public/images/game/`: `board.webp` (the board, 3:4,
+  ~235 kB) and `cover.webp` (the wide door on Home and the game's first screen, ~82 kB). Both
+  were painted with Nano Banana Pro on fal by `scripts/generate-game-board.mjs`; full-size
+  masters stay OUTSIDE the repo in `../game-art-wip/masters/` (`board.jpg` is the chosen take),
+  the same split as the hero frames. **The board was painted OVER a sketch of the game's own
+  road** (`lib/game/board.js`), and the squares are drawn by the page, not painted — so if the
+  road's control points ever move, the board must be painted again; check a take with
+  `--overlay` before shipping it. **Neither picture contains a word, a letter or a number**,
+  which is what lets the cover be mirrored for the right-to-left page (`.game-cover`) and the
+  board be cut into bands (each round card's band is a CSS crop of the board — one download).
+  A phone gets the board as the game's poster (`GameCover poster`).
+  **Their paths are written out literally** in `data/gameArt.js` — `check-image-refs` finds a
+  shipped file by its NAME in the source. The first version's ten flat-lay photographs (and
+  `generate-game-art.mjs`, which made them) were removed on 2026-11-17 when the board was
+  painted; they are in git history, their masters in `../game-art-wip/masters/`.
 
 ## Fonts
 
@@ -263,8 +268,9 @@ keeps `base: './'` sub-path hosting working.
 
 - **No `localStorage`/`sessionStorage` — ever.** All state (quiz score, assessment answers,
   language, theme, figure controls) is in-memory React state. This is a hard requirement.
-  **The dice game keeps its state in the URL instead** (`#/game?g=…`, see the game's bullet
-  below) — the rule stands, and a forty-minute game played on a call still survives a refresh.
+  **The game keeps its state in its room** — in our own mailbox and on every player's phone —
+  and the address bar holds only the room code and which player this tab is
+  (`#/game?room=…&me=…`), so a refresh lands back in the same seat. The rule stands.
 - **Analytics: Vercel Web Analytics only** (`src/components/Analytics.jsx`, mounted in
   `main.jsx`). It renders `null` — counts are for the club in the Vercel dashboard, never shown
   to visitors. Chosen because its script is served from our own origin
@@ -281,9 +287,9 @@ keeps `base: './'` sub-path hosting working.
   path: the script already appends `location.hash` to the `path` we gave it, so folding
   double-applies and yields `/book/why-we-sleep/book/why-we-sleep`. Verify changes in `npm run
   dev`, where the debug script logs every event to the console instead of sending it.
-  **One page is logged WITHOUT its query: `/game`.** A game in play carries its whole state in
-  `?g=…`, players' names included, and neither a row per game state nor members' names belong
-  in a dashboard.
+  **One page is logged WITHOUT its query: `/game`.** A game's address carries its room code and
+  a player's id, and neither a row per room nor anything that identifies a player belongs in a
+  dashboard.
 - **The page has NO native scrollbar, on purpose.** `body::-webkit-scrollbar` is
   zero-width and `scrollbar-width: none`; `components/ScrollOverlay.jsx` draws a fixed,
   translucent thumb over the content instead, fading in while scrolling and out ~900ms
@@ -392,44 +398,79 @@ keeps `base: './'` sub-path hosting working.
     `<h1>` already say where you are. Still deliberately not sticky.
   - **`.arrow`** is a glyph arrow that mirrors with the reading direction. Use it rather than
     typing `→` after a label, which in Arabic points back the way the reader came.
-- **«رُقعة النرد» — the club's dice game** (`/game`; added 2026-11-16). «رُقعة» is also the
-  Arabic for a game board, so the name is the club's own. **Built to be played on the weekly
-  call: ONE person opens it and shares their screen; players answer out loud and the host
-  taps.** No server and nothing to join — a game that needed every member to connect a phone
-  would be the first thing on this site that could fail for a reason other than the reader's
-  own connection.
-  - **Decks are found, not registered.** Every `data/books/<slug>/game.js` (`gameDeck`,
-    `gameIcon`, optional `gameArt`) puts that book in the game, and the book's `mythOrFact.js`
-    becomes its «خرافة أم حقيقة؟» squares; luck cards and dares are club-level, in
-    `data/game/cards.js`. Adding next season's book to the game is writing that one file.
-  - **The deck rules** are at the top of `books/why-we-sleep/game.js`: option 0 is always the
-    right one (the game shuffles); the right answer is a fact THIS SITE already states; the wrong
-    answers are jokes, not plausible rivals. Where the club's own check corrected a book — the
-    23 minutes, Bitcoin's last coin — the question asks what the CHECK found.
-  - **A luck card's text never says what happens.** Its effect line is generated from `effect`
-    (`lib/game/effects.js`), so the words on the card and what the engine does cannot disagree.
-  - **The rules are a pure reducer** (`lib/game/engine.js`: no React, no DOM, no clock), and
-    **the whole game lives in the URL** — `#/game?g=…`, rewritten after every move. A refresh
-    resumes; so does Back; so can anyone the host sends the link to. `decode()` REBUILDS a state
-    field by field and clamps it, because a URL is input. It is written with
-    `history.replaceState`, not the router's navigate, on purpose: a move must not be a history
-    entry, and the router (and so Analytics) must not hear forty location changes per game.
-  - **The stage** (`components/game/GameStage.jsx`) takes the whole window: `html[data-stage]`
-    hides the chrome the way `data-presenting` does. It is **always a dark table with paper
-    cards, whatever the site's theme** (`--gm-*` in `game.css`) — it is the thing shared on a
-    call. Everything laid over it (cards, the result, dialogs) is **portalled to `<body>`**:
-    the `position: fixed`-inside-a-transform trap that the in-book bar already avoids.
-    The engine knows the rules; the stage knows TIME — `shown` is where tokens are DRAWN, and
-    it walks one square per tick toward where they ARE. The layout switches on the window's
-    SHAPE (`max-aspect-ratio: 1/1`), not its width: a phone on its side is 844px wide and needs
-    the side-by-side layout. The board's fold (columns × rows) is chosen so the squares are as
-    large as the window allows.
+- **«رُقعة النرد» — the club's board game** (`/game`; added 2026-11-16, rebuilt for phones
+  2026-11-17). «رُقعة» is also the Arabic for a game board, so the name is the club's own.
+  **Played on the weekly call with EVERY MEMBER ON THEIR OWN PHONE**: one opens a room and
+  reads its six-digit code out on the call; the others join with it (or the invite link). Every
+  phone shows the same board, and every round is played by everyone at once. The first version
+  — one shared screen, a host tapping what people said — was turned down by the club in so many
+  words ("everyone to be able to see the game and play on their phone, not one person share
+  the screen"), so don't drift back towards a host-only screen.
+  - **How the phones talk: a mailbox on our own origin.** `api/room.js` is a Vercel Function
+    (its logic is `api/_mailbox.js` — the underscore keeps Vercel from routing it — and
+    `vite.config.js` mounts the same handler on the dev and preview servers). It does not know
+    the game: per room it keeps the newest "core" (the game's state), one small "entry" per
+    player (that player's own inputs) and when each was last heard from, and every poll
+    (about once a second) is a two-way sync. **Nothing there is durable, and the game does not
+    need it to be**: rooms live in the instance's memory, an instance may be recycled or be one
+    of several, so every reply names its instance and says what it lacks, and the phones keep
+    sending it until each instance they have heard from holds it (`peers` in `lib/game/net.js`).
+    One live tab can rebuild a room. **Don't "fix" this with a database** — it would be the one
+    moving part that could be down while the club waits on a call. Same origin, so the site
+    still makes no third-party request. No accounts: whoever has the code can join (up to 8);
+    rooms are forgotten three hours after the last move.
+  - **The rules run on every phone** — `lib/game/engine.js`, `advance(core, entries, env)`, pure.
+    Phones agree because (1) the clock only ever GATES a step and never goes into a result —
+    every time written into a core comes from an entry or a deadline already in it; (2) chance
+    comes from the room's seeds (`lib/game/rand.js`), never `Math.random`; (3) a core is sealed
+    with a hash of its content, and when two phones do produce different next states the
+    greater (game, version, hash) wins everywhere. The mailbox and the client must order cores
+    identically (`newer` in both; the simulator checks). To stop six phones announcing the same
+    step at once, whoever's tap made it possible acts at once and the rest wait a beat that
+    grows with their place in the list (`delay()` in net.js).
+  - **A player writes only their own entry**, and its counter is a clock reading, so a tab that
+    reloads still outranks the copy everyone else holds. An answer is `{ s, v, at }`: `s` names
+    the turn and stage, so a late answer can never count in the next round.
+  - **Time on screen is the room's clock** (`useNow(room)` — the mailbox's clock as net.js
+    estimates it), never `Date.now()`: six phones with six wrong clocks still see the die land
+    and the timer run out together. Every duration is `T` in engine.js.
+  - **The board is ONE painting with the squares drawn over it.** `lib/game/board.js` is the
+    road (control points → a Catmull-Rom curve → 36 squares evenly spaced along it) and what each
+    square is (`TYPES`). Three zones, one per book in registry order: the valley of sleep, the
+    city of distraction, the island market. See **Images** for why the painting depends on it.
+  - **A turn**: the player whose turn it is rolls (or the die rolls itself after a while — and at
+    once for someone who has left); the square sets a round EVERYONE plays: a question from the
+    zone's book (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
+    (`num`), who is it? (`who` — three clues, the sooner you answer the more it is worth; the
+    book's MAIN people only, at the club's request), read the chart (`graph` — hand-rolled SVG
+    in `MiniChart.jsx`; never recharts here), a white lie (`bluff`, Fibbage-style: write a lie,
+    then find the truth), the Lab (`mini`: count the sheep, the vigilance test, the digits,
+    Stroop, the one arrow — and from the Varoufakis book the stag hunt and an auction of
+    Achilles' armour, which test each other rather than anyone's attention), a dare (performed
+    on the call, judged on the phones), or chance. **The only currency is squares**; the first
+    to the lighthouse ends the game. The end screen hands out titles from per-player tallies.
+  - **The deck rules** are at the top of `books/why-we-sleep/game.js`, and they answer the club's
+    verdict on the first deck ("so obvious"): every wrong answer must be one a half-informed
+    player could believe, and the fun lives in the setup and the `why`, not in silly options.
+    Option 0 is the right one; the game deals options in a seeded order, the same on every phone
+    so "the second one!" means the same to everyone. `lib/game/decks.js` checks every shape.
+  - **A chance card's text never says what happens.** Its effect line is generated from
+    `effect` (`lib/game/effects.js`), so the words on the card and what the engine does cannot
+    disagree. No card can carry anyone over the finish line.
+  - **The room** (lobby and game) takes the whole window: `html[data-stage]` hides the chrome
+    the way `data-presenting` does. It is **always the board's night with paper cards, whatever
+    the site's theme** (`--gm-*` in `game.css`), and everything laid over it is **portalled to
+    `<body>`** (the `position: fixed`-inside-a-transform trap). Rounds rise as bottom sheets,
+    where a thumb is. The layout switches on the window's SHAPE (`min-aspect-ratio: 1/1`), not
+    its width. `Board` draws tokens where they ARE by the rules but walks them there a square at
+    a time; `targetsAt` in `Stage.jsx` decides what to draw at each moment of a turn.
   - **Sounds are synthesised** (`lib/game/sfx.js`, Web Audio), not shipped.
-  - **There is no committed test for the rules** (the project has no test runner), but the
-    reducer is pure: a throwaway Node script can import `engine.js` with the decks and play
-    thousands of games through it — that is how it was checked (3,000 games, every one ended,
-    every state survived the URL round trip).
-  - The photographs are described under **Images**.
+  - **Testing**: `node scripts/sim-game.mjs` for the rules and the network; for the screens,
+    `npm run dev` and open the game in several tabs (with `--host`, phones on the same Wi-Fi can
+    join). To look at one kind of round without waiting for the die, POST a hand-made core to
+    `/api/room` under a fresh code and open `#/game?room=<code>&me=<a player id in it>` — the dev
+    server takes it like any other room.
+  - The paintings are described under **Images**.
 - **Three books are live**: `why-we-sleep`, `stolen-focus`, and since **2026-10-16**
   `talking-to-my-daughter` (Varoufakis — see its own bullet below). The first two went down
   from 19 and 24 sections on **2026-08-24**. Each book's `index.js` header lists exactly what went where.

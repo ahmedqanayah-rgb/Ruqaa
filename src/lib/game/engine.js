@@ -1,491 +1,656 @@
+import { TYPES, LAST, zoneOf } from './board.js'
+import { MINIS, miniScore, rankAwards, AUCTION, STAG } from './minis.js'
+import { hash32, seeded, shuffled, range } from './rand.js'
+
 /*
- * «رُقعة النرد» — THE RULES, as a pure state machine. No React, no DOM, no
- * clock: `reduce(state, action)` in, a new state out. The page (pages/Game.jsx)
- * owns the dice animation, the sounds and the timers and tells this file only
- * what happened ("rolled a 4", "arrived", "picked the second option").
+ * «رُقعة النرد» — THE RULES. One pure function, `advance(core, entries, env)`:
+ * given the game as it stands (`core`), what each player has put in their own
+ * entry (`entries`), and the time (`env.now`), it returns the next core — or
+ * null if nothing is due yet. No React, no DOM, no network, no clock of its
+ * own, no Math.random.
  *
- * It is pure for two reasons that both matter here:
+ * EVERY PHONE RUNS THIS, AND THEY MUST AGREE (see net.js). Three habits keep
+ * them agreeing, and a change that breaks one will desynchronise real games:
  *
- * 1. THE WHOLE GAME LIVES IN THE ADDRESS BAR. The project keeps no storage —
- *    no localStorage, ever — so a refresh used to mean a new sitting. That is
- *    fine for a reading tick and fatal for a forty-minute game played on a
- *    call: one pull-to-refresh on the host's phone and the score is gone. So
- *    the state is plain JSON, `encode()`d into `#/game?g=…` after every move,
- *    and `decode()`d on arrival. A refresh resumes; so does the Back button;
- *    and if the host's connection drops, anyone they sent the link to can carry
- *    the same game on from the same square.
- * 2. A URL IS INPUT. Anything can be pasted into it, so `decode()` rebuilds a
- *    state field by field and throws away whatever it does not recognise,
- *    rather than trusting a parsed blob.
+ *  1. `env.now` and `env.present` are only ever a GATE — "is it time?", "are we
+ *     still waiting on her?". They never go INTO the result. Every time written
+ *     into a core comes from an entry (when the player tapped) or from a
+ *     deadline already in the core. Two phones that decide a step a second
+ *     apart therefore write the identical core.
+ *  2. Chance comes from the room's seeds (rand.js), keyed by turn.
+ *  3. A core is sealed with a hash of its content (`h`). Same content, same
+ *     hash — which is also how "nothing changed" is detected.
  *
- * THE GAME, in one paragraph. Two to six players take turns: roll, move along
- * the board, and do what the square says — a QUESTION from that square's book
- * (+2), a MYTH-OR-FACT statement from the books' own decks (+1), a DARE the
- * group judges (+2), or a LUCK card. The first to reach the last square earns
- * +3 and ends the game — but the ROUND is finished first, so everyone has had
- * the same number of turns. Then the highest score wins: getting there first
- * is worth three points, not the game.
+ * A PLAYER'S ENTRY is their inputs, each stamped with what it is FOR, so a
+ * stale one is ignored rather than misapplied:
+ *   name, j            who they are, and when they joined
+ *   books, start, st   (host) the books in play; "start game g" and when
+ *   kick, again        (host) players removed in the lobby; "play game g again"
+ *   roll, rt           "roll for turn n", and when
+ *   a: { s, v, at }    an answer to slot s = "<turn>:<stage>", its value, when
+ *   next, nt           "move on from the result of turn n", and when
+ *   left               walked out
+ *
+ * THE SHAPE OF A TURN. The player whose turn it is rolls and moves; the square
+ * they land on sets a challenge that EVERYONE plays at once on their own phone;
+ * the result is shown, and those who earned steps move. One currency: squares.
+ * There is no separate score — where you stand on the board is how you are
+ * doing, and the first token to the last square ends the game.
  */
 
-export const LENGTHS = { short: 20, medium: 30, long: 40 }
-export const TIMERS = [0, 30, 60]
-export const POINTS = { mcq: 2, tf: 1, dare: 2, finish: 3, finishLate: 1 }
-export const MIN_PLAYERS = 2
-export const MAX_PLAYERS = 6
-export const NAME_MAX = 18
-const VERSION = 1
+export const MAX_PLAYERS = 8
+export const NAME_MAX = 16
+export const LIE_MAX = 48
 
-/* ---- a small seeded generator (mulberry32) ----
-   The BOARD is built from a seed so that it can be rebuilt from the URL rather
-   than stored in it. Card draws use Math.random: the drawn card's id goes into
-   the state, so there is nothing to reproduce. */
-function seeded(seed) {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) | 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
+/* Every duration, in milliseconds. The stage reads these too, so what is drawn
+   and what is decided run on one set of numbers. */
+export const T = {
+  dice: 1500, // the die tumbles
+  hop: 300, // a token crosses one square
+  repay: 900, // a debt is collected before the move
+  card: 2800, // "you landed on…" before a challenge opens
+  rollWait: 25000, // then the die rolls itself
+  rollAway: 5000, // …or this soon, if the player has gone
+  grace: 2000, // after a deadline, for answers still in the air
+  clue: 7000, // between clues in «من هو؟»
+  minReveal: 2500, // a result cannot be skipped faster than this
+  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 24000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000 },
+  dwell: { luck: 10000, bluff: 22000, default: 16000 }, // a result moves on by itself
 }
 
-function shuffled(list, rand = Math.random) {
-  const a = [...list]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
+/* The mix of question kinds on a book square, drawn without replacement. */
+const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph']
+
+const isNum = (x) => typeof x === 'number' && Number.isFinite(x)
+export const clampPos = (p) => Math.max(0, Math.min(LAST, p))
+
+/* ------------------------------ text helpers ------------------------------ */
+
+/* A name or an answer typed by a player is shown on everyone's phone: strip
+   control and bidi-override characters, collapse spaces, cut to length (by
+   code point, so an emoji is not cut in half). */
+export function cleanText(raw, max) {
+  const text = String(raw ?? '')
+    .replace(/[\u0000-\u001f\u007f​-‏‪-‮⁦-⁩]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return Array.from(text).slice(0, max).join('')
+}
+export const cleanName = (raw) => cleanText(raw, NAME_MAX)
+
+/* Two answers are "the same" if they match after this: no diacritics, one form
+   of alef/ya/ta-marbuta, Western digits, no case, no punctuation or spaces. */
+export function norm(raw) {
+  return String(raw ?? '')
+    .normalize('NFKD')
+    .replace(/\p{M}|ـ/gu, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '')
 }
 
-/* The rhythm of the squares between start and finish. Eight in fourteen are
-   book questions; the rest alternate so two of a kind never touch. The seed
-   only decides where in the rhythm the board starts and in what order the
-   books take their turns. */
-const PATTERN = ['book', 'book', 'tf', 'book', 'luck', 'book', 'dare', 'book', 'book', 'tf', 'book', 'luck', 'book', 'dare']
-
-export function buildBoard(seed, length, bookIds) {
-  const n = LENGTHS[length] || LENGTHS.medium
-  const rand = seeded(seed)
-  const order = shuffled(bookIds, rand)
-  const offset = Math.floor(rand() * PATTERN.length)
-  const squares = [{ type: 'start' }]
-  let b = 0
-  for (let i = 1; i < n - 1; i++) {
-    const type = PATTERN[(i - 1 + offset) % PATTERN.length]
-    squares.push(type === 'book' ? { type, book: order[b++ % order.length] } : { type })
-  }
-  squares.push({ type: 'finish' })
-  return squares
+/* A number as a phone's keyboard gives it: either digit set, either decimal
+   mark, thousands separators or not. */
+export function parseNumber(raw) {
+  const text = String(raw ?? '')
+    .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٫]/g, '.')
+    .replace(/[\s,٬_]/g, '')
+  if (!/^-?\d+(\.\d+)?$/.test(text)) return null
+  const n = Number(text)
+  return Number.isFinite(n) ? n : null
 }
 
-/* ---------------- state ---------------- */
+/* --------------------------------- sealing -------------------------------- */
 
-export function setupState(decks, keep = {}) {
-  return {
-    v: VERSION,
-    phase: 'setup',
-    names: keep.names || ['', ''],
-    settings: keep.settings || { length: 'medium', books: [...decks.books], timer: 0 },
-  }
+function stable(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null'
+  if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`
+  return `{${Object.keys(value).filter((k) => value[k] !== undefined).sort().map((k) => `${JSON.stringify(k)}:${stable(value[k])}`).join(',')}}`
 }
 
-function freshUsed() {
-  return { mcq: [], tf: [], luck: [], dare: [] }
+/* Stamp a core with the next version and the hash of its content. Returns null
+   if the content is what `prev` already was — i.e. nothing happened. */
+function seal(prev, body) {
+  const { v: _v, h: _h, ...rest } = body
+  const h = hash32(stable(rest)).toString(36)
+  if (prev && h === prev.h) return null
+  return { ...rest, v: prev ? prev.v + 1 : 1, h }
 }
 
-function startState(names, settings, seed) {
-  return {
-    v: VERSION,
-    phase: 'play',
-    settings,
-    seed,
-    players: names.map((name) => ({ name, pos: 0, score: 0, skip: false, debt: 0, done: false })),
-    turn: 0,
-    round: 1,
-    step: 'roll',
-    die: null,
-    card: null,
-    used: freshUsed(),
-    finisher: null,
-    notices: [],
-  }
+export function newRoom({ code, id, host, ds }) {
+  return seal(null, { id, room: code, g: 1, host, ds, opts: {}, out: [], players: [], phase: 'lobby', cur: {} })
 }
 
-const lastSquare = (state) => LENGTHS[state.settings.length] - 1
-const clampScore = (n) => Math.max(0, n)
+/* --------------------------------- reading -------------------------------- */
 
-/* ---------------- drawing cards ---------------- */
-
-/* One unused item from a pool, and the `used` list with it added. When a pool
-   runs dry it starts over — a long game with one book has more book squares
-   than that book has questions — but never by handing back the card that was
-   just played. */
-function draw(pool, used) {
-  if (!pool.length) return null
-  let fresh = pool.filter((c) => !used.includes(c.id))
-  let nextUsed = used
-  if (!fresh.length) {
-    const last = used[used.length - 1]
-    fresh = pool.length > 1 ? pool.filter((c) => c.id !== last) : pool
-    nextUsed = []
-  }
-  const pick = fresh[Math.floor(Math.random() * fresh.length)]
-  return { pick, used: [...nextUsed, pick.id] }
+export const turnPlayer = (core) => core.players[core.turn]
+export const slotOf = (core) => `${core.n}:${core.ch?.s ?? 0}`
+export const playBooks = (core, decks) => {
+  const chosen = (core.opts?.books || []).filter((b) => decks.books.includes(b))
+  return chosen.length ? chosen : decks.books
 }
 
-function drawFor(state, square, decks) {
-  const books = state.settings.books
-  const inPlay = (c) => c.book == null || books.includes(c.book)
-  const put = (kind, got, extra) => ({
-    card: { kind, id: got.pick.id, ...extra },
-    used: { ...state.used, [kind]: got.used },
+/* Whoever may start, restart and move things along: the room's creator while
+   they are here, otherwise the first player who is. */
+export function actingHost(core, env) {
+  const ids = core.players.filter((p) => !p.gone).map((p) => p.id)
+  if (!ids.length) return core.host
+  if (ids.includes(core.host) && env.present(core.host)) return core.host
+  return ids.find((id) => env.present(id)) || core.host
+}
+
+/* The order the options are SHOWN in — the same on every phone, so "the second
+   one!" means the same thing to everyone on the call. Decks keep the right
+   answer at index 0; an answer is reported by that original index. */
+export const optionOrder = (ch, count) => shuffled(range(count), seeded(ch.seed, 'order'))
+
+/* «من هو؟»: the person, then three others from the same book. */
+export function whoChoices(ch, decks) {
+  const all = decks.byBook[ch.book].who
+  const others = shuffled(all.filter((w) => w.id !== ch.id), seeded(ch.seed, 'who')).slice(0, 3)
+  return [decks.byId[ch.id], ...others]
+}
+
+/* Players in order of standing; equal standing shares a rank. */
+export function standings(players) {
+  const rows = players.map((p, i) => ({ ...p, i })).sort((a, b) => (b.pos - a.pos) || (b.st[0] - a.st[0]) || (a.i - b.i))
+  let rank = 0
+  return rows.map((row, k) => {
+    if (k && (rows[k - 1].pos !== row.pos || rows[k - 1].st[0] !== row.st[0])) rank = k
+    return { ...row, rank }
   })
-
-  if (square.type === 'book') {
-    const got = draw(decks.mcq[square.book] || [], state.used.mcq)
-    if (!got) return null
-    // The options' on-screen order. Stored, so a refresh shows the same card.
-    const order = shuffled(got.pick.opts.map((_, i) => i))
-    return put('mcq', got, { book: square.book, order, picked: null, right: null })
-  }
-  if (square.type === 'tf') {
-    const pool = books.flatMap((b) => decks.tf[b] || [])
-    const got = draw(pool, state.used.tf)
-    return got && put('tf', got, { book: got.pick.book, picked: null, right: null })
-  }
-  if (square.type === 'luck') {
-    const got = draw(decks.luck.filter(inPlay), state.used.luck)
-    return got && put('luck', got, { book: got.pick.book })
-  }
-  if (square.type === 'dare') {
-    const got = draw(decks.dare.filter(inPlay), state.used.dare)
-    return got && put('dare', got, { book: got.pick.book })
-  }
-  return null
 }
 
-/* Find a card's content again from the id the state carries. */
-export function cardContent(card, decks) {
-  if (!card) return null
-  if (card.kind === 'mcq') return (decks.mcq[card.book] || []).find((c) => c.id === card.id) || null
-  if (card.kind === 'tf') return (decks.tf[card.book] || []).find((c) => c.id === card.id) || null
-  if (card.kind === 'luck') return decks.luck.find((c) => c.id === card.id) || null
-  if (card.kind === 'dare') return decks.dare.find((c) => c.id === card.id) || null
-  return null
+/* Who is expected to answer the challenge's current stage. */
+export function expected(core) {
+  const alive = core.players.filter((p) => !p.gone).map((p) => p.id)
+  if (core.ch?.k !== 'dare') return alive
+  const active = turnPlayer(core).id
+  return core.ch.s === 0 ? [active] : alive.filter((id) => id !== active)
 }
 
-/* ---------------- turn order ---------------- */
-
-/* Reaching the last square. The first to do it gets the bonus and starts the
-   end of the game; anyone who also gets there before the round is out gets a
-   smaller one, so a late arrival is still worth something. */
-function finish(state, i) {
-  const first = state.finisher == null
-  const bonus = first ? POINTS.finish : POINTS.finishLate
-  const players = state.players.map((p, k) => (k === i ? { ...p, score: p.score + bonus, done: true } : p))
-  return { state: { ...state, players, finisher: first ? i : state.finisher }, bonus }
-}
-
-/* Pass the turn. A player who owes a turn is stepped over (and told so); a
-   player with a loan repays it as their turn begins. When the order wraps and
-   somebody has finished, the round is complete and the game is over. */
-function advance(state) {
-  const players = state.players.map((p) => ({ ...p }))
-  const notices = []
-  let i = state.turn
-  let round = state.round
-  for (let guard = 0; guard <= players.length * 2; guard++) {
-    i += 1
-    if (i >= players.length) {
-      if (state.finisher != null) {
-        return { ...state, players, phase: 'over', step: 'done', card: null, die: null, notices: [] }
-      }
-      i = 0
-      round += 1
-    }
-    if (players[i].skip) {
-      players[i].skip = false
-      notices.push({ kind: 'skip', player: i })
-      continue
-    }
-    break
-  }
-  if (players[i].debt > 0) {
-    notices.push({ kind: 'debt', player: i, n: players[i].debt })
-    players[i].score = clampScore(players[i].score - players[i].debt)
-    players[i].debt = 0
-  }
-  return { ...state, players, turn: i, round, step: 'roll', card: null, die: null, notices }
-}
-
-/* ---------------- luck ---------------- */
-
-function applyLuck(state, effect) {
-  const me = state.turn
-  const last = lastSquare(state)
-  let players = state.players.map((p) => ({ ...p }))
-  const others = players.map((_, i) => i).filter((i) => i !== me)
-  const notices = []
-  let again = false
-
-  switch (effect.kind) {
-    case 'move':
-      players[me].pos = Math.min(last, Math.max(0, players[me].pos + effect.n))
-      break
-    case 'score':
-      players[me].score = clampScore(players[me].score + effect.n)
-      break
-    case 'again':
-      again = true
-      break
-    case 'skip':
-      players[me].skip = true
-      break
-    case 'steal': {
-      // From whoever is ahead of the rest. Nobody with a point to take: the
-      // bank pays instead, so the card is never a dud.
-      const victim = others.filter((i) => players[i].score > 0).sort((a, b) => players[b].score - players[a].score)[0]
-      if (victim != null) {
-        players[victim].score -= 1
-        notices.push({ kind: 'stolen', player: victim, by: me })
-      }
-      players[me].score += 1
-      break
-    }
-    case 'gift': {
-      const poorest = [...others].sort((a, b) => players[a].score - players[b].score)[0]
-      if (poorest != null && players[me].score > 0) {
-        players[me].score -= 1
-        players[poorest].score += 1
-        notices.push({ kind: 'gift', player: poorest, by: me })
+/* One player's answer to the current stage, checked — a phone can send
+   anything. Returns { v, at } or null. */
+export function readAnswer(core, raw, pid) {
+  const ch = core.ch
+  if (!ch || !raw || raw.s !== slotOf(core)) return null
+  const int = (lo, hi) => (Number.isInteger(raw.v) && raw.v >= lo && raw.v <= hi ? raw.v : null)
+  let v = null
+  switch (ch.k) {
+    case 'mcq': case 'graph': case 'who': v = int(0, 3); break
+    case 'tf': v = int(0, 1); break
+    case 'num': v = isNum(raw.v) && Math.abs(raw.v) < 1e12 ? raw.v : null; break
+    case 'bluff':
+      if (ch.s === 0) v = cleanText(raw.v, LIE_MAX) || null
+      else {
+        v = int(0, ch.o.length - 1)
+        if (v != null && ch.o[v].p?.includes(pid)) v = null // nobody votes for their own lie
       }
       break
-    }
-    case 'others':
-      // Not the ones who have already finished: they are off the board.
-      others.filter((i) => !players[i].done).forEach((i) => {
-        players[i].pos = Math.min(last, Math.max(0, players[i].pos + effect.n))
-      })
-      break
-    case 'all':
-      players = players.map((p) => ({ ...p, score: clampScore(p.score + effect.n) }))
-      break
-    case 'loan':
-      players[me].score += effect.now
-      players[me].debt += effect.later
+    case 'dare': v = ch.s === 0 ? (raw.v === 1 ? 1 : null) : int(0, 1); break
+    case 'mini':
+      if (ch.id === 'stag') v = int(0, 1)
+      else if (ch.id === 'auction') v = int(0, AUCTION.max)
+      else v = typeof raw.v === 'number' || typeof raw.v === 'string' ? raw.v : null
       break
     default:
+  }
+  if (v == null) return null
+  const at = isNum(raw.at) ? Math.max(ch.t0, Math.min(raw.at, ch.t1 + T.grace)) : ch.t1
+  return { v, at }
+}
+
+/* Everyone's answers to the current stage: { pid: { v, at } }. */
+export function answersNow(core, entries) {
+  const want = expected(core)
+  const out = {}
+  for (const pid of want) {
+    const a = readAnswer(core, entries[pid]?.d?.a, pid)
+    if (a) out[pid] = a
+  }
+  return out
+}
+
+/* --------------------------------- roster --------------------------------- */
+
+function addJoiners(players, entries, out) {
+  const here = new Set(players.map((p) => p.id))
+  const joiners = Object.entries(entries)
+    .filter(([pid, e]) => !here.has(pid) && !out.includes(pid) && e?.d && !e.d.left && cleanName(e.d.name))
+    .sort((a, b) => ((a[1].d.j || 0) - (b[1].d.j || 0)) || (a[0] < b[0] ? -1 : 1))
+  let next = players
+  for (const [pid, e] of joiners) {
+    if (next.length >= MAX_PLAYERS) break
+    const used = new Set(next.map((p) => p.c))
+    next = [...next, { id: pid, name: cleanName(e.d.name), c: range(MAX_PLAYERS).find((i) => !used.has(i)), pos: 0, st: [0, 0, 0, 0] }]
+  }
+  return next
+}
+
+/* Between games the list is free to change: joins, new names, the host's
+   removals, and anyone who left is simply gone from it. */
+function lobbyRoster(core, entries, env) {
+  const host = actingHost(core, env)
+  const kick = entries[host]?.d?.kick
+  let out = core.out
+  if (Array.isArray(kick)) {
+    const add = kick.filter((pid) => typeof pid === 'string' && pid !== host && !out.includes(pid))
+    if (add.length) out = [...out, ...add].slice(-32)
+  }
+  let players = core.players.filter((p) => !out.includes(p.id) && !entries[p.id]?.d?.left)
+  players = players.map((p) => {
+    const name = cleanName(entries[p.id]?.d?.name)
+    return name && name !== p.name ? { ...p, name } : p
+  })
+  return { players: addJoiners(players, entries, out), out }
+}
+
+/* During a game the list only grows (so `turn`, an index, stays true): a
+   latecomer is added at the start square, and someone who walks out is marked
+   `gone` — skipped, not removed. */
+function gameRoster(core, entries) {
+  const players = core.players.map((p) => {
+    const d = entries[p.id]?.d
+    if (!d) return p
+    if (d.left && !p.gone) return { ...p, gone: true }
+    if (!d.left && p.gone) { const { gone: _gone, ...back } = p; return back }
+    return p
+  })
+  return addJoiners(players, entries, core.out)
+}
+
+function nextAlive(players, from) {
+  for (let step = 1; step <= players.length; step++) {
+    const i = (from + step) % players.length
+    if (!players[i].gone) return i
+  }
+  return from
+}
+
+/* --------------------------------- phases --------------------------------- */
+
+function lobbyStep(core, entries, env) {
+  const { players, out } = lobbyRoster(core, entries, env)
+  let next = { ...core, players, out }
+  const host = actingHost(next, env)
+  const d = entries[host]?.d || {}
+  if (Array.isArray(d.books)) {
+    const books = env.decks.books.filter((b) => d.books.includes(b))
+    if (books.length) next.opts = { ...core.opts, books }
+  }
+  if (d.start === core.g && isNum(d.st) && players.length >= 1) {
+    const seed = hash32(`${core.id}|${core.g}|${d.st}`)
+    next = {
+      ...next,
+      players: players.map((p) => ({ id: p.id, name: p.name, c: p.c, pos: 0, st: [0, 0, 0, 0] })),
+      phase: 'roll', seed, n: 1, turn: seed % players.length, t: d.st,
+      die: 0, from: 0, repay: 0, ch: null, res: null, skip: [], debt: {},
+    }
+  }
+  return seal(core, next)
+}
+
+function rollStep(core, entries, env) {
+  const players = gameRoster(core, entries)
+  const base = { ...core, players }
+  if (players.every((p) => p.gone)) return seal(core, base)
+  // The player whose turn it is has walked out: pass the die on.
+  if (players[core.turn].gone) return seal(core, { ...base, turn: nextAlive(players, core.turn) })
+  const changed = seal(core, base)
+  if (changed) return changed
+
+  const active = players[core.turn]
+  const d = entries[active.id]?.d
+  let at = null
+  if (d && d.roll === core.n && isNum(d.rt)) at = Math.max(core.t, Math.min(d.rt, core.t + T.rollWait))
+  else {
+    const wait = env.present(active.id) ? T.rollWait : T.rollAway
+    if (env.now >= core.t + wait) at = core.t + wait
+  }
+  return at == null ? null : seal(core, roll(base, at, env.decks))
+}
+
+function roll(core, at, decks) {
+  const i = core.turn
+  const me = core.players[i]
+  const die = 1 + Math.floor(seeded(core.seed, core.n, 'die')() * 6)
+  // A loan taken on a chance card is repaid — with its interest — before moving.
+  const debt = { ...core.debt }
+  const repay = debt[me.id] || 0
+  delete debt[me.id]
+  const from = clampPos(me.pos - repay)
+  const to = Math.min(LAST, from + die)
+  const players = core.players.map((p, k) => (k === i ? { ...p, pos: to } : p))
+  const landed = at + T.dice + (repay ? T.repay : 0) + (to - from) * T.hop
+  // `was` is where the token stood before the roll: the board walks it from
+  // there, and back to `from` first if a debt was collected.
+  const next = { ...core, players, die, from, was: me.pos, repay, debt, rolledAt: at, ch: null, res: null }
+  // Landing on the last square by the die ends the game there and then.
+  if (to >= LAST) return { ...next, phase: 'over', t: landed + 500 }
+  return challenge(next, to, landed, decks)
+}
+
+/* What the square asks of everyone. */
+function challenge(core, to, landed, decks) {
+  const cur = { ...core.cur }
+  /* Draw from a deck without repeats: each deck is dealt in a seeded order and
+     a cursor remembers how far through it the ROOM is — across rematches too,
+     so a second game the same evening does not replay the first one's cards. */
+  const draw = (key, length) => {
+    const k = cur[key] || 0
+    cur[key] = k + 1
+    return shuffled(range(length), seeded(core.ds, key, Math.floor(k / length)))[k % length]
+  }
+  const alive = core.players.filter((p) => !p.gone).length
+  const books = playBooks(core, decks)
+  const zone = zoneOf(to)
+  // The zone's own book, unless tonight's game leaves it out.
+  const book = books.includes(decks.books[zone]) ? decks.books[zone] : books[core.n % books.length]
+  const D = decks.byBook[book]
+  const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
+  const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
+
+  let type = TYPES[to]
+  if (type === 'B' && (alive < 3 || !D.bluff.length)) type = 'K' // a lie needs someone to fool
+  if (type === 'D' && (alive < 2 || !dares.length)) type = 'K' // a dare needs a jury
+  if (type === 'C' && !luck.length) type = 'K'
+
+  if (type === 'C') return chance({ ...core, cur }, luck[draw(`luck:${luck.length}`, luck.length)], landed)
+
+  const t0 = landed + T.card
+  let ch
+  if (type === 'L') {
+    let pool = MINIS.filter((m) => m.zone === zone && alive >= m.min)
+    if (!pool.length) pool = MINIS.filter((m) => alive >= m.min)
+    const mini = pool[draw(`mini:${zone}:${pool.length}`, pool.length)]
+    ch = { k: 'mini', id: mini.id, t1: t0 + mini.dur }
+  } else if (type === 'B') {
+    ch = { k: 'bluff', id: D.bluff[draw(`bluff:${book}`, D.bluff.length)].id, book, t1: t0 + T.dur.bluff }
+  } else if (type === 'D') {
+    ch = { k: 'dare', id: dares[draw(`dare:${dares.length}`, dares.length)].id, t1: t0 + T.dur.dare }
+  } else {
+    let k = KBAG[draw('k', KBAG.length)]
+    if (!D[k]?.length || (k === 'who' && D.who.length < 4)) k = 'mcq'
+    ch = { k, id: D[k][draw(`${k}:${book}`, D[k].length)].id, book, t1: t0 + T.dur[k] }
+  }
+  return { ...core, cur, phase: 'play', t: t0, ch: { ...ch, s: 0, t0, seed: hash32(`${core.seed}|${core.n}|ch`) } }
+}
+
+/* A chance card: no question, it simply happens. It can take the lead away but
+   never carries anyone over the line — the game is not won on a card. */
+function chance(core, card, landed) {
+  const P = core.players
+  const i = core.turn
+  const pre = P.map((p) => p.pos)
+  const pos = pre.slice()
+  const cap = (p) => Math.max(0, Math.min(LAST - 1, p))
+  const alive = range(P.length).filter((k) => !P[k].gone)
+  const others = alive.filter((k) => k !== i)
+  const e = card.effect
+  let { skip, debt } = core
+  let again = false
+  switch (e.kind) {
+    case 'move': pos[i] = cap(pos[i] + e.n); break
+    case 'others': for (const k of others) pos[k] = cap(pos[k] + e.n); break
+    case 'all': for (const k of alive) pos[k] = cap(pos[k] + e.n); break
+    case 'again': again = true; break
+    case 'skip': skip = [...skip.filter((id) => id !== P[i].id), P[i].id]; break
+    case 'steal': {
+      // From whoever is furthest ahead of the others.
+      const lead = others.reduce((best, k) => (best == null || pos[k] > pos[best] ? k : best), null)
+      const take = lead == null ? 0 : Math.min(e.n, pos[lead])
+      if (lead != null) pos[lead] -= take
+      pos[i] = cap(pos[i] + Math.max(1, take))
       break
+    }
+    case 'swap': {
+      // Places with the nearest player ahead; with nobody ahead, a step forward.
+      const ahead = others.filter((k) => pos[k] > pos[i]).reduce((best, k) => (best == null || pos[k] < pos[best] ? k : best), null)
+      if (ahead == null) pos[i] = cap(pos[i] + 1)
+      else [pos[i], pos[ahead]] = [pos[ahead], pos[i]]
+      break
+    }
+    case 'loan': pos[i] = cap(pos[i] + e.now); debt = { ...debt, [P[i].id]: e.later }; break
+    default:
   }
-
-  let next = { ...state, players }
-  // A luck card can carry a player onto the last square.
-  if (players[me].pos >= last && !players[me].done) {
-    const done = finish(next, me)
-    next = done.state
-    notices.push({ kind: 'finished', player: me, n: done.bonus })
+  const aw = {}
+  P.forEach((p, k) => { if (pos[k] !== pre[k]) aw[p.id] = pos[k] - pre[k] })
+  return {
+    ...core,
+    players: P.map((p, k) => (pos[k] === p.pos ? p : { ...p, pos: pos[k] })),
+    skip, debt, phase: 'reveal', t: landed,
+    ch: { k: 'luck', id: card.id, s: 0, t0: landed, t1: landed, seed: 0 },
+    res: { k: 'luck', pre, aw, a: {}, x: again ? { again: true } : {} },
   }
-  if (again && !next.players[me].done) {
-    return { ...next, step: 'roll', card: null, die: null, notices: [{ kind: 'again', player: me }] }
-  }
-  const passed = advance(next)
-  return passed.phase === 'over' ? passed : { ...passed, notices: [...notices, ...passed.notices] }
 }
 
-/* ---------------- the reducer ---------------- */
+function playStep(core, entries, env) {
+  const ch = core.ch
+  const want = expected(core)
+  const answers = answersNow(core, entries)
+  const waitingOn = want.filter((pid) => !answers[pid] && env.present(pid))
+  const allIn = waitingOn.length === 0 && Object.keys(answers).length > 0
+  // If nobody who could answer is even here, there is no point running the clock down.
+  const deadline = want.some((pid) => env.present(pid)) ? ch.t1 + T.grace : Math.min(ch.t1 + T.grace, ch.t0 + 4000)
+  let at = null
+  if (allIn && env.now >= ch.t0) at = Math.max(ch.t0, ...Object.values(answers).map((a) => a.at))
+  else if (env.now >= deadline) at = deadline
+  if (at == null) return null
 
-export function makeReducer(decks) {
-  return function reduce(state, action) {
-    switch (action.type) {
-      case 'load':
-        return action.state
+  if (ch.k === 'bluff' && ch.s === 0) return seal(core, bluffVote(core, answers, at, env.decks))
+  if (ch.k === 'dare' && ch.s === 0) {
+    const t0 = at + 300
+    return seal(core, { ...core, t: t0, ch: { ...ch, s: 1, t0, t1: t0 + T.dur.judge } })
+  }
+  return seal(core, reveal(core, answers, at, env.decks))
+}
 
-      /* ---- setup ---- */
-      case 'names':
-        return state.phase === 'setup' ? { ...state, names: action.names } : state
-      case 'settings':
-        return state.phase === 'setup' ? { ...state, settings: { ...state.settings, ...action.patch } } : state
-      case 'start': {
-        if (state.phase !== 'setup') return state
-        const names = state.names.map((n, i) => n.trim().slice(0, NAME_MAX) || action.fallback(i))
-        if (names.length < MIN_PLAYERS || !state.settings.books.length) return state
-        return startState(names, state.settings, action.seed)
+/* Bluff, second half: the lies are collected and everyone votes. Identical lies
+   are merged (both authors are credited); a "lie" that is the truth is dropped;
+   and with few players the house adds decoys so there is something to doubt. */
+function bluffVote(core, answers, at, decks) {
+  const ch = core.ch
+  const item = decks.byId[ch.id]
+  const truths = [item.truth.ar, item.truth.en, ...(item.alt || [])].map(norm)
+  const lies = []
+  for (const p of core.players) {
+    const a = answers[p.id]
+    if (!a) continue
+    const key = norm(a.v)
+    if (!key || truths.includes(key)) continue
+    const same = lies.find((l) => norm(l.x) === key)
+    if (same) same.p.push(p.id)
+    else lies.push({ x: a.v, p: [p.id] })
+  }
+  if (!lies.length) return reveal(core, {}, at, decks)
+  const o = [{ t: 1 }, ...lies]
+  for (const d of shuffled(range((item.decoys || []).length), seeded(ch.seed, 'decoys'))) {
+    if (o.length >= 4) break
+    o.push({ d })
+  }
+  const t0 = at + 1200
+  return { ...core, t: t0, ch: { ...ch, s: 1, o: shuffled(o, seeded(ch.seed, 'bluff')), t0, t1: t0 + T.dur.vote } }
+}
+
+/* Mark the challenge, hand out the steps, and move to the result. */
+function reveal(core, answers, at, decks) {
+  const ch = core.ch
+  const P = core.players
+  const active = turnPlayer(core).id
+  const alive = P.filter((p) => !p.gone)
+  const item = decks.byId[ch.id]
+  const aw = {}
+  const st = {}
+  const x = {}
+  const give = (pid, n) => { if (n) aw[pid] = (aw[pid] || 0) + n }
+  // The four tallies behind the end-of-game titles: right answers, fastest
+  // answers, players fooled, lab wins.
+  const tally = (pid, k, n = 1) => { (st[pid] ||= [0, 0, 0, 0])[k] += n }
+
+  switch (ch.k) {
+    case 'mcq': case 'graph': case 'tf': {
+      const right = ch.k === 'tf' ? (item.isMyth ? 0 : 1) : 0
+      const ok = alive.filter((p) => answers[p.id]?.v === right)
+      for (const p of ok) { give(p.id, 1); tally(p.id, 0) }
+      // Speed counts where there is something to weigh — not on a coin toss.
+      if (ch.k !== 'tf' && alive.length >= 3 && ok.length) {
+        const first = ok.reduce((a, b) => (answers[b.id].at < answers[a.id].at ? b : a))
+        give(first.id, 1)
+        tally(first.id, 1)
+        x.fast = first.id
       }
-
-      /* ---- a turn ---- */
-      case 'roll': {
-        if (state.phase !== 'play' || state.step !== 'roll') return state
-        const value = Math.min(6, Math.max(1, action.value | 0))
-        const me = state.turn
-        const players = state.players.map((p, i) => (i === me
-          ? { ...p, pos: Math.min(lastSquare(state), p.pos + value) }
-          : p))
-        return { ...state, players, die: value, step: 'moving', notices: [] }
+      if (aw[active]) give(active, 1) // it is their square
+      break
+    }
+    case 'who': {
+      for (const p of alive) {
+        const a = answers[p.id]
+        if (!a || a.v !== 0) continue
+        // Worth more the fewer clues you needed.
+        give(p.id, 3 - Math.min(2, Math.floor((a.at - ch.t0) / T.clue)))
+        tally(p.id, 0)
       }
-      case 'arrive': {
-        if (state.phase !== 'play' || state.step !== 'moving') return state
-        const me = state.turn
-        const board = buildBoard(state.seed, state.settings.length, state.settings.books)
-        const square = board[state.players[me].pos]
-        if (square.type === 'finish') {
-          const done = finish(state, me)
-          return { ...done.state, step: 'card', card: { kind: 'finish', bonus: done.bonus } }
+      if (aw[active]) give(active, 1)
+      break
+    }
+    case 'num': {
+      const rows = alive.filter((p) => answers[p.id]).map((p) => ({ id: p.id, off: Math.abs(answers[p.id].v - item.a) })).sort((a, b) => a.off - b.off)
+      if (rows.length) {
+        const best = rows[0].off
+        const second = rows.find((r) => r.off > best)?.off
+        for (const r of rows) {
+          if (r.off === best) { give(r.id, best === 0 ? 3 : 2); tally(r.id, 0) } else if (alive.length >= 4 && r.off === second) give(r.id, 1)
         }
-        const drawn = drawFor(state, square, decks)
-        // An empty deck (a book with no questions yet) is a free square.
-        if (!drawn) return advance(state)
-        return { ...state, step: 'card', card: drawn.card, used: drawn.used }
+        if (aw[active]) give(active, 1)
       }
-      case 'answer': {
-        // `pick` is the position tapped (mcq) or the boolean "it's a myth" (tf);
-        // null means the timer ran out.
-        if (state.step !== 'card' || !state.card) return state
-        const { card } = state
-        const content = cardContent(card, decks)
-        if (!content) return advance(state)
-        let right = false
-        if (card.kind === 'mcq') right = action.pick != null && card.order[action.pick] === 0
-        else if (card.kind === 'tf') right = action.pick != null && action.pick === content.isMyth
-        else return state
-        const gain = right ? POINTS[card.kind] : 0
-        const players = state.players.map((p, i) => (i === state.turn ? { ...p, score: p.score + gain } : p))
-        return { ...state, players, step: 'reveal', card: { ...card, picked: action.pick, right } }
+      break
+    }
+    case 'bluff': {
+      if (ch.s !== 1) { x.none = true; break } // nobody wrote anything
+      for (const p of alive) {
+        const a = answers[p.id]
+        if (!a) continue
+        const picked = ch.o[a.v]
+        if (picked.t) { give(p.id, 2); tally(p.id, 0) } else if (picked.p) for (const author of picked.p) { give(author, 1); tally(author, 2) }
       }
-      case 'judge': {
-        if (state.step !== 'card' || state.card?.kind !== 'dare') return state
-        const gain = action.passed ? POINTS.dare : 0
-        const players = state.players.map((p, i) => (i === state.turn ? { ...p, score: p.score + gain } : p))
-        const passed = advance({ ...state, players })
-        if (passed.phase === 'over') return passed
-        return { ...passed, notices: [{ kind: 'dare', player: state.turn, n: gain }, ...passed.notices] }
-      }
-      case 'apply': {
-        if (state.step !== 'card' || state.card?.kind !== 'luck') return state
-        const content = cardContent(state.card, decks)
-        return content ? applyLuck(state, content.effect) : advance(state)
-      }
-      case 'next': {
-        if (state.phase !== 'play') return state
-        if (state.step === 'reveal' || (state.step === 'card' && state.card?.kind === 'finish')) return advance(state)
-        return state
-      }
-
-      /* ---- after ---- */
-      case 'again':
-        // Same people, same settings, a new board.
-        return startState(state.players.map((p) => p.name), state.settings, action.seed)
-      case 'setup':
-        return setupState(decks, {
-          names: state.players ? state.players.map((p) => p.name) : state.names,
-          settings: state.settings,
+      break
+    }
+    case 'dare': {
+      const votes = alive.filter((p) => p.id !== active && answers[p.id])
+      x.yes = votes.filter((p) => answers[p.id].v === 1).length
+      x.no = votes.length - x.yes
+      x.pass = x.yes >= x.no // the benefit of the doubt
+      if (x.pass) give(active, 2)
+      break
+    }
+    case 'mini': {
+      const took = alive.filter((p) => answers[p.id])
+      if (ch.id === 'stag') {
+        // The stag is caught only if EVERY hunter who answered went for it.
+        x.together = took.length >= 2 && took.every((p) => answers[p.id].v === 1)
+        for (const p of took) {
+          if (x.together) give(p.id, STAG.together)
+          else if (answers[p.id].v === 0) give(p.id, STAG.hare)
+        }
+      } else if (ch.id === 'auction') {
+        // The highest bid that nobody else made wins, and pays what it bid.
+        const bids = took.filter((p) => answers[p.id].v > 0)
+        const alone = bids.filter((p) => bids.filter((q) => answers[q.id].v === answers[p.id].v).length === 1)
+        const winner = alone.reduce((best, p) => (!best || answers[p.id].v > answers[best.id].v ? p : best), null)
+        if (winner) { x.winner = winner.id; give(winner.id, AUCTION.prize - answers[winner.id].v); tally(winner.id, 3) }
+      } else {
+        const rows = took.map((p) => ({ id: p.id, m: miniScore(ch.id, answers[p.id].v, ch.seed) })).filter((r) => r.m).sort((a, b) => b.m.score - a.m.score)
+        const prizes = rankAwards(alive.length)
+        let place = 0
+        rows.forEach((r, k) => {
+          if (k && rows[k - 1].m.score !== r.m.score) place = k
+          r.place = place
+          give(r.id, prizes[place] || 0)
+          if (place === 0) tally(r.id, 3)
         })
-      default:
-        return state
-    }
-  }
-}
-
-/* ---------------- the result ---------------- */
-
-/* Highest score first; among equals, whoever got further along the board. The
-   winners are everyone level with the top on BOTH — a real tie is shared, not
-   broken by the order people happened to sit in. */
-export function ranking(players) {
-  const order = players.map((p, i) => ({ ...p, index: i }))
-    .sort((a, b) => b.score - a.score || b.pos - a.pos)
-  const top = order[0]
-  return order.map((p) => ({ ...p, winner: p.score === top.score && p.pos === top.pos }))
-}
-
-/* ---------------- the address bar ---------------- */
-
-const b64 = {
-  to: (text) => {
-    const bytes = new TextEncoder().encode(text)
-    let bin = ''
-    bytes.forEach((b) => { bin += String.fromCharCode(b) })
-    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-  },
-  from: (str) => {
-    const bin = atob(str.replace(/-/g, '+').replace(/_/g, '/'))
-    return new TextDecoder().decode(Uint8Array.from(bin, (ch) => ch.charCodeAt(0)))
-  },
-}
-
-export function encode(state) {
-  return b64.to(JSON.stringify(state))
-}
-
-const int = (v, min, max, fallback = min) => (Number.isFinite(v) ? Math.min(max, Math.max(min, Math.trunc(v))) : fallback)
-const ids = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, 400) : [])
-
-/* A state from the `?g=` parameter, or null if it is not one. REBUILT, never
-   trusted: every field is read, typed and clamped, and a card that no longer
-   exists in the decks (the site was updated mid-game) simply ends that turn. */
-export function decode(str, decks) {
-  let raw
-  try { raw = JSON.parse(b64.from(str)) } catch { return null }
-  if (!raw || raw.v !== VERSION || !['play', 'over'].includes(raw.phase)) return null
-
-  const s = raw.settings || {}
-  const books = ids(s.books).filter((b) => decks.books.includes(b))
-  if (!books.length || !LENGTHS[s.length]) return null
-  const settings = { length: s.length, books, timer: TIMERS.includes(s.timer) ? s.timer : 0 }
-  const last = LENGTHS[settings.length] - 1
-
-  if (!Array.isArray(raw.players) || raw.players.length < MIN_PLAYERS || raw.players.length > MAX_PLAYERS) return null
-  const players = raw.players.map((p, i) => ({
-    name: String(p?.name ?? '').slice(0, NAME_MAX) || `#${i + 1}`,
-    pos: int(p?.pos, 0, last),
-    score: int(p?.score, 0, 9999),
-    skip: !!p?.skip,
-    debt: int(p?.debt, 0, 99),
-    done: !!p?.done,
-  }))
-
-  const state = {
-    v: VERSION,
-    phase: raw.phase,
-    settings,
-    seed: int(raw.seed, 0, 0xffffffff),
-    players,
-    turn: int(raw.turn, 0, players.length - 1),
-    round: int(raw.round, 1, 999, 1),
-    step: ['roll', 'moving', 'card', 'reveal', 'done'].includes(raw.step) ? raw.step : 'roll',
-    die: raw.die == null ? null : int(raw.die, 1, 6, 1),
-    card: null,
-    used: { mcq: ids(raw.used?.mcq), tf: ids(raw.used?.tf), luck: ids(raw.used?.luck), dare: ids(raw.used?.dare) },
-    finisher: raw.finisher == null ? null : int(raw.finisher, 0, players.length - 1),
-    notices: [],
-  }
-
-  const c = raw.card
-  if (c && state.phase === 'play' && (state.step === 'card' || state.step === 'reveal')) {
-    if (c.kind === 'finish') {
-      state.card = { kind: 'finish', bonus: int(c.bonus, 0, POINTS.finish) }
-    } else {
-      const card = { kind: c.kind, id: String(c.id), book: c.book == null ? null : String(c.book) }
-      const content = cardContent(card, decks)
-      if (content && c.kind === 'mcq') {
-        const n = content.opts.length
-        const order = Array.isArray(c.order) ? c.order.map((x) => int(x, 0, n - 1)) : []
-        const whole = order.length === n && new Set(order).size === n
-        state.card = {
-          ...card,
-          order: whole ? order : content.opts.map((_, i) => i),
-          picked: c.picked == null ? null : int(c.picked, 0, n - 1),
-          right: c.right == null ? null : !!c.right,
-        }
-      } else if (content && c.kind === 'tf') {
-        state.card = { ...card, picked: c.picked == null ? null : !!c.picked, right: c.right == null ? null : !!c.right }
-      } else if (content) {
-        state.card = card
+        x.rows = rows.map((r) => ({ id: r.id, show: r.m.show, place: r.place }))
       }
+      break
     }
+    default:
   }
-  // A card step with no card to show cannot be played; hand the dice back.
-  if ((state.step === 'card' || state.step === 'reveal') && !state.card) state.step = 'roll'
-  if (state.phase === 'over') state.step = 'done'
-  return state
+
+  const a = {}
+  for (const p of P) if (answers[p.id]) a[p.id] = [answers[p.id].v, Math.round(answers[p.id].at - ch.t0)]
+  return {
+    ...core,
+    players: P.map((p) => {
+      const steps = aw[p.id] || 0
+      const add = st[p.id]
+      if (!steps && !add) return p
+      return { ...p, pos: clampPos(p.pos + steps), st: add ? p.st.map((n, k) => n + add[k]) : p.st }
+    }),
+    phase: 'reveal', t: at,
+    res: { k: ch.k, pre: P.map((p) => p.pos), aw, a, x },
+  }
+}
+
+/* Whose turn comes after this one. */
+export function upNext(core) {
+  const P = core.players
+  let skip = core.skip || []
+  if (core.res?.x?.again && !P[core.turn].gone) return { turn: core.turn, skip }
+  let turn = core.turn
+  for (let guard = 0; guard < P.length * 2; guard++) {
+    turn = (turn + 1) % P.length
+    const p = P[turn]
+    if (p.gone) continue
+    if (skip.includes(p.id)) { skip = skip.filter((id) => id !== p.id); continue } // a missed turn, served
+    return { turn, skip }
+  }
+  return { turn: core.turn, skip }
+}
+
+/* Who may tap "next" on a result: the player about to roll, and the host. */
+export function mayMoveOn(core, env) {
+  return [core.players[upNext(core).turn].id, actingHost(core, env)]
+}
+
+function revealStep(core, entries, env) {
+  const dwell = T.dwell[core.res.k] || T.dwell.default
+  const up = upNext(core)
+  let at = null
+  for (const pid of mayMoveOn(core, env)) {
+    const d = entries[pid]?.d
+    if (!d || d.next !== core.n || !isNum(d.nt)) continue
+    const t = Math.max(core.t + T.minReveal, Math.min(d.nt, core.t + dwell))
+    at = at == null ? t : Math.min(at, t)
+  }
+  if (at == null && env.now >= core.t + dwell) at = core.t + dwell
+  if (at == null) return null
+  if (core.players.some((p) => p.pos >= LAST)) return seal(core, { ...core, phase: 'over', t: at })
+  return seal(core, { ...core, phase: 'roll', turn: up.turn, skip: up.skip, n: core.n + 1, t: at, ch: null, res: null, die: 0, repay: 0 })
+}
+
+function overStep(core, entries, env) {
+  const d = entries[actingHost(core, env)]?.d
+  if (!d || d.again !== core.g) return null
+  // Back to the lobby with the same people: the host can change the books, and
+  // anyone who arrived late is let in. The decks' cursors carry over.
+  return seal(core, {
+    id: core.id, room: core.room, g: core.g + 1, host: core.host, ds: core.ds, opts: core.opts, out: core.out, cur: core.cur,
+    phase: 'lobby',
+    players: core.players.filter((p) => !p.gone).map((p) => ({ id: p.id, name: p.name, c: p.c, pos: 0, st: [0, 0, 0, 0] })),
+  })
+}
+
+export function advance(core, entries, env) {
+  switch (core.phase) {
+    case 'lobby': return lobbyStep(core, entries, env)
+    case 'roll': return rollStep(core, entries, env)
+    case 'play': return playStep(core, entries, env)
+    case 'reveal': return revealStep(core, entries, env)
+    case 'over': return overStep(core, entries, env)
+    default: return null
+  }
 }
