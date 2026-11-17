@@ -2,12 +2,20 @@
  * «الشخصيات» — everyone the book leans on, in four groups.
  *
  * Varoufakis interviewed nobody; his cast is the people of his own life, the
- * thinkers he borrows from, and the writers and myths he teaches with. So the
- * first group is the book's own characters — Captain Kostas, Miriam, Maria —
- * and they get monograms, not photos: some are invented, the rest are private
- * people. Several real people have no portrait yet (Rousseau, Radford,
- * Titmuss, Polanyi, Marlowe…); PeopleGrid renders a monogram for a missing
- * `img`, so adding one later is a file plus one line here.
+ * thinkers he borrows from, and the writers and myths he teaches with.
+ *
+ * THE FIRST GROUP — the book's own characters — CAN HAVE NO PHOTOGRAPHS, so
+ * they are PAINTED (2026-11-17, at the club's request), in the game board's
+ * style, by scripts/generate-character-art.mjs. Three are examples the author
+ * made up (Mr Nabuk, Miriam, Maria) and get portraits. The other six are real,
+ * private people — his daughter, his friends, a fisherman, a child, his father
+ * — and are NEVER given a face: each is painted from behind, or through the
+ * scene the book remembers them by. A painted face would claim a likeness
+ * nobody gave us. Keep that rule if one is ever re-painted.
+ *
+ * Several real people elsewhere have no portrait yet (Rousseau, Radford,
+ * Titmuss, Polanyi, Marlowe…) — the club is collecting them. PeopleGrid renders
+ * a monogram for a missing `img`, so adding one is a file plus one line here.
  */
 const L = (ar, en) => ({ ar, en })
 const port = (f) => `./images/characters/${f.replace(/\.\w+$/, '')}.webp`
@@ -22,23 +30,23 @@ export const characters = {
   blocks: [
     { type: 'peoplegroups', groups: [
       { title: L('أهل الكتاب', 'The book’s own people'), people: [
-        { name: L('كسينيا', 'Xenia'), tag: L('الابنة التي كُتب لها الكتاب', 'The daughter the book is written to'),
+        { img: port('xenia.jpg'), name: L('كسينيا', 'Xenia'), tag: L('الابنة التي كُتب لها الكتاب', 'The daughter the book is written to'),
           story: L('ابنة المؤلّف، تعيش في سيدني. سؤالها «لماذا كلّ هذه اللامساواة؟» هو أوّل الكتاب، واسمها — «الإحسان إلى الغرباء» — آخره.', 'The author’s daughter, living in Sydney. Her question “why so much inequality?” opens the book, and her name — “kindness to strangers” — closes it.') },
-        { name: L('السيد نابوك', 'Mr Nabuk'), tag: L('مزارعٌ في بلاد ما بين النهرين', 'A Mesopotamian farmer'),
+        { img: port('mr-nabuk.jpg'), name: L('السيد نابوك', 'Mr Nabuk'), tag: L('مزارعٌ في بلاد ما بين النهرين', 'A Mesopotamian farmer'),
           story: L('أودع قمحه في المخزن المشترك وقبض صَدَفةً منقوشة: أوّل كتابة، وأوّل دَين، وأوّل نقد. يعود في الفصل الرابع ليُثبت أن مال المصرف المركزي ليس جديداً.', 'He left his grain in the common granary and was handed an engraved shell: the first writing, the first debt, the first money. He returns in chapter four to show that central-bank money is nothing new.') },
-        { name: L('القبطان كوستاس', 'Captain Kostas'), tag: L('صيّادٌ في إيجينا', 'A fisherman on Aegina'),
+        { img: port('captain-kostas.jpg'), name: L('القبطان كوستاس', 'Captain Kostas'), tag: L('صيّادٌ في إيجينا', 'A fisherman on Aegina'),
           story: L('علقت مرساته فطلب من كسينيا أن تغطس لأجلها. لو عرض عليها خمسة يوروهات لربّما لم تقفز: درس القيمتين.', 'His anchor snagged and he asked Xenia to dive for it. Had he offered her five euros she might not have jumped: the lesson of the two values.') },
-        { name: L('باريس', 'Paris'), tag: L('الصبيّ المضحك', 'The funny boy'),
+        { img: port('paris.jpg'), name: L('باريس', 'Paris'), tag: L('الصبيّ المضحك', 'The funny boy'),
           story: L('ابن أصدقائهم، أضحك الجميع في المطعم. ادفع له عن كلّ ضحكة يجفّ ظُرفه.', 'Their friends’ son, who had the whole taverna laughing. Pay him per laugh and the humour dries up.') },
-        { name: L('مريم', 'Miriam'), tag: L('صانعة درّاجات', 'A bicycle-maker'),
+        { img: port('miriam.jpg'), name: L('مريم', 'Miriam'), tag: L('صانعة درّاجات', 'A bicycle-maker'),
           story: L('طلبت نصف مليون جنيه لآلةٍ تصنع إطارات الكربون، فكتبه المصرفيّ في حسابها من العدم. إمّا أن تصير مريمُ المستقبلِ ناجحة، وإمّا يقع الانهيار.', 'She asked for half a million pounds for a carbon-frame machine, and the banker typed it into her account from thin air. Either tomorrow’s Miriam succeeds, or the crash comes.') },
-        { name: L('ماريا', 'Maria'), tag: L('صاحبة مصنع برّادات', 'A fridge-maker'),
+        { img: port('maria.jpg'), name: L('ماريا', 'Maria'), tag: L('صاحبة مصنع برّادات', 'A fridge-maker'),
           story: L('تفكّر في توظيف فاسيلي، ثم تقرأ أن النقابات مستعدّة لخفض الأجور ٢٠٪ فتقرّر ألّا توظّف أحداً: من سيملك ما يشتري به برّاداتها؟ صيّاد روسو في ثوب صاحبة مصنع.', 'She is thinking of hiring Wasily, then reads that the unions are ready to see wages fall 20%, and decides to hire no one: who will have the money to buy her fridges? Rousseau’s hunter as a factory owner.') },
-        { name: L('فاسيلي', 'Wasily'), tag: L('اقتصاديٌّ عاطل', 'An unemployed economist'),
+        { img: port('wasily.jpg'), name: L('فاسيلي', 'Wasily'), tag: L('اقتصاديٌّ عاطل', 'An unemployed economist'),
           story: L('نال الدكتوراه سنة ١٩٨٩ ولم يجد عملاً: «أسوأ ما يحدث أن تقرّر بيع روحك للشيطان فتكتشف أن الشيطان لا يشتري».', 'He got his doctorate in 1989 and found no job: the worst is to decide to sell your soul to the devil, only to find the devil isn’t buying.') },
-        { name: L('أندرياس', 'Andreas'), tag: L('صاحب بيتٍ في باتموس', 'A house-owner on Patmos'),
+        { img: port('andreas.jpg'), name: L('أندرياس', 'Andreas'), tag: L('صاحب بيتٍ في باتموس', 'A house-owner on Patmos'),
           story: L('لا يستطيع بيع بيته الصيفي، فيعرض عليه صديقه عشرة يوروهات. الفرق بين ألّا تبيع وألّا تنال سعرك هو أساس حجّة «منكري البطالة».', 'He can’t sell his summer house, so his friend offers him ten euros. The gap between not selling and not getting your price is the root of the unemployment deniers’ case.') },
-        { name: L('والد المؤلّف', 'The author’s father'), tag: L('سجينٌ سياسيّ في الحرب الأهلية اليونانية', 'A political prisoner in the Greek Civil War'),
+        { img: port('varoufakis-father.jpg'), name: L('والد المؤلّف', 'The author’s father'), tag: L('سجينٌ سياسيّ في الحرب الأهلية اليونانية', 'A political prisoner in the Greek Civil War'),
           story: L('في معسكرات ماكرونيسوس وإيكاريا لم تصر السجائر عملة: «كنّا نتقاسم ما يصلنا». يختم الفصل السابع.', 'In the camps on Makronisos and Ikaria cigarettes never became currency: “we shared whatever we received.” He closes chapter seven.') },
       ] },
 

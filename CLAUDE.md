@@ -30,8 +30,9 @@ scripts/<name>.mjs`. `process-images.mjs` and `fix-images.mjs` remove background
 flood-fill and write to `public/images/clean/`; `to-webp.mjs <dir>` converts a directory in
 place; `gen-image-dims.mjs` regenerates `src/data/imageDims.js`.
 
-**Two families of script spend real money** — the hero's (`generate-hero-frames.mjs`,
-`generate-hero-video.mjs`) and the game's `generate-game-board.mjs`. All of them call
+**Three families of script spend real money** — the hero's (`generate-hero-frames.mjs`,
+`generate-hero-video.mjs`), the game's `generate-game-board.mjs`, and the Varoufakis book's
+painted characters, `generate-character-art.mjs` (`--publish` re-exports them free). All of them call
 fal.ai through `fal-client.mjs`, print the estimate and the live balance, and **do nothing
 without `--yes`**. The board script's `--overlay`, `--publish` and `--publish-cover` modes are
 free: they only read a master.
@@ -638,6 +639,13 @@ keeps `base: './'` sub-path hosting working.
   النجوم» (Star Trek)، «عدّاء النصل»، «المبيد»، «العصيدة الحلوة»، «الساحر المتمرّن». The full
   list is in the header of `chapters-2.js`; keep the figures, the quiz, the people and the
   game's questions in step with it.
+  **The book's own nine characters are PAINTED** (2026-11-17, at the club's request, by
+  `scripts/generate-character-art.mjs` in the game board's style; masters in the book folder's
+  `painted-characters/`). The three the author made up (Nabuk, Miriam, Maria) are portraits;
+  the six real, private people (Xenia, Kostas, Paris, Wasily, Andreas, the author's father) are
+  **never given a face** — painted from behind, or through the scene the book remembers them by
+  — because a painted face would claim a likeness nobody gave us. The fifteen people still
+  showing a monogram are real public figures; the club is collecting their photos.
   - Four tabs: author+translator, «مراجعة الكتاب» (8 chapters + epilogue as panels), the
     companion **«الدَّين والربا والأنظمة الثلاثة»** (slug `debt-usury`), and activities.
   - **The companion tab is the club's own PDF**, converted (it stays outside the repo with the
