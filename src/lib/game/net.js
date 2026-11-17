@@ -57,6 +57,10 @@ export const makeId = (length = 8, rand = Math.random) => (
 /* How long since a player was heard from before they count as… */
 export const AWAY = { offline: 8000, gone: 25000 }
 
+/* How far into its future the mailbox accepts an entry's counter — the same
+   limit as `cleanEntry` in api/_mailbox.js (the simulator checks they match). */
+export const FUTURE = 300_000
+
 export class Room {
   constructor({ code, me = null, send, advance = null, create = null, clock = () => Date.now(), timers = null, pace = () => 1000 }) {
     this.code = code
@@ -283,6 +287,22 @@ export class Room {
       this.samples.push({ rtt: t1 - t0, off: resp.now + (t1 - t0) / 2 - t1 })
       if (this.samples.length > 8) this.samples.shift()
       this.offset = this.samples.reduce((best, s) => (s.rtt < best.rtt ? s : best)).off
+
+      /* A CLOCK FAR AHEAD. This phone's first entry is written before it knows
+         the mailbox's clock (the name goes in as the room opens), so a phone
+         minutes fast stamps a counter from the mailbox's future — and the
+         mailbox refuses those (FUTURE), as it must: one from the far future
+         would win every merge for ever. Every later input counts up from it,
+         so it was refused too: on 2026-11-17 a laptop 7 minutes fast played two
+         minutes of a live game that nobody else could see. Now that the clock
+         is known, stamp the entry again. Going back is safe: the mailbox cannot
+         be holding the refused one — and no instance is assumed to. */
+      const stamped = this.me ? this.entries[this.me] : null
+      if (stamped && stamped.c > resp.now + FUTURE) {
+        this.entries = { ...this.entries, [this.me]: { c: Math.round(this.now()), d: stamped.d } }
+        this.offer.add(this.me)
+        for (const p of Object.values(this.peers)) p.c = -1
+      }
 
       if (resp.clash || (resp.core && this.core && resp.core.id !== this.core.id)) {
         this.status = 'clash'

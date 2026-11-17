@@ -14,7 +14,11 @@
  * together — the mailbox (api/_mailbox.js), the room client (lib/game/net.js)
  * and the rules (lib/game/engine.js) — over a pretend network, in pretend time:
  *
- *   • each game has 1–8 bots, each with its own WRONG clock (± a minute);
+ *   • each game has 1–8 bots, each with its own WRONG clock — most within a
+ *     minute, a fifth of them far out (5½–15½ minutes, either way: found live
+ *     on 2026-11-17, a laptop 7 minutes fast whose every input the mailbox
+ *     refused for two minutes — its counters were stamped before the clock
+ *     was known, and the mailbox refuses counters from the far future);
  *   • requests are delayed 20–600 ms each way (with spikes), and some are lost;
  *   • there are 1–3 mailbox instances, a request lands on any of them, and
  *     every so often one forgets everything (a serverless instance recycled);
@@ -32,8 +36,8 @@
 import path from 'node:path'
 import fs from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { makeMailbox, newer as serverNewer } from '../api/_mailbox.js'
-import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE } from '../src/lib/game/net.js'
+import { makeMailbox, newer as serverNewer, FUTURE as serverFuture } from '../api/_mailbox.js'
+import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE, FUTURE as clientFuture } from '../src/lib/game/net.js'
 import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, MAX_PLAYERS } from '../src/lib/game/engine.js'
 import { assembleDecks, lintDecks } from '../src/lib/game/decks.js'
 import { SQUARES, TYPES, lastOf, typeAt } from '../src/lib/game/board.js'
@@ -120,6 +124,7 @@ const fail = (msg) => { console.error(`✗ ${msg}`); process.exit(1) }
     if (!ROOM_RE.test(makeRoomCode(r))) fail('makeRoomCode produced a code ROOM_RE rejects')
     if (!PID_RE.test(makeId(8, r))) fail('makeId produced an id PID_RE rejects')
   }
+  if (serverFuture !== clientFuture) fail('the mailbox and the client disagree on how far ahead a counter may be (FUTURE)')
   const box = makeMailbox()
   if (box.handle({ r: 'nope' }, 1).status !== 400) fail('the mailbox accepted a bad room code')
   if (box.handle(null, 1).status !== 400) fail('the mailbox accepted an empty body')
@@ -227,7 +232,9 @@ class Bot {
   constructor(world, { me, name, create = null, host = false }) {
     Object.assign(this, { world, me, name, create, host })
     const { rand } = world
-    this.skew = CALM ? 0 : Math.round((rand() - 0.5) * 120_000) // this phone's clock is wrong by up to a minute
+    // This phone's clock is wrong: usually by up to a minute, sometimes by a lot.
+    const far = rand() < 0.2
+    this.skew = CALM ? 0 : far ? Math.round((rand() < 0.5 ? -1 : 1) * (330_000 + rand() * 600_000)) : Math.round((rand() - 0.5) * 120_000)
     this.quiet = !CALM && rand() < 0.12 // never rolls, rarely answers
     this.plan = {}
     this.last = null
@@ -238,8 +245,15 @@ class Bot {
 
   open(create) {
     const { sched, send, rand } = this.world
+    /* Once this phone knows the mailbox's clock, the mailbox must never refuse
+       its entry again (it refuses counters more than 5 minutes in its future). */
+    const checked = (body, done) => {
+      const mine = body.e?.[this.me]
+      if (mine && this.room?.samples.length && mine.c > sched.now + serverFuture) this.world.stats.refused += 1
+      send(body, done)
+    }
     this.room = new Room({
-      code: this.world.code, me: this.me, send, create,
+      code: this.world.code, me: this.me, send: checked, create,
       advance: (core, entries, env) => advance(core, entries, { ...env, decks }),
       clock: () => sched.now + this.skew,
       timers: sched,
@@ -399,7 +413,7 @@ function playGame(index) {
     ? { instances: 1, drop: 0, min: 40, max: 120, forget: 0 }
     : { instances: 1 + Math.floor(rand() * 3), drop: rand() * 0.06, min: 20, max: 200 + rand() * 400, forget: rand() < 0.6 ? 1 : 0 }
   const boxes = Array.from({ length: cfg.instances }, makeMailbox)
-  const stats = { forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, healed: 0 }
+  const stats = { forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, healed: 0, refused: 0 }
   const lag = () => (cfg.min + rand() * (cfg.max - cfg.min)) * (!CALM && rand() < 0.04 ? 6 : 1)
 
   const send = (body, done) => {
@@ -487,6 +501,7 @@ function playGame(index) {
     const where = live().map((b) => `${b.name}: ${b.room.core ? `${b.room.core.phase} g${b.room.core.g} n${b.room.core.n} v${b.room.core.v}` : 'no core'} (${b.room.status})`).join(' | ')
     throw new Error(`game ${index} never finished — ${where} — boxes=${boxes.map((x) => { const c = x.peek(world.code)?.core; return c ? `${c.phase} g${c.g} n${c.n} v${c.v}` : "none" }).join(",")} — timed=${world.timed}`)
   }
+  if (stats.refused) throw new Error(`game ${index}: the mailbox refused ${stats.refused} entr${stats.refused > 1 ? 'ies' : 'y'} from phones that already knew its clock`)
   // Let the last exchanges land, then every phone must hold the same core.
   const sealOf = (b) => b.room.seal() || 'nothing yet'
   const agreed = () => new Set(live().map(sealOf)).size === 1

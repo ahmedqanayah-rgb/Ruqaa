@@ -37,6 +37,10 @@ const MAX_ROOMS = 300
 const MAX_CORE = 24_000 // characters of JSON
 const MAX_ENTRY = 1_600
 const MAX_ENTRIES = 16
+/* How far into the future an entry's counter may be: further, and it is refused
+   (see cleanEntry). The phones re-stamp a refused entry once they know this
+   clock — net.js holds the same number, and the simulator checks they match. */
+export const FUTURE = 300_000
 const ROOM_RE = /^[1-9]\d{5}$/ // six digits — see net.js
 const PID_RE = /^[a-z0-9]{6,12}$/
 
@@ -67,7 +71,7 @@ function cleanEntry(entry, now) {
   if (!isObj(entry) || !isObj(entry.d)) return null
   // A counter is a clock reading (see net.js); one from the far future would
   // win every merge for ever, so it is refused rather than clamped.
-  if (!Number.isFinite(entry.c) || entry.c < 0 || entry.c > now + 300_000) return null
+  if (!Number.isFinite(entry.c) || entry.c < 0 || entry.c > now + FUTURE) return null
   return size(entry.d) <= MAX_ENTRY ? { c: entry.c, d: entry.d } : null
 }
 

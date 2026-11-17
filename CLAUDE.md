@@ -440,7 +440,13 @@ keeps `base: './'` sub-path hosting working.
     step at once, whoever's tap made it possible acts at once and the rest wait a beat that
     grows with their place in the list (`delay()` in net.js).
   - **A player writes only their own entry**, and its counter is a clock reading, so a tab that
-    reloads still outranks the copy everyone else holds. An answer is `{ s, v, at }`: `s` names
+    reloads still outranks the copy everyone else holds. **The mailbox refuses a counter more than
+    `FUTURE` (5 minutes) ahead of its own clock**, and a phone's first entry is written before it
+    knows that clock — so a phone minutes fast was refused every input until the mailbox's clock
+    caught up (found live on 2026-11-17: a laptop 7 minutes fast, two minutes of a game nobody else
+    could see). Now the first reply re-stamps a refused entry on the mailbox's clock (`net.js`), and
+    the simulator gives a fifth of its phones clocks 5½–15½ minutes out and fails if the mailbox
+    refuses anything from a phone that already knows its clock. An answer is `{ s, v, at }`: `s` names
     the GAME, the turn and the stage, so a late answer can never count in the next round — and a
     leftover from the first game never in a rematch, whose turns start again at 1. Every other
     stamp (`roll`, `next`, …) carries the game too (`turnKey`); until 2026-11-17 they carried only
