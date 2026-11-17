@@ -1,6 +1,15 @@
-// Paints the game's BOARD — one illustrated map — over a layout sketch drawn
+// Paints the game's BOARDS — illustrated maps — over a layout sketch drawn
 // from the game's own road (src/lib/game/board.js).
 //
+// THE BOOK BOARDS (2026-11-17, the game's three-board road). One board per book,
+// painted over that book's road (every other book's is mirrored, see
+// `mirrored` in board.js) with the first map as the STYLE reference:
+//   node scripts/generate-game-board.mjs --book why-we-sleep               → dry run: sketch, plan, cost
+//   node scripts/generate-game-board.mjs --book why-we-sleep --yes         → one take, saved as a master
+//   node scripts/generate-game-board.mjs --book why-we-sleep --overlay <master>   → the squares over it (free)
+//   node scripts/generate-game-board.mjs --book why-we-sleep --publish <master>   → ship it (free)
+//
+// THE FIRST MAP (one board with all three books; now the game's poster):
 //   node scripts/generate-game-board.mjs                       → dry run: writes the sketch, prints the plan + cost
 //   node scripts/generate-game-board.mjs --yes --model banana  → one painting (a "take"), saved as a master
 //   node scripts/generate-game-board.mjs --yes --model seedream --seed 7
@@ -30,12 +39,15 @@ import path from 'node:path'
 import sharp from 'sharp'
 import { fileURLToPath } from 'node:url'
 import { apiKey, upload, run, download, confirmSpend } from './fal-client.mjs'
-import { pathLine, pathPoints, stepSize, TYPES, ZONE_ENDS } from '../src/lib/game/board.js'
+import { pathLine, pathPoints, stepSize, TYPES, mirrored } from '../src/lib/game/board.js'
+
+/* Where the first map's three regions met: the last square of each zone. */
+const ZONE_ENDS = [13, 23, 34]
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WIP = path.resolve(__dirname, '../../game-art-wip')
 const MASTERS = path.join(WIP, 'masters')
-const SHIP = path.resolve(__dirname, '../public/images/game/board.webp')
+const shipFor = (file) => path.resolve(__dirname, `../public/images/game/${file}.webp`)
 
 const args = process.argv.slice(2)
 const flag = (name) => args.includes(`--${name}`)
@@ -85,8 +97,61 @@ const MODELS = {
   },
 }
 
+/* ---------------------------- the book boards ----------------------------
+   `art` is the book's place in the registry: what decides whether its road is
+   mirrored, and so it must match the order in src/data/allBooks.js. */
+const BOOKS = {
+  'why-we-sleep': {
+    file: 'board-sleep', art: 0, sky: ['#141640', '#2f2672', '#5a3f8f'],
+    scene: 'THE WHOLE MAP is the Valley of Sleep, at night: deep indigo and violet, a huge glowing crescent moon and many stars, sleeping cottages with dim warm windows, rolling hills with flocks of fluffy white sheep asleep in the grass, an owl awake in a tree and a lark asleep on a branch, a hill shaped like a bed under a patchwork quilt, drifting dream clouds with soft glowing shapes inside them, a still pond reflecting the moon, fields of lavender, a quiet clock tower whose clock face is blank, fireflies over the meadows, and along the top edge the first faint pink light of dawn over the hills.',
+  },
+  'stolen-focus': {
+    file: 'board-focus', art: 1, sky: ['#7a1f63', '#d0573c', '#2f9fae'],
+    scene: 'THE WHOLE MAP is the City of Distraction, at dusk: hot magenta, orange and electric blue. Tall crooked towers shaped like smartphones and tablets with glowing blank screens, floating bell-shaped and speech-bubble balloons with nothing written on them, tangled cables strung between rooftops, glowing signs that are pure colour and shape with no letters, a giant hourglass, a carousel, a big wheel, and crowds of tiny distant figures bent over glowing rectangles. Higher up the noise thins out: a small quiet garden with a reading bench under a tree, and across the top a calm seaside town with sand dunes, a little striped lighthouse and a still blue bay at sunset, where the screens are left behind.',
+  },
+  'talking-to-my-daughter': {
+    file: 'board-market', art: 2, sky: ['#e2cf98', '#3fb3b8', '#8fd6e0'],
+    scene: 'THE WHOLE MAP is the Island Market, in bright midday sun: a turquoise sea with small sailing boats and a little fishing boat with its anchor, whitewashed houses with blue domes, olive trees and terraced fields of golden wheat, a stone granary with sacks of grain, an open-air market with striped stalls, clay amphoras, brass scales and heaps of gold coins, a small columned temple on a hill, sheep behind a wooden fence, a small brick factory with a smoking chimney on the edge of town, and at the very end of the road in the top right corner a tall lighthouse built of stacked books with a small flag on top.',
+  },
+}
+const bookId = value('book')
+const BOOK = bookId ? BOOKS[bookId] : null
+if (bookId && !BOOK) { console.error(`Unknown --book. One of: ${Object.keys(BOOKS).join(', ')}`); process.exit(1) }
+const FLIP = BOOK ? mirrored(BOOK.art) : false
+
+/* What belongs to the OTHER boards. The style reference holds all three books'
+   worlds, and without this list the model borrows them (the first focus take
+   had the sleep board's quilted bed and the market's temple). */
+const AVOID = {
+  'why-we-sleep': 'no screens, no phone-shaped towers, no balloons, no carousel, no temple, no market stalls, no coins, no domed houses',
+  'stolen-focus': 'no bed, no quilt, no moon, no sheep, no temple, no columns, no market stalls, no amphoras, no scales, no coins, no domed white houses',
+  'talking-to-my-daughter': 'no bed, no quilt, no moon, no screens, no phone-shaped towers, no balloons, no carousel, no big wheel',
+}
+
+const bookPrompt = (b) => [
+  'The FIRST image is a rough layout sketch. The SECOND image is ONLY a style reference.',
+  'Turn the sketch into a finished, richly detailed illustrated board-game map, painted from a high bird\'s-eye view, in exactly the same hand-painted gouache-and-ink storybook style, rich jewel-like colours, crisp fine detail, line quality and level of detail as the style reference — but a completely NEW scene: do not copy the reference\'s layout, regions or landmarks.',
+  `KEEP THE ROAD EXACTLY WHERE IT IS IN THE SKETCH: one single continuous winding road with the same position, the same curves and the same width, starting at the bottom ${mirrored(b.art) ? 'right' : 'left'} and ending at the top ${mirrored(b.art) ? 'left' : 'right'}. Paint it as a smooth pale sandstone road with a clean, even, empty surface — no stones, no tiles, no steps, no markings, nothing standing on it — clearly readable against the scenery along its whole length.`,
+  b.scene,
+  `Everything in the map belongs to that one place only — ${AVOID[Object.keys(BOOKS).find((k) => BOOKS[k] === b)]}: those belong to other maps.`,
+  'Landmarks sit in the spaces between the bends of the road, never on it, and nothing overlaps the road anywhere: no roof, tree, balloon or object covers any part of its surface or its edges. A thin decorative border around the whole map, as in the reference. Warm, cheerful and slightly whimsical.',
+  'Strictly no text, no letters, no numbers and no writing of any kind anywhere in the picture; no game pieces, no dice, no cards, no people shown close up.',
+].join(' ')
+
 /* ------------------------------ the sketch ------------------------------ */
-const roadPath = (w, h) => pathLine().map(([x, y], i) => `${i ? 'L' : 'M'}${(x * w).toFixed(1)} ${(y * h).toFixed(1)}`).join(' ')
+const roadPath = (w, h) => pathLine(FLIP).map(([x, y], i) => `${i ? 'L' : 'M'}${(x * w).toFixed(1)} ${(y * h).toFixed(1)}`).join(' ')
+
+/* A book board's sketch: its road on its own colours. */
+function bookSketchSvg(b) {
+  const road = stepSize() * W * 0.78
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <defs><linearGradient id="sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="${b.sky[0]}"/><stop offset="0.55" stop-color="${b.sky[1]}"/><stop offset="1" stop-color="${b.sky[2]}"/>
+    </linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="url(#sky)"/>
+    <path d="${roadPath(W, H)}" fill="none" stroke="#f1e2bd" stroke-width="${road.toFixed(1)}" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`
+}
 
 function sketchSvg() {
   const pts = pathPoints()
@@ -112,7 +177,7 @@ function sketchSvg() {
 
 /* The squares as the page will draw them, for --overlay. */
 function overlaySvg(w, h) {
-  const pts = pathPoints()
+  const pts = pathPoints(FLIP)
   const r = stepSize() * w * 0.36
   const fill = { S: '#ffffff', F: '#ffd54a', K: '#3e63dd', L: '#12a594', B: '#8e4ec6', C: '#f5b800', D: '#e5484d' }
   const dots = pts.map((p, i) => `<circle cx="${(p.x * w).toFixed(1)}" cy="${(p.y * h).toFixed(1)}" r="${r.toFixed(1)}" fill="${fill[TYPES[i]]}" stroke="#fff" stroke-width="${(r * 0.16).toFixed(1)}" fill-opacity="0.92"/>
@@ -137,8 +202,9 @@ if (flag('publish')) {
   const file = path.resolve(value('publish'))
   /* 1200×1600: a phone shows the board about 390 CSS px wide, so this is the
      full 3× of the densest screens, and enough for a desktop window. */
-  await sharp(file).resize(1200, 1600, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(SHIP)
-  console.log(`published → ${path.relative(process.cwd(), SHIP)} (${Math.round(fs.statSync(SHIP).size / 1024)} KB)`)
+  const ship = shipFor(BOOK ? BOOK.file : 'board')
+  await sharp(file).resize(1200, 1600, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(ship)
+  console.log(`published → ${path.relative(process.cwd(), ship)} (${Math.round(fs.statSync(ship).size / 1024)} KB)`)
   process.exit(0)
 }
 
@@ -179,6 +245,27 @@ if (flag('publish-cover')) {
   const out = path.resolve(__dirname, '../public/images/game/cover.webp')
   await sharp(file).resize(1680, 720, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(out)
   console.log(`published → ${path.relative(process.cwd(), out)} (${Math.round(fs.statSync(out).size / 1024)} KB)`)
+  process.exit(0)
+}
+
+if (BOOK) {
+  // A book's board: its sketch, plus the first map as the style reference.
+  const sketch = path.join(WIP, `${BOOK.file}-sketch.jpg`)
+  await sharp(Buffer.from(bookSketchSvg(BOOK))).jpeg({ quality: 92 }).toFile(sketch)
+  console.log(`sketch → ${sketch}`)
+  const reference = path.join(MASTERS, 'board.jpg')
+  if (!fs.existsSync(reference)) { console.error(`No ${reference} — the style reference.`); process.exit(1) }
+  const key = apiKey()
+  await confirmSpend(key, { what: `Board for ${bookId} — 1 × ${MODELS.banana.label} on fal`, estimate: MODELS.banana.price })
+  const small = path.join(WIP, 'board-reference.jpg')
+  await sharp(reference).resize(1200, 1600).jpeg({ quality: 88 }).toFile(small)
+  const [sketchUrl, refUrl] = [await upload(key, sketch), await upload(key, small)]
+  const result = await run(key, MODELS.banana.endpoint, { prompt: bookPrompt(BOOK), image_urls: [sketchUrl, refUrl], resolution: '2K', aspect_ratio: '3:4', output_format: 'jpeg', num_images: 1 }, { label: BOOK.file })
+  const image = result?.images?.[0]?.url
+  if (!image) { console.error(`no image in result: ${JSON.stringify(result).slice(0, 400)}`); process.exit(1) }
+  const name = `${BOOK.file}-${Date.now().toString(36)}.jpg`
+  await download(image, path.join(MASTERS, name))
+  console.log(`\nLook at it, then:  node scripts/generate-game-board.mjs --book ${bookId} --overlay "${path.join(MASTERS, name)}"`)
   process.exit(0)
 }
 

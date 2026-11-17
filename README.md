@@ -37,11 +37,15 @@ serves it too), and all state is kept in memory (no localStorage/sessionStorage)
   sidebar (a drawer on phones) lists the books and their sections.
 - **Ruqʿa Dice / رُقعة النرد** (`/#/game`) — the club's board game, played on the
   weekly call with everyone on their own phone: one person opens a room and reads
-  out its six‑digit code, the others join, and every phone shows the same painted
-  board. Each square opens a round everybody plays at once — tricky questions from
-  every book, myth or fact, closest number, who‑is‑it, charts, a white‑lie round,
-  mini‑games, dares and chance cards. The phones keep in step through one small
-  function on the site's own server (`api/room.js`); nothing is stored on a phone.
+  out its six‑digit code, the others join, and every phone shows the same road —
+  one painted board per book, sliding on from one to the next. Each square opens a
+  round everybody plays at once — tricky questions from every book, myth or fact,
+  closest number, who‑is‑it, who‑is‑this (a face and four names), charts, picture
+  rounds, a white‑lie round, mini‑games, dares and chance cards — with no clock
+  unless the host asks for one, and the explanation after each round stays up until
+  everyone has read it. The die is thrown by a small physics simulation. The phones
+  keep in step through one small function on the site's own server (`api/room.js`);
+  nothing is stored on a phone.
 - **Global features:** AR⇄EN language switch (translates *everything*, including
   chart labels, tooltips and image captions), dark/light theme toggle. Direction
   and theme are driven from `<html>`; all colors come from CSS variables in

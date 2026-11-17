@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext.jsx'
 import { ui } from '../../data/ui.js'
 import Icon from '../Icon.jsx'
-import { LAST } from '../../lib/game/board.js'
 import { standings, actingHost } from '../../lib/game/engine.js'
 import { L, Token, TOKEN_COLORS, copyText } from './parts.jsx'
 
@@ -48,6 +47,7 @@ export default function GameOver({ room, core, me, labels }) {
   const winners = rows.filter((r) => r.rank === 0)
   const isHost = actingHost(core, room.env()) === me
   const asked = room.snapshot().entries[me]?.d?.again === core.g
+  const LAST = core.last
 
   const titles = TITLES.map((title) => {
     const best = Math.max(0, ...rows.map((r) => r.st[title.k]))

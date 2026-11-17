@@ -81,8 +81,9 @@ export function useNow(room, every = 200) {
   return now
 }
 
-/* A bar that empties from t0 to t1. */
+/* A bar that empties from t0 to t1 — and nothing at all for an untimed round. */
 export function TimeBar({ now, t0, t1 }) {
+  if (t1 == null) return null
   const left = Math.max(0, Math.min(1, (t1 - now) / Math.max(1, t1 - t0)))
   const secs = Math.max(0, Math.ceil((t1 - now) / 1000))
   return (
@@ -157,6 +158,12 @@ export const KIND = {
     title: L('خمّن الصورة', 'Picture this'),
     how: L('صورةٌ من كتبنا: شخص، أو حدث، أو لوحة. سمِّها، أو قل من أيّ كتابٍ هي. التلميح والخيارات متاحة — لكن كلّ عونٍ يكلّف خطوة.',
       'A picture from our books — a person, an event or a painting. Name it, or say which book it is from. Hints and options are there, but every bit of help costs a step.'),
+  },
+  face: {
+    icon: '🙂', tone: 'book',
+    title: L('من هذا؟', 'Who is this?'),
+    how: L('وجهٌ من الكتاب، وأربعة أسماء. الإجابة الصحيحة بخطوة، وأسرع المصيبين يأخذ خطوةً ثانية.',
+      'A face from the book, and four names. A right answer is a step; the fastest right answer earns a second.'),
   },
   luck: { icon: '🍀', tone: 'luck', title: L('حظّ', 'Chance'), how: null },
   mini: { icon: '🧪', tone: 'lab', title: L('المختبر', 'The Lab'), how: null },

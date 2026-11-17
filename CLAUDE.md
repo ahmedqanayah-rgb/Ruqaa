@@ -49,7 +49,9 @@ node scripts/sim-game.mjs
 "Books registry"). `sim-game` plays 200 whole games of «رُقعة النرد» over a pretend network that
 is lossy, laggy and forgetful (1–8 bots with wrong clocks, tabs reloading, players leaving, a
 mailbox that forgets) and fails unless every game ends with every phone holding the same state;
-it lints every deck first. `--synthetic` checks the engine alone, `--calm` gives timings.
+it lints every deck first. Half its games are untimed, where its bots behave like a table: a
+quiet one is slow rather than gone, and the others roll for them, close a round or move on
+(the engine's `override`). `--synthetic` checks the engine alone, `--calm` gives timings.
 `check-image-refs` imports the full books (`data/allBooks.js`) and walks every block (paths are helper-built, so
 grepping filenames misses them), then reports refs pointing at missing files, files in
 `public/images` nothing references, and content images missing from `imageDims.js`.
@@ -165,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~87 kB gz of script and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~101 kB gz of script and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -224,17 +226,20 @@ book folder or the search index eagerly. Check that, not just the size line.
   inline content images so `ImageBlock` can emit `width`/`height` and reserve the box before
   the bytes land. Content images have genuinely different aspect ratios, so the flat
   `aspect-ratio: 2/3` that works for covers would distort them. Regenerate after adding one.
-- **The game's two paintings** live in `public/images/game/`: `board.webp` (the board, 3:4,
-  ~235 kB) and `cover.webp` (the wide door on Home and the game's first screen, ~82 kB). Both
-  were painted with Nano Banana Pro on fal by `scripts/generate-game-board.mjs`; full-size
-  masters stay OUTSIDE the repo in `../game-art-wip/masters/` (`board.jpg` is the chosen take),
-  the same split as the hero frames. **The board was painted OVER a sketch of the game's own
-  road** (`lib/game/board.js`), and the squares are drawn by the page, not painted — so if the
-  road's control points ever move, the board must be painted again; check a take with
-  `--overlay` before shipping it. **Neither picture contains a word, a letter or a number**,
-  which is what lets the cover be mirrored for the right-to-left page (`.game-cover`) and the
-  board be cut into bands (each round card's band is a CSS crop of the board — one download).
-  A phone gets the board as the game's poster (`GameCover poster`).
+- **The game's paintings** live in `public/images/game/`: the three BOOK BOARDS the game is
+  played on — `board-sleep.webp`, `board-focus.webp`, `board-market.webp` (3:4, ~250 kB each,
+  2026-11-17) — plus `board.webp`, the first map that held all three books on one board and is
+  now only the game's poster on a phone (`GameCover poster`), and `cover.webp` (the wide door on
+  Home and the game's first screen). All were painted with Nano Banana Pro on fal by
+  `scripts/generate-game-board.mjs` (`--book <id>` for a book's board, with `masters/board.jpg`
+  sent as the STYLE reference so the three look like one set); full-size masters stay OUTSIDE
+  the repo in `../game-art-wip/masters/`, the same split as the hero frames. **Every board was
+  painted OVER a sketch of the game's own road** (`lib/game/board.js`; every other book's road
+  is mirrored, `mirrored(art)`), and the squares are drawn by the page, not painted — so if the
+  road's control points ever move, the boards must be painted again; check a take with
+  `--overlay` before shipping it. **No picture contains a word, a letter or a number**, which is
+  what lets the cover be mirrored for the right-to-left page (`.game-cover`) and a board be cut
+  into bands (each round card's band is a CSS crop of the board where the turn is played).
   **Their paths are written out literally** in `data/gameArt.js` — `check-image-refs` finds a
   shipped file by its NAME in the source. The first version's ten flat-lay photographs (and
   `generate-game-art.mjs`, which made them) were removed on 2026-11-17 when the board was
@@ -436,28 +441,52 @@ keeps `base: './'` sub-path hosting working.
     grows with their place in the list (`delay()` in net.js).
   - **A player writes only their own entry**, and its counter is a clock reading, so a tab that
     reloads still outranks the copy everyone else holds. An answer is `{ s, v, at }`: `s` names
-    the turn and stage, so a late answer can never count in the next round.
+    the GAME, the turn and the stage, so a late answer can never count in the next round — and a
+    leftover from the first game never in a rematch, whose turns start again at 1. Every other
+    stamp (`roll`, `next`, …) carries the game too (`turnKey`); until 2026-11-17 they carried only
+    the turn, and a rematch could roll or answer for you from the first game's entry.
   - **Time on screen is the room's clock** (`useNow(room)` — the mailbox's clock as net.js
     estimates it), never `Date.now()`: six phones with six wrong clocks still see the die land
     and the timer run out together. Every duration is `T` in engine.js.
-  - **The board is ONE painting with the squares drawn over it.** `lib/game/board.js` is the
+  - **The road runs through ONE PAINTED BOARD PER BOOK in play** (2026-11-17: the club found
+    one board "so short that it ends in less than 5 minutes"). `lib/game/board.js` is a board's
     road (control points → a Catmull-Rom curve → 36 squares evenly spaced along it) and what each
-    square is (`TYPES`). Three zones, one per book in registry order: the valley of sleep, the
-    city of distraction, the island market. See **Images** for why the painting depends on it.
-  - **A turn**: the player whose turn it is rolls (or the die rolls itself after a while — and at
-    once for someone who has left); the square sets a round EVERYONE plays: a question from the
-    zone's book (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
+    square is (`TYPES`, `typeAt`); a game's boards are the books in play in registry order
+    (`core.boards`), joined into one road of 36 × boards squares (`core.last` is the finish — never
+    a constant any more). With all three books it is 108 squares: the valley of sleep, the city of
+    distraction, the island market. A board's squares ask its own book. **The screen shows one
+    board at a time**: they are stacked in a strip (`Board.jsx`) that slides down to the next
+    when the turn's token walks off the top — the long road without tiny squares. The book marks
+    in the board's corner show another board until the next turn. Fewer books, shorter game: the
+    lobby says how long tonight's road is. See **Images** for why the paintings depend on the road.
+  - **No clock unless the host asks for one** (`core.timed`, a switch in the lobby, OFF by default
+    — the club asked for it: "the default game is to be without timing"). Untimed, a round has no
+    deadline (`ch.t1` null) and closes when everyone still here has answered; a result stays until
+    everyone has read it and tapped «قرأتُ — التالي» (`readyNow`); nobody's die rolls itself. The
+    rounds that ARE a clock keep it either way (`CLOCKED`: «من هو؟», whose clues come one by one,
+    and the Lab's speed tests). A table waiting on someone whose phone is on but who is not there
+    is moved on by an **override** in a player's entry — roll for them, close the round, leave the
+    result — which the host may send at once and anyone else after a minute (`T.anyone`), for
+    when the one holding things up is the host.
+  - **A turn**: the player whose turn it is rolls (or, in a timed game, the die rolls itself after
+    a while — and in any game, soon, for someone who has left); the square sets a round EVERYONE
+    plays: a question from the board's book (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
     (`num`), who is it? (`who` — three clues, the sooner you answer the more it is worth; the
     book's MAIN people only, at the club's request), read the chart (`graph` — hand-rolled SVG
     in `MiniChart.jsx`; never recharts here), picture this (`pic` — a picture already on the
     site: a person, a painting, an event; "who/what is this?" is answered by TYPING, or "which
     book is it from?" by three buttons; a hint or the four options can be bought for a step
-    each, so a bare typed answer is worth the most), a white lie (`bluff`, Fibbage-style: write
+    each, so a bare typed answer is worth the most), who is this? (`face` — a portrait from the
+    book's people cards and four names of the same sex; the card's `tag` and `about` are read after
+    the answer; no pairs, no group photos, never the book's private people — 62 faces in all),
+    a white lie (`bluff`, Fibbage-style: write
     a lie, then find the truth), the Lab (`mini`: count the sheep, the vigilance test, the digits,
     Stroop, the one arrow — and from the Varoufakis book the stag hunt and an auction of
     Achilles' armour, which test each other rather than anyone's attention), a dare (performed
     on the call, judged on the phones), or chance. **The only currency is squares**; the first
-    to the lighthouse ends the game. The end screen hands out titles from per-player tallies.
+    to the end of the last board ends the game. The end screen hands out titles from per-player
+    tallies. **The `why` after a round is the point of it** — a reading club plays to read — which
+    is why an untimed result waits for everyone.
   - **The deck rules** are at the top of `books/why-we-sleep/game.js`, and they answer the club's
     verdict on the first deck ("so obvious"): every wrong answer must be one a half-informed
     player could believe, and the fun lives in the setup and the `why`, not in silly options.

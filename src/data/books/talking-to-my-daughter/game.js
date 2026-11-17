@@ -27,6 +27,11 @@ const picName = (id, img, name, aliases, wrong, hints, why, extra = {}) => ({ id
 const picBook = (id, img, hints, why, extra = {}) => ({ id, kind: 'book', img, hints, why, ...extra })
 const WHO = L('من هذا؟', 'Who is this?')
 
+/* «من هذا؟» — a face from this book's people (their card on this site), and
+   four names to choose from. `tag` and `about` are what is read out after the
+   answer; `f` marks a woman, so the other names offered are women's too. */
+const face = (id, img, name, tag, about, f) => ({ id, img, name, tag, about, ...(f ? { f: 1 } : {}) })
+
 export const gameIcon = '⚖️'
 
 /* ------------------------------- questions ------------------------------- */
@@ -391,4 +396,52 @@ const pics = [
     L('السيد نابوك — من «الاقتصاد كما أشرحه لابنتي».', 'Mr Nabuk — from Talking to My Daughter About the Economy.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics }
+/* --------------------------------- faces --------------------------------- */
+const faces = [
+  face('td-f-mr-nabuk', './images/characters/mr-nabuk.webp', L('السيد نابوك', 'Mr Nabuk'),
+    L('مزارعٌ في بلاد ما بين النهرين', 'A Mesopotamian farmer'),
+    L('أودع قمحه في المخزن المشترك وقبض صَدَفةً منقوشة: أوّل كتابة، وأوّل دَين، وأوّل نقد. يعود في الفصل الرابع ليُثبت أن مال المصرف المركزي ليس جديداً.',
+      'He left his grain in the common granary and was handed an engraved shell: the first writing, the first debt, the first money. He returns in chapter four to show that central-bank money is nothing new.')),
+  face('td-f-miriam', './images/characters/miriam.webp', L('مريم', 'Miriam'),
+    L('صانعة درّاجات', 'A bicycle-maker'),
+    L('طلبت نصف مليون جنيه لآلةٍ تصنع إطارات الكربون، فكتبه المصرفيّ في حسابها من العدم. إمّا أن تصير مريمُ المستقبلِ ناجحة، وإمّا يقع الانهيار.',
+      'She asked for half a million pounds for a carbon-frame machine, and the banker typed it into her account from thin air. Either tomorrow’s Miriam succeeds, or the crash comes.'), 1),
+  face('td-f-maria', './images/characters/maria.webp', L('ماريا', 'Maria'),
+    L('صاحبة مصنع برّادات', 'A fridge-maker'),
+    L('تفكّر في توظيف فاسيلي، ثم تقرأ أن النقابات مستعدّة لخفض الأجور ٢٠٪ فتقرّر ألّا توظّف أحداً: من سيملك ما يشتري به برّاداتها؟ صيّاد روسو في ثوب صاحبة مصنع.',
+      'She is thinking of hiring Wasily, then reads that the unions are ready to see wages fall 20%, and decides to hire no one: who will have the money to buy her fridges? Rousseau’s hunter as a factory owner.'), 1),
+  face('td-f-adam-smith', './images/characters/adam-smith.webp', L('آدم سميث', 'Adam Smith'),
+    L('صاحب «ثروة الأمم»', 'Author of The Wealth of Nations'),
+    L('الأب المؤسّس لعلم الاقتصاد. عبارته «اليد الخفية» صارت، عند فاروفاكيس، شعار دينٍ علمانيّ يقدّم مجتمع السوق نظاماً طبيعياً.',
+      'The founding father of economics. His “invisible hand” became, for Varoufakis, the motto of a secular religion presenting market society as the natural order.')),
+  face('td-f-karl-marx', './images/characters/karl-marx.webp', L('كارل ماركس', 'Karl Marx'),
+    L('«الشبح» الحاضر في كلّ فكرة', 'The “spectre” behind every thought'),
+    L('يقول المؤلّف إن ماركس يسكن كلّ أفكاره. منه وصف الآلات بأنها «القوّة التي علينا أن ننحني لها»، والميل إلى الأزمة الذي يمنعها من الاستيلاء الكامل.',
+      'The author says Marx haunts all his thinking. From him come the machines as “the force we must bow to”, and the tendency to crisis that stops them taking over entirely.')),
+  face('td-f-john-maynard-keynes', './images/characters/john-maynard-keynes.webp', L('جون ماينارد كينز', 'John Maynard Keynes'),
+    L('«مغالطة التركيب»', 'The “fallacy of composition”'),
+    L('ما يصحّ على شركةٍ لا يصحّ على الاقتصاد كلّه. ويستشهد الكتاب بمقالته عن «أحفادنا» (١٩٣٠): سيُرى حبّ المال على حقيقته يوماً.',
+      'What holds for one firm does not hold for the whole economy. The book quotes his 1930 essay on “our grandchildren”: one day the love of money will be seen for what it is.')),
+  face('td-f-jared-diamond', './images/characters/jared-diamond.webp', L('جارد دايموند', 'Jared Diamond'),
+    L('صاحب «أسلحة، جراثيم، وفولاذ»', 'Author of Guns, Germs and Steel'),
+    L('على كتابه يقوم الفصل الأوّل كلّه: الجغرافيا، لا الجينات، هي التي قرّرت من سيستعمر من.',
+      'The whole first chapter rests on his book: geography, not genes, decided who would colonise whom.')),
+  face('td-f-sophocles', './images/characters/sophocles.webp', L('سوفوكليس', 'Sophocles'),
+    L('صاحب «أوديب ملكاً»', 'Author of Oedipus Rex'),
+    L('نبوءةٌ تحقّق نفسها لأن من سمعها حاول الهرب منها: هكذا يشرح الكتاب سوقَي العمل والمال.',
+      'A prophecy that fulfils itself because those who hear it try to escape it: the book’s way of explaining the labour and money markets.')),
+  face('td-f-goethe', './images/characters/goethe.webp', L('يوهان فولفغانغ فون غوته', 'Johann Wolfgang von Goethe'),
+    L('صاحب «فاوست»', 'Author of Faust'),
+    L('في نسخته من القرن التاسع عشر يُنقذ فاوست — فقد صار الدَّين مع الفائدة مقبولاً. وله أيضاً «الساحر المتمرّن» عن مخلوقٍ يفلت من صانعه.',
+      'In his nineteenth-century version Faust is saved — debt with interest had become acceptable. He also wrote The Sorcerer’s Apprentice, about a creation that escapes its maker.')),
+  face('td-f-yanis-varoufakis', './images/characters/yanis-varoufakis.webp', L('يانيس فاروفاكيس', 'Yanis Varoufakis'),
+    L('مؤلّف «الاقتصاد كما أشرحه لابنتي»', 'Author of “Talking to My Daughter About the Economy”'),
+    L('اقتصاديّ يونانيّ وُلد في أثينا (١٩٦١)، أمضى معظم مسيرته أستاذاً في بريطانيا وأستراليا، ثم صار وزيراً لمالية اليونان ستّة أشهر في ذروة أزمتها (٢٠١٥).',
+      'A Greek economist born in Athens (1961) who spent most of his career teaching in Britain and Australia, then was Greece’s finance minister for six months at the height of its crisis (2015).')),
+  face('td-f-imad-shiha', './images/characters/imad-shiha.webp', L('عماد شيحة', 'Imad Shiha'),
+    L('مترجم الكتاب إلى العربية', 'The book’s Arabic translator'),
+    L('روائيٌّ ومترجمٌ سوريّ (١٩٥٤–٢٠٢٢) ترجم عن الإنجليزية كتباً في الاقتصاد والسياسة والفلسفة والتاريخ — ومنها الطبعة العربية من كتاب فاروفاكيس.',
+      'A Syrian novelist and translator (1954–2022) who translated books on economics, politics, philosophy and history from English — among them the Arabic edition of Varoufakis’s book.')),
+]
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces }

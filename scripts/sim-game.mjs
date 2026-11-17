@@ -18,7 +18,10 @@
  *   • requests are delayed 20–600 ms each way (with spikes), and some are lost;
  *   • there are 1–3 mailbox instances, a request lands on any of them, and
  *     every so often one forgets everything (a serverless instance recycled);
- *   • bots reload their tab mid-game, walk out, arrive late, or go quiet.
+ *   • bots reload their tab mid-game, walk out, arrive late, or go quiet;
+ *   • half the games are untimed (the default), where nothing moves until the
+ *     players do — and the host bot does what a host would: closes a round a
+ *     quiet friend is holding up, rolls for them, moves the table on.
  *
  * and then insists that every game ENDS, that every phone ends up holding the
  * SAME core, and that no rule ever threw or put a token off the board.
@@ -31,9 +34,9 @@ import fs from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { makeMailbox, newer as serverNewer } from '../api/_mailbox.js'
 import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE } from '../src/lib/game/net.js'
-import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, MAX_PLAYERS } from '../src/lib/game/engine.js'
+import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, MAX_PLAYERS } from '../src/lib/game/engine.js'
 import { assembleDecks, lintDecks } from '../src/lib/game/decks.js'
-import { LAST, SQUARES, TYPES } from '../src/lib/game/board.js'
+import { SQUARES, TYPES, lastOf, typeAt } from '../src/lib/game/board.js'
 import { rng } from '../src/lib/game/rand.js'
 import { sheepPlan, memoryDigits, AUCTION } from '../src/lib/game/minis.js'
 
@@ -64,6 +67,7 @@ function syntheticDecks() {
         who: n('who', 5, (i) => ({ name: text(`person ${i}`), clues: [1, 2, 3].map((c) => text(`clue ${c}`)), why: text('why') })),
         graph: n('graph', 2, (i) => ({ q: text(`g${i}`), chart: { type: 'line' }, opts: [0, 1, 2, 3].map((o) => text(`o${o}`)), why: text('why') })),
         bluff: n('bluff', 3, (i) => ({ q: text(`b${i} ____`), truth: text('the truth'), decoys: [text('d1'), text('d2'), text('d3')], why: text('why') })),
+        face: n('face', 8, (i) => ({ img: `./images/${id}-${i}.webp`, name: text(`face ${i}`), tag: text('tag'), about: text('about'), ...(i % 2 ? { f: 1 } : {}) })),
       },
     }
     myths[id] = { mythOrFact: Array.from({ length: 4 }, (_, i) => ({ statement: text(`s${i}`), isMyth: i % 2 === 0, explain: text('x') })) }
@@ -123,7 +127,13 @@ const fail = (msg) => { console.error(`✗ ${msg}`); process.exit(1) }
   box.handle({ r: '123456', me: 'hosthost', have: null, en: {}, core: a }, 1)
   if (!box.handle({ r: '123456', me: 'otherone', have: null, en: {}, core: b }, 2).json.clash) fail('two rooms on one code did not clash')
   if (box.handle({ r: '654321', me: 'otherone', have: null, en: {} }, 3).json.none !== true) fail('an unknown room was not reported as none')
-  if (TYPES.length !== SQUARES || TYPES[0] !== 'S' || TYPES[LAST] !== 'F') fail('the board string is malformed')
+  if (TYPES.length !== SQUARES || TYPES[0] !== 'S' || TYPES[SQUARES - 1] !== 'F') fail('the board string is malformed')
+  // One road through several boards: a start only at the very beginning, a finish only at the very end.
+  for (let boards = 1; boards <= 3; boards++) {
+    const last = lastOf(boards)
+    if (typeAt(0, boards) !== 'S' || typeAt(last, boards) !== 'F') fail('the road does not start and finish where it should')
+    for (let pos = 1; pos < last; pos++) if ('SF'.includes(typeAt(pos, boards))) fail(`square ${pos} of ${boards} boards is a start or a finish`)
+  }
 }
 
 /* ------------------------------ pretend time ------------------------------ */
@@ -183,7 +193,7 @@ function botAnswer(core, rand, me) {
   const item = decks.byId[ch.id]
   const pick = (n) => Math.floor(rand() * n)
   switch (ch.k) {
-    case 'mcq': case 'graph': case 'who': return rand() < 0.5 ? 0 : 1 + pick(3)
+    case 'mcq': case 'graph': case 'who': case 'face': return rand() < 0.5 ? 0 : 1 + pick(3)
     case 'tf': return pick(2)
     case 'num': return rand() < 0.1 ? item.a : Math.round(item.a * (0.3 + rand() * 1.6))
     case 'bluff':
@@ -255,6 +265,10 @@ class Bot {
     this.world.sched.set(() => this.loop(), 300 + this.world.rand() * 200)
   }
 
+  /* How long this bot lets a stuck table wait before moving it on: the host
+     soon, anyone else only after the engine's minute (T.anyone). */
+  patience(core) { return actingHost(core, this.room.env()) === this.me ? 20_000 : 65_000 }
+
   /* Do something once, a little after it first became possible. */
   after(key, ms) {
     const now = this.room.now()
@@ -286,40 +300,76 @@ class Bot {
           const everyone = core.players.length >= world.expect
           if (this.after(`start${core.g}`, everyone ? 600 : 9000)) {
             const books = rand() < 0.25 ? decks.books.filter(() => rand() < 0.6) : decks.books
-            room.setMine({ start: core.g, st: now, books: books.length ? books : decks.books })
+            room.setMine({ start: core.g, st: now, books: books.length ? books : decks.books, timed: world.timed })
           }
         }
         break
       }
       case 'roll': {
-        if (!meIn || meIn.gone || turnPlayer(core).id !== this.me || mine.roll === core.n || this.quiet) break
-        if (this.after(`roll${core.n}`, 300 + rand() * 2600)) room.setMine({ roll: core.n, rt: now })
+        if (!meIn || meIn.gone) break
+        // An untimed game waits for a quiet friend's roll for ever — unless the host rolls for them.
+        if (!core.timed && turnPlayer(core).id !== this.me && mine.rollFor !== turnKey(core)) {
+          if (this.after(`rollFor${turnKey(core)}`, this.patience(core) + rand() * 20_000)) room.setMine({ rollFor: turnKey(core), rft: now })
+          break
+        }
+        if (turnPlayer(core).id !== this.me || mine.roll === turnKey(core)) break
+        // A quiet player never rolls in a timed game (the die rolls itself); in
+        // an untimed one they are slow, not gone — someone may roll for them first.
+        const wait = !this.quiet ? 300 + rand() * 2600 : core.timed ? null : 90_000 + rand() * 60_000
+        if (wait != null && this.after(`roll${turnKey(core)}`, wait)) room.setMine({ roll: turnKey(core), rt: now })
         break
       }
       case 'play': {
         const ch = core.ch
         const slot = slotOf(core)
-        if (!meIn || !expected(core).includes(this.me) || mine.a?.s === slot || now < ch.t0) break
-        if (this.plan.key !== slot) {
-          const span = ch.t1 - ch.t0
-          const late = ch.k === 'mini' && !['stag', 'auction'].includes(ch.id)
-          this.plan = { key: slot, at: ch.t0 + (late ? span - 1500 + rand() * 1200 : 600 + rand() * span * 0.8), skip: rand() < (this.quiet ? 0.7 : 0.06) }
+        if (!meIn || now < ch.t0) break
+        // The host closes an untimed round that a quiet friend is holding up.
+        if (ch.t1 == null && mine.end !== slot && (mine.a?.s === slot || !expected(core).includes(this.me)) && this.after(`end${slot}`, this.patience(core) + 5_000 + rand() * 30_000)) {
+          room.setMine({ end: slot, et: now })
+          break
         }
-        if (this.plan.skip || now < this.plan.at || now > ch.t1) break
+        if (!expected(core).includes(this.me) || mine.a?.s === slot) break
+        if (this.answer !== slot) {
+          const span = (ch.t1 ?? ch.t0 + 30_000) - ch.t0
+          const late = ch.k === 'mini' && !['stag', 'auction'].includes(ch.id)
+          this.answer = slot
+          // Untimed, a player who would have let the clock run out answers late instead.
+          const skip = rand() < (this.quiet ? 0.7 : 0.06)
+          const slow = skip && ch.t1 == null
+          this.answerPlan = { at: ch.t0 + (slow ? 90_000 + rand() * 60_000 : late ? span - 1500 + rand() * 1200 : 600 + rand() * span * 0.8), skip: skip && !slow }
+        }
+        if (this.answerPlan.skip || now < this.answerPlan.at || (ch.t1 != null && now > ch.t1)) break
         room.setMine({ a: { s: slot, v: botAnswer(core, rand, this.me), at: now } })
         this.sent = slot
         break
       }
       case 'reveal': {
         // Was an answer this bot sent in time left out of the result?
-        if (this.sent === slotOf(core) && this.counted !== core.n) {
-          this.counted = core.n
+        if (this.sent === slotOf(core) && this.counted !== turnKey(core)) {
+          this.counted = turnKey(core)
           stats.answers += 1
           if (!core.res.a[this.me]) stats.lost += 1
         }
-        if (!meIn || mine.next === core.n || !mayMoveOn(core, room.env()).includes(this.me)) break
-        if (this.plan.key !== `next${core.n}`) this.plan = { key: `next${core.n}`, at: core.t + 3000 + rand() * 9000, skip: rand() < 0.35 }
-        if (!this.plan.skip && now >= this.plan.at) room.setMine({ next: core.n, nt: now })
+        if (!meIn) break
+        if (!core.timed) {
+          // Untimed: everyone taps on when they have read it (a quiet one only
+          // much later), and the table is moved on if somebody takes too long.
+          if (mine.next === turnKey(core) && mine.go !== turnKey(core) && this.after(`go${turnKey(core)}`, this.patience(core) + 10_000 + rand() * 30_000)) {
+            room.setMine({ go: turnKey(core), gt: now })
+            break
+          }
+          if (mine.next === turnKey(core)) break
+          if (this.reading !== turnKey(core)) {
+            this.reading = turnKey(core)
+            const slow = rand() < (this.quiet ? 0.6 : 0.03)
+            this.readPlan = { at: core.t + (slow ? 90_000 + rand() * 60_000 : 2500 + rand() * 12_000) }
+          }
+          if (now >= this.readPlan.at) room.setMine({ next: turnKey(core), nt: now })
+          break
+        }
+        if (mine.next === turnKey(core) || !mayMoveOn(core, room.env()).includes(this.me)) break
+        if (this.plan.key !== `next${turnKey(core)}`) this.plan = { key: `next${turnKey(core)}`, at: core.t + 3000 + rand() * 9000, skip: rand() < 0.35 }
+        if (!this.plan.skip && now >= this.plan.at) room.setMine({ next: turnKey(core), nt: now })
         break
       }
       case 'over': {
@@ -367,13 +417,14 @@ function playGame(index) {
     code: makeRoomCode(rand),
     expect: players,
     rounds: rand() < 0.2 ? 2 : 1, // sometimes they play again
+    timed: rand() < 0.5, // the host's choice in the lobby
     seenKinds: new Set(),
     reached: {},
     began: {},
     check(core, bot) {
       if (core.phase === 'roll' && core.n === 1 && !this.began[core.g]) this.began[core.g] = core.t
       if (JSON.stringify(core).length > 20_000) throw new Error('a core grew past 20 kB')
-      for (const p of core.players) if (!(p.pos >= 0 && p.pos <= LAST)) throw new Error(`a token is off the board: ${p.pos}`)
+      if (core.phase !== 'lobby') for (const p of core.players) if (!(p.pos >= 0 && p.pos <= core.last)) throw new Error(`a token is off the board: ${p.pos}`)
       if (core.phase !== 'lobby' && !(core.turn >= 0 && core.turn < core.players.length)) throw new Error('the turn points at nobody')
       if (core.phase === 'reveal' || core.phase === 'play') {
         const key = `${core.g}:${core.n}`
@@ -426,9 +477,9 @@ function playGame(index) {
     return cores.length > 0 && cores.every((c) => c.phase === 'over' && c.g >= world.rounds)
   }
   const start = sched.now
-  if (!sched.run(finished, start + 4 * 3600_000)) {
+  if (!sched.run(finished, start + 16 * 3600_000)) {
     const where = live().map((b) => `${b.name}: ${b.room.core ? `${b.room.core.phase} g${b.room.core.g} n${b.room.core.n} v${b.room.core.v}` : 'no core'} (${b.room.status})`).join(' | ')
-    throw new Error(`game ${index} never finished — ${where}`)
+    throw new Error(`game ${index} never finished — ${where} — boxes=${boxes.map((x) => { const c = x.peek(world.code)?.core; return c ? `${c.phase} g${c.g} n${c.n} v${c.v}` : "none" }).join(",")} — timed=${world.timed}`)
   }
   // Let the last exchanges land, then every phone must hold the same core.
   const sealOf = (b) => b.room.seal() || 'nothing yet'

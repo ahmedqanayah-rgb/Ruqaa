@@ -2,12 +2,12 @@ import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
 import Icon from '../Icon.jsx'
 import RichText from '../RichText.jsx'
-import { T, turnPlayer, optionOrder, whoChoices, mayMoveOn, upNext } from '../../lib/game/engine.js'
+import { T, turnPlayer, optionOrder, whoChoices, faceChoices, mayMoveOn, upNext, readyNow, actingHost, turnKey } from '../../lib/game/engine.js'
 import { effectLine, effectMood } from '../../lib/game/effects.js'
 import { sheepPlan, memoryDigits, MEMORY, AUCTION } from '../../lib/game/minis.js'
 import MiniChart from './MiniChart.jsx'
 import { PicResult } from './PicRound.jsx'
-import { LETTERS } from './Challenge.jsx'
+import { LETTERS, FaceImage } from './Challenge.jsx'
 import { L, KindHead, Token, TOKEN_COLORS, Steps } from './parts.jsx'
 
 /*
@@ -15,9 +15,11 @@ import { L, KindHead, Token, TOKEN_COLORS, Steps } from './parts.jsx'
  * Everything here is read from `core.res`, which the engine wrote when it
  * marked the round — this file decides nothing, it only shows.
  *
- * The result stays up until the player about to roll (or the host) taps on,
- * or by itself after a while (`T.dwell`): a table that has gone quiet should
- * not stall.
+ * HOW LONG IT STAYS UP. In an untimed game (the default) until everyone still
+ * at the table has read it and tapped on — the `why` is the best part of a
+ * round, and nobody should lose it to a quick thumb — or the host moves things
+ * along. In a timed game, until the player about to roll (or the host) taps on,
+ * or by itself after a while (`T.dwell`).
  */
 function Mini({ player, labels, index }) {
   return <Token color={TOKEN_COLORS[player.c]} label={labels[index]} className="is-mini" />
@@ -171,6 +173,20 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
       why = item.why
       break
     }
+    case 'face': {
+      const people = faceChoices(ch, decks)
+      body = (
+        <>
+          <div className="gm-face-truth">
+            <FaceImage item={item} small />
+            <p className="gm-truth">{t(item.name)}<small>{t(item.tag)}</small></p>
+          </div>
+          <ChoiceResult core={core} labels={labels} order={optionOrder(ch, people.length)} right={0} mine={mine} render={(i) => t(people[i].name)} />
+        </>
+      )
+      why = item.about
+      break
+    }
     case 'num': {
       const rows = core.players.filter((p) => res.a[p.id]).map((p) => ({ id: p.id, v: res.a[p.id][0], off: Math.abs(res.a[p.id][0] - item.a) }))
         .sort((a, b) => a.off - b.off)
@@ -255,7 +271,42 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
   const left = Math.max(0, Math.ceil((core.t + dwell - now) / 1000))
   const canGo = mayMoveOn(core, room.env()).includes(me) && now >= core.t + T.minReveal
   const nextName = core.players[upNext(core).turn]?.name
-  const sent = room.snapshot().entries[me]?.d?.next === core.n
+  const { entries } = room.snapshot()
+  const sent = entries[me]?.d?.next === turnKey(core)
+  const tap = () => room.setMine({ next: turnKey(core), nt: Math.round(room.now()) })
+
+  /* Untimed: everyone taps on when they have read it; the host may go on. */
+  let foot
+  if (!core.timed) {
+    const ready = readyNow(core, entries)
+    const table = core.players.filter((p) => !p.gone && (ready.includes(p.id) || room.present(p.id)))
+    const late = table.filter((p) => !ready.includes(p.id)).map((p) => p.name)
+    const isHost = actingHost(core, room.env()) === me
+    foot = sent
+      ? (
+        <>
+          <p className="gm-muted-dark">{t(late.length
+            ? L(`ننتظر من لم ينتهِ من القراءة: ${late.join('، ')}`, `Waiting for those still reading: ${late.join(', ')}`)
+            : L(`الدور التالي لـ${nextName}…`, `${nextName} is next…`))}</p>
+          {late.length > 0 && entries[me]?.d?.go !== turnKey(core) && (isHost || now > core.t + T.anyone) && (
+            <button type="button" className="gm-btn gm-btn-quiet" onClick={() => room.setMine({ go: turnKey(core), gt: Math.round(room.now()) })}>
+              {t(L('تابع دون انتظار', 'Go on without waiting'))}
+            </button>
+          )}
+        </>
+      )
+      : (
+        <button type="button" className="gm-btn is-main is-wide" disabled={now < core.t + T.minReveal} onClick={tap}>
+          {t(L('قرأتُ — التالي', 'Read it — next'))} <span className="arrow" aria-hidden>→</span>
+        </button>
+      )
+  } else {
+    foot = canGo && !sent
+      ? <button type="button" className="gm-btn is-main is-wide" onClick={tap}>
+          {t(L(`التالي: دور ${nextName}`, `Next: ${nextName}’s turn`))} <span className="arrow" aria-hidden>→</span>
+        </button>
+      : <p className="gm-muted-dark">{t(L(`الدور التالي لـ${nextName} — بعد ${left} ث`, `${nextName} is next — in ${left}s`))}</p>
+  }
 
   return (
     <div className="gm-result">
@@ -277,13 +328,7 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
         )}
         {why && <div className="gm-why"><Icon name="💡" /><RichText value={why} /></div>}
       </div>
-      <div className="gm-sheet-foot">
-        {canGo && !sent
-          ? <button type="button" className="gm-btn is-main is-wide" onClick={() => room.setMine({ next: core.n, nt: Math.round(room.now()) })}>
-              {t(L(`التالي: دور ${nextName}`, `Next: ${nextName}’s turn`))} <span className="arrow" aria-hidden>→</span>
-            </button>
-          : <p className="gm-muted-dark">{t(L(`الدور التالي لـ${nextName} — بعد ${left} ث`, `${nextName} is next — in ${left}s`))}</p>}
-      </div>
+      <div className="gm-sheet-foot">{foot}</div>
     </div>
   )
 }

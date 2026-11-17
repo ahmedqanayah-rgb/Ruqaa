@@ -1,4 +1,4 @@
-import { TYPES, LAST, zoneOf } from './board.js'
+import { lastOf, typeAt, boardOf } from './board.js'
 import { MINIS, miniScore, rankAwards, AUCTION, STAG } from './minis.js'
 import { hash32, seeded, shuffled, range } from './rand.js'
 import { matchesName } from './match.js'
@@ -26,17 +26,30 @@ import { matchesName } from './match.js'
  * stale one is ignored rather than misapplied:
  *   name, j            who they are, and when they joined
  *   books, start, st   (host) the books in play; "start game g" and when
+ *   timed              (host) whether rounds run against a clock
  *   kick, again        (host) players removed in the lobby; "play game g again"
- *   roll, rt           "roll for turn n", and when
- *   a: { s, v, at }    an answer to slot s = "<turn>:<stage>", its value, when
- *   next, nt           "move on from the result of turn n", and when
+ *   roll, rt           "roll for this turn" (`turnKey`: game and turn), and when
+ *   rollFor, rft       "roll for whoever's turn it is" (see `override`), and when
+ *   a: { s, v, at }    an answer to slot s = "<game>:<turn>:<stage>", its value, when
+ *   end, et            "close round slot s now" (see `override`), and when
+ *   next, nt           "I have read this turn's result" (`turnKey`), and when
+ *   go, gt             "move on from this turn's result NOW" (see `override`), and when
+ *   acc: { n, p }      (host) typed answers accepted by hand, this turn (`turnKey`)
  *   left               walked out
  *
  * THE SHAPE OF A TURN. The player whose turn it is rolls and moves; the square
  * they land on sets a challenge that EVERYONE plays at once on their own phone;
  * the result is shown, and those who earned steps move. One currency: squares.
- * There is no separate score — where you stand on the board is how you are
- * doing, and the first token to the last square ends the game.
+ * There is no separate score — where you stand on the road is how you are
+ * doing, and the first token to the end of the last board ends the game.
+ *
+ * NO CLOCK UNLESS THE HOST ASKS FOR ONE (`core.timed`, off by default — the
+ * club's choice: a reading club plays to read, not to race). Untimed, a round
+ * waits until everyone still here has answered, a result stays up until
+ * everyone has read it and tapped on, and nobody's die rolls itself — and the
+ * host has a button for each of the three, for the friend who has wandered off
+ * from their phone. The rounds that ARE a clock keep theirs either way: the
+ * Lab's tests of speed, and «من هو؟», whose clues arrive one by one.
  */
 
 export const MAX_PLAYERS = 8
@@ -50,17 +63,22 @@ export const T = {
   hop: 300, // a token crosses one square
   repay: 900, // a debt is collected before the move
   card: 2800, // "you landed on…" before a challenge opens
-  rollWait: 25000, // then the die rolls itself
-  rollAway: 5000, // …or this soon, if the player has gone
+  rollWait: 25000, // then the die rolls itself (a timed game only)
+  rollAway: 5000, // …or this soon, if the player has gone (any game)
   grace: 2000, // after a deadline, for answers still in the air
   clue: 7000, // between clues in «من هو؟»
   minReveal: 2500, // a result cannot be skipped faster than this
-  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 24000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000, pic: 45000, picBook: 22000 },
-  dwell: { luck: 10000, bluff: 22000, default: 16000 }, // a result moves on by itself
+  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 24000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000, pic: 45000, picBook: 22000, face: 20000 },
+  dwell: { luck: 10000, bluff: 22000, default: 16000 }, // a result moves on by itself (timed)
+  untimed: 6 * 3600_000, // the furthest an untimed answer's time is believed
+  anyone: 60000, // after this long, anyone (not only the host) may move a stuck table on
 }
 
 /* The mix of question kinds on a book square, drawn without replacement. */
-const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic']
+const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic', 'face', 'face']
+
+/* Rounds that are a race against the clock by nature, timed game or not. */
+const CLOCKED = (k, id) => k === 'who' || (k === 'mini' && id !== 'stag' && id !== 'auction')
 
 /*
  * «خمّن الصورة» — a picture round. Two kinds of question:
@@ -68,11 +86,11 @@ const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who'
  *         costs: each hint −1, showing the four options −1 (`op`); a right
  *         answer is worth 3 minus the help, never less than 1.
  *   book  "which of our books is it from?" — three buttons; each hint −1 from 2.
- * The pictures are the site's own (portraits, paintings, the spider webs…).
+ * The pictures are the site's own (portraits, paintings, scenes from the books).
  */
 export const picPrize = (ch, v) => (ch.pk === 'book' ? Math.max(1, 2 - (v.h || 0)) : Math.max(1, 3 - (v.h || 0) - (v.op ? 1 : 0)))
 export const picPool = (core, decks) => {
-  const books = playBooks(core, decks)
+  const books = core.boards || playBooks(core, decks)
   // "Which book is it from?" is no question when only one book is in play.
   return books.flatMap((b) => (decks.byBook[b].pic || []).filter((item) => books.length > 1 || item.kind !== 'book'))
 }
@@ -81,7 +99,7 @@ export const picRight = (ch, item, v, decks) => (ch.pk === 'book'
   : v.o != null ? v.o === 0 : matchesName(v.t, [item.name.ar, item.name.en, ...(item.aliases || [])]))
 
 const isNum = (x) => typeof x === 'number' && Number.isFinite(x)
-export const clampPos = (p) => Math.max(0, Math.min(LAST, p))
+export const clampPos = (p, last) => Math.max(0, Math.min(last, p))
 
 /* ------------------------------ text helpers ------------------------------ */
 
@@ -148,7 +166,12 @@ export function newRoom({ code, id, host, ds }) {
 /* --------------------------------- reading -------------------------------- */
 
 export const turnPlayer = (core) => core.players[core.turn]
-export const slotOf = (core) => `${core.n}:${core.ch?.s ?? 0}`
+/* What a player's input is FOR. A turn number alone is not enough: turns
+   start again at 1 in a rematch, and a "roll for turn 5" — or an answer to
+   turn 5's question — left in an entry from the first game must not count in
+   the second. So every stamp carries the game too. */
+export const turnKey = (core) => core.g * 100000 + core.n
+export const slotOf = (core) => `${core.g}:${core.n}:${core.ch?.s ?? 0}`
 export const playBooks = (core, decks) => {
   const chosen = (core.opts?.books || []).filter((b) => decks.books.includes(b))
   return chosen.length ? chosen : decks.books
@@ -173,6 +196,17 @@ export function whoChoices(ch, decks) {
   const all = decks.byBook[ch.book].who
   const others = shuffled(all.filter((w) => w.id !== ch.id), seeded(ch.seed, 'who')).slice(0, 3)
   return [decks.byId[ch.id], ...others]
+}
+
+/* «من هذا؟»: the face, then three other people of the same sex — from the same
+   book first, then from the others — so no name can be ruled out at a glance. */
+export function faceChoices(ch, decks) {
+  const me = decks.byId[ch.id]
+  const like = (x) => x.id !== me.id && !!x.f === !!me.f
+  const own = decks.byBook[ch.book].face.filter(like)
+  const rest = decks.books.filter((b) => b !== ch.book).flatMap((b) => decks.byBook[b].face).filter(like)
+  const pool = [...shuffled(own, seeded(ch.seed, 'face')), ...shuffled(rest, seeded(ch.seed, 'face', 2))]
+  return [me, ...pool.slice(0, 3)]
 }
 
 /* Players in order of standing; equal standing shares a rank. */
@@ -201,7 +235,7 @@ export function readAnswer(core, raw, pid, rv) {
   const int = (lo, hi) => (Number.isInteger(raw.v) && raw.v >= lo && raw.v <= hi ? raw.v : null)
   let v = null
   switch (ch.k) {
-    case 'mcq': case 'graph': case 'who': v = int(0, 3); break
+    case 'mcq': case 'graph': case 'who': case 'face': v = int(0, 3); break
     case 'tf': v = int(0, 1); break
     case 'num': v = isNum(raw.v) && Math.abs(raw.v) < 1e12 ? raw.v : null; break
     case 'bluff':
@@ -238,7 +272,9 @@ export function readAnswer(core, raw, pid, rv) {
     default:
   }
   if (v == null) return null
-  const at = isNum(raw.at) ? Math.max(ch.t0, Math.min(raw.at, ch.t1 + T.grace)) : ch.t1
+  // An untimed round (`t1` null) has no deadline to hold an answer's time to.
+  const hi = ch.t1 == null ? ch.t0 + T.untimed : ch.t1 + T.grace
+  const at = isNum(raw.at) ? Math.max(ch.t0, Math.min(raw.at, hi)) : ch.t1 ?? ch.t0
   return { v, at }
 }
 
@@ -309,6 +345,25 @@ function nextAlive(players, from) {
   return from
 }
 
+/* A table waiting on someone who is here but not playing — their phone on, its
+   owner elsewhere — is moved on by an OVERRIDE in a player's entry: roll for
+   them (`rollFor`), close the round (`end`), leave the result (`go`). The host
+   may do it at once; anyone else once the table has waited `T.anyone` since
+   `since` — for when the one holding things up is the host. Returns the
+   earliest valid time, or null. Every time in it comes from an entry. */
+function override(core, entries, env, key, timeKey, value, since) {
+  const host = actingHost(core, env)
+  let at = null
+  for (const p of core.players) {
+    const d = entries[p.id]?.d
+    if (p.gone || !d || d[key] !== value || !isNum(d[timeKey])) continue
+    if (p.id !== host && d[timeKey] < since + T.anyone) continue
+    const t = Math.max(since, Math.min(d[timeKey], since + T.untimed))
+    at = at == null ? t : Math.min(at, t)
+  }
+  return at
+}
+
 /* --------------------------------- phases --------------------------------- */
 
 function lobbyStep(core, entries, env) {
@@ -318,14 +373,18 @@ function lobbyStep(core, entries, env) {
   const d = entries[host]?.d || {}
   if (Array.isArray(d.books)) {
     const books = env.decks.books.filter((b) => d.books.includes(b))
-    if (books.length) next.opts = { ...core.opts, books }
+    if (books.length) next.opts = { ...next.opts, books }
   }
+  if (typeof d.timed === 'boolean' && d.timed !== !!next.opts.timed) next.opts = { ...next.opts, timed: d.timed }
   if (d.start === core.g && isNum(d.st) && players.length >= 1) {
     const seed = hash32(`${core.id}|${core.g}|${d.st}`)
+    // One board per book in play, in the registry's order: the road's length.
+    const boards = playBooks(next, env.decks)
     next = {
       ...next,
       players: players.map((p) => ({ id: p.id, name: p.name, c: p.c, pos: 0, st: [0, 0, 0, 0] })),
       phase: 'roll', seed, n: 1, turn: seed % players.length, t: d.st,
+      boards, last: lastOf(boards.length), timed: !!next.opts.timed,
       die: 0, from: 0, repay: 0, ch: null, res: null, skip: [], debt: {},
     }
   }
@@ -344,10 +403,13 @@ function rollStep(core, entries, env) {
   const active = players[core.turn]
   const d = entries[active.id]?.d
   let at = null
-  if (d && d.roll === core.n && isNum(d.rt)) at = Math.max(core.t, Math.min(d.rt, core.t + T.rollWait))
+  if (d && d.roll === turnKey(core) && isNum(d.rt)) at = Math.max(core.t, Math.min(d.rt, core.t + (core.timed ? T.rollWait : T.untimed)))
   else {
-    const wait = env.present(active.id) ? T.rollWait : T.rollAway
-    if (env.now >= core.t + wait) at = core.t + wait
+    // Rolled for a friend who is here but not rolling: an untimed game would
+    // otherwise wait for them for ever.
+    at = override(base, entries, env, 'rollFor', 'rft', turnKey(core), core.t)
+    const wait = !env.present(active.id) ? T.rollAway : core.timed ? T.rollWait : null
+    if (at == null && wait != null && env.now >= core.t + wait) at = core.t + wait
   }
   return at == null ? null : seal(core, roll(base, at, env.decks))
 }
@@ -360,15 +422,15 @@ function roll(core, at, decks) {
   const debt = { ...core.debt }
   const repay = debt[me.id] || 0
   delete debt[me.id]
-  const from = clampPos(me.pos - repay)
-  const to = Math.min(LAST, from + die)
+  const from = clampPos(me.pos - repay, core.last)
+  const to = Math.min(core.last, from + die)
   const players = core.players.map((p, k) => (k === i ? { ...p, pos: to } : p))
   const landed = at + T.dice + (repay ? T.repay : 0) + (to - from) * T.hop
   // `was` is where the token stood before the roll: the board walks it from
   // there, and back to `from` first if a debt was collected.
   const next = { ...core, players, die, from, was: me.pos, repay, debt, rolledAt: at, ch: null, res: null }
   // Landing on the last square by the die ends the game there and then.
-  if (to >= LAST) return { ...next, phase: 'over', t: landed + 500 }
+  if (to >= core.last) return { ...next, phase: 'over', t: landed + 500 }
   return challenge(next, to, landed, decks)
 }
 
@@ -384,15 +446,15 @@ function challenge(core, to, landed, decks) {
     return shuffled(range(length), seeded(core.ds, key, Math.floor(k / length)))[k % length]
   }
   const alive = core.players.filter((p) => !p.gone).length
-  const books = playBooks(core, decks)
-  const zone = zoneOf(to)
-  // The zone's own book, unless tonight's game leaves it out.
-  const book = books.includes(decks.books[zone]) ? decks.books[zone] : books[core.n % books.length]
+  const books = core.boards
+  // Every board is a book's own, and its squares ask that book.
+  const zone = boardOf(to)
+  const book = books[Math.min(zone, books.length - 1)]
   const D = decks.byBook[book]
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
 
-  let type = TYPES[to]
+  let type = typeAt(to, books.length)
   if (type === 'B' && (alive < 3 || !D.bluff.length)) type = 'K' // a lie needs someone to fool
   if (type === 'D' && (alive < 2 || !dares.length)) type = 'K' // a dare needs a jury
   if (type === 'C' && !luck.length) type = 'K'
@@ -400,27 +462,32 @@ function challenge(core, to, landed, decks) {
   if (type === 'C') return chance({ ...core, cur }, luck[draw(`luck:${luck.length}`, luck.length)], landed)
 
   const t0 = landed + T.card
+  // A deadline only where the game is timed, or the round is a race by nature.
+  const until = (k, id, dur) => (core.timed || CLOCKED(k, id) ? t0 + dur : null)
   let ch
   if (type === 'L') {
-    let pool = MINIS.filter((m) => m.zone === zone && alive >= m.min)
+    /* The Lab's games were made for the three zones of the first board, one
+       per book; a book's own board plays its book's. */
+    const lab = decks.books.indexOf(book)
+    let pool = MINIS.filter((m) => m.zone === lab && alive >= m.min)
     if (!pool.length) pool = MINIS.filter((m) => alive >= m.min)
-    const mini = pool[draw(`mini:${zone}:${pool.length}`, pool.length)]
-    ch = { k: 'mini', id: mini.id, t1: t0 + mini.dur }
+    const mini = pool[draw(`mini:${lab}:${pool.length}`, pool.length)]
+    ch = { k: 'mini', id: mini.id, t1: until('mini', mini.id, mini.dur) }
   } else if (type === 'B') {
-    ch = { k: 'bluff', id: D.bluff[draw(`bluff:${book}`, D.bluff.length)].id, book, t1: t0 + T.dur.bluff }
+    ch = { k: 'bluff', id: D.bluff[draw(`bluff:${book}`, D.bluff.length)].id, book, t1: until('bluff', null, T.dur.bluff) }
   } else if (type === 'D') {
-    ch = { k: 'dare', id: dares[draw(`dare:${dares.length}`, dares.length)].id, t1: t0 + T.dur.dare }
+    ch = { k: 'dare', id: dares[draw(`dare:${dares.length}`, dares.length)].id, t1: until('dare', null, T.dur.dare) }
   } else {
     let k = KBAG[draw('k', KBAG.length)]
     const pics = k === 'pic' ? picPool(core, decks) : null
     if (k === 'pic' && pics.length) {
-      /* A picture can come from ANY book in play, not just this zone's — and
+      /* A picture can come from ANY book in play, not just this board's — and
          the card does not name a book, which would answer "which book?". */
       const item = pics[draw(`pic:${pics.length}`, pics.length)]
-      ch = { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: t0 + (item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
+      ch = { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: until('pic', null, item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
     } else {
-      if (k === 'pic' || !D[k]?.length || (k === 'who' && D.who.length < 4)) k = 'mcq'
-      ch = { k, id: D[k][draw(`${k}:${book}`, D[k].length)].id, book, t1: t0 + T.dur[k] }
+      if (k === 'pic' || !D[k]?.length || ((k === 'who' || k === 'face') && D[k].length < 4)) k = 'mcq'
+      ch = { k, id: D[k][draw(`${k}:${book}`, D[k].length)].id, book, t1: until(k, null, T.dur[k]) }
     }
   }
   return { ...core, cur, phase: 'play', t: t0, ch: { ...ch, s: 0, t0, seed: hash32(`${core.seed}|${core.n}|ch`) } }
@@ -433,7 +500,7 @@ function chance(core, card, landed) {
   const i = core.turn
   const pre = P.map((p) => p.pos)
   const pos = pre.slice()
-  const cap = (p) => Math.max(0, Math.min(LAST - 1, p))
+  const cap = (p) => Math.max(0, Math.min(core.last - 1, p))
   const alive = range(P.length).filter((k) => !P[k].gone)
   const others = alive.filter((k) => k !== i)
   const e = card.effect
@@ -480,17 +547,23 @@ function playStep(core, entries, env) {
   const answers = answersNow(core, entries)
   const waitingOn = want.filter((pid) => !answers[pid] && env.present(pid))
   const allIn = waitingOn.length === 0 && Object.keys(answers).length > 0
-  // If nobody who could answer is even here, there is no point running the clock down.
-  const deadline = want.some((pid) => env.present(pid)) ? ch.t1 + T.grace : Math.min(ch.t1 + T.grace, ch.t0 + 4000)
+  // If nobody who could answer is even here, there is no point waiting on them.
+  const someone = want.some((pid) => env.present(pid))
+  const deadline = ch.t1 == null
+    ? (someone ? null : ch.t0 + 4000)
+    : someone ? ch.t1 + T.grace : Math.min(ch.t1 + T.grace, ch.t0 + 4000)
+  // A round still waiting on someone can be closed (see `override`).
+  const ended = override(core, entries, env, 'end', 'et', slotOf(core), ch.t0)
   let at = null
   if (allIn && env.now >= ch.t0) at = Math.max(ch.t0, ...Object.values(answers).map((a) => a.at))
-  else if (env.now >= deadline) at = deadline
+  else if (ended != null && env.now >= ended) at = deadline == null ? ended : Math.min(ended, deadline)
+  else if (deadline != null && env.now >= deadline) at = deadline
   if (at == null) return null
 
   if (ch.k === 'bluff' && ch.s === 0) return seal(core, bluffVote(core, answers, at, env.decks))
   if (ch.k === 'dare' && ch.s === 0) {
     const t0 = at + 300
-    return seal(core, { ...core, t: t0, ch: { ...ch, s: 1, t0, t1: t0 + T.dur.judge } })
+    return seal(core, { ...core, t: t0, ch: { ...ch, s: 1, t0, t1: ch.t1 == null ? null : t0 + T.dur.judge } })
   }
   return seal(core, reveal(core, answers, at, env.decks))
 }
@@ -519,7 +592,7 @@ function bluffVote(core, answers, at, decks) {
     o.push({ d })
   }
   const t0 = at + 1200
-  return { ...core, t: t0, ch: { ...ch, s: 1, o: shuffled(o, seeded(ch.seed, 'bluff')), t0, t1: t0 + T.dur.vote } }
+  return { ...core, t: t0, ch: { ...ch, s: 1, o: shuffled(o, seeded(ch.seed, 'bluff')), t0, t1: ch.t1 == null ? null : t0 + T.dur.vote } }
 }
 
 /* Mark the challenge, hand out the steps, and move to the result. */
@@ -538,7 +611,7 @@ function reveal(core, answers, at, decks) {
   const tally = (pid, k, n = 1) => { (st[pid] ||= [0, 0, 0, 0])[k] += n }
 
   switch (ch.k) {
-    case 'mcq': case 'graph': case 'tf': {
+    case 'mcq': case 'graph': case 'tf': case 'face': {
       const right = ch.k === 'tf' ? (item.isMyth ? 0 : 1) : 0
       const ok = alive.filter((p) => answers[p.id]?.v === right)
       for (const p of ok) { give(p.id, 1); tally(p.id, 0) }
@@ -645,7 +718,7 @@ function reveal(core, answers, at, decks) {
       const steps = aw[p.id] || 0
       const add = st[p.id]
       if (!steps && !add) return p
-      return { ...p, pos: clampPos(p.pos + steps), st: add ? p.st.map((n, k) => n + add[k]) : p.st }
+      return { ...p, pos: clampPos(p.pos + steps, core.last), st: add ? p.st.map((n, k) => n + add[k]) : p.st }
     }),
     phase: 'reveal', t: at,
     res: { k: ch.k, pre: P.map((p) => p.pos), aw, a, x },
@@ -681,7 +754,7 @@ export function mayMoveOn(core, env) {
 function acceptStep(core, entries, env) {
   if (core.res?.k !== 'pic' || core.ch.pk === 'book') return null
   const acc = entries[actingHost(core, env)]?.d?.acc
-  if (!acc || acc.n !== core.n || !Array.isArray(acc.p)) return null
+  if (!acc || acc.n !== turnKey(core) || !Array.isArray(acc.p)) return null
   const done = core.res.x.ok || []
   const add = acc.p.filter((pid) => typeof pid === 'string' && !done.includes(pid) && core.res.x.c?.[pid] === 0 && core.res.a[pid]?.[0]?.t)
   if (!add.length) return null
@@ -696,25 +769,45 @@ function acceptStep(core, entries, env) {
     aw[pid] = (aw[pid] || 0) + n
     c[pid] = 2
   }
-  const players = core.players.map((p) => (steps[p.id] ? { ...p, pos: clampPos(p.pos + steps[p.id]), st: p.st.map((v, k) => (k === 0 ? v + 1 : v)) } : p))
+  const players = core.players.map((p) => (steps[p.id] ? { ...p, pos: clampPos(p.pos + steps[p.id], core.last), st: p.st.map((v, k) => (k === 0 ? v + 1 : v)) } : p))
   return seal(core, { ...core, players, res: { ...core.res, aw, x: { ...core.res.x, c, ok: [...done, ...add] } } })
 }
+
+/* Untimed, a result waits for everyone: who still in the game has read it and
+   tapped on (`next` for this turn). */
+export const readyNow = (core, entries) => core.players
+  .filter((p) => !p.gone && entries[p.id]?.d?.next === turnKey(core) && isNum(entries[p.id].d.nt))
+  .map((p) => p.id)
 
 function revealStep(core, entries, env) {
   const accepted = acceptStep(core, entries, env)
   if (accepted) return accepted
-  const dwell = T.dwell[core.res.k] || T.dwell.default
   const up = upNext(core)
-  let at = null
-  for (const pid of mayMoveOn(core, env)) {
-    const d = entries[pid]?.d
-    if (!d || d.next !== core.n || !isNum(d.nt)) continue
-    const t = Math.max(core.t + T.minReveal, Math.min(d.nt, core.t + dwell))
-    at = at == null ? t : Math.min(at, t)
+  const floor = core.t + T.minReveal
+  // Someone moves the table on (see `override`)…
+  let at = override(core, entries, env, 'go', 'gt', turnKey(core), core.t)
+  if (at != null) at = Math.max(floor, at)
+  else if (core.timed) {
+    // Timed: the player about to roll, or the host, taps on — or it moves on by itself.
+    const dwell = T.dwell[core.res.k] || T.dwell.default
+    for (const pid of mayMoveOn(core, env)) {
+      const d = entries[pid]?.d
+      if (!d || d.next !== turnKey(core) || !isNum(d.nt)) continue
+      const t = Math.max(floor, Math.min(d.nt, core.t + dwell))
+      at = at == null ? t : Math.min(at, t)
+    }
+    if (at == null && env.now >= core.t + dwell) at = core.t + dwell
+  } else {
+    // Untimed: when everyone who is here has tapped on. (Whether someone is
+    // here only gates it; the time comes from the taps themselves.)
+    const ready = readyNow(core, entries)
+    const waiting = core.players.filter((p) => !p.gone && !ready.includes(p.id) && env.present(p.id))
+    if (ready.length && !waiting.length) at = Math.max(floor, ...ready.map((pid) => Math.min(entries[pid].d.nt, core.t + T.untimed)))
+    // Nobody left at the table: it does not wait for an empty room.
+    else if (!core.players.some((p) => !p.gone && env.present(p.id)) && env.now >= core.t + T.dwell.default) at = core.t + T.dwell.default
   }
-  if (at == null && env.now >= core.t + dwell) at = core.t + dwell
   if (at == null) return null
-  if (core.players.some((p) => p.pos >= LAST)) return seal(core, { ...core, phase: 'over', t: at })
+  if (core.players.some((p) => p.pos >= core.last)) return seal(core, { ...core, phase: 'over', t: at })
   return seal(core, { ...core, phase: 'roll', turn: up.turn, skip: up.skip, n: core.n + 1, t: at, ch: null, res: null, die: 0, repay: 0 })
 }
 

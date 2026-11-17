@@ -3,12 +3,12 @@ import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
-import { GAME_ART, zoneBand } from '../../data/gameArt.js'
+import { GAME_ART } from '../../data/gameArt.js'
 import Icon from '../Icon.jsx'
-import { LAST, zoneOf } from '../../lib/game/board.js'
-import { T, turnPlayer, answersNow, expected, slotOf } from '../../lib/game/engine.js'
+import { boardOf, squareOf } from '../../lib/game/board.js'
+import { T, turnPlayer, answersNow, expected, slotOf, actingHost, turnKey } from '../../lib/game/engine.js'
 import { sfx, setMuted } from '../../lib/game/sfx.js'
-import Board from './Board.jsx'
+import Board, { pointOf } from './Board.jsx'
 import DieThrow from './DieThrow.jsx'
 import Challenge from './Challenge.jsx'
 import Result from './Result.jsx'
@@ -127,7 +127,17 @@ export default function Stage({ room, snap, me, decks, code }) {
   const myTurn = active?.id === me
   const targets = targetsAt(core, now)
   const sheet = sheetAt(core, now)
-  const zoneIcons = decks.books.map((b) => decks.byBook[b].icon)
+  const isHost = actingHost(core, room.env()) === me
+  /* The road's boards: one per book in play, each with its own painting. `art`
+     is the book's place in the registry — what its painting was painted for. */
+  const boards = useMemo(() => core.boards.map((id) => ({
+    id, art: decks.books.indexOf(id), icon: decks.byBook[id].icon, img: GAME_ART.boards[id],
+    title: t(books.find((b) => b.id === id)?.title || L(id, id)),
+  })), [core.boards, decks, t])
+  /* The round card's band: a strip of the painting where the turn is played. */
+  const turnPos = players[core.turn]?.pos ?? 0
+  const turnBoard = boards[Math.min(boards.length - 1, boardOf(turnPos))]
+  const band = { backgroundImage: `url(${turnBoard.img})`, backgroundPosition: `50% ${(pointOf(turnBoard.art, squareOf(turnPos)).y * 100).toFixed(1)}%` }
 
   /* ---- sounds, once per event (the die makes its own: DieThrow) ---- */
   const heard = useRef({})
@@ -148,7 +158,14 @@ export default function Stage({ room, snap, me, decks, code }) {
   // A new result starts un-peeked.
   useEffect(() => { setPeek(false) }, [core.n, core.phase])
 
-  const roll = () => { if (myTurn && core.phase === 'roll') room.setMine({ roll: core.n, rt: Math.round(room.now()) }) }
+  const roll = () => { if (myTurn && core.phase === 'roll') room.setMine({ roll: turnKey(core), rt: Math.round(room.now()) }) }
+  /* Untimed, nobody's die rolls itself — so a friend who has wandered off from
+     their phone is rolled for: by the host after a little while, by anyone
+     after a minute (the engine's `override`). */
+  const rollFor = core.phase === 'roll' && !core.timed && !myTurn && now - core.t > (isHost ? 20000 : T.anyone)
+    && room.snapshot().entries[me]?.d?.rollFor !== turnKey(core)
+    ? () => room.setMine({ rollFor: turnKey(core), rft: Math.round(room.now()) })
+    : null
   const leave = () => { room.setMine({ left: true }); setTimeout(() => navigate('/game'), 250) }
 
   /* ---- the line under the board ---- */
@@ -156,9 +173,10 @@ export default function Stage({ room, snap, me, decks, code }) {
   const rolling = core.rolledAt && core.phase !== 'roll' && now < core.rolledAt + T.dice
   if (core.phase === 'roll') {
     const left = Math.ceil((core.t + T.rollWait - now) / 1000)
+    const soon = core.timed && left <= 10
     status = myTurn
       ? L('دورك! ارمِ النرد.', 'Your turn! Roll the die.')
-      : L(`دور ${active.name}…${left <= 10 ? ` (يُرمى وحده بعد ${Math.max(0, left)} ث)` : ''}`, `${active.name}’s turn…${left <= 10 ? ` (rolls itself in ${Math.max(0, left)}s)` : ''}`)
+      : L(`دور ${active.name}…${soon ? ` (يُرمى وحده بعد ${Math.max(0, left)} ث)` : ''}`, `${active.name}’s turn…${soon ? ` (rolls itself in ${Math.max(0, left)}s)` : ''}`)
   } else if (core.rolledAt && !sheet) {
     status = rolling ? L(`${active.name} يرمي النرد…`, `${active.name} is rolling…`)
       : L(`${active.name} رمى ${core.die}${core.repay ? ` — وسدّد دَينه أوّلاً` : ''}`, `${active.name} rolled ${core.die}${core.repay ? ' — and paid back the loan first' : ''}`)
@@ -180,7 +198,7 @@ export default function Stage({ room, snap, me, decks, code }) {
         ? <GameOver room={room} core={core} me={me} labels={labels} decks={decks} />
         : (
           <div className={`gm-sheet tone-${core.ch ? KIND[core.ch.k].tone : 'luck'}`}>
-            <div className="gm-band" style={{ backgroundImage: `url(${GAME_ART.board})`, backgroundPosition: `50% ${zoneBand[zoneOf(players[core.turn]?.pos ?? 0)]}` }} aria-hidden />
+            <div className="gm-band" style={band} aria-hidden />
             {sheet === 'landed' && <LandedCard core={core} decks={decks} />}
             {sheet === 'challenge' && <Challenge key={slot} core={core} entries={entries} decks={decks} room={room} me={me} now={now} labels={labels} />}
             {sheet === 'result' && <Result core={core} decks={decks} room={room} me={me} now={now} labels={labels} onPeek={() => setPeek(true)} />}
@@ -203,7 +221,7 @@ export default function Stage({ room, snap, me, decks, code }) {
       </header>
 
       <div className="gm-board-wrap">
-        <Board players={players} targets={targets} activeId={active?.id} me={me} zoneIcons={zoneIcons}
+        <Board players={players} targets={targets} activeId={active?.id} me={me} boards={boards} focusKey={`${core.g}:${core.n}`}
           label={t(L('لوح اللعب', 'The game board'))}>
           {core.rolledAt && core.phase !== 'roll' && core.die ? (
             <DieThrow key={`${core.g}:${core.n}`} room={room} seed={core.seed} turn={core.n} value={core.die} rolledAt={core.rolledAt} />
@@ -218,7 +236,7 @@ export default function Stage({ room, snap, me, decks, code }) {
               <Token color={TOKEN_COLORS[p.c]} label={labels[i]} />
               <span className="gm-strip-text">
                 <bdi>{p.id === me ? t(L('أنت', 'You')) : p.name}</bdi>
-                <small dir="ltr">{Math.min(LAST, p.pos)}/{LAST}</small>
+                <small dir="ltr">{Math.min(core.last, p.pos)}/{core.last}</small>
               </span>
               {answered[p.id] && <span className="gm-strip-tick" aria-label={t(L('أجاب', 'answered'))}><Icon name="✓" /></span>}
             </li>
@@ -230,6 +248,11 @@ export default function Stage({ room, snap, me, decks, code }) {
             ? <button type="button" className="gm-roll" onClick={roll}><Die value={core.die || 6} spin={core.n} /> <span>{t(L('ارمِ النرد', 'Roll the die'))}</span></button>
             : <span className={`gm-dock-die ${rolling ? 'is-away' : ''}`}><Die value={core.die || 1} spin={core.rolledAt && core.phase !== 'roll' ? core.n : core.n - 1} /></span>}
           {status && <p className="gm-status" role="status">{t(status)}</p>}
+          {rollFor && (
+            <button type="button" className="gm-btn" onClick={rollFor}>
+              <Icon name="🎲" /> {t(L(`ارمِ عن ${active.name}`, `Roll for ${active.name}`))}
+            </button>
+          )}
           {sheet === 'result' && peek && (
             <button type="button" className="gm-btn" onClick={() => setPeek(false)}>{t(L('عُد إلى النتيجة', 'Back to the result'))}</button>
           )}

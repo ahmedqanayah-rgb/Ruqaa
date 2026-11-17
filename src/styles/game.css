@@ -139,6 +139,24 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
 .gm-btn:disabled { opacity: 0.5; cursor: default; }
 .gm-btn:not(:disabled):active { transform: scale(0.98); }
 .gm-overlay .gm-btn:not(.is-main):not(.is-danger) { color: var(--gm-ink); border-color: var(--gm-rule); background: #fff; }
+/* The host's quiet overrides (end a round, go on, roll for a friend): there,
+   but not shouting. */
+.gm-btn.gm-btn-quiet { width: 100%; min-height: 40px; margin-top: 8px; font-size: 0.9rem; font-weight: 600; border-style: dashed; }
+
+/* An on/off switch (the lobby's clock). */
+.gm-switch {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 8px 12px;
+  border-radius: 14px; border: 1.5px solid var(--gm-line); background: transparent; color: var(--gm-text);
+  font: inherit; font-weight: 600; cursor: pointer; text-align: start;
+}
+.gm-switch span { flex: 1; }
+.gm-switch .icon { width: 20px; height: 20px; }
+.gm-switch i { position: relative; width: 44px; height: 26px; border-radius: 999px; background: rgba(255, 255, 255, 0.18); flex-shrink: 0; transition: background 160ms; }
+.gm-switch i::after { content: ''; position: absolute; top: 3px; inset-inline-start: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: inset-inline-start 160ms; }
+.gm-switch.is-on { border-color: var(--gm-gold); }
+.gm-switch.is-on i { background: var(--gm-gold); }
+.gm-switch.is-on i::after { inset-inline-start: 21px; }
+.gm-switch:disabled { cursor: default; opacity: 0.75; }
 
 .gm-muted { color: var(--gm-muted); font-size: var(--fs-sm); margin: 8px 0 0; }
 
@@ -287,6 +305,19 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
   background: #262252; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 .gm-board-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+/* The boards, stacked (the first at the bottom) in a strip that slides down
+   to show the next one as the play moves up. A page is one board. */
+.gm-board-strip { position: absolute; left: 0; bottom: 0; width: 100%; transition: transform 800ms cubic-bezier(0.65, 0, 0.35, 1); will-change: transform; }
+.gm-board-page { position: absolute; left: 0; width: 100%; }
+/* Which board is on screen — and a tap to look at another for a while. */
+.gm-board-pages { position: absolute; top: 2cqw; right: 2cqw; z-index: 5; display: flex; gap: 1.2cqw; }
+.gm-board-page-btn {
+  display: grid; place-items: center; width: max(30px, 8cqw); height: max(30px, 8cqw); padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid rgba(255, 255, 255, 0.75); background: rgba(14, 11, 30, 0.55); color: #fff;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.gm-board-page-btn .icon { width: 55%; height: 55%; }
+.gm-board-page-btn.is-on { background: var(--gm-gold); border-color: var(--gm-gold); color: #1a1408; }
 .gm-sq {
   position: absolute; width: calc(var(--step) * 0.6); aspect-ratio: 1; transform: translate(-50%, -50%);
   display: grid; place-items: center; border-radius: 50%;
@@ -492,6 +523,14 @@ button.gm-opt:not(:disabled):active { transform: scale(0.99); }
 .gm-who-card { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 18px; background: var(--gm-good-soft); }
 .gm-who-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
 .gm-who-card strong { font-size: 1.2rem; }
+
+/* «من هذا؟» — a face, square and cropped high, where faces are. */
+.gm-face { width: min(100%, 32dvh); aspect-ratio: 1; margin: 0 auto; border-radius: 18px; overflow: hidden; background: var(--gm-paper-2); }
+.gm-face img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
+.gm-face.is-small { width: 84px; margin: 0; border-radius: 14px; flex-shrink: 0; }
+.gm-face-truth { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.gm-face-truth .gm-truth { text-align: start; }
+.gm-truth small { display: block; margin-top: 2px; font-size: var(--fs-sm); font-weight: 500; color: var(--gm-ink-soft); }
 
 /* «خمّن الصورة» — the picture, the help, the ladder */
 .gm-pic { position: relative; overflow: hidden; border-radius: 18px; background: var(--gm-paper-2); aspect-ratio: 4 / 3; max-height: 34dvh; margin: 0 auto; width: 100%; }

@@ -5,6 +5,7 @@ import { books } from '../../data/books.js'
 import { ui } from '../../data/ui.js'
 import Icon from '../Icon.jsx'
 import { actingHost, playBooks } from '../../lib/game/engine.js'
+import { SQUARES } from '../../lib/game/board.js'
 import { L, Token, TOKEN_COLORS, tokenLabels, prettyCode, copyText } from './parts.jsx'
 import Rules from './Rules.jsx'
 
@@ -41,6 +42,8 @@ export default function Lobby({ room, snap, me, decks, code }) {
     setCopied((await copyText(`${text}\n${invite}`)) ? 'ok' : 'manual')
   }
 
+  const timed = !!core.opts?.timed
+  const toggleTimed = () => room.setMine({ timed: !timed })
   const toggleBook = (id) => {
     const next = chosen.includes(id) ? chosen.filter((b) => b !== id) : [...chosen, id]
     if (next.length) room.setMine({ books: decks.books.filter((b) => next.includes(b)) })
@@ -103,7 +106,26 @@ export default function Lobby({ room, snap, me, decks, code }) {
               )
             })}
           </div>
-          {!isHost && <p className="gm-muted">{t(L('يختارها المضيف.', 'The host chooses.'))}</p>}
+          <p className="gm-muted">
+            {t(L(
+              `${chosen.length === 1 ? 'لوحٌ واحد' : chosen.length === 2 ? 'لوحان' : `${chosen.length} ألواح`} — لوحٌ لكلّ كتاب، و${chosen.length * SQUARES} ${(chosen.length * SQUARES) % 100 >= 3 && (chosen.length * SQUARES) % 100 <= 10 ? 'خانات' : 'خانة'} على الطريق.`,
+              `${chosen.length} board${chosen.length > 1 ? 's' : ''} — one for each book, ${chosen.length * SQUARES} squares of road.`,
+            ))}
+            {!isHost && ` ${t(L('يختارها المضيف.', 'The host chooses.'))}`}
+          </p>
+        </section>
+
+        <section className="gm-panel-dark">
+          <h2>{t(L('الوقت', 'Time'))}</h2>
+          <button type="button" role="switch" aria-checked={timed} className={`gm-switch ${timed ? 'is-on' : ''}`} disabled={!isHost} onClick={toggleTimed}>
+            <Icon name="⏱" />
+            <span>{t(L('جولاتٌ بوقتٍ محدّد', 'Rounds against the clock'))}</span>
+            <i aria-hidden />
+          </button>
+          <p className="gm-muted">{t(timed
+            ? L('لكلّ جولةٍ عدّادها، والنتيجة تمضي وحدها بعد قليل.', 'Every round has its countdown, and a result moves on by itself after a while.')
+            : L('بلا وقت: كلّ جولةٍ تنتظر الجميع، والنتيجة تبقى حتى يقرأها الجميع. (ألعاب السرعة في المختبر و«من هو؟» لها وقتها دائماً.)',
+              'No clock: every round waits for everyone, and a result stays until everyone has read it. (The Lab’s speed games and «Who is it?» keep their clocks.)'))}</p>
         </section>
       </main>
 

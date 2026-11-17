@@ -33,7 +33,13 @@
             { id, kind: 'book', img, hints, why, q? }
             a picture already on the site; "name" is answered by TYPING
             (lib/game/match.js), with hints and the options for sale at a step
-            each; list every acceptable short form in `aliases`
+            each; list every acceptable short form in `aliases`. NEVER a
+            picture with its answer written on it (the spider webs were cut
+            for that, and for being blurred)
+     face   { id, img, name, tag, about, f? }   «من هذا؟» — a portrait and four
+            names of the same sex (`f`: a woman); `tag` + `about` are the
+            person's card, read after the answer. One face per person, no pairs
+            and no group photos, and never the book's private people
    The book's myth-or-fact deck becomes its «خرافة أم حقيقة؟» rounds.
    ========================================================================== */
 import { curve, poly } from '../../../lib/game/chart.js'
@@ -52,6 +58,11 @@ const bluff = (id, q, truth, alt, decoys, why) => ({ id, q, truth, alt, decoys, 
 const picName = (id, img, name, aliases, wrong, hints, why, extra = {}) => ({ id, kind: 'name', img, name, aliases, opts: [name, ...wrong], hints, why, ...extra })
 const picBook = (id, img, hints, why, extra = {}) => ({ id, kind: 'book', img, hints, why, ...extra })
 const WHO = L('من هذا؟', 'Who is this?')
+
+/* «من هذا؟» — a face from this book's people (their card on this site), and
+   four names to choose from. `tag` and `about` are what is read out after the
+   answer; `f` marks a woman, so the other names offered are women's too. */
+const face = (id, img, name, tag, about, f) => ({ id, img, name, tag, about, ...(f ? { f: 1 } : {}) })
 
 /* The mark this book's squares wear on the board (a key into Icon.jsx). */
 export const gameIcon = '🌙'
@@ -382,13 +393,6 @@ const bluffs = [
 
 /* ------------------------------- pictures ------------------------------- */
 const pics = [
-  picName('ws-p-spider', './images/clean/spider/caffeine.webp', L('الكافيين', 'Caffeine'),
-    ['caffeine', 'كافيين', 'الكافيين', 'كافين', 'coffee', 'قهوة', 'القهوة'],
-    [L('LSD', 'LSD'), L('الماريجوانا', 'Marijuana'), L('الأمفيتامين', 'Amphetamine')],
-    [L('المخدّر الإدماني الوحيد الذي نقدّمه للأطفال بلا قلق.', 'The only addictive drug we happily give children.'),
-      L('أغلبنا يتناول شيئاً منه قبل التاسعة صباحاً.', 'Most of us have some before nine in the morning.')],
-    L('الكافيين — شبكته أسوأ حتى من شبكة LSD.', 'Caffeine — a worse web even than LSD’s.'),
-    { q: L('أعطت «ناسا» عنكبوتاً مخدّراً فنسج هذه الشبكة. أيّ مخدّر؟', 'NASA gave a spider a drug and it spun this. Which drug?') }),
   picName('ws-p-edison', './images/characters/thomas-edison.webp', L('توماس إديسون', 'Thomas Edison'),
     ['Edison', 'إديسون', 'اديسون', 'thomas edison'],
     [L('نيكولا تسلا', 'Nikola Tesla'), L('ألكسندر غراهام بل', 'Alexander Graham Bell'), L('هنري فورد', 'Henry Ford')],
@@ -427,4 +431,68 @@ const pics = [
     L('ناثانيال كلايتمان، الأب المؤسّس لعلم النوم — من «لماذا ننام».', 'Nathaniel Kleitman, the founding father of sleep science — from Why We Sleep.')),
 ]
 
-export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics }
+/* --------------------------------- faces --------------------------------- */
+const faces = [
+  face('ws-f-william-halsted', './images/characters/william-halsted.webp', L('وليام هالستد', 'William Halsted'),
+    L('الجرّاح المدمن على الكوكايين', 'The cocaine-addicted surgeon'),
+    L('أنشأ نظام **«الإقامة»** لتدريب الأطبّاء (١٨٨٩)، وكان مدمناً سرّاً على الكوكايين الذي يُبقي متعاطيه مستيقظاً. ومنه جاءت مناوبات الأطبّاء المقيمين المرهِقة بلا نوم، التي ما زالت تُعمل حتى اليوم.',
+      'He created the **residency** system for training doctors (1889), and was secretly addicted to cocaine, which keeps its user awake. From him came the exhausting, sleepless shifts resident doctors still work today.')),
+  face('ws-f-nathaniel-kleitman', './images/characters/nathaniel-kleitman.webp', L('ناثانيال كلايتمان', 'Nathaniel Kleitman'),
+    L('الأب المؤسّس لعلم النوم', 'The founding father of sleep science'),
+    L('عزل نفسه ومساعده في كهف «ماموث» المظلم أسابيع (١٩٣٨)، فوجد أن الجسم يحافظ على إيقاعٍ داخليٍّ قريبٍ من ٢٤ ساعة حتى بلا شمس.',
+      'In 1938 he shut himself and an assistant in the dark Mammoth Cave for weeks, and found that the body keeps a rhythm of about 24 hours even without the sun.')),
+  face('ws-f-dmitri-mendeleev', './images/characters/dmitri-mendeleev.webp', L('ديمتري مندلييف', 'Dmitri Mendeleev'),
+    L('الجدول الدوري في المنام', 'The periodic table in a dream'),
+    L('عجز سنواتٍ عن ترتيب العناصر، حتى **رآها في حلمٍ سنة ١٨٦٩** كلٌّ في مكانه، فاستيقظ ودوّن **الجدول الدوري**.',
+      'For years he failed to arrange the elements, until he **saw them in a dream in 1869**, each in its place — he woke and wrote down the **periodic table**.')),
+  face('ws-f-paul-mccartney', './images/characters/paul-mccartney.webp', L('بول مكارتني', 'Paul McCartney'),
+    L('ألحانٌ من النوم', 'Melodies from sleep'),
+    L('جاءه في نومه لحنا «Yesterday» و«Let It Be» — مثالٌ يسوقه ووكر على أن الحلم حاضنةٌ للإبداع.',
+      'The melodies of “Yesterday” and “Let It Be” came to him in his sleep — Walker’s example of dreaming as an incubator of creativity.')),
+  face('ws-f-mary-shelley', './images/characters/mary-shelley.webp', L('ماري شيلي', 'Mary Shelley'),
+    L('«فرانكنشتاين» من رؤيا', '“Frankenstein” from a vision'),
+    L('استلهمت روايتها **«فرانكنشتاين»** (١٨١٦) من مشهدٍ شبيهٍ بالحلم رأته بين النوم واليقظة.',
+      'She drew her novel **“Frankenstein”** (1816) from a dream-like scene she saw between sleep and waking.'), 1),
+  face('ws-f-thomas-edison', './images/characters/thomas-edison.webp', L('توماس إديسون', 'Thomas Edison'),
+    L('قيلولة «الكرات الفولاذية»', 'The “steel-ball” nap'),
+    L('كان يزدري النوم علناً، ويغفو سرّاً ممسكاً كراتٍ فولاذية فوق صحونٍ معدنية: إذا بدأ يحلم سقطت الكرات فأيقظته، فدوّن ما التقطه عقله.',
+      'He scorned sleep in public and napped in secret, holding steel balls over metal pans: as he began to dream the balls dropped and woke him, and he wrote down what his mind had caught.')),
+  face('ws-f-sigmund-freud', './images/characters/sigmund-freud.webp', L('زيغموند فرويد', 'Sigmund Freud'),
+    L('الرائد المُخطئ', 'The mistaken pioneer'),
+    L('أعاد الأحلام في «تفسير الأحلام» (١٨٩٩) إلى **الدماغ** لا إلى الأرواح — إسهامٌ مهمّ. لكن نظريته في الرغبات المكبوتة **لا تُختبر علمياً**.',
+      'In “The Interpretation of Dreams” (1899) he returned dreams to the **brain**, not to spirits — an important contribution. But his theory of repressed desires **cannot be tested scientifically**.')),
+  face('ws-f-rosalind-cartwright', './images/characters/rosalind-cartwright.webp', L('روزاليند كارترايت', 'Rosalind Cartwright'),
+    L('عالمة أحلام الصدمات', 'Scientist of trauma dreams'),
+    L('تابعت مكتئبين يمرّون بطلاقٍ مؤلم سنةً كاملة، فوجدت أن من حلموا **بصدماتهم نفسها** هم وحدهم من تعافوا — دليلٌ على أن نوم الأحلام يداوي الجروح النفسية.',
+      'She followed depressed people through a painful divorce for a whole year, and found that only those who dreamed of **their own trauma** recovered — evidence that dream sleep heals emotional wounds.'), 1),
+  face('ws-f-robert-stickgold', './images/characters/robert-stickgold.webp', L('روبرت ستيكغولد', 'Robert Stickgold'),
+    L('باحث الذاكرة والأحلام', 'Memory & dreams researcher'),
+    L('أثبتت دراساته أن مصدر الأحلام **العاطفة لا الأحداث** (١–٢٪ فقط منها إعادةٌ لأحداثٍ بعينها)، وأن النوم يرسّخ المهارات.',
+      'His studies showed that dreams draw on **emotion, not events** (only 1–2% replay specific events), and that sleep consolidates skills.')),
+  face('ws-f-charles-czeisler', './images/characters/charles-czeisler.webp', L('تشارلز تشايزلر', 'Charles Czeisler'),
+    L('عالم الإيقاع اليومي والضوء', 'Circadian and light scientist'),
+    L('من كبار الباحثين في أثر الضوء على الساعة البيولوجية: كشف ما تفعله الإنارة الاصطناعية ومصابيح LED بالميلاتونين، ودعا إلى إصلاح مواعيد العمل والنوبات.',
+      'A leading researcher of light and the body clock: he showed what artificial lighting and LED lamps do to melatonin, and called for reform of work and shift schedules.')),
+  face('ws-f-daniel-kripke', './images/characters/daniel-kripke.webp', L('دانييل كريبكي', 'Daniel Kripke'),
+    L('الباحث المستقلّ في الأقراص المنوّمة', 'The independent sleeping-pill researcher'),
+    L('عالمٌ لا صلة له بشركات الأدوية، وجد (٢٠١٢) أن مستخدمي الأقراص المنوّمة أكثر عرضةً للوفاة بنحو **٤٫٦ مرّة** وأعلى خطراً للسرطان.',
+      'A scientist with no ties to drug companies, he found (2012) that sleeping-pill users are about **4.6×** more likely to die, and at higher risk of cancer.')),
+  face('ws-f-andre-iguodala', './images/characters/andre-iguodala.webp', L('أندريه إيغودالا', 'André Iguodala'),
+    L('لاعب كرة السلة', 'The basketball player'),
+    L('لاعبٌ في الدوري الأمريكي لكرة السلة (فريق ووريَرز): حين نام أكثر تحسّنت دقّة تصويبه، وزاد زمن لعبه، وقلّت أخطاؤه وإصاباته.',
+      'An NBA player (the Warriors): when he slept more, his shooting accuracy improved, his playing time rose, and his errors and injuries fell.')),
+  face('ws-f-allan-rechtschaffen', './images/characters/allan-rechtschaffen.webp', L('آلان رِختشافن', 'Allan Rechtschaffen'),
+    L('صاحب تجربة الفئران', 'The rat-deprivation experiment'),
+    L('حرم الفئران من النوم كلياً في جامعة شيكاغو (١٩٨٣)، فماتت جميعها خلال نحو ١٥ يوماً — بسرعة الموت جوعاً — بإنتانٍ دمويٍّ من بكتيريا أمعائها. وكانت آخر تجربةٍ من نوعها.',
+      'At the University of Chicago (1983) he deprived rats of sleep entirely; all died within about 15 days — as fast as starvation — of blood poisoning from their own gut bacteria. It was the last experiment of its kind.')),
+  face('ws-f-matthew-walker', './images/characters/matthew-walker.webp', L('ماثيو ووكر', 'Matthew Walker'),
+    L('مؤلّف «لماذا ننام»', 'Author of “Why We Sleep”'),
+    L('عالِم أعصابٍ وعالِم نفسٍ بريطاني، ومؤسّس «مركز علوم النوم البشري» — لُقّب بـ«دبلوماسي النوم» لتبسيطه العلم للجمهور.',
+      'A British neuroscientist and psychologist, founder of the Center for Human Sleep Science — nicknamed “the Sleep Diplomat” for making the science accessible.')),
+  face('ws-f-harith-al-nabhan', './images/characters/harith-al-nabhan.webp', L('الحارث النبهان', 'Al-Harith Al-Nabhan'),
+    L('مترجم كتابَي النادي الأوّلين', 'Translator of the club’s first two books'),
+    L('مترجمٌ سوريّ وُلد في دمشق (١٩٦١) ويقيم في بلغاريا. درس الهندسة الميكانيكية لا الأدب، ثم نقل إلى العربية عشرات الكتب — منها «لماذا ننام» و«تركيزنا المسلوب».',
+      'A Syrian translator born in Damascus (1961), living in Bulgaria. He studied mechanical engineering, not literature, and has brought dozens of books into Arabic — among them Why We Sleep and Stolen Focus.')),
+]
+
+export const gameDeck = { mcq: mcqs, num: nums, who: people, graph: graphs, bluff: bluffs, pic: pics, face: faces }

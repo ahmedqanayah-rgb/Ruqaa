@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
 import Icon from '../Icon.jsx'
 import RichText from '../RichText.jsx'
-import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, parseNumber } from '../../lib/game/engine.js'
+import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, faceChoices, parseNumber, actingHost } from '../../lib/game/engine.js'
 import MiniChart from './MiniChart.jsx'
 import MiniPlay, { NumPad } from './Minis.jsx'
 import { PicPlay } from './PicRound.jsx'
@@ -36,6 +36,15 @@ export function Options({ order, render, onPick, picked, chart = false }) {
           <span className="gm-opt-text">{render(index)}</span>
         </button>
       ))}
+    </div>
+  )
+}
+
+/* «من هذا؟» — the face: square, and cropped high, where faces are. */
+export function FaceImage({ item, small = false }) {
+  return (
+    <div className={`gm-face ${small ? 'is-small' : ''}`}>
+      <img src={item.img} alt="" decoding="async" draggable={false} />
     </div>
   )
 }
@@ -144,6 +153,17 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       )
       break
     }
+    case 'face': {
+      const people = faceChoices(ch, decks)
+      body = (
+        <>
+          <FaceImage item={item} />
+          <p className="gm-q">{t(L('من هذا؟', 'Who is this?'))}</p>
+          <Options order={optionOrder(ch, people.length)} picked={mine?.v} onPick={submit} render={(i) => t(people[i].name)} />
+        </>
+      )
+      break
+    }
     case 'bluff': {
       const [before, after] = (t(item.q) || '').split('____')
       if (ch.s === 0) {
@@ -226,7 +246,17 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
   }
 
   // The choice kinds show "waiting" in place, under the options they answered.
-  const inPlace = ['mcq', 'graph', 'who', 'tf'].includes(ch.k)
+  const inPlace = ['mcq', 'graph', 'who', 'tf', 'face'].includes(ch.k)
+
+  /* An untimed round waits for everyone — so it can be closed for a friend who
+     has wandered off from their phone: by the host after a little while, by
+     anyone else after a minute (the engine's `override`). */
+  const got = answersNow(core, entries)
+  const missingIds = expected(core).filter((pid) => !got[pid] && room.present(pid))
+  const missing = missingIds.map((pid) => core.players.find((p) => p.id === pid)?.name).filter(Boolean)
+  const isHost = actingHost(core, room.env()) === me
+  const canEnd = ch.t1 == null && missing.length > 0 && !missingIds.includes(me) && entries[me]?.d?.end !== slot
+    && now - ch.t0 > (isHost ? 12000 : T.anyone)
   return (
     <div className="gm-challenge">
       {head}
@@ -234,6 +264,13 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
         {body}
         {inPlace && mine && <Waiting core={core} entries={entries} />}
       </div>
+      {canEnd && (
+        <div className="gm-sheet-foot">
+          <button type="button" className="gm-btn gm-btn-quiet" onClick={() => room.setMine({ end: slot, et: Math.round(room.now()) })}>
+            {t(L(`أنهِ الجولة دون انتظار ${missing.join('، ')}`, `End the round without waiting for ${missing.join(', ')}`))}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

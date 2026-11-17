@@ -11,7 +11,7 @@
  */
 import { matchesName } from './match.js'
 
-const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf', 'pic']
+const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf', 'pic', 'face']
 
 export function assembleDecks({ order, games, myths, luck, dares }) {
   const books = []
@@ -30,6 +30,7 @@ export function assembleDecks({ order, games, myths, luck, dares }) {
       bluff: deck.bluff || [],
       // Pictures carry their book: a "which book?" question needs to know it.
       pic: (deck.pic || []).map((item) => ({ ...item, book: id })),
+      face: deck.face || [],
       // The myth deck has no ids of its own; its order in the file is stable
       // enough to be one.
       tf: (myths[id]?.mythOrFact || []).map((item, i) => ({ ...item, id: `${id}:tf:${i}` })),
@@ -106,6 +107,17 @@ export function lintDecks(decks) {
       }
     }
   }
+  /* «من هذا؟»: every face needs three others of the same sex to stand beside
+     it, and no person may be in two books' decks (the same face twice). */
+  const faces = decks.books.flatMap((book) => decks.byBook[book].face.map((item) => ({ ...item, book })))
+  for (const item of faces) {
+    id(item, item.book)
+    check(typeof item.img === 'string' && item.img.startsWith('./images/'), `${item.id}: needs an ./images/ picture`)
+    check(both(item.name) && both(item.tag) && both(item.about), `${item.id}: name/tag/about must be bilingual`)
+    check(faces.filter((x) => x.img === item.img).length === 1, `${item.id}: the same picture is in more than one face`)
+    check(faces.filter((x) => x.id !== item.id && !!x.f === !!item.f).length >= 3, `${item.id}: fewer than three other ${item.f ? 'women' : 'men'} to offer beside them`)
+  }
+
   const EFFECTS = ['move', 'others', 'all', 'again', 'skip', 'steal', 'swap', 'loan']
   for (const card of decks.luck) {
     id(card, 'luck')
