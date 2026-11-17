@@ -589,6 +589,14 @@ keeps `base: './'` sub-path hosting working.
   English-only and the landing renders it through `t()` (an `{ar:''}` object is truthy).
   Chapter vocabulary follows the translation (مجتمع السوق، الانقلاب الكبير، التسييجات،
   المصرف…); names too (السيد نابوك، القبطان كوستاس، فاسيلي).
+  **Pages missing from that scan in chapters 5–7 were photographed by the club on
+  2026-11-17** (kept with the book files in `missing-pages/`, outside the repo), and those
+  chapters now use the translator's words where the first draft had rendered the English:
+  الظبي والأرانب البرّية (not «الأيل»)، البرّادات، البندورة، سوق قوّة العمل، كزافييه، انكماش
+  الأسعار — and the films and tales as he titles them: «المصفوفة» (The Matrix)، «رحلة عبر
+  النجوم» (Star Trek)، «عدّاء النصل»، «المبيد»، «العصيدة الحلوة»، «الساحر المتمرّن». The full
+  list is in the header of `chapters-2.js`; keep the figures, the quiz, the people and the
+  game's questions in step with it.
   - Four tabs: author+translator, «مراجعة الكتاب» (8 chapters + epilogue as panels), the
     companion **«الدَّين والربا والأنظمة الثلاثة»** (slug `debt-usury`), and activities.
   - **The companion tab is the club's own PDF**, converted (it stays outside the repo with the
