@@ -56,5 +56,10 @@ export default function Game() {
     // A new seat or a new room is a new mount: nothing of the last one leaks in.
     return <GameRoom key={`${code}:${me}`} code={code} me={me} decks={decks} />
   }
-  return <GameEntry decks={decks} invite={ROOM_RE.test(code) ? code : ''} />
+  // The front door too. GameEntry copies `invite` into its state once, when it
+  // mounts, so an invite that arrives WITHOUT a page load — the link pasted
+  // into a tab already on #/game — has to be a new mount, or its «ادخل الغرفة»
+  // keeps the old empty code and quietly does nothing (found live 2026-11-18).
+  const invite = ROOM_RE.test(code) ? code : ''
+  return <GameEntry key={invite} decks={decks} invite={invite} />
 }
