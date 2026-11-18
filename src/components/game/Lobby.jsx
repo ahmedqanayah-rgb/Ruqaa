@@ -124,8 +124,8 @@ export default function Lobby({ room, snap, me, decks, code }) {
           </button>
           <p className="gm-muted">{t(timed
             ? L('لكلّ جولةٍ عدّادها، والنتيجة تمضي وحدها بعد قليل.', 'Every round has its countdown, and a result moves on by itself after a while.')
-            : L('بلا وقت: كلّ جولةٍ تنتظر الجميع، والنتيجة تبقى حتى يقرأها الجميع. (ألعاب السرعة في المختبر و«من هو؟» لها وقتها دائماً.)',
-              'No clock: every round waits for everyone, and a result stays until everyone has read it. (The Lab’s speed games and «Who is it?» keep their clocks.)'))}</p>
+            : L('بلا وقت: كلّ جولةٍ تنتظر الجميع، والنتيجة تبقى حتى يقرأها الجميع. (ألعاب السرعة في المختبر لها وقتها دائماً.)',
+              'No clock: every round waits for everyone, and a result stays until everyone has read it. (The Lab’s speed games keep their clocks.)'))}</p>
         </section>
       </main>
 

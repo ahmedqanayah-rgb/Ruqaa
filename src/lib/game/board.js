@@ -7,8 +7,7 @@
  * slides on to the next as the play moves up (components/game/Board.jsx).
  *
  * ONE FILE DECIDES WHERE THE ROAD RUNS, and three things read it:
- *   • the engine — what kind of square a token has landed on (`typeAt`), and
- *     whose board it is on (`boardOf`);
+ *   • the engine — what kind of square a token has landed on (`typeAt`);
  *   • the board on screen (components/game/Board.jsx) — where each square and
  *     token is drawn (`pathPoints`);
  *   • scripts/generate-game-board.mjs — the layout sketch each painting is
@@ -19,13 +18,16 @@
  * Pure: no React, no DOM.
  */
 
-/* What each square of a board is. S start · K a question from the board's book
-   · L the lab (a mini-game) · B bluff · C chance · D dare · F finish. Only the
-   very first square of the road is a start and only the very last a finish; on
-   the boards in between, those two squares are questions like any other
-   (`typeAt`). The run before the finish ends on a chance card on purpose: the
-   last square should be able to take the lead away. */
-export const TYPES = 'S' + 'KKCKLKBKDLK' + 'KCKLKBKDKCLK' + 'KLKCKBKDLKC' + 'F'
+/* What each square of a board is. S start · K a question (from any book in
+   play — the engine's `challenge`) · L the Lab (a mini-game) · B bluff · C
+   chance · D dare · F finish. Only the very first square of the road is a start
+   and only the very last a finish; on the boards in between, those two squares
+   are questions like any other (`typeAt`). The run before the finish ends on a
+   chance card on purpose: the last square should be able to take the lead away.
+   TWO Lab squares a board, not six: the club found the Lab came round far too
+   often (2026-11-18: "i want the focus lab questions to be a lot less"); the
+   other four became questions. */
+export const TYPES = 'S' + 'KKCKKKBKDLK' + 'KCKKKBKDKCKK' + 'KLKCKBKDKKC' + 'F'
 export const SQUARES = TYPES.length
 
 export const boardOf = (pos) => Math.floor(Math.max(0, pos) / SQUARES)

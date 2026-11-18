@@ -132,8 +132,8 @@ export const KIND = {
   who: {
     icon: '👤', tone: 'book',
     title: L('من هو؟', 'Who is it?'),
-    how: L('ثلاثة تلميحات تظهر تباعًا — ولك أن تكشف التالي قبل وقته. كلّما أجبتَ أبكر ربحتَ أكثر: ٣ ثم ٢ ثم ١.',
-      'Three clues, one after another — and you can open the next one early. The earlier you answer the more it is worth: 3, then 2, then 1.'),
+    how: L('تلميحٌ واحد، ولك أن تطلب الثاني ثم الثالث. كلّما احتجتَ تلميحاتٍ أقلّ ربحتَ أكثر: ٣ ثم ٢ ثم ١.',
+      'One clue — and you can ask for a second and a third. The fewer clues you need, the more it is worth: 3, then 2, then 1.'),
   },
   graph: {
     icon: '📈', tone: 'book',

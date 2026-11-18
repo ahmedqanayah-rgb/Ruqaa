@@ -10,8 +10,9 @@ import { seeded } from './rand.js'
  * challenge's seed, through the plans below — and the engine reads the same
  * plan to mark the answers.
  *
- * Each belongs to a zone of the board, because each is its book's idea made
- * playable:
+ * Each belongs to a book (`zone` is the book's place in the registry — the
+ * name is from when one board held all three books), because each is its
+ * book's idea made playable; a Lab square plays any of tonight's books' games:
  *   the valley (Why We Sleep)   count the sheep · the vigilance test sleep labs
  *                               use · the digits a rested memory keeps
  *   the city (Stolen Focus)     the Stroop conflict · finding one thing among

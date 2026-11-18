@@ -1,4 +1,4 @@
-import { lastOf, typeAt, boardOf } from './board.js'
+import { lastOf, typeAt } from './board.js'
 import { MINIS, miniScore, rankAwards, AUCTION, STAG } from './minis.js'
 import { hash32, seeded, shuffled, range } from './rand.js'
 import { matchesName } from './match.js'
@@ -49,7 +49,12 @@ import { matchesName } from './match.js'
  * everyone has read it and tapped on, and nobody's die rolls itself — and the
  * host has a button for each of the three, for the friend who has wandered off
  * from their phone. The rounds that ARE a clock keep theirs either way: the
- * Lab's tests of speed, and «من هو؟», whose clues arrive one by one.
+ * Lab's tests of speed.
+ *
+ * WHAT A SQUARE ASKS comes from ALL of tonight's books, on every board (the
+ * club, 2026-11-18: "the questions from all books to be there in all steps of
+ * the game, not divided"). The boards are the road's scenery and its length;
+ * the questions are one deck. See `challenge`.
  */
 
 export const MAX_PLAYERS = 8
@@ -66,19 +71,22 @@ export const T = {
   rollWait: 25000, // then the die rolls itself (a timed game only)
   rollAway: 5000, // …or this soon, if the player has gone (any game)
   grace: 2000, // after a deadline, for answers still in the air
-  clue: 7000, // between clues in «من هو؟»
   minReveal: 2500, // a result cannot be skipped faster than this
-  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 24000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000, pic: 45000, picBook: 22000, face: 20000 },
+  dur: { mcq: 26000, tf: 14000, graph: 34000, who: 30000, num: 26000, bluff: 45000, vote: 26000, dare: 45000, judge: 14000, pic: 45000, picBook: 22000, face: 20000 },
   dwell: { luck: 10000, bluff: 22000, default: 16000 }, // a result moves on by itself (timed)
   untimed: 6 * 3600_000, // the furthest an untimed answer's time is believed
   anyone: 60000, // after this long, anyone (not only the host) may move a stuck table on
 }
 
-/* The mix of question kinds on a book square, drawn without replacement. */
+/* The mix of question kinds on a question square, drawn without replacement. */
 const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic', 'face', 'face']
 
-/* Rounds that are a race against the clock by nature, timed game or not. */
-const CLOCKED = (k, id) => k === 'who' || (k === 'mini' && id !== 'stag' && id !== 'auction')
+/* Rounds that are a race against the clock by nature, timed game or not: the
+   Lab's tests of speed. («من هو؟» was one while its clues came by the clock;
+   since 2026-11-18 they come only when asked for — "i want the hints to be
+   optional as in a button to request them, not that they appear after a
+   certain amount of time".) */
+const CLOCKED = (k, id) => k === 'mini' && id !== 'stag' && id !== 'auction'
 
 /*
  * HINTS — EVERY QUESTION HAS ONE TO BUY (the club asked: "i want the hint option
@@ -88,11 +96,13 @@ const CLOCKED = (k, id) => k === 'who' || (k === 'mini' && id !== 'stag' && id !
  *   face         the person's role, from their card (`tag`)
  *   tf           a nudge written for the statement (`hint`, tfHints in game.js)
  *   num          a range the number lies in (`numRange`)
- *   who          the next clue, now — worth what waiting for it would be
+ *   who          the second clue, then the third — one clue is worth 3 steps,
+ *                two are worth 2, all three 1
  *   bluff        (the vote) one lie struck out (`bluffHint`)
  *   pic          its own ladder of hints and options (`picPrize`)
- * A hint is written into the player's entry the moment it is bought (`rv`), so
- * a refresh cannot undo it, and the answer carries it too (`h`).
+ * A hint is only ever shown because its player asked for it — never by the
+ * clock. It is written into the player's entry the moment it is bought (`rv`),
+ * so a refresh cannot undo it, and the answer carries it too (`h`).
  */
 export function maxHints(ch) {
   switch (ch?.k) {
@@ -505,15 +515,29 @@ function challenge(core, to, landed, decks) {
   }
   const alive = core.players.filter((p) => !p.gone).length
   const books = core.boards
-  // Every board is a book's own, and its squares ask that book.
-  const zone = boardOf(to)
-  const book = books[Math.min(zone, books.length - 1)]
-  const D = decks.byBook[book]
+  /* ONE DECK OF ALL TONIGHT'S BOOKS, on every square of every board. Each book
+     keeps its own deck of each kind (and its own cursor, so a rematch with
+     other books still replays nothing); a card is dealt as if from all of them
+     shuffled together — the book is picked by how many of its cards of that
+     kind are still to come in its deck, then its next card is dealt. So the
+     first square of the road can ask any book, and every card of the kind is
+     equally likely next. */
+  const pickBook = (kind, least = 1) => {
+    const left = books
+      .filter((b) => decks.byBook[b][kind].length >= least)
+      .map((b) => [b, decks.byBook[b][kind].length - ((cur[`${kind}:${b}`] || 0) % decks.byBook[b][kind].length)])
+    if (!left.length) return null
+    let r = seeded(core.seed, core.n, kind, 'book')() * left.reduce((sum, [, n]) => sum + n, 0)
+    for (const [b, n] of left) if ((r -= n) < 0) return b
+    return left[left.length - 1][0]
+  }
+  const deal = (kind, book) => decks.byBook[book][kind][draw(`${kind}:${book}`, decks.byBook[book][kind].length)]
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
 
   let type = typeAt(to, books.length)
-  if (type === 'B' && (alive < 3 || !D.bluff.length)) type = 'K' // a lie needs someone to fool
+  const liar = type === 'B' ? pickBook('bluff') : null
+  if (type === 'B' && (alive < 3 || !liar)) type = 'K' // a lie needs someone to fool
   if (type === 'D' && (alive < 2 || !dares.length)) type = 'K' // a dare needs a jury
   if (type === 'C' && !luck.length) type = 'K'
 
@@ -524,28 +548,30 @@ function challenge(core, to, landed, decks) {
   const until = (k, id, dur) => (core.timed || CLOCKED(k, id) ? t0 + dur : null)
   let ch
   if (type === 'L') {
-    /* The Lab's games were made for the three zones of the first board, one
-       per book; a book's own board plays its book's. */
-    const lab = decks.books.indexOf(book)
-    let pool = MINIS.filter((m) => m.zone === lab && alive >= m.min)
+    /* The Lab: any of tonight's books' games (each book brought its own — see
+       minis.js), whichever board the square is on. */
+    const zones = books.map((b) => decks.books.indexOf(b))
+    let pool = MINIS.filter((m) => zones.includes(m.zone) && alive >= m.min)
     if (!pool.length) pool = MINIS.filter((m) => alive >= m.min)
-    const mini = pool[draw(`mini:${lab}:${pool.length}`, pool.length)]
+    const mini = pool[draw(`mini:${pool.map((m) => m.id).join('+')}`, pool.length)]
     ch = { k: 'mini', id: mini.id, t1: until('mini', mini.id, mini.dur) }
   } else if (type === 'B') {
-    ch = { k: 'bluff', id: D.bluff[draw(`bluff:${book}`, D.bluff.length)].id, book, t1: until('bluff', null, T.dur.bluff) }
+    ch = { k: 'bluff', id: deal('bluff', liar).id, book: liar, t1: until('bluff', null, T.dur.bluff) }
   } else if (type === 'D') {
     ch = { k: 'dare', id: dares[draw(`dare:${dares.length}`, dares.length)].id, t1: until('dare', null, T.dur.dare) }
   } else {
     let k = KBAG[draw('k', KBAG.length)]
     const pics = k === 'pic' ? picPool(core, decks) : null
     if (k === 'pic' && pics.length) {
-      /* A picture can come from ANY book in play, not just this board's — and
-         the card does not name a book, which would answer "which book?". */
+      /* The card does not name a book, which would answer "which book?". */
       const item = pics[draw(`pic:${pics.length}`, pics.length)]
       ch = { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: until('pic', null, item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
     } else {
-      if (k === 'pic' || !D[k]?.length || ((k === 'who' || k === 'face') && D[k].length < 4)) k = 'mcq'
-      ch = { k, id: D[k][draw(`${k}:${book}`, D[k].length)].id, book, t1: until(k, null, T.dur[k]) }
+      // «من هو؟» offers three others from the person's own book, so a book
+      // with fewer than four people cannot ask it (nor «من هذا؟», likewise).
+      let book = k === 'pic' ? null : pickBook(k, k === 'who' || k === 'face' ? 4 : 1)
+      if (!book) { k = 'mcq'; book = pickBook(k) }
+      ch = { k, id: deal(k, book).id, book, t1: until(k, null, T.dur[k]) }
     }
   }
   return { ...core, cur, phase: 'play', t: t0, ch: { ...ch, s: 0, t0, seed: hash32(`${core.seed}|${core.n}|ch`) } }
@@ -687,8 +713,8 @@ function reveal(core, answers, at, decks) {
       for (const p of alive) {
         const a = answers[p.id]
         if (!a || a.v !== 0) continue
-        // Worth more the fewer clues you needed — waited for, or bought early.
-        give(p.id, 3 - Math.min(2, Math.max(Math.floor((a.at - ch.t0) / T.clue), a.h || 0)))
+        // Worth more the fewer clues you asked for: 3, 2, 1.
+        give(p.id, 3 - Math.min(2, a.h || 0))
         tally(p.id, 0)
       }
       if (aw[active]) give(active, 1)

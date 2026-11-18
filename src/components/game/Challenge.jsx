@@ -20,8 +20,9 @@ import { L, KindHead, TimeBar } from './parts.jsx'
  *
  * EVERY QUESTION HAS A HINT TO BUY (engine.js → `maxHints` says what each kind
  * offers): a right answer is worth 2 steps and each hint costs one. A hint is
- * written into the player's entry the moment it is bought (`rv`), so a refresh
- * cannot undo it.
+ * shown only when its player taps for it — never by the clock — and is written
+ * into the player's entry the moment it is bought (`rv`), so a refresh cannot
+ * undo it.
  *
  * Options are reported by their index in the DECK (where the right one is
  * always 0) and shown in the order `optionOrder` deals for this round — the
@@ -193,22 +194,14 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
     case 'who': {
       const people = whoChoices(ch, decks)
       const order = optionOrder(ch, people.length)
-      // Clues arrive one by one — or sooner, bought, for what waiting would cost.
-      const timed = Math.floor(Math.max(0, now - ch.t0) / T.clue)
-      const shown = Math.min(3, 1 + Math.max(timed, h))
-      const worthWho = 3 - (shown - 1)
+      // One clue to start; the second and third only when asked for, a step each.
+      const shown = Math.min(3, 1 + h)
       body = (
         <>
           <ol className="gm-clues">
             {item.clues.slice(0, shown).map((clue, i) => <li key={i} className={i === shown - 1 ? 'is-new' : ''}><RichText value={clue} /></li>)}
-            {shown < 3 && <li className="gm-clue-next">{t(L(`التلميح التالي بعد ${Math.max(0, Math.ceil((ch.t0 + shown * T.clue - now) / 1000))} ث`, `Next clue in ${Math.max(0, Math.ceil((ch.t0 + shown * T.clue - now) / 1000))}s`))}</li>}
           </ol>
-          {!mine && <p className="gm-worth">{t(L(`أجِب الآن: ${worthWho === 1 ? 'خطوةٌ واحدة' : worthWho === 2 ? 'خطوتان' : '٣ خطوات'} إن أصبت`, `Answer now: ${worthWho} step${worthWho > 1 ? 's' : ''} if you’re right`))}</p>}
-          {!mine && shown < 3 && (
-            <button type="button" className="gm-btn gm-hint-btn" onClick={() => { if (h < most) { setBought(shown); room.setMine({ rv: { s: slot, h: shown } }) } }}>
-              <Icon name="💡" /> {t(L('التلميح التالي الآن', 'Next clue now'))} <b dir="ltr">{t(COST)}</b>
-            </button>
-          )}
+          {!mine && <HintBar label={L('التلميح التالي', 'Next clue')} h={h} most={most} onBuy={buy} worth={3 - h} />}
           <Options order={order} picked={mine?.v} onPick={submit} render={(i) => t(people[i].name)} />
         </>
       )

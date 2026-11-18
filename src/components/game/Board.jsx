@@ -31,7 +31,9 @@ import { Token, TOKEN_COLORS, tokenLabels } from './parts.jsx'
  * a token six squares in one step, and nobody on a call wants to see it
  * teleport. On arrival (and on a reload) tokens are simply where they are.
  */
-const MARK = { S: '▶', F: '🏁', L: '🧪', B: '🎭', C: '🍀', D: '🎤' }
+/* A question square wears a book, not its board's book: what it asks can come
+   from any of tonight's books (engine.js → `challenge`). */
+const MARK = { S: '▶', F: '🏁', K: '📖', L: '🧪', B: '🎭', C: '🍀', D: '🎤' }
 const STEP = stepSize()
 const POINTS = [pathPoints(false), pathPoints(true)]
 
@@ -120,7 +122,7 @@ export default function Board({ players, targets, activeId, me, boards, focusKey
               return (
                 <span key={sq} className={`gm-sq t-${type} z-${page.art} ${here.has(pos) ? 'is-here' : ''}`}
                   style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%` }}>
-                  <Icon name={type === 'K' ? page.icon : MARK[type]} />
+                  <Icon name={MARK[type]} />
                 </span>
               )
             })}

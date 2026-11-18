@@ -460,7 +460,15 @@ keeps `base: './'` sub-path hosting working.
     square is (`TYPES`, `typeAt`); a game's boards are the books in play in registry order
     (`core.boards`), joined into one road of 36 × boards squares (`core.last` is the finish — never
     a constant any more). With all three books it is 108 squares: the valley of sleep, the city of
-    distraction, the island market. A board's squares ask its own book. **The screen shows one
+    distraction, the island market. **A board does NOT ask only its own book** (2026-11-18, the
+    club: "the questions from all books to be there in all steps of the game, not divided"): every
+    square deals from all of tonight's books as if from one shuffled deck — `challenge` picks the
+    book by how many of its cards of that kind are still to come, then deals that book's next card,
+    so each book keeps its own cursor and a rematch with other books still replays nothing. Before
+    this, everyone started on the sleep board, and the first fifteen rounds of a three-book game
+    were 46% Why We Sleep (whose decks are small: 4 charts, 6 numbers, 7 people), 12% Stolen Focus
+    and 3% Varoufakis — "the questions are always the same". A question square wears a plain book
+    (📖), not its board's book. **The screen shows one
     board at a time**: they are stacked in a strip (`Board.jsx`) that slides down to the next
     when the turn's token walks off the top — the long road without tiny squares. The book marks
     in the board's corner show another board until the next turn. Fewer books, shorter game: the
@@ -469,16 +477,16 @@ keeps `base: './'` sub-path hosting working.
     — the club asked for it: "the default game is to be without timing"). Untimed, a round has no
     deadline (`ch.t1` null) and closes when everyone still here has answered; a result stays until
     everyone has read it and tapped «قرأتُ — التالي» (`readyNow`); nobody's die rolls itself. The
-    rounds that ARE a clock keep it either way (`CLOCKED`: «من هو؟», whose clues come one by one,
-    and the Lab's speed tests). A table waiting on someone whose phone is on but who is not there
+    rounds that ARE a clock keep it either way (`CLOCKED`: the Lab's speed tests — «من هو؟» was
+    one until 2026-11-18, while its clues came by the clock). A table waiting on someone whose phone is on but who is not there
     is moved on by an **override** in a player's entry — roll for them, close the round, leave the
     result — which the host may send at once and anyone else after a minute (`T.anyone`), for
     when the one holding things up is the host.
   - **A turn**: the player whose turn it is rolls (or, in a timed game, the die rolls itself after
     a while — and in any game, soon, for someone who has left); the square sets a round EVERYONE
-    plays: a question from the board's book (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
-    (`num`), who is it? (`who` — three clues, the sooner you answer the more it is worth; the
-    book's MAIN people only, at the club's request), read the chart (`graph` — hand-rolled SVG
+    plays: a question from one of the books (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
+    (`num`), who is it? (`who` — one clue, and a second and third for a step each: 3 steps with
+    one clue, 2 with two, 1 with three; the book's MAIN people only, at the club's request), read the chart (`graph` — hand-rolled SVG
     in `MiniChart.jsx`; never recharts here), picture this (`pic` — a picture already on the
     site: a person, a painting, an event; "who/what is this?" is answered by TYPING, or "which
     book is it from?" by three buttons; a hint or the four options can be bought for a step
@@ -488,7 +496,10 @@ keeps `base: './'` sub-path hosting working.
     a white lie (`bluff`, Fibbage-style: write
     a lie, then find the truth), the Lab (`mini`: count the sheep, the vigilance test, the digits,
     Stroop, the one arrow — and from the Varoufakis book the stag hunt and an auction of
-    Achilles' armour, which test each other rather than anyone's attention), a dare (performed
+    Achilles' armour, which test each other rather than anyone's attention; any of tonight's books'
+    games on any board, and only **two Lab squares a board** since 2026-11-18 — the club: "i want
+    the focus lab questions to be a lot less"; the six there were made it about a sixth of all
+    rounds), a dare (performed
     on the call, judged on the phones), or chance. **The only currency is squares**; the first
     to the end of the last board ends the game. The end screen hands out titles from per-player
     tallies. **The `why` after a round is the point of it** — a reading club plays to read — which
@@ -500,9 +511,11 @@ keeps `base: './'` sub-path hosting working.
     engine.js): 50:50 for `mcq`/`graph` (`fiftyFifty`), the person's role line for `face`, a
     written nudge for `tf` (64 of them, `tfHints` in each book's `game.js`, keyed by the
     statement's English so a reworded statement fails `decks.js` instead of losing its hint), a
-    range for `num` (`numRange`), the next clue early for `who` (worth what waiting would be),
-    one lie struck out in the white lie's vote (`bluffHint`), and the picture round's own ladder.
-    A hint is written into the player's entry the moment it is bought (`rv: { s, h }`) and rides
+    range for `num` (`numRange`), the next clue for `who`, one lie struck out in the white lie's
+    vote (`bluffHint`), and the picture round's own ladder. **A hint appears only when its player
+    taps for it, never by the clock** (2026-11-18, the club: "i want the hints to be optional as in
+    a button to request them, not that they appear after a certain amount of time" — «من هو؟»'s
+    clues used to arrive every 7 seconds). A hint is written into the player's entry the moment it is bought (`rv: { s, h }`) and rides
     on the answer (`h`); the engine takes the larger, so neither a refresh nor a forged answer
     undoes it. The result marks a hinted answer with 💡.
   - **The deck rules** are at the top of `books/why-we-sleep/game.js`, and they answer the club's
