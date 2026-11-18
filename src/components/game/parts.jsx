@@ -108,65 +108,30 @@ export const stepsText = (n) => L(
 )
 
 /* ---- the kinds of round, in words ----
-   `how` is what the "you landed on…" card says, so it has to be readable in
-   the three seconds that card is up. */
+   `how` is what the "you landed on…" card says — and only the rounds people may
+   not know what to do with have one, the white lie here and the Lab's games in
+   MINI; an ordinary question is simply shown (the club, 2026-11-18: "no need to
+   explain how the question works before every question, normal questions are
+   obvious … also no need to explain what the hints are, just show the
+   question"; engine.js → `cardOf`). It has to be readable in the three seconds
+   that card is up. */
 export const KIND = {
-  mcq: {
-    icon: '📖', tone: 'book',
-    title: L('سؤال من الكتاب', 'A question from the book'),
-    how: L('الكلّ يجيب على هاتفه. الإجابة الصحيحة بخطوتين، والتلميح (حذف إجابتين) يكلّف خطوة. وأسرع المصيبين يأخذ خطوةً إضافية.',
-      'Everyone answers on their own phone. A right answer is worth two steps, and a hint (two answers removed) costs one. The fastest right answer earns an extra step.'),
-  },
-  tf: {
-    icon: '❓', tone: 'book',
-    title: L('خرافة أم حقيقة؟', 'Myth or fact?'),
-    how: L('عبارةٌ واحدة: حقيقةٌ يقولها الكتاب، أم خرافةٌ شائعة؟ الإجابة الصحيحة بخطوتين، والتلميح يكلّف خطوة.',
-      'One statement: a fact the book states, or a popular myth? A right answer is worth two steps, and a hint costs one.'),
-  },
-  num: {
-    icon: '🔢', tone: 'book',
-    title: L('كم الرقم؟', 'What’s the number?'),
-    how: L('لا خيارات هنا. الأقرب إلى الرقم الصحيح يتقدّم خطوتين، ومن أصابه تمامًا ثلاثًا. والنطاق تلميحٌ بخطوة.',
-      'No options here. Whoever is closest moves two steps; an exact hit, three. A range is a hint, for a step.'),
-  },
-  who: {
-    icon: '👤', tone: 'book',
-    title: L('من هو؟', 'Who is it?'),
-    how: L('تلميحٌ واحد، ولك أن تطلب الثاني ثم الثالث. كلّما احتجتَ تلميحاتٍ أقلّ ربحتَ أكثر: ٣ ثم ٢ ثم ١.',
-      'One clue — and you can ask for a second and a third. The fewer clues you need, the more it is worth: 3, then 2, then 1.'),
-  },
-  graph: {
-    icon: '📈', tone: 'book',
-    title: L('اقرأ الرسم', 'Read the chart'),
-    how: L('رسمٌ من الكتاب وسؤالٌ عنه. الإجابة الصحيحة بخطوتين، والتلميح (حذف إجابتين) يكلّف خطوة.',
-      'A chart from the book, and a question about it. A right answer is worth two steps, and a hint (two answers removed) costs one.'),
-  },
+  mcq: { icon: '📖', tone: 'book', title: L('سؤال من الكتاب', 'A question from the book') },
+  tf: { icon: '❓', tone: 'book', title: L('خرافة أم حقيقة؟', 'Myth or fact?') },
+  num: { icon: '🔢', tone: 'book', title: L('كم الرقم؟', 'What’s the number?') },
+  who: { icon: '👤', tone: 'book', title: L('من هو؟', 'Who is it?') },
+  graph: { icon: '📈', tone: 'book', title: L('اقرأ الرسم', 'Read the chart') },
   bluff: {
     icon: '🎭', tone: 'bluff',
     title: L('كذبة بيضاء', 'White lie'),
-    how: L('اكتب إجابةً كاذبة تبدو صحيحة. ثم تظهر الأكاذيب مع الحقيقة: خطوتان إن وجدتَ الحقيقة (والتلميح يحذف كذبةً بخطوة)، وخطوةٌ عن كلّ من صدّق كذبتك.',
-      'Write a false answer that sounds true. Then the lies appear beside the truth: two steps for finding the truth (a hint strikes out a lie, for a step), and one for everyone who believes your lie.'),
+    how: L('اكتب إجابةً كاذبة تبدو صحيحة. ثم تظهر الأكاذيب مع الحقيقة: خطوتان إن وجدتَ الحقيقة، وخطوةٌ عن كلّ من صدّق كذبتك.',
+      'Write a false answer that sounds true. Then the lies appear beside the truth: two steps for finding the truth, and one for everyone who believes your lie.'),
   },
-  dare: {
-    icon: '🎤', tone: 'dare',
-    title: L('تحدٍّ', 'Dare'),
-    how: L('صاحب الدور يؤدّي التحدّي بصوته في المكالمة، والبقيّة يحكمون من هواتفهم. إن نجح تقدّم خطوتين.',
-      'Whoever’s turn it is performs the dare out loud on the call; everyone else judges from their phone. A pass is worth two steps.'),
-  },
-  pic: {
-    icon: '🖼️', tone: 'pic',
-    title: L('خمّن الصورة', 'Picture this'),
-    how: L('صورةٌ من كتبنا: شخص، أو حدث، أو لوحة. سمِّها، أو قل من أيّ كتابٍ هي. التلميح والخيارات متاحة — لكن كلّ عونٍ يكلّف خطوة.',
-      'A picture from our books — a person, an event or a painting. Name it, or say which book it is from. Hints and options are there, but every bit of help costs a step.'),
-  },
-  face: {
-    icon: '🙂', tone: 'book',
-    title: L('من هذا؟', 'Who is this?'),
-    how: L('وجهٌ من الكتاب، وأربعة أسماء. الإجابة الصحيحة بخطوتين، والتلميح يكلّف خطوة. وأسرع المصيبين يأخذ خطوةً إضافية.',
-      'A face from the book, and four names. A right answer is worth two steps, and a hint costs one. The fastest right answer earns an extra step.'),
-  },
-  luck: { icon: '🍀', tone: 'luck', title: L('حظّ', 'Chance'), how: null },
-  mini: { icon: '🧪', tone: 'lab', title: L('المختبر', 'The Lab'), how: null },
+  dare: { icon: '🎤', tone: 'dare', title: L('تحدٍّ', 'Dare') },
+  pic: { icon: '🖼️', tone: 'pic', title: L('خمّن الصورة', 'Picture this') },
+  face: { icon: '🙂', tone: 'book', title: L('من هذا؟', 'Who is this?') },
+  luck: { icon: '🍀', tone: 'luck', title: L('حظّ', 'Chance') },
+  mini: { icon: '🧪', tone: 'lab', title: L('المختبر', 'The Lab') },
 }
 
 export const MINI = {

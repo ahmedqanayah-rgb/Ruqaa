@@ -165,9 +165,9 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
       const people = whoChoices(ch, decks)
       body = (
         <>
-          <div className="gm-who-card">
-            {item.img && <img src={item.img} alt="" loading="lazy" />}
-            <strong>{t(item.name)}</strong>
+          <div className="gm-person">
+            <FaceImage item={item} />
+            <p className="gm-truth">{t(item.name)}</p>
           </div>
           <ChoiceResult core={core} labels={labels} order={optionOrder(ch, people.length)} right={0} mine={mine} render={(i) => t(people[i].name)} />
         </>
@@ -179,8 +179,8 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
       const people = faceChoices(ch, decks)
       body = (
         <>
-          <div className="gm-face-truth">
-            <FaceImage item={item} small />
+          <div className="gm-person">
+            <FaceImage item={item} />
             <p className="gm-truth">{t(item.name)}<small>{t(item.tag)}</small></p>
           </div>
           <ChoiceResult core={core} labels={labels} order={optionOrder(ch, people.length)} right={0} mine={mine} render={(i) => t(people[i].name)} />

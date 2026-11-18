@@ -23,6 +23,8 @@
  *   • there are 1–3 mailbox instances, a request lands on any of them, and
  *     every so often one forgets everything (a serverless instance recycled);
  *   • bots reload their tab mid-game, walk out, arrive late, or go quiet;
+ *   • the player whose turn it is, or the host, now and then skips a question
+ *     for a new one — with the others' answers to the old one in flight;
  *   • half the games are untimed (the default), where nothing moves until the
  *     players do — and the host bot does what a host would: closes a round a
  *     quiet friend is holding up, rolls for them, moves the table on.
@@ -38,7 +40,7 @@ import fs from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { makeMailbox, newer as serverNewer, FUTURE as serverFuture } from '../api/_mailbox.js'
 import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE, FUTURE as clientFuture } from '../src/lib/game/net.js'
-import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, MAX_PLAYERS } from '../src/lib/game/engine.js'
+import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, maySkip, MAX_PLAYERS } from '../src/lib/game/engine.js'
 import { assembleDecks, lintDecks } from '../src/lib/game/decks.js'
 import { SQUARES, TYPES, lastOf, typeAt } from '../src/lib/game/board.js'
 import { rng } from '../src/lib/game/rand.js'
@@ -338,6 +340,17 @@ class Bot {
         const ch = core.ch
         const slot = slotOf(core)
         if (!meIn || now < ch.t0) break
+        // Now and then the player whose turn it is — or the host — skips the
+        // question for a new one (`maySkip`) before answering it.
+        if (this.skipFor !== slot) {
+          this.skipFor = slot
+          this.skipAt = !this.quiet && maySkip(core, room.env(), this.me) && rand() < 0.12 ? ch.t0 + 200 + rand() * 3000 : null
+        }
+        if (this.skipAt != null && now >= this.skipAt && mine.a?.s !== slot && mine.swap !== slot && maySkip(core, room.env(), this.me)) {
+          this.skipAt = null
+          room.setMine({ swap: slot, swt: now })
+          break
+        }
         // The host closes an untimed round that a quiet friend is holding up.
         if (ch.t1 == null && mine.end !== slot && (mine.a?.s === slot || !expected(core).includes(this.me)) && this.after(`end${slot}`, this.patience(core) + 5_000 + rand() * 30_000)) {
           room.setMine({ end: slot, et: now })
@@ -403,7 +416,7 @@ class Bot {
 }
 
 /* -------------------------------- one game -------------------------------- */
-const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0 }
+const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0 }
 
 function playGame(index) {
   const rand = rng(SEED * 100_003 + index)
@@ -439,6 +452,7 @@ function playGame(index) {
     rounds: rand() < 0.2 ? 2 : 1, // sometimes they play again
     timed: rand() < 0.5, // the host's choice in the lobby
     seenKinds: new Set(),
+    seenSkips: new Set(),
     reached: {},
     began: {},
     check(core, bot) {
@@ -449,6 +463,12 @@ function playGame(index) {
       if (core.phase === 'reveal' || core.phase === 'play') {
         const key = `${core.g}:${core.n}`
         if (!this.seenKinds.has(key)) { this.seenKinds.add(key); const k = core.ch.k === 'mini' ? `mini:${core.ch.id}` : core.ch.k; totals.kinds[k] = (totals.kinds[k] || 0) + 1 }
+        // A question skipped for a new one: a round with a slot of its own, on the same square.
+        if (core.ch.r && !this.seenSkips.has(`${key}:${core.ch.r}`)) {
+          this.seenSkips.add(`${key}:${core.ch.r}`)
+          totals.skips += 1
+          if (!core.ch.by || !slotOf(core).endsWith(`:${core.ch.r}`)) throw new Error(`a skipped question was dealt badly: ${JSON.stringify(core.ch)}`)
+        }
       }
       void bot
     },
@@ -555,7 +575,7 @@ console.log(`  network: ${CALM ? 'calm' : 'lossy, laggy, forgetful'} · ${totals
   const at = (q) => (sp.length ? Math.round(sp[Math.min(sp.length - 1, Math.floor(sp.length * q))]) : 0)
   console.log(`  a new state reaches every phone in: median ${at(0.5)} ms · 90% within ${at(0.9)} ms · 99% within ${at(0.99)} ms   (slowest agreement at the end: ${(totals.settle / 1000).toFixed(1)} s)`)
 }
-console.log(`  brief disagreements settled: ${totals.forks} · answers sent in time but left out: ${totals.lost} of ${totals.answers}`)
+console.log(`  brief disagreements settled: ${totals.forks} · answers sent in time but left out: ${totals.lost} of ${totals.answers} · questions skipped for a new one: ${totals.skips}`)
 console.log('  players   games   turns   minutes')
 for (const [n, row] of Object.entries(totals.byPlayers)) {
   console.log(`  ${String(n).padStart(7)}  ${String(row.games).padStart(6)}  ${(row.turns / row.games).toFixed(1).padStart(6)}  ${mins(row.ms / row.games).padStart(8)}`)

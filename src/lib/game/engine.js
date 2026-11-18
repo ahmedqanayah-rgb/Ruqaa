@@ -32,6 +32,8 @@ import { matchesName } from './match.js'
  *   rollFor, rft       "roll for whoever's turn it is" (see `override`), and when
  *   a: { s, v, at }    an answer to slot s = "<game>:<turn>:<stage>", its value, when
  *   end, et            "close round slot s now" (see `override`), and when
+ *   swap, swt          (the turn's player or the host) "skip the question at slot s
+ *                      — a new one for everyone" (see `maySkip`), and when
  *   next, nt           "I have read this turn's result" (`turnKey`), and when
  *   go, gt             "move on from this turn's result NOW" (see `override`), and when
  *   acc: { n, p }      (host) typed answers accepted by hand, this turn (`turnKey`)
@@ -67,7 +69,8 @@ export const T = {
   dice: 2300, // the die is shaken, thrown and read (lib/game/throw.js)
   hop: 300, // a token crosses one square
   repay: 900, // a debt is collected before the move
-  card: 2800, // "you landed on…" before a challenge opens
+  card: 2800, // "you landed on…" before a round that needs saying (`cardOf`)
+  land: 700, // …or this beat, before a question that is simply shown
   rollWait: 25000, // then the die rolls itself (a timed game only)
   rollAway: 5000, // …or this soon, if the player has gone (any game)
   grace: 2000, // after a deadline, for answers still in the air
@@ -80,6 +83,14 @@ export const T = {
 
 /* The mix of question kinds on a question square, drawn without replacement. */
 const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic', 'face', 'face']
+
+/* "You landed on…": a card before the round, saying what is coming — only for
+   the rounds people may not know what to do with (the Lab's games, the white
+   lie), and for one that replaced a skipped round, so nobody's question changes
+   under them without a word. Any other question is simply shown (the club,
+   2026-11-18: "no need to explain how the question works before every
+   question, normal questions are obvious … just show the question"). */
+export const cardOf = (ch) => (ch.r || ch.k === 'mini' || ch.k === 'bluff' ? T.card : T.land)
 
 /* Rounds that are a race against the clock by nature, timed game or not: the
    Lab's tests of speed. («من هو؟» was one while its clues came by the clock;
@@ -231,7 +242,10 @@ export const turnPlayer = (core) => core.players[core.turn]
    turn 5's question — left in an entry from the first game must not count in
    the second. So every stamp carries the game too. */
 export const turnKey = (core) => core.g * 100000 + core.n
-export const slotOf = (core) => `${core.g}:${core.n}:${core.ch?.s ?? 0}`
+/* A stage of a round: "<game>:<turn>:<stage>" — and ":<n>" once the question
+   has been skipped n times (`maySkip`), so an answer to a skipped question, or
+   a hint bought for it, can never count for the one that replaced it. */
+export const slotOf = (core) => `${core.g}:${core.n}:${core.ch?.s ?? 0}${core.ch?.r ? `:${core.ch.r}` : ''}`
 export const playBooks = (core, decks) => {
   const chosen = (core.opts?.books || []).filter((b) => decks.books.includes(b))
   return chosen.length ? chosen : decks.books
@@ -278,6 +292,16 @@ export function standings(players) {
     return { ...row, rank }
   })
 }
+
+/* SKIP — a new question for everyone (the club, 2026-11-18: "add a skip
+   question option"). The player whose turn it is — it is their square — or the
+   host may swap the round for a fresh one on the same square: the same kind of
+   square, the next card of the deck. Not the Lab's games, which are over in
+   seconds, and only in a round's first stage: once the white lies are written
+   or the dare is done, the round is the table's. */
+export const skippable = (ch) => !!ch && ch.k !== 'mini' && ch.k !== 'luck' && (ch.s ?? 0) === 0
+export const maySkip = (core, env, pid) => core.phase === 'play' && skippable(core.ch)
+  && (pid === turnPlayer(core)?.id || pid === actingHost(core, env))
 
 /* Who is expected to answer the challenge's current stage. */
 export function expected(core) {
@@ -502,8 +526,11 @@ function roll(core, at, decks) {
   return challenge(next, to, landed, decks)
 }
 
-/* What the square asks of everyone. */
-function challenge(core, to, landed, decks) {
+/* What the square asks of everyone. `again` is set when the round before was
+   skipped (`maySkip`): { r: the how-manieth skip this turn, by: who asked } —
+   it salts the turn's luck, so the new round is not dealt the old one's. */
+function challenge(core, to, landed, decks, again = null) {
+  const salt = again ? [again.r] : []
   const cur = { ...core.cur }
   /* Draw from a deck without repeats: each deck is dealt in a seeded order and
      a cursor remembers how far through it the ROOM is — across rematches too,
@@ -527,7 +554,7 @@ function challenge(core, to, landed, decks) {
       .filter((b) => decks.byBook[b][kind].length >= least)
       .map((b) => [b, decks.byBook[b][kind].length - ((cur[`${kind}:${b}`] || 0) % decks.byBook[b][kind].length)])
     if (!left.length) return null
-    let r = seeded(core.seed, core.n, kind, 'book')() * left.reduce((sum, [, n]) => sum + n, 0)
+    let r = seeded(core.seed, core.n, kind, 'book', ...salt)() * left.reduce((sum, [, n]) => sum + n, 0)
     for (const [b, n] of left) if ((r -= n) < 0) return b
     return left[left.length - 1][0]
   }
@@ -543,9 +570,10 @@ function challenge(core, to, landed, decks) {
 
   if (type === 'C') return chance({ ...core, cur }, luck[draw(`luck:${luck.length}`, luck.length)], landed)
 
-  const t0 = landed + T.card
+  // When the round opens: after its card, if it has one (`cardOf`).
+  const opens = (k) => landed + cardOf({ k, r: again?.r })
   // A deadline only where the game is timed, or the round is a race by nature.
-  const until = (k, id, dur) => (core.timed || CLOCKED(k, id) ? t0 + dur : null)
+  const until = (k, id, dur) => (core.timed || CLOCKED(k, id) ? opens(k) + dur : null)
   let ch
   if (type === 'L') {
     /* The Lab: any of tonight's books' games (each book brought its own — see
@@ -574,7 +602,8 @@ function challenge(core, to, landed, decks) {
       ch = { k, id: deal(k, book).id, book, t1: until(k, null, T.dur[k]) }
     }
   }
-  return { ...core, cur, phase: 'play', t: t0, ch: { ...ch, s: 0, t0, seed: hash32(`${core.seed}|${core.n}|ch`) } }
+  const t0 = opens(ch.k)
+  return { ...core, cur, phase: 'play', t: t0, ch:{ ...ch, s: 0, t0, seed: hash32([core.seed, core.n, 'ch', ...salt].join('|')), ...again } }
 }
 
 /* A chance card: no question, it simply happens. It can take the lead away but
@@ -625,6 +654,22 @@ function chance(core, card, landed) {
   }
 }
 
+/* The earliest "skip this question" from someone who may ask it (`maySkip`),
+   once its time has come: { at, by } — or null. */
+function skipAsked(core, entries, env) {
+  const ch = core.ch
+  if (!skippable(ch)) return null
+  const slot = slotOf(core)
+  let best = null
+  for (const pid of new Set([turnPlayer(core).id, actingHost(core, env)])) {
+    const d = entries[pid]?.d
+    if (!d || d.swap !== slot || !isNum(d.swt)) continue
+    const at = Math.max(ch.t0, Math.min(d.swt, ch.t0 + T.untimed))
+    if (!best || at < best.at || (at === best.at && pid < best.by)) best = { at, by: pid }
+  }
+  return best && env.now >= best.at ? best : null
+}
+
 function playStep(core, entries, env) {
   const ch = core.ch
   const want = expected(core)
@@ -642,6 +687,12 @@ function playStep(core, entries, env) {
   if (allIn && env.now >= ch.t0) at = Math.max(ch.t0, ...Object.values(answers).map((a) => a.at))
   else if (ended != null && env.now >= ended) at = deadline == null ? ended : Math.min(ended, deadline)
   else if (deadline != null && env.now >= deadline) at = deadline
+  // Skipped before it closed: a new round on the same square, its own slot, so
+  // nothing given to the old one carries over.
+  const skip = skipAsked(core, entries, env)
+  if (skip && (at == null || skip.at < at)) {
+    return seal(core, challenge(core, turnPlayer(core).pos, skip.at, env.decks, { r: (ch.r || 0) + 1, by: skip.by }))
+  }
   if (at == null) return null
 
   if (ch.k === 'bluff' && ch.s === 0) return seal(core, bluffVote(core, answers, at, env.decks))

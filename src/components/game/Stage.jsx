@@ -6,7 +6,7 @@ import { books } from '../../data/books.js'
 import { GAME_ART } from '../../data/gameArt.js'
 import Icon from '../Icon.jsx'
 import { boardOf, squareOf } from '../../lib/game/board.js'
-import { T, turnPlayer, answersNow, expected, slotOf, actingHost, turnKey } from '../../lib/game/engine.js'
+import { T, turnPlayer, answersNow, expected, slotOf, actingHost, turnKey, cardOf } from '../../lib/game/engine.js'
 import { sfx, setMuted } from '../../lib/game/sfx.js'
 import Board, { pointOf } from './Board.jsx'
 import DieThrow from './DieThrow.jsx'
@@ -28,6 +28,9 @@ import { L, Die, Token, TOKEN_COLORS, tokenLabels, useNow, KIND, MINI, KindHead,
  * a challenge's `t0`), and this file only decides what to draw at that moment:
  *
  *   rolledAt ──die thrown── (debt collected) ──token walks── landed ──card── t0 ──round── t1
+ *
+ * (the card only before the Lab, a white lie, or a round that replaced a skipped
+ * one — any other question opens a moment after the token lands: `cardOf`)
  *
  * The overlays are portalled to <body> — the `position: fixed`-inside-a-
  * transform trap the site's in-book bar already avoids.
@@ -58,9 +61,9 @@ function targetsAt(core, now) {
 function sheetAt(core, now) {
   const ch = core.ch
   if (core.phase === 'play') {
-    const landed = ch.t0 - T.card
-    if (now < landed) return null
-    return now < ch.t0 ? 'landed' : 'challenge'
+    if (now >= ch.t0) return 'challenge'
+    // The card before the round, for the rounds that have one (engine.js → `cardOf`).
+    return cardOf(ch) === T.card && now >= ch.t0 - T.card ? 'landed' : null
   }
   if (core.phase === 'reveal') return core.res.k === 'luck' && now < core.t ? null : 'result'
   if (core.phase === 'over') return now < core.t ? null : 'over'
@@ -101,10 +104,14 @@ function LandedCard({ core, decks }) {
   const ch = core.ch
   const info = ch.k === 'mini' ? MINI[ch.id] : KIND[ch.k]
   const mover = turnPlayer(core)
+  // A round dealt because the one before was skipped (engine.js → `maySkip`).
+  const skipper = ch.r ? core.players.find((p) => p.id === ch.by) : null
   return (
     <div className={`gm-landed tone-${KIND[ch.k].tone}`}>
       <KindHead ch={ch} decks={decks} books={books} />
-      <p className="gm-landed-who">{t(L(`${mover.name} وقف على هذه الخانة — والجولة للجميع:`, `${mover.name} landed here — and the round is for everyone:`))}</p>
+      <p className="gm-landed-who">{t(skipper
+        ? L(`تخطّى ${skipper.name} تلك الجولة — وهذه جديدةٌ للجميع:`, `${skipper.name} skipped that one — here is a new round for everyone:`)
+        : L(`${mover.name} وقف على هذه الخانة — والجولة للجميع:`, `${mover.name} landed here — and the round is for everyone:`))}</p>
       {info.how && <p className="gm-landed-how">{t(info.how)}</p>}
     </div>
   )
@@ -144,7 +151,7 @@ export default function Stage({ room, snap, me, decks, code }) {
   const once = (key, play) => { if (heard.current[key]) return; heard.current[key] = true; play() }
   useEffect(() => {
     const key = `${core.g}:${core.n}`
-    if (sheet === 'challenge') once(`card${key}:${core.ch?.s}`, sfx.card)
+    if (sheet === 'challenge') once(`card${key}:${core.ch?.r || 0}:${core.ch?.s}`, sfx.card)
     if (sheet === 'result') {
       once(`res${key}`, () => {
         if (core.res.k === 'luck') return sfx.luck()

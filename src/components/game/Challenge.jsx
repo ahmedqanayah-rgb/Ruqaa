@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
 import Icon from '../Icon.jsx'
 import RichText from '../RichText.jsx'
-import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, faceChoices, parseNumber, actingHost, maxHints, fiftyFifty, numRange, bluffHint } from '../../lib/game/engine.js'
+import { T, LIE_MAX, turnPlayer, expected, answersNow, slotOf, optionOrder, whoChoices, faceChoices, parseNumber, actingHost, maxHints, fiftyFifty, numRange, bluffHint, maySkip } from '../../lib/game/engine.js'
 import MiniChart from './MiniChart.jsx'
 import MiniPlay, { NumPad } from './Minis.jsx'
 import { PicPlay } from './PicRound.jsx'
@@ -28,6 +28,11 @@ import { L, KindHead, TimeBar } from './parts.jsx'
  * always 0) and shown in the order `optionOrder` deals for this round — the
  * same order on every phone, so "the second one!" means the same thing to
  * everyone on the call.
+ *
+ * SKIP: the player whose turn it is, or the host, can swap the round for a new
+ * one on the same square, for everyone (engine.js → `maySkip`). The new round
+ * has a slot of its own, and this component is keyed by the slot (Stage.jsx),
+ * so what was typed or bought for the old one does not follow it.
  */
 export const LETTERS = [L('أ', 'A'), L('ب', 'B'), L('ج', 'C'), L('د', 'D')]
 
@@ -47,10 +52,13 @@ export function Options({ order, render, onPick, picked, chart = false, gone = [
   )
 }
 
-/* «من هذا؟» — the face: square, and cropped high, where faces are. */
-export function FaceImage({ item, small = false }) {
+/* A person's picture, big — «من هذا؟»'s face, and «من هو؟»'s from the start
+   (the club: "i want the foto in the questions to appear from the start … and
+   make it big, not just a thumbnail"). Square, and cropped high, where faces are. */
+export function FaceImage({ item }) {
+  if (!item.img) return null
   return (
-    <div className={`gm-face ${small ? 'is-small' : ''}`}>
+    <div className="gm-face">
       <img src={item.img} alt="" decoding="async" draggable={false} />
     </div>
   )
@@ -198,6 +206,7 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       const shown = Math.min(3, 1 + h)
       body = (
         <>
+          <FaceImage item={item} />
           <ol className="gm-clues">
             {item.clues.slice(0, shown).map((clue, i) => <li key={i} className={i === shown - 1 ? 'is-new' : ''}><RichText value={clue} /></li>)}
           </ol>
@@ -319,6 +328,10 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
   const isHost = actingHost(core, room.env()) === me
   const canEnd = ch.t1 == null && missing.length > 0 && !missingIds.includes(me) && entries[me]?.d?.end !== slot
     && now - ch.t0 > (isHost ? 12000 : T.anyone)
+  /* Skip — for the player whose turn it is and the host, until they answer. */
+  const canSkip = !mine && maySkip(core, room.env(), me)
+  const askedSkip = entries[me]?.d?.swap === slot
+  const skip = () => room.setMine({ swap: slot, swt: Math.round(room.now()) })
   return (
     <div className="gm-challenge">
       {head}
@@ -326,11 +339,22 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
         {body}
         {inPlace && mine && <Waiting core={core} entries={entries} />}
       </div>
-      {canEnd && (
+      {(canSkip || canEnd) && (
         <div className="gm-sheet-foot">
-          <button type="button" className="gm-btn gm-btn-quiet" onClick={() => room.setMine({ end: slot, et: Math.round(room.now()) })}>
-            {t(L(`أنهِ الجولة دون انتظار ${missing.join('، ')}`, `End the round without waiting for ${missing.join(', ')}`))}
-          </button>
+          {canSkip && (askedSkip
+            ? <p className="gm-muted-dark">{t(L('لحظة — جولةٌ جديدة في الطريق…', 'One moment — a new round is on its way…'))}</p>
+            : (
+              <button type="button" className="gm-btn gm-btn-quiet" onClick={skip}>
+                <Icon name="🔀" /> {t(ch.k === 'dare'
+                  ? L('تخطَّ — تحدٍّ آخر للجميع', 'Skip — another dare for everyone')
+                  : L('تخطَّ السؤال — سؤالٌ جديد للجميع', 'Skip — a new question for everyone'))}
+              </button>
+            ))}
+          {canEnd && (
+            <button type="button" className="gm-btn gm-btn-quiet" onClick={() => room.setMine({ end: slot, et: Math.round(room.now()) })}>
+              {t(L(`أنهِ الجولة دون انتظار ${missing.join('، ')}`, `End the round without waiting for ${missing.join(', ')}`))}
+            </button>
+          )}
         </div>
       )}
     </div>

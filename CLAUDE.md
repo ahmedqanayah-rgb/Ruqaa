@@ -485,8 +485,14 @@ keeps `base: './'` sub-path hosting working.
   - **A turn**: the player whose turn it is rolls (or, in a timed game, the die rolls itself after
     a while — and in any game, soon, for someone who has left); the square sets a round EVERYONE
     plays: a question from one of the books (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
-    (`num`), who is it? (`who` — one clue, and a second and third for a step each: 3 steps with
-    one clue, 2 with two, 1 with three; the book's MAIN people only, at the club's request), read the chart (`graph` — hand-rolled SVG
+    (`num`), who is it? (`who` — the person's picture, BIG, from the start, and one clue; a second
+    and third for a step each: 3 steps with one clue, 2 with two, 1 with three; the book's MAIN
+    people only, at the club's request. The picture used to wait for the result, as a 64-px
+    thumbnail — 2026-11-18, the club: "i want the foto in the questions to appear from the start,
+    not only after ansewring, and make it big, not just a thumbnail". It gives the face away to
+    anyone who knows it; that was their call. `FaceImage`, the same square as «من هذا؟», which
+    is now just as big on its result; Richard Radford, the one without a picture, simply shows
+    none), read the chart (`graph` — hand-rolled SVG
     in `MiniChart.jsx`; never recharts here), picture this (`pic` — a picture already on the
     site: a person, a painting, an event; "who/what is this?" is answered by TYPING, or "which
     book is it from?" by three buttons; a hint or the four options can be bought for a step
@@ -504,6 +510,18 @@ keeps `base: './'` sub-path hosting working.
     to the end of the last board ends the game. The end screen hands out titles from per-player
     tallies. **The `why` after a round is the point of it** — a reading club plays to read — which
     is why an untimed result waits for everyone.
+  - **Skip — a new round for everyone** (2026-11-18, the club: "add a skip question option"; asked
+    whether a skip should be one player passing or the question swapped for all, they chose the
+    swap). The player whose turn it is — it is their square — or the host can swap a round for a
+    fresh one on the SAME square: the same kind of square, the next card of its deck (`maySkip`,
+    `skipAsked`, and `challenge(…, again)` in engine.js). Any round but the Lab's, and only in its
+    first stage — once the white lies are in or the dare is done, the round is the table's. It is
+    `swap: slot, swt` in their entry; the new round carries `r` (the turn's how-manieth skip) and
+    `by`, and `r` is part of `slotOf`, so nothing given to the skipped question — an answer, a hint
+    bought — can count for its replacement, and `Challenge`, keyed by the slot, starts clean. `r`
+    also salts the turn's luck; a round nobody skipped is dealt exactly as before. The new round
+    opens with the usual card, saying who skipped. The simulator's turn players and hosts skip now
+    and then, and it prints how many.
   - **Every question has a hint to buy** (2026-11-17, the club: "i want the hint option for all
     questions"). A right answer is worth **2 steps and each hint costs one** (never below 1), so a
     bare right answer is always worth the most — the scoring had to rise from 1 to 2 for that, or

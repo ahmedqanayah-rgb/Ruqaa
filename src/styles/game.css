@@ -517,9 +517,6 @@ button.gm-opt:not(:disabled):active { transform: scale(0.99); }
 .gm-clues li { margin: 0; padding: 10px 14px; border-radius: 16px; background: var(--gm-paper-2); line-height: 1.6; counter-increment: clue; }
 .gm-clues li::before { content: counter(clue) ' · '; font-weight: 700; color: var(--gm-zone-1); }
 .gm-clues li.is-new { animation: gmRise 300ms ease-out both; }
-.gm-who-card { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 18px; background: var(--gm-good-soft); }
-.gm-who-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
-.gm-who-card strong { font-size: 1.2rem; }
 
 /* Hints — every question has one to buy. */
 .gm-hintbar { display: grid; gap: 8px; justify-items: start; }
@@ -537,9 +534,8 @@ button.gm-opt:not(:disabled):active { transform: scale(0.99); }
 /* «من هذا؟» — a face, square and cropped high, where faces are. */
 .gm-face { width: min(100%, 32dvh); aspect-ratio: 1; margin: 0 auto; border-radius: 18px; overflow: hidden; background: var(--gm-paper-2); }
 .gm-face img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
-.gm-face.is-small { width: 84px; margin: 0; border-radius: 14px; flex-shrink: 0; }
-.gm-face-truth { display: flex; align-items: center; justify-content: center; gap: 14px; }
-.gm-face-truth .gm-truth { text-align: start; }
+/* A result of «من هو؟» or «من هذا؟»: the person big, the name under them. */
+.gm-person { display: grid; gap: 10px; justify-items: center; }
 .gm-truth small { display: block; margin-top: 2px; font-size: var(--fs-sm); font-weight: 500; color: var(--gm-ink-soft); }
 
 /* «خمّن الصورة» — the picture, the help, the ladder */
