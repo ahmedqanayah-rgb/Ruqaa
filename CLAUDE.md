@@ -541,6 +541,13 @@ keeps `base: './'` sub-path hosting working.
     player could believe, and the fun lives in the setup and the `why`, not in silly options.
     Option 0 is the right one; the game deals options in a seeded order, the same on every phone
     so "the second one!" means the same to everyone. `lib/game/decks.js` checks every shape.
+  - **Questions the club's members wrote** (`data/game/members.js`, 2026-11-19) join their book's
+    decks with a `by` mark and are dealt like the site's own; a member's question that repeats a
+    site question replaces it or is dropped, whichever is the better version. A writer's own
+    questions are rarely dealt in a room they play in — the deal passes over nine in ten
+    (`OWN`, `writersHere` in engine.js; the writer is recognised by the name they joined under, in
+    either script). **Nothing in the game may show it**: no name, no credit on a card, no line in
+    the rules — the club asked for exactly that.
   - **Typed answers are judged by `lib/game/match.js`, not by AI** (asked about 2026-11-17).
     It forgives what people actually get wrong — Arabic letter forms, diacritics, «ال»/"the",
     either language, a few letters off, vowels in transliterations — and checks only against

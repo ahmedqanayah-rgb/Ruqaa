@@ -81,8 +81,13 @@ export const T = {
   anyone: 60000, // after this long, anyone (not only the host) may move a stuck table on
 }
 
+/* A club member's own question (data/game/members.js), come up in a room they
+   are playing in, is dealt only this often; otherwise the deck moves on to its
+   next card (`challenge`). Nothing in the game says so. */
+const OWN = 0.1
+
 /* The mix of question kinds on a question square, drawn without replacement. */
-const KBAG = ['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic', 'face', 'face']
+const KBAG =['mcq', 'mcq', 'mcq', 'mcq', 'mcq', 'tf', 'tf', 'num', 'num', 'who', 'who', 'graph', 'graph', 'pic', 'pic', 'face', 'face']
 
 /* "You landed on…": a card before the round, saying what is coming — only for
    the rounds people may not know what to do with (the Lab's games, the white
@@ -249,6 +254,19 @@ export const slotOf = (core) => `${core.g}:${core.n}:${core.ch?.s ?? 0}${core.ch
 export const playBooks = (core, decks) => {
   const chosen = (core.opts?.books || []).filter((b) => decks.books.includes(b))
   return chosen.length ? chosen : decks.books
+}
+
+/* Which of the decks' writers — club members whose questions are in them — are
+   at the table, by the names the players joined under: either script, any case
+   or diacritics, alone or as one word of a longer name. */
+export function writersHere(core, decks) {
+  const here = new Set()
+  for (const [by, names] of Object.entries(decks.writers || {})) {
+    const keys = names.map(norm).filter(Boolean)
+    const known = (name) => keys.includes(norm(name)) || String(name).split(/\s+/).some((word) => keys.includes(norm(word)))
+    if (core.players.some((p) => !p.gone && known(p.name))) here.add(by)
+  }
+  return here
 }
 
 /* Whoever may start, restart and move things along: the room's creator while
@@ -558,7 +576,18 @@ function challenge(core, to, landed, decks, again = null) {
     for (const [b, n] of left) if ((r -= n) < 0) return b
     return left[left.length - 1][0]
   }
-  const deal = (kind, book) => decks.byBook[book][kind][draw(`${kind}:${book}`, decks.byBook[book][kind].length)]
+  /* Deal a book's next card of a kind — but a member's own question, at a table
+     they are sitting at, is mostly passed over for the card after it (`OWN`). */
+  const here = writersHere(core, decks)
+  const deal = (kind, book) => {
+    const deck = decks.byBook[book][kind]
+    let card
+    for (let tries = 0; tries < deck.length; tries++) {
+      card = deck[draw(`${kind}:${book}`, deck.length)]
+      if (!card.by || !here.has(card.by) || seeded(core.seed, core.n, 'own', card.id, ...salt)() < OWN) break
+    }
+    return card
+  }
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
 

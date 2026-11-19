@@ -8,12 +8,19 @@
  * A book is in the game if its folder has a `game.js`; its myth-or-fact deck
  * becomes its «خرافة أم حقيقة؟» questions. `books` keeps the registry's order,
  * which is also the order of the board's three zones.
+ *
+ * The club's members' own questions (data/game/members.js) join their book's
+ * decks, each marked with its writer (`by`), which only the deal reads
+ * (engine.js → `writersHere`). `writers` is each writer's names.
  */
 import { matchesName } from './match.js'
 
 const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf', 'pic', 'face']
+// What a member may write: every kind the deal takes from a book's deck — not
+// the picture rounds, which are drawn on their own.
+const MEMBER_KINDS = KINDS.filter((k) => k !== 'pic')
 
-export function assembleDecks({ order, games, myths, luck, dares }) {
+export function assembleDecks({ order, games, myths, luck, dares, members = {} }) {
   const books = []
   const byBook = {}
   const byId = {}
@@ -23,14 +30,14 @@ export function assembleDecks({ order, games, myths, luck, dares }) {
     if (!deck?.mcq?.length) continue
     const entry = {
       icon: mod.gameIcon || '📖',
-      mcq: deck.mcq,
-      num: deck.num || [],
-      who: deck.who || [],
-      graph: deck.graph || [],
-      bluff: deck.bluff || [],
+      mcq: [...deck.mcq],
+      num: [...(deck.num || [])],
+      who: [...(deck.who || [])],
+      graph: [...(deck.graph || [])],
+      bluff: [...(deck.bluff || [])],
       // Pictures carry their book: a "which book?" question needs to know it.
       pic: (deck.pic || []).map((item) => ({ ...item, book: id })),
-      face: deck.face || [],
+      face: [...(deck.face || [])],
       // The myth deck has no ids of its own; its order in the file is stable
       // enough to be one. Its hints live in the game's deck, by statement.
       tf: (myths[id]?.mythOrFact || []).map((item, i) => ({ ...item, id: `${id}:tf:${i}`, hint: deck.tfHints?.[item.statement?.en] })),
@@ -38,11 +45,20 @@ export function assembleDecks({ order, games, myths, luck, dares }) {
     }
     books.push(id)
     byBook[id] = entry
-    for (const kind of KINDS) for (const item of entry[kind]) byId[item.id] = item
   }
+  const writers = {}
+  const strays = []
+  for (const [by, member] of Object.entries(members)) {
+    writers[by] = member.names || []
+    for (const { book, kind, ...item } of member.questions || []) {
+      if (!byBook[book] || !MEMBER_KINDS.includes(kind)) { strays.push(`${by}: ${item.id || 'a question'} is for "${book}"/"${kind}", which the game does not deal`); continue }
+      byBook[book][kind].push({ ...item, by })
+    }
+  }
+  for (const id of books) for (const kind of KINDS) for (const item of byBook[id][kind]) byId[item.id] = item
   for (const card of luck) byId[card.id] = card
   for (const dare of dares) byId[dare.id] = dare
-  return { books, byBook, byId, luck, dares }
+  return { books, byBook, byId, luck, dares, writers, strays }
 }
 
 /* Every way a deck can be wrong that would only show up mid-game, on a call. */
@@ -88,9 +104,11 @@ export function lintDecks(decks) {
       check(Array.isArray(item.decoys) && item.decoys.length >= 2 && item.decoys.every(both), `${item.id}: needs at least 2 bilingual decoys`)
     }
     for (const item of D.tf) {
+      if (item.by) id(item, book) // a member's statement brings an id of its own
       check(both(item.statement) && typeof item.isMyth === 'boolean', `${item.id}: malformed myth-or-fact item`)
       // Every question has a hint to buy — a myth-or-fact statement's is written for it.
-      check(both(item.hint), `${item.id}: no hint (tfHints in ${book}/game.js, keyed by "${item.statement?.en?.slice(0, 40)}…")`)
+      check(both(item.hint), item.by ? `${item.id}: no hint` : `${item.id}: no hint (tfHints in ${book}/game.js, keyed by "${item.statement?.en?.slice(0, 40)}…")`)
+      if (item.by) check(both(item.explain), `${item.id}: explain must be bilingual`)
     }
     for (const key of Object.keys(D.tfHints)) {
       check(D.tf.some((item) => item.statement?.en === key), `${book}: a myth-or-fact hint matches no statement: "${key.slice(0, 50)}…"`)
@@ -137,6 +155,12 @@ export function lintDecks(decks) {
     id(dare, 'dares')
     check(both(dare.text), `${dare.id}: text must be bilingual`)
     check(!dare.book || decks.books.includes(dare.book), `${dare.id}: unknown book ${dare.book}`)
+  }
+  /* The members' own questions: each must land in a book's deck, and each
+     writer must have a name to be recognised by at the table. */
+  for (const stray of decks.strays || []) problems.push(stray)
+  for (const [by, names] of Object.entries(decks.writers || {})) {
+    check(Array.isArray(names) && names.some((n) => typeof n === 'string' && n.trim()), `${by}: a writer needs a name to be recognised by`)
   }
   return problems
 }

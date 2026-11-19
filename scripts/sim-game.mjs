@@ -98,7 +98,8 @@ async function realDecks() {
     myths[book.id] = await load(path.join(data, 'books', book.id, 'mythOrFact.js'))
   }
   const cards = await import(pathToFileURL(path.join(data, 'game', 'cards.js')).href)
-  return assembleDecks({ order: books.map((b) => b.id), games, myths, luck: cards.luckCards, dares: cards.dares })
+  const { members } = await import(pathToFileURL(path.join(data, 'game', 'members.js')).href)
+  return assembleDecks({ order: books.map((b) => b.id), games, myths, luck: cards.luckCards, dares: cards.dares, members })
 }
 
 const decks = flag('synthetic') ? syntheticDecks() : await realDecks()
@@ -476,7 +477,10 @@ function playGame(index) {
 
   const hostId = makeId(8, rand)
   const bots = [new Bot(world, { me: hostId, name: 'Host', host: true, create: newRoom({ code: world.code, id: makeId(8, rand), host: hostId, ds: Math.floor(rand() * 1e9) }) })]
-  for (let i = 1; i < players; i++) sched.set(() => bots.push(new Bot(world, { me: makeId(8, rand), name: `P${i + 1}` })), 400 + rand() * 5000)
+  // In half the games two of the players carry the names of members who wrote
+  // questions (data/game/members.js), so the deal passes their own over.
+  const named = rand() < 0.5 ? ['Maria', 'مجد'] : []
+  for (let i = 1; i < players; i++) sched.set(() => bots.push(new Bot(world, { me: makeId(8, rand), name: named[i - 1] || `P${i + 1}` })), 400 + rand() * 5000)
 
   if (!CALM) {
     // The mailbox instances forget.
