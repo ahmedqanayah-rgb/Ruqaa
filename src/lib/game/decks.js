@@ -11,7 +11,9 @@
  *
  * The club's members' own questions (data/game/members.js) join their book's
  * decks, each marked with its writer (`by`), which only the deal reads
- * (engine.js → `writersHere`). `writers` is each writer's names.
+ * (engine.js → `writersHere`). `writers` is each writer's names. A question
+ * that links two books lives in the first one's deck with the other in `also`,
+ * and is dealt only when both are in play.
  */
 import { matchesName } from './match.js'
 
@@ -20,7 +22,9 @@ const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf', 'pic', 'face']
 // the picture rounds, which are drawn on their own.
 const MEMBER_KINDS = KINDS.filter((k) => k !== 'pic')
 
-export function assembleDecks({ order, games, myths, luck, dares, members = {} }) {
+export function assembleDecks({ order, games, myths, luck: siteLuck, dares: siteDares, members = {} }) {
+  let luck = siteLuck
+  let dares = siteDares
   const books = []
   const byBook = {}
   const byId = {}
@@ -46,15 +50,26 @@ export function assembleDecks({ order, games, myths, luck, dares, members = {} }
     books.push(id)
     byBook[id] = entry
   }
+  /* A member's question may link two books (`book: [a, b]`): it lives in the
+     first one's deck and is dealt only when the others are in play too
+     (`also`). Their dares and chance cards join the site's. */
   const writers = {}
   const strays = []
+  const extraLuck = []
+  const extraDares = []
   for (const [by, member] of Object.entries(members)) {
     writers[by] = member.names || []
     for (const { book, kind, ...item } of member.questions || []) {
-      if (!byBook[book] || !MEMBER_KINDS.includes(kind)) { strays.push(`${by}: ${item.id || 'a question'} is for "${book}"/"${kind}", which the game does not deal`); continue }
-      byBook[book][kind].push({ ...item, by })
+      const [home, ...also] = Array.isArray(book) ? book : [book]
+      const known = [home, ...also].every((b) => byBook[b])
+      if (known && kind === 'luck') extraLuck.push({ ...item, book: home, by })
+      else if (known && kind === 'dare') extraDares.push({ ...item, book: home, by })
+      else if (known && MEMBER_KINDS.includes(kind)) byBook[home][kind].push({ ...item, ...(also.length ? { also } : {}), by })
+      else strays.push(`${by}: ${item.id || 'a question'} is for "${book}"/"${kind}", which the game does not deal`)
     }
   }
+  luck = [...luck, ...extraLuck]
+  dares = [...dares, ...extraDares]
   for (const id of books) for (const kind of KINDS) for (const item of byBook[id][kind]) byId[item.id] = item
   for (const card of luck) byId[card.id] = card
   for (const dare of dares) byId[dare.id] = dare

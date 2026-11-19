@@ -167,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~108 kB gz of script and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~131 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -547,7 +547,12 @@ keeps `base: './'` sub-path hosting working.
     questions are rarely dealt in a room they play in — the deal passes over nine in ten
     (`OWN`, `writersHere` in engine.js; the writer is recognised by the name they joined under, in
     either script). **Nothing in the game may show it**: no name, no credit on a card, no line in
-    the rules — the club asked for exactly that.
+    the rules — the club asked for exactly that. A member's question may link two books
+    (`book: [a, b]` → `also`): it is dealt only when both are in play, and its card names both.
+    Members' dares and chance cards join the site's, outside the writer rule (there is nothing to
+    know in advance). Maria's first set (2026-11-19): 53 dealt, 3 picture rounds in `waiting`
+    until they have pictures; where hers and the site's overlapped, a few words were changed so
+    neither gives the other away — the header of her list says which.
   - **Typed answers are judged by `lib/game/match.js`, not by AI** (asked about 2026-11-17).
     It forgives what people actually get wrong — Arabic letter forms, diacritics, «ال»/"the",
     either language, a few letters off, vowels in transliterations — and checks only against

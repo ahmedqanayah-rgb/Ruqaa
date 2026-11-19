@@ -172,18 +172,20 @@ export const MINI = {
   },
 }
 
-/* The head of a round's card: its mark, its name, and whose book it is from. */
+/* The head of a round's card: its mark, its name, and whose book it is from —
+   both books, for a question that links two (`also`, decks.js). */
 export function KindHead({ ch, decks, books }) {
   const { t } = useApp()
   const kind = KIND[ch.k]
   const mini = ch.k === 'mini' ? MINI[ch.id] : null
   const book = ch.book ? books.find((b) => b.id === ch.book) : null
+  const also = (decks.byId[ch.id]?.also || []).map((id) => books.find((b) => b.id === id)).filter(Boolean)
   return (
     <div className="gm-kind">
-      <span className="gm-kind-mark"><Icon name={mini?.icon || (book && ch.k !== 'bluff' ? decks.byBook[ch.book].icon : kind.icon)} /></span>
+      <span className="gm-kind-mark"><Icon name={mini?.icon || (also.length ? '📚' : book && ch.k !== 'bluff' ? decks.byBook[ch.book].icon : kind.icon)} /></span>
       <span className="gm-kind-text">
         <strong>{t(mini ? mini.title : kind.title)}</strong>
-        {(book || mini) && <small>{mini ? t(kind.title) : t(book.title)}</small>}
+        {(book || mini) && <small>{mini ? t(kind.title) : [book, ...also].map((b) => t(b.title)).join(' · ')}</small>}
       </span>
     </div>
   )

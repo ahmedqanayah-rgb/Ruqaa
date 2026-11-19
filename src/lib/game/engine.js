@@ -576,17 +576,21 @@ function challenge(core, to, landed, decks, again = null) {
     for (const [b, n] of left) if ((r -= n) < 0) return b
     return left[left.length - 1][0]
   }
-  /* Deal a book's next card of a kind — but a member's own question, at a table
-     they are sitting at, is mostly passed over for the card after it (`OWN`). */
+  /* Deal a book's next card of a kind — passing over a question that links a
+     book not in play tonight (`also`), and, mostly, a member's own question at
+     a table they are sitting at (`OWN`). */
   const here = writersHere(core, decks)
   const deal = (kind, book) => {
     const deck = decks.byBook[book][kind]
     let card
+    let fallback = null
     for (let tries = 0; tries < deck.length; tries++) {
       card = deck[draw(`${kind}:${book}`, deck.length)]
-      if (!card.by || !here.has(card.by) || seeded(core.seed, core.n, 'own', card.id, ...salt)() < OWN) break
+      if (card.also && !card.also.every((b) => books.includes(b))) continue
+      fallback ??= card
+      if (!card.by || !here.has(card.by) || seeded(core.seed, core.n, 'own', card.id, ...salt)() < OWN) return card
     }
-    return card
+    return fallback || card
   }
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
