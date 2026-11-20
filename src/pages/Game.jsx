@@ -7,6 +7,7 @@ import { assembleDecks } from '../lib/game/decks.js'
 import { ROOM_RE, PID_RE, cleanRoomCode } from '../lib/game/net.js'
 import GameEntry from '../components/game/GameEntry.jsx'
 import GameRoom from '../components/game/GameRoom.jsx'
+import Practice from '../components/game/Practice.jsx'
 import '../styles/game.css'
 
 /*
@@ -51,7 +52,9 @@ const decks = assembleDecks({
 })
 
 export default function Game() {
-  const { search } = useLocation()
+  const { pathname, search } = useLocation()
+  // The questions without the game: the same decks, in one fixed order.
+  if (pathname === '/game/questions') return <Practice decks={decks} />
   const params = new URLSearchParams(search)
   const code = cleanRoomCode(params.get('room'))
   const me = params.get('me') || ''

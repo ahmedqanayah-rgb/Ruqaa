@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext.jsx'
 import { ui } from '../../data/ui.js'
 import GameCover from '../GameCover.jsx'
@@ -101,6 +101,15 @@ export default function GameEntry({ invite = '' }) {
             )}
           </form>
         </div>
+      )}
+
+      {!invite && (
+        <section className="card gm-panel">
+          <h2><Icon name="📚" /> {t(L('أجيبوا عن أسئلة اللعبة — دون لعب', 'Answer the game’s questions — without playing'))}</h2>
+          <p className="gm-hint">{t(L('الأسئلة نفسها التي في اللعبة، بالترتيب نفسه على كلّ هاتف: افتحوها معاً في المكالمة، وأجيبوا سؤالاً سؤالاً.',
+            'The very questions of the game, in the same order on every phone: open them together on the call and answer them one by one.'))}</p>
+          <Link to="/game/questions" className="btn gm-go">{t(L('افتح الأسئلة', 'Open the questions'))} <span className="arrow" aria-hidden>→</span></Link>
+        </section>
       )}
 
       <section className="card gm-panel">

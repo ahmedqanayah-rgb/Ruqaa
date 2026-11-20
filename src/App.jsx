@@ -29,6 +29,9 @@ export default function App() {
         <Route path="/books" element={<Books />} />
         <Route path="/about" element={<About />} />
         <Route path="/game" element={gameRoute} />
+        {/* The game's questions without the game (components/game/Practice.jsx):
+            the same lazy chunk, which already holds the decks. */}
+        <Route path="/game/questions" element={gameRoute} />
         {/* A legacy address from when the sleep assessment was its own page. It
             is an activity of «أنشطة إضافية» now, so the redirect opens that
             heading. Found by scripts/check-component-links.mjs — a redirect

@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext.jsx'
 import { ui } from '../../data/ui.js'
 import Icon from '../Icon.jsx'
 import { standings, actingHost } from '../../lib/game/engine.js'
+import { questionList, restOf, restSearch } from '../../lib/game/questions.js'
 import { L, Token, TOKEN_COLORS, copyText } from './parts.jsx'
 
 /* Forty paper scraps for the winner. Positions are rolled once per mount (so a
@@ -37,10 +38,19 @@ const TITLES = [
   { k: 3, icon: '🧪', name: L('بطل المختبر', 'Lab champion'), why: L('فاز بأكثر جولات المختبر', 'won the most Lab rounds') },
 ]
 
-export default function GameOver({ room, core, me, labels }) {
+export default function GameOver({ room, core, me, labels, decks }) {
   const { t } = useApp()
   const navigate = useNavigate()
   const [copied, setCopied] = useState(null)
+  /* The questions this game did not get to (the club, 2026-11-20: "after the
+     game ends … an option to answer the rest of the questions that we didn't
+     get in the game") — the same list on every phone at the table, since the
+     game is (lib/game/questions.js). Going there leaves the room. */
+  const rest = useMemo(() => questionList(decks, restOf(core, decks)).length, [core, decks])
+  const answerRest = () => {
+    room.setMine({ left: true })
+    setTimeout(() => navigate(`/game/questions?${restSearch(core, decks)}`), 250)
+  }
   const rows = useMemo(() => standings(core.players.filter((p) => !p.gone)), [core.players])
   // Token letters are indexed by the room's player list, not by the ranking.
   const labelOf = (id) => labels[core.players.findIndex((p) => p.id === id)] ?? ''
@@ -97,6 +107,11 @@ export default function GameOver({ room, core, me, labels }) {
           {isHost
             ? <button type="button" className="gm-btn is-main" disabled={asked} onClick={() => room.setMine({ again: core.g })}><Icon name="↻" /> {t(L('جولةٌ أخرى', 'Play again'))}</button>
             : <p className="gm-muted-dark">{t(L('المضيف يقرّر إن كانت هناك جولةٌ أخرى.', 'The host decides whether there is another game.'))}</p>}
+          {rest > 0 && (
+            <button type="button" className="gm-btn" onClick={answerRest}>
+              <Icon name="📚" /> {t(L(`أجيبوا عن بقية الأسئلة (${rest})`, `Answer the rest of the questions (${rest})`))}
+            </button>
+          )}
           <button type="button" className="gm-btn" onClick={async () => setCopied((await copyText(summary)) ? 'ok' : 'manual')}>
             <Icon name="📋" /> {t(copied === 'ok' ? L('نُسخت', 'Copied') : L('انسخ النتيجة', 'Copy the result'))}
           </button>

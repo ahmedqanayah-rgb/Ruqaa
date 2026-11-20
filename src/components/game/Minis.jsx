@@ -36,6 +36,8 @@ export function NumPad({ value, onChange, max = 3, dot = false, disabled = false
   latest.current = press
   useEffect(() => {
     const onKey = (e) => {
+      // Not while typing into a field (the questions page has one beside it).
+      if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable]')) return
       if (/^[0-9]$/.test(e.key)) latest.current(e.key)
       else if (e.key === 'Backspace') latest.current('del')
       else if (e.key === '.' || e.key === ',') latest.current('.')

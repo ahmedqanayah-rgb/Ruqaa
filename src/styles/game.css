@@ -52,9 +52,11 @@
    the room that is the wrong colour half the time, so inside it those elements
    take their colour from where they sit. One class of weight (see the old
    lesson in git history: wrapping the `.gm-*` half in `:where()` too drops it
-   to zero, and the site's rules win). */
+   to zero, and the site's rules win). A question card laid on an ordinary page
+   (`.gm-paper`, the questions page) is the room's paper, and the same. */
 .gm-room :where(p, li, strong, small, span, h1, h2, h3, b, label),
-.gm-overlay :where(p, li, strong, small, span, h1, h2, h3, b, label) { color: inherit; }
+.gm-overlay :where(p, li, strong, small, span, h1, h2, h3, b, label),
+.gm-paper :where(p, li, strong, small, span, h1, h2, h3, b, label) { color: inherit; }
 
 /* ============================================================
    The entry page — an ordinary page of the site
@@ -96,6 +98,28 @@
 .gm-join-only { max-width: 560px; }
 
 .gm-rules { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 8px; line-height: 1.7; }
+
+/* ---- the game's questions, without the game (Practice.jsx) ----
+   An ordinary page of the site, like the entry; each question is the game's
+   own paper card, laid on the page instead of rising over the board. */
+.gm-practice { max-width: 680px; margin-inline: auto; }
+.gm-practice .page-head { margin-bottom: 0; }
+.gm-practice-books { display: flex; flex-wrap: wrap; gap: 8px; }
+.gm-practice-books .pill-btn { min-height: 44px; cursor: pointer; }
+.gm-practice-books .pill-btn .icon { width: 18px; height: 18px; }
+.gm-practice-books .pill-btn.is-on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.gm-jump { scroll-margin-top: 66px; } /* just under the site's bar */
+.gm-jump label { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: var(--fs-md); }
+.gm-jump .gm-input { width: 4.6em; text-align: center; font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; padding: 6px 8px; }
+.gm-sheet.is-page {
+  position: static; width: 100%; max-height: none; overflow: visible; border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); animation: none;
+}
+.gm-sheet.is-page .gm-btn:not(.is-main):not(.is-danger) { color: var(--gm-ink); border-color: var(--gm-rule); background: #fff; }
+.gm-practice-clue { justify-self: start; align-self: flex-start; }
+.gm-practice-guess { text-align: center; }
+.gm-practice-steps { display: flex; justify-content: space-between; gap: 12px; }
+.gm-practice-steps .btn { min-height: 48px; padding-inline: 20px; }
 
 /* ============================================================
    The room — always the board's night

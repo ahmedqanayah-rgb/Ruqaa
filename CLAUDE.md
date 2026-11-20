@@ -167,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~135 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~139 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -553,6 +553,31 @@ keeps `base: './'` sub-path hosting working.
     players, ~25% with three or four, 3–16% with five or more (4 players: 36 → 45 minutes). The
     simulator checks every result: a roller who earned nothing is back at `from`, one who earned
     something kept the roll.
+  - **The questions without the game — `#/game/questions`** (2026-11-20, the club: "a separate
+    part from the game where we can answer all the questions … in a fixed order so we all open
+    them together and keep track on the call", named «أجيبوا عن أسئلة اللعبة — دون لعب» so it is
+    plain they are the game's own questions; and "after the game ends … an option to answer the
+    rest of the questions that we didn't get in the game"). `components/game/Practice.jsx`, in
+    the same lazy chunk (App.jsx routes `/game/questions` to it; `pages/Game.jsx` hands it the
+    same decks). **What is in it and in what order is `lib/game/questions.js`**: every question
+    of the eight kinds (no dares, chance or Lab), each deck spread evenly through ONE FIXED ORDER
+    (card j of n at (j + ½)/n; ties by registry book, then `KINDS`), so "question 12" said on the
+    call is the same on every phone — 318 questions, or one book's (`?book=<id>`: 100 / 111 / 96;
+    a one-book list drops the linking questions and the «من أيّ كتاب؟» pictures, as a one-book
+    game would). Adding questions shifts the numbers after them. The game's end screen offers
+    «أجيبوا عن بقية الأسئلة (N)» (`GameOver`): it leaves the room and opens the list for that
+    game's books less what `core.asked` holds — written into the address as
+    `?books=0.1.2&asked=<asking numbers in base 36>` (`restSearch` / `readRest`; `asking` gained
+    `keys`, number → key, for it), so every phone at the table gets the same list and a refresh
+    keeps it. The question on screen is `&n=`; what you answered lives in the tab only. Each
+    kind is played as its round, minus what only a game needs: no hints to buy («من هو؟» still
+    gives its clues one at a time, free), a picture round shows its four options at once, and a
+    white lie becomes "find the truth" among the house's decoys. Options are shuffled by the
+    question alone (`practice|<id>`), the same on every phone. The cards are the game's paper
+    sheet laid on an ordinary themed page (`.gm-sheet.is-page`, `.gm-paper` for the ink rule at
+    the top of game.css). `NumPad` now ignores keys typed into a field (the jump box sits beside
+    it). Checked in the preview at phone size, light and dark, Arabic and English: every kind,
+    the jump box, the rest list from a hand-made finished room on the local mailbox.
   - **Every question has a hint to buy** (2026-11-17, the club: "i want the hint option for all
     questions"). A right answer is worth **2 steps and each hint costs one** (never below 1), so a
     bare right answer is always worth the most — the scoring had to rise from 1 to 2 for that, or

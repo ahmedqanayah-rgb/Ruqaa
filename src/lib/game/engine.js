@@ -564,16 +564,18 @@ export function asking(decks) {
   let ix = ASKING.get(decks)
   if (ix) return ix
   const at = new Map()
+  const keys = [] // …and back: number → key (questions.js reads a game's list with it)
   const marks = []
   const add = (key, item) => {
     if (at.has(key)) return
-    at.set(key, marks.length)
+    at.set(key, keys.length)
+    keys.push(key)
     marks.push([item?.img, item?.photo?.src].filter(Boolean))
   }
   for (const b of decks.books) for (const k of ASKED_KINDS) for (const item of decks.byBook[b][k] || []) add(`q:${item.id}`, item)
   for (const dare of decks.dares) add(`d:${dare.id}`)
   for (const mini of MINIS) add(`m:${mini.id}`)
-  ix = { at, marks }
+  ix = { at, keys, marks }
   ASKING.set(decks, ix)
   return ix
 }
