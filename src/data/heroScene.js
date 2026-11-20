@@ -55,7 +55,8 @@ export const heroScene = {
   active: 'overhead',
 
   // Which book the hero features. Leave null and it follows the club's current
-  // season (club.js → the season with status 'current'), which is the same
+  // season (club.js → `featuredSeason`: the season with status 'current', or
+  // between seasons the one just finished), which is the same
   // source of truth the rest of Home uses — so the hero can't drift from the
   // carousel underneath it. Set an id from src/data/books.js
   // ('why-we-sleep' | 'stolen-focus' | future ids) only to override that.

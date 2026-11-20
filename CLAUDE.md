@@ -763,8 +763,8 @@ keeps `base: './'` sub-path hosting working.
   section (its URL); the landing's stat chips, `FactRotator` and `countExperts` all go
   through it. Missing that is how the «X+ شخصية» chip silently vanished. The search index emits
   an entry per part, and the studies' `?study=` deep link resolves against the parts too.
-- **«الاقتصاد كما أشرحه لابنتي» — Yanis Varoufakis, the third book** (season from
-  2026-09-27; Stolen Focus ended 2026-09-20). `data/books/talking-to-my-daughter/`. Arabic
+- **«الاقتصاد كما أشرحه لابنتي» — Yanis Varoufakis, the third book** (season
+  2026-09-27 to Saturday 2026-11-14, when the club finished it; Stolen Focus ended 2026-09-20). `data/books/talking-to-my-daughter/`. Arabic
   title, author spelling «يانيس فاروفاكيس» and translator «عماد شيحة» are the **Dar Al Saqi
   2020** edition's own, read off its title page; chapter titles likewise — **except chapter
   8**, «فيروساتٌ غبيّة؟», which is a rendering: the club's scan lacks that page. Check it
@@ -876,7 +876,10 @@ keeps `base: './'` sub-path hosting working.
 - **The homepage hero is a video** (shipped 2026-08-18; it was a surprise for members
   until then, and no longer is). `src/data/heroScene.js` is the control panel: `enabled`
   is a kill switch back to the old text hero, `active` picks the scene, and
-  `featuredBookId: null` means "follow the club's current season".
+  `featuredBookId: null` means "follow the club's current season" — and between seasons
+  (nothing 'current' in `club.seasons`), the one just finished: `featuredSeason` in
+  `data/club.js`, which Home's shelf reads too. Before it, an absent 'current' silently
+  fell back to the first book in the registry.
   - **`overhead` is the only scene** — a flat-lay: a book falls open beside a cup of
     coffee, and the book's title/author/translator are set on the open right-hand page
     (`data/pageArt.js`). A second treatment, **`toppling`** (a stack slides apart, the

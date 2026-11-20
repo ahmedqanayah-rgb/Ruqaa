@@ -78,6 +78,8 @@ export const club = {
    * picks up each book's real title and cover automatically.
    *   status: 'done' | 'current' | 'planned'
    *   start/end: display strings, or null when not announced yet.
+   * Between seasons (nothing 'current'), the front page features the one just
+   * finished — see `featuredSeason` below.
    */
   seasons: [
     {
@@ -98,11 +100,11 @@ export const club = {
     },
     {
       bookId: 'talking-to-my-daughter',
-      status: 'current',
+      status: 'done',
       start: L('الجلسة الأولى: ٢٧ سبتمبر ٢٠٢٦', 'First session: 27 September 2026'),
-      end: null,   // ongoing — the "Reading now" pill carries the rest
-      note: L('موسمنا الحالي — عن الاقتصاد: من أين يأتي المال، ولماذا لا ينبغي أن نتركه للاقتصاديين.',
-              'Our current season — on the economy: where money comes from, and why we shouldn’t leave it to the economists.'),
+      end: L('١٤ نوفمبر ٢٠٢٦', '14 November 2026'),
+      note: L('موسمنا الثالث — عن الاقتصاد: من أين يأتي المال، ولماذا لا ينبغي أن نتركه للاقتصاديين.',
+              'Our third season — on the economy: where money comes from, and why we shouldn’t leave it to the economists.'),
     },
   ],
 
@@ -125,5 +127,11 @@ export const club = {
 }
 
 /* True once there is anything to show — used to hide empty sections. */
+/* The season the front page features: the one being read now — or, between
+   seasons, the one just finished (rather than falling back to the first book
+   in the registry, which is what an absent 'current' used to mean). */
+export const featuredSeason = () => club.seasons.find((s) => s.status === 'current')
+  || [...club.seasons].reverse().find((s) => s.status === 'done')
+
 export const hasMembers = () => club.members.length > 0
 export const hasGallery = () => club.gallery.length > 0

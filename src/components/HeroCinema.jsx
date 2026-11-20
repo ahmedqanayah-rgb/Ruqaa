@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
-import { club } from '../data/club.js'
+import { featuredSeason } from '../data/club.js'
 import { heroScene } from '../data/heroScene.js'
 import { coverArt } from '../data/coverArt.js'
 import { pageArt } from '../data/pageArt.js'
@@ -127,11 +127,10 @@ export default function HeroCinema() {
   const stills = scene.stills[orient]
   const videoSrc = scene.video[orient]
 
-  // Default to the season the club is actually reading — the same source of
-  // truth Home uses for the carousel — so the two can't disagree. heroScene
-  // may override it with an explicit id.
-  const wantedId = heroScene.featuredBookId
-    || club.seasons?.find((s) => s.status === 'current')?.bookId
+  // Default to the season the club is actually reading (between seasons, the
+  // one just finished) — the same source of truth Home uses for the carousel —
+  // so the two can't disagree. heroScene may override it with an explicit id.
+  const wantedId = heroScene.featuredBookId || featuredSeason()?.bookId
   const book = books.find((b) => b.id === wantedId) || books[0]
 
   // What gets warped onto the quad depends on the scene: the book's cover, or

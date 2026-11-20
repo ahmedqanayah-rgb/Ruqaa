@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 import { ui } from '../data/ui.js'
 import { books } from '../data/books.js'
-import { club } from '../data/club.js'
+import { featuredSeason } from '../data/club.js'
 import { heroScene } from '../data/heroScene.js'
 import HeroCinema from '../components/HeroCinema.jsx'
 import BookPoster from '../components/BookPoster.jsx'
@@ -22,10 +22,11 @@ const L = (ar, en) => ({ ar, en })
  */
 export default function Home() {
   const { t } = useApp()
-  // Feature the season the club is actually reading — not whichever book
-  // happens to sit first in the registry. club.seasons is the single source of
-  // truth for that, so the front page can't drift from the About page.
-  const currentId = club.seasons?.find((s) => s.status === 'current')?.bookId
+  // Feature the season the club is actually reading (between seasons, the one
+  // just finished) — not whichever book happens to sit first in the registry.
+  // club.seasons is the single source of truth for that, so the front page
+  // can't drift from the About page.
+  const currentId = featuredSeason()?.bookId
   const featured = books.find((b) => b.id === currentId) || books[0]
   // Up to three posters, the current book first; «كلّ الكتب» in the heading
   // carries the rest. The row scroll-snaps on a phone and is RTL-aware.
