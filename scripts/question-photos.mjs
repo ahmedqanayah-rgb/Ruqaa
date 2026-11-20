@@ -161,8 +161,11 @@ export const PHOTOS = {
 
 /* Planned, but not shown: the club found no real portrait of Radford, and the
    picture that stood in for him was of other men — «من هو؟» presents its
-   picture as the person (2026-11-20). */
-export const SKIP = ['td-radford']
+   picture as the person (2026-11-20). sf-angry-phone was a stock photo with a
+   faint Dreamstime stamp across it (the club, 2026-11-20: "some fotos has stamps
+   like getty image"): a stamp is not erased here — the photo is left out until
+   there is a clean one the club is free to use. */
+export const SKIP = ['td-radford', 'sf-angry-phone']
 
 /* Picture rounds whose picture the club supplied: here the photo IS the
    question, so it must carry no name, caption or brand (scripts/

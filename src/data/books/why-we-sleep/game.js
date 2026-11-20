@@ -287,8 +287,8 @@ const people = [
     [L('كنديٌّ في الثالثة والعشرين.', 'A Canadian, twenty-three years old.'),
       L('سنة ١٩٨٧ قاد سيّارته نحو ٢٣ كيلومتراً دون أن يستيقظ.', 'In 1987 he drove about 23 kilometres without waking up.'),
       L('برّأته هيئة المحلّفين لأنه كان يسير نائماً — أشهر قضايا السير النومي.', 'A jury acquitted him because he had been sleepwalking — the most famous sleepwalking case.')],
-    L('كينيث باركس: السير النومي فعلٌ لا واعٍ من دماغٍ عالقٍ بين النوم العميق واليقظة.', 'Kenneth Parks: sleepwalking is an unconscious act of a brain stuck between deep sleep and waking.'),
-    './images/characters/kenneth-parks.webp'),
+    // No picture: the only one we had carried a Getty Images stamp (taken off 2026-11-20).
+    L('كينيث باركس: السير النومي فعلٌ لا واعٍ من دماغٍ عالقٍ بين النوم العميق واليقظة.', 'Kenneth Parks: sleepwalking is an unconscious act of a brain stuck between deep sleep and waking.')),
 ]
 
 /* -------------------------------- charts -------------------------------- */
@@ -431,9 +431,8 @@ const pics = [
   picBook('ws-p-bird', './images/anatomical/half-sleeping-bird.webp',
     [L('هذا الطائر نائم — بنصف دماغه.', 'This bird is asleep — with half its brain.')],
     L('من «لماذا ننام»: الطيور والدلافين تنام بنصف دماغٍ في كلّ مرّة.', 'From Why We Sleep: birds and dolphins sleep one half of the brain at a time.')),
-  picBook('ws-p-parks', './images/characters/kenneth-parks.webp',
-    [L('قاد سيّارته ٢٣ كيلومتراً دون أن يستيقظ.', 'He drove 23 kilometres without waking up.')],
-    L('كينيث باركس، من «لماذا ننام»: أشهر قضايا السير النومي.', 'Kenneth Parks, from Why We Sleep: the most famous sleepwalking case.')),
+  // ws-p-parks (Kenneth Parks's picture) sits out: its photo carried a Getty
+  // Images stamp (2026-11-20). It comes back with a clean picture.
   picBook('ws-p-kleitman', './images/characters/nathaniel-kleitman.webp',
     [L('أمضى أسابيع في كهفٍ سنة ١٩٣٨.', 'He spent weeks in a cave in 1938.')],
     L('ناثانيال كلايتمان، الأب المؤسّس لعلم النوم — من «لماذا ننام».', 'Nathaniel Kleitman, the founding father of sleep science — from Why We Sleep.')),

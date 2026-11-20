@@ -11,7 +11,6 @@ export const questionPhotos = {
   "maria-sf-m-prichard": ["./images/game/q/sf-lecture-sleep.webp", 960, 643],
   "maria-sf-n-85": ["./images/game/q/sf-kids-bedroom.webp", 960, 960],
   "maria-sf-n-guardian": ["./images/game/q/sf-nz-office.webp", 1200, 903],
-  "maria-sf-n-outrage": ["./images/game/q/sf-angry-phone.webp", 638, 960],
   "maria-sf-t-kids": ["./images/game/q/sf-kids-bedroom.webp", 960, 960],
   "maria-sf-t-wikipedia": ["./images/characters/sune-lehmann.webp", 500, 552],
   "maria-td-b-kerosene": ["./images/game/q/td-dust-bowl.webp", 1000, 562],

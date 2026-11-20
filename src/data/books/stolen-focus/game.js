@@ -374,10 +374,8 @@ const faces = [
     L('باحث الرواية والتعاطف', 'Fiction & empathy researcher'),
     L('وجد أن قرّاء الروايات أفضل في فهم مشاعر الآخرين ونيّاتهم — القصّة تدرّبنا على العيش داخل عقلٍ آخر.',
       'Found that fiction readers are better at understanding others’ feelings and intentions — story trains us to inhabit another mind.')),
-  face('sf-f-tore-nielsen', './images/characters/tore-nielsen.webp', L('توري نيلسن', 'Tore Nielsen'),
-    L('باحث الأحلام والنوم', 'Dream & sleep researcher'),
-    L('باحثٌ في الأحلام والنوم؛ يذكّر بأن ما يجري في أدمغتنا حين «لا نفعل شيئاً» أبعد ما يكون عن العطالة.',
-      'A researcher of dreams and sleep; a reminder that what happens in our brains when we “do nothing” is far from idle.')),
+  // sf-f-tore-nielsen sits out: the portrait carried a logo stamp (2026-11-20).
+  // It comes back with a clean picture.
   face('sf-f-aza-raskin', './images/characters/aza-raskin.webp', L('أزا راسكِن', 'Aza Raskin'),
     L('مخترع «التمرير اللانهائي»', 'Inventor of infinite scroll'),
     L('صمّم خاصّية التمرير التي لا تنتهي — ويقول اليوم إنه نادم على ما تسرقه من وقت البشر.',

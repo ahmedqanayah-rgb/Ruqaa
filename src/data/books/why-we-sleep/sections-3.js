@@ -196,7 +196,7 @@ export const characters = {
   blocks: [
     { type: 'h', text: L('حالات وقصص مأساوية', 'Tragic cases and stories') },
     { type: 'people', people: [
-      { img: port('kenneth-parks.jpg'), name: L('كينيث باركس', 'Kenneth Parks'), tag: L('«القاتل النائم»', 'The “sleepwalking killer”'),
+      { name: L('كينيث باركس', 'Kenneth Parks'), // no portrait: the one we had carried a Getty Images stamp (2026-11-20) tag: L('«القاتل النائم»', 'The “sleepwalking killer”'),
         story: L('شابٌّ كنديٌّ في الثالثة والعشرين من عمره. في عام ١٩٨٧ نهض ليلاً وهو نائم، وقاد سيّارته نحو ٢٣ كيلومتراً إلى بيت حَمَويه، فقتل حماته وأصاب حماه بجروحٍ بالغة — ثم استيقظ في الطريق مذعوراً وسلّم نفسه للشرطة. ولكونه معروفاً بتاريخٍ عائليٍّ وشخصيٍّ طويلٍ مع **السير النومي** (الذي يحدث في النوم العميق لا في الأحلام)، قرّرت هيئة المحلّفين أنه لم يكن واعياً بأفعاله، فحكمت بـ**براءته** عام ١٩٨٨. قصّته المثال الأشهر على أن السير النومي فعلٌ لاواعٍ صادرٌ عن دماغٍ عالقٍ بين النوم العميق واليقظة.',
                  'A 23-year-old Canadian. In 1987 he arose at night while asleep, drove his car about 23 kilometres to his in-laws’ home, killed his mother-in-law and gravely injured his father-in-law — then woke on the way in horror and turned himself in to the police. Because he was known for a long family and personal history of **sleepwalking** (which occurs in deep NREM sleep, not in dreaming), the jury decided he had not been conscious of his acts and **acquitted** him in 1988. His story is the most famous example that sleepwalking is an unconscious act by a brain stuck between deep sleep and waking.') },
       { img: port('michael-corke.jpg'), name: L('مايكل كورك', 'Michael Corke'), tag: L('الذي مات من قلّة النوم', 'The man who died of lack of sleep'),

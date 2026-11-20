@@ -639,6 +639,18 @@ keeps `base: './'` sub-path hosting working.
     `<img>` hold its shape while loading). `assembleDecks` hands each item its `photo`, and the
     stage starts loading a round's photo the moment it is dealt. A few are TV or anime stills the
     club chose to keep.
+    **A stock-photo stamp is never erased** (2026-11-20, the club: "some fotos has stamps like
+    getty image, i want u remove them"): a Getty, Dreamstime, Shutterstock… mark says the photo
+    is paid stock, and erasing it to show the photo would be using it without a licence. Such a
+    photo is LEFT OUT until there is a clean one the club is free to use (the club chose this
+    over waiting). Taken off that day: `sf-angry-phone` (a faint Dreamstime stamp — `SKIP`; Maria's
+    number question shows no photo), Kenneth Parks's portrait (Getty: his «من هو؟» runs without a
+    picture, his picture round `ws-p-parks` sits out, his book page shows his initial) and Tore
+    Nielsen's (a logo stamp: his «من هذا؟» card sits out, his page shows his initial;
+    `import-stolen-focus-photos.mjs` skips him). How they were found: contact sheets show a big
+    centred logo; Windows OCR (`Windows.Media.Ocr`, from PowerShell) read the Getty credit line;
+    the Dreamstime stamp showed only in the file's own metadata and at full size, boosted with
+    CLAHE — faint stamps escape both sheets and OCR, so check a stock-looking photo full-size.
   - **Typed answers are judged by `lib/game/match.js`, not by AI** (asked about 2026-11-17).
     It forgives what people actually get wrong — Arabic letter forms, diacritics, «ال»/"the",
     either language, a few letters off, vowels in transliterations — and checks only against

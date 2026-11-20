@@ -25,7 +25,8 @@ const TO_IMAGES = new Set([
   'stolen-focus-cover-en', 'stolen-focus-cover-ar', 'provincetown', 'graceland-jungle-room',
 ])
 // Already present in the app from the Why We Sleep book — don't duplicate.
-const SKIP = new Set(['Charles Czeisler'])
+// Tore Nielsen's portrait carried a logo stamp: left out until a clean one comes (2026-11-20).
+const SKIP = new Set(['Charles Czeisler', 'Tore Nielsen', 'tore-nielsen'])
 
 const kebab = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 

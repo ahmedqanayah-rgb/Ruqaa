@@ -44,7 +44,7 @@ export const characters = {
       { img: port('gilbert-killingsworth.jpg'), name: L('غيلبرت وكيلينغزوورث', 'Gilbert & Killingsworth'), tag: L('دراسة الذهن الشارد والسعادة', 'The wandering-mind & happiness study'),
         story: L('أجرى **دانييل غيلبرت** و**ماثيو كيلينغزوورث** دراسةً واسعة عبر التطبيقات خلصت إلى أن الذهن الشارد قد يكون أقلّ سعادةً لحظياً — نتيجةٌ يناقشها هاري بعينٍ ناقدة.',
                  '**Daniel Gilbert** and **Matthew Killingsworth** ran a large smartphone study concluding a wandering mind can be less happy in the moment — a finding Hari examines critically.') },
-      { img: port('tore-nielsen.jpg'), name: L('توري نيلسن', 'Tore Nielsen'), tag: L('باحث الأحلام والنوم', 'Dream & sleep researcher'),
+      { name: L('توري نيلسن', 'Tore Nielsen'), // no portrait: the one we had carried a logo stamp (2026-11-20) tag: L('باحث الأحلام والنوم', 'Dream & sleep researcher'),
         story: L('باحثٌ في الأحلام والنوم؛ يذكّر بأن ما يجري في أدمغتنا حين «لا نفعل شيئاً» أبعد ما يكون عن العطالة.',
                  'A researcher of dreams and sleep; a reminder that what happens in our brains when we “do nothing” is far from idle.') },
     ] },
