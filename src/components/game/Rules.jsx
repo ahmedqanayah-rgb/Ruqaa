@@ -14,6 +14,8 @@ const RULES = [
     'On your turn you roll and move. The square you land on opens a round that EVERYONE plays at the same moment, each on their own phone. Don’t like your square’s question? Skip it, and everyone gets a new one (the host can too).'),
   L('النقاط هنا خطوات: الإجابة الصحيحة تقدّمك خطوتين. ولكلّ سؤالٍ تلميحٌ تشتريه بخطوة. وأسرع إجابةٍ صحيحة تأخذ خطوةً إضافية، ولصاحب الخانة خطوةٌ أخرى إن أصاب.',
     'Points are steps: a right answer moves your token two. Every question has a hint, which costs a step. The fastest right answer earns an extra step, and the player whose square it is gets one more if they get it right.'),
+  L('ورمية النرد لا تُحسب إلا بالفوز: إن لم يربح صاحب الخانة شيئاً في جولتها عاد إلى حيث رمى. (بطاقات الحظّ لا جولة لها، فتبقى رميتها.)',
+    'And the roll only counts if you win it: if the player whose square it is earns nothing in its round, they go back to where they rolled from. (Chance cards have no round, so their roll stands.)'),
   L('الجولات: أسئلة من الكتب، وخرافة أم حقيقة، وأرقام (الأقرب يفوز)، ومن هو؟ (صورةٌ وتلميحات — كلّما احتجتَ تلميحاتٍ أقلّ ربحت أكثر)، ومن هذا؟ (وجهٌ وأربعة أسماء)، ورسوم بيانية، وخمّن الصورة (اكتب الاسم بنفسك، أو اشترِ تلميحاً أو الخيارات بخطوة)، وكذبة بيضاء، والمختبر، وتحدّيات يحكم فيها الجميع، وبطاقات حظّ.',
     'Rounds: questions from the books, myth or fact, numbers (closest wins), who is it? (a picture and clues — the fewer clues you need, the more you win), who is this? (a face and four names), charts, picture this (type the name yourself, or buy a hint or the options for a step), a white lie, the Lab, dares the room judges, and chance cards.'),
   L('لا عجلة، إلا إن اختار المضيف جولاتٍ بوقت: الجولة تنتظر الجميع، وبعدها شرحٌ قصير يبقى حتى يقرأه الجميع ويضغطوا «التالي».',

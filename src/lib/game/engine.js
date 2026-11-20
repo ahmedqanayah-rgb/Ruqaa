@@ -41,7 +41,8 @@ import { matchesName } from './match.js'
  *
  * THE SHAPE OF A TURN. The player whose turn it is rolls and moves; the square
  * they land on sets a challenge that EVERYONE plays at once on their own phone;
- * the result is shown, and those who earned steps move. One currency: squares.
+ * the result is shown, and those who earned steps move — and the roller, if
+ * they earned none, walks back to where they rolled from. One currency: squares.
  * There is no separate score — where you stand on the road is how you are
  * doing, and the first token to the end of the last board ends the game.
  *
@@ -960,6 +961,21 @@ function reveal(core, answers, at, decks) {
     default:
   }
 
+  /* THE ROLL COUNTS ONLY IF IT IS WON (the club, 2026-11-20: "wouldnt it be
+     better for the player only to progress when he answers correctly?"). The
+     die walks the player to the square, so everyone sees whose round it is;
+     they keep those steps only by earning something in its round — a right
+     answer, the closest number, the truth found or someone fooled, a dare
+     passed, a place in the Lab. Otherwise they walk back to where they rolled
+     from (`from`: after any loan was repaid), and the result says so
+     (`x.back`). A white lie nobody wrote, a round that never happened, leaves
+     the roll standing. Chance cards have no round, and keep theirs. */
+  const roller = P[core.turn]
+  if (!x.none && !(aw[active] > 0) && roller.pos > core.from) {
+    x.back = roller.pos - core.from
+    aw[active] = -x.back
+  }
+
   // Each answer as [value, ms after the round opened] — and the hints bought, if any.
   const a = {}
   for (const p of P) if (answers[p.id]) a[p.id] = [answers[p.id].v, Math.round(answers[p.id].at - ch.t0), ...(answers[p.id].h ? [answers[p.id].h] : [])]
@@ -1012,16 +1028,21 @@ function acceptStep(core, entries, env) {
   const aw = { ...core.res.aw }
   const c = { ...core.res.x.c }
   const active = turnPlayer(core).id
+  const back = core.res.x.back || 0
   const steps = {}
   for (const pid of add) {
     let n = picPrize(core.ch, core.res.a[pid][0])
-    if (pid === active && !aw[active]) n += 1 // it is their square
-    steps[pid] = n
-    aw[pid] = (aw[pid] || 0) + n
+    if (pid === active && !(aw[active] > 0)) n += 1 // it is their square
+    // …and the roll they walked back from is theirs again (`reveal`).
+    const undo = pid === active ? back : 0
+    steps[pid] = n + undo
+    aw[pid] = (aw[pid] || 0) + n + undo
     c[pid] = 2
   }
   const players = core.players.map((p) => (steps[p.id] ? { ...p, pos: clampPos(p.pos + steps[p.id], core.last), st: p.st.map((v, k) => (k === 0 ? v + 1 : v)) } : p))
-  return seal(core, { ...core, players, res: { ...core.res, aw, x: { ...core.res.x, c, ok: [...done, ...add] } } })
+  const x = { ...core.res.x, c, ok: [...done, ...add] }
+  if (add.includes(active)) delete x.back
+  return seal(core, { ...core, players, res: { ...core.res, aw, x } })
 }
 
 /* Untimed, a result waits for everyone: who still in the game has read it and

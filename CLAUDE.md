@@ -167,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~134 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~135 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -538,6 +538,21 @@ keeps `base: './'` sub-path hosting working.
     question; a Lab game comes round again only once every one has been played. `asked` resets
     each game (a rematch keeps only the cursors). The simulator checks every core: no question,
     dare, person or picture twice, and the round on the table is the last thing asked.
+  - **The roll counts only if it is won** (2026-11-20, the club: "wouldnt it be better for the
+    player only to progress when he answers correctly?"). The die still walks the roller to the
+    square — everyone sees whose round it is — but they keep those steps only by earning
+    something in its round: a right answer, the closest number (or runner-up with four players),
+    the truth found or someone fooled, a dare passed, a place in the Lab. Otherwise `reveal` walks
+    them back to `from` (where they rolled from, after any loan was repaid): `aw[roller]` is
+    minus the roll and `x.back` says how far, which `Result` turns into one line. A white lie
+    nobody wrote (`x.none`) leaves the roll standing; chance cards have no round and keep it; a
+    roll onto the finish still wins. The host accepting a typed picture answer by hand
+    (`acceptStep`) gives the roller their roll back with the prize. The skip button is the
+    roller's way out of a question they don't know. Measured on 150 calm simulated rooms, bots
+    right about half the time (they walk back in ~49% of rounds): games ~35% longer with two
+    players, ~25% with three or four, 3–16% with five or more (4 players: 36 → 45 minutes). The
+    simulator checks every result: a roller who earned nothing is back at `from`, one who earned
+    something kept the roll.
   - **Every question has a hint to buy** (2026-11-17, the club: "i want the hint option for all
     questions"). A right answer is worth **2 steps and each hint costs one** (never below 1), so a
     bare right answer is always worth the most — the scoring had to rise from 1 to 2 for that, or

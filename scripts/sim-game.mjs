@@ -422,7 +422,7 @@ class Bot {
 }
 
 /* -------------------------------- one game -------------------------------- */
-const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0, played: 0, dealt: 0, labAgain: 0 }
+const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0, played: 0, dealt: 0, labAgain: 0, judged: 0, backs: 0 }
 
 function playGame(index) {
   const rand = rng(SEED * 100_003 + index)
@@ -460,6 +460,7 @@ function playGame(index) {
     seenKinds: new Set(),
     seenSkips: new Set(),
     over: new Set(),
+    judged: new Set(),
     /* Nothing twice in one game (the engine's `asking`): in every core, the
        list of what the game has asked holds no question or dare twice and no
        person or picture twice, and ends with the round on the table. A Lab game
@@ -510,6 +511,21 @@ function playGame(index) {
         }
       }
       this.checkAsked(core)
+      // The roll counts only if it is won (`reveal`): the player whose square it
+      // was keeps it by earning something in its round, or is back where they rolled from.
+      if (core.phase === 'reveal' && core.res.k !== 'luck') {
+        const { aw, x } = core.res
+        const roller = core.players[core.turn]
+        const won = (aw[roller.id] || 0) > 0
+        if (x.back && (won || roller.pos !== core.from || aw[roller.id] !== -x.back)) throw new Error(`a roll walked back wrongly: pos ${roller.pos}, from ${core.from}, ${JSON.stringify(core.res)}`)
+        if (!won && !x.back && !x.none) throw new Error(`a roller earned nothing and kept the roll: ${JSON.stringify(core.res)}`)
+        const key = `${core.g}:${core.n}`
+        if (!this.judged.has(key)) {
+          this.judged.add(key)
+          totals.judged += 1
+          if (x.back) totals.backs += 1
+        }
+      }
       void bot
     },
   }
@@ -624,5 +640,6 @@ for (const [n, row] of Object.entries(totals.byPlayers)) {
   console.log(`  ${String(n).padStart(7)}  ${String(row.games).padStart(6)}  ${(row.turns / row.games).toFixed(1).padStart(6)}  ${mins(row.ms / row.games).padStart(8)}`)
 }
 const all = Object.values(totals.kinds).reduce((a, b) => a + b, 0)
+console.log(`  rolls walked back (the roller won nothing on their square): ${totals.backs} of ${totals.judged} rounds (${totals.judged ? Math.round((totals.backs / totals.judged) * 100) : 0}%)`)
 console.log(`  nothing asked twice in a game: ${totals.dealt} rounds dealt in ${totals.played} games, no question, dare, person or picture twice · a Lab game again (after all had been played): ${totals.labAgain}×`)
 console.log(`  challenges: ${Object.entries(totals.kinds).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${((n / all) * 100).toFixed(0)}%`).join(' · ')}`)

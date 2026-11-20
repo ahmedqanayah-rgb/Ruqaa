@@ -8,7 +8,7 @@ import { sheepPlan, memoryDigits, MEMORY, AUCTION } from '../../lib/game/minis.j
 import MiniChart from './MiniChart.jsx'
 import { PicResult } from './PicRound.jsx'
 import { LETTERS, FaceImage, QuestionPhoto } from './Challenge.jsx'
-import { L, KindHead, Token, TOKEN_COLORS, Steps } from './parts.jsx'
+import { L, KindHead, Token, TOKEN_COLORS, Steps, stepsText } from './parts.jsx'
 
 /*
  * A ROUND'S RESULT: what the truth was, who said what, and who moves how far.
@@ -326,6 +326,12 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
               <li key={p.id}><Mini player={p} labels={labels} index={i} /><bdi>{p.id === me ? t(L('أنت', 'You')) : p.name}</bdi><Steps n={n} /></li>
             ))}
           </ul>
+        )}
+        {/* The roll counts only if it is won (engine.js → `reveal`). */}
+        {res.x.back > 0 && (
+          <p className="gm-hint-dark">{t(active.id === me
+            ? L(`لم تربح شيئاً على خانتك، فتعود ${stepsText(res.x.back).ar} إلى حيث رميت.`, `You won nothing on your square, so you go back ${stepsText(res.x.back).en} to where you rolled from.`)
+            : L(`لم يربح ${active.name} شيئاً على خانته، فيعود ${stepsText(res.x.back).ar} إلى حيث رمى.`, `${active.name} won nothing on their square, so they go back ${stepsText(res.x.back).en} to where they rolled from.`))}</p>
         )}
         {!['luck', 'dare', 'mini', 'pic'].includes(res.k) && movers.length === 0 && (
           <p className="gm-hint-dark">{t(L('لم يتقدّم أحد هذه المرّة.', 'Nobody moves this time.'))}</p>
