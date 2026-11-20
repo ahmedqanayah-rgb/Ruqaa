@@ -522,6 +522,22 @@ keeps `base: './'` sub-path hosting working.
     also salts the turn's luck; a round nobody skipped is dealt exactly as before. The new round
     opens with the usual card, saying who skipped. The simulator's turn players and hosts skip now
     and then, and it prints how many.
+  - **Nothing twice in one game** (2026-11-20, the club: "if 2 ppl stand on the same place, they
+    dont get the same question"). A square never fixed its question — every round deals the next
+    card of a shuffled deck — but two things still brought one back: a deck that runs out starts
+    a fresh shuffle, and one person can be asked about three ways («من هو؟», «من هذا؟», a picture
+    round) with the same picture (30 people/pictures are in two or three decks, and 5 of the
+    portraits reused as question photos are also «من هذا؟» faces). Measured on the version before
+    the fix: 57% of 179 simulated games showed a person or picture twice (243 times), one asked the
+    exact same question twice. Now a game keeps what it has asked in `core.asked` — NUMBERS from
+    `asking(decks)` (every question, dare and Lab game, in the decks' own order: ~4 bytes a round,
+    where ids would have been ~20) — and a card is passed over if it was asked, or if its `img` or
+    `photo.src` was already shown (`fresh` in `challenge`). `pickBook` weighs only cards still
+    fresh; a kind this game has used up hands over to mcq → tf → num → graph; only a game that has
+    asked every question may repeat one (`loose`). A dare square with no fresh dare becomes a
+    question; a Lab game comes round again only once every one has been played. `asked` resets
+    each game (a rematch keeps only the cursors). The simulator checks every core: no question,
+    dare, person or picture twice, and the round on the table is the last thing asked.
   - **Every question has a hint to buy** (2026-11-17, the club: "i want the hint option for all
     questions"). A right answer is worth **2 steps and each hint costs one** (never below 1), so a
     bare right answer is always worth the most — the scoring had to rise from 1 to 2 for that, or

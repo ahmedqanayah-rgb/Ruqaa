@@ -495,7 +495,7 @@ function lobbyStep(core, entries, env) {
       players: players.map((p) => ({ id: p.id, name: p.name, c: p.c, pos: 0, st: [0, 0, 0, 0] })),
       phase: 'roll', seed, n: 1, turn: seed % players.length, t: d.st,
       boards, last: lastOf(boards.length), timed: !!next.opts.timed,
-      die: 0, from: 0, repay: 0, ch: null, res: null, skip: [], debt: {},
+      die: 0, from: 0, repay: 0, ch: null, res: null, skip: [], debt: {}, asked: [],
     }
   }
   return seal(core, next)
@@ -544,9 +544,44 @@ function roll(core, at, decks) {
   return challenge(next, to, landed, decks)
 }
 
+/* NOTHING TWICE IN ONE GAME (the club, 2026-11-20: "if 2 ppl stand on the same
+   place, they dont get the same question"). A square never fixes its question —
+   every round deals the next card of a shuffled deck (`challenge`) — but two
+   things could still bring one back: a deck that runs out starts a fresh
+   shuffle, and one person can be asked about three ways («من هو؟», «من هذا؟», a
+   picture round), each with the same picture. So a game keeps what it has asked
+   (`core.asked`), and a card is passed over if it was asked already or shows a
+   person or a picture already seen (`img`, or a question's `photo`). Only when a
+   game has asked everything of a kind does another kind stand in; only when it
+   has asked everything may anything come again.
+   `core.asked` holds NUMBERS, not ids, to keep the core small: every card, dare
+   and Lab game, numbered in the decks' own order — the same on every phone,
+   like the decks themselves. */
+const ASKED_KINDS = ['mcq', 'tf', 'num', 'who', 'graph', 'bluff', 'pic', 'face']
+const ASKING = new WeakMap()
+export function asking(decks) {
+  let ix = ASKING.get(decks)
+  if (ix) return ix
+  const at = new Map()
+  const marks = []
+  const add = (key, item) => {
+    if (at.has(key)) return
+    at.set(key, marks.length)
+    marks.push([item?.img, item?.photo?.src].filter(Boolean))
+  }
+  for (const b of decks.books) for (const k of ASKED_KINDS) for (const item of decks.byBook[b][k] || []) add(`q:${item.id}`, item)
+  for (const dare of decks.dares) add(`d:${dare.id}`)
+  for (const mini of MINIS) add(`m:${mini.id}`)
+  ix = { at, marks }
+  ASKING.set(decks, ix)
+  return ix
+}
+export const askKey = (ch) => `${ch.k === 'mini' ? 'm' : ch.k === 'dare' ? 'd' : 'q'}:${ch.id}`
+
 /* What the square asks of everyone. `again` is set when the round before was
    skipped (`maySkip`): { r: the how-manieth skip this turn, by: who asked } —
-   it salts the turn's luck, so the new round is not dealt the old one's. */
+   it salts the turn's luck, so the new round is not dealt the old one's (and
+   the skipped one, already in `core.asked`, cannot come back). */
 function challenge(core, to, landed, decks, again = null) {
   const salt = again ? [again.r] : []
   const cur = { ...core.cur }
@@ -560,40 +595,64 @@ function challenge(core, to, landed, decks, again = null) {
   }
   const alive = core.players.filter((p) => !p.gone).length
   const books = core.boards
+  // What this game has asked already, and the people and pictures it has shown.
+  const ix = asking(decks)
+  const asked = core.asked || []
+  const gone = new Set(asked)
+  const seen = new Set(asked.flatMap((i) => ix.marks[i] || []))
+  const fresh = (item, ns = 'q') => {
+    const i = ix.at.get(`${ns}:${item.id}`)
+    return i == null || (!gone.has(i) && !ix.marks[i].some((m) => seen.has(m)))
+  }
+  // A question that links a book not in play tonight (`also`) is never dealt.
+  const playable = (card) => !card.also || card.also.every((b) => books.includes(b))
   /* ONE DECK OF ALL TONIGHT'S BOOKS, on every square of every board. Each book
      keeps its own deck of each kind (and its own cursor, so a rematch with
      other books still replays nothing); a card is dealt as if from all of them
      shuffled together — the book is picked by how many of its cards of that
-     kind are still to come in its deck, then its next card is dealt. So the
-     first square of the road can ask any book, and every card of the kind is
-     equally likely next. */
-  const pickBook = (kind, least = 1) => {
-    const left = books
-      .filter((b) => decks.byBook[b][kind].length >= least)
-      .map((b) => [b, decks.byBook[b][kind].length - ((cur[`${kind}:${b}`] || 0) % decks.byBook[b][kind].length)])
+     kind are still to come in its deck's current shuffle (not yet asked this
+     game), then its next card is dealt. So the first square of the road can ask
+     any book, and every card of the kind is equally likely next. Once every
+     book's shuffle is spent, by how many it has not asked this game at all.
+     `loose`: asked or not — for the game that has asked everything. */
+  const pickBook = (kind, least = 1, loose = false) => {
+    const ok = (card) => playable(card) && (loose || fresh(card))
+    const rows = books.filter((b) => decks.byBook[b][kind].length >= least).map((b) => {
+      const deck = decks.byBook[b][kind]
+      const key = `${kind}:${b}`
+      const k = cur[key] || 0
+      const ahead = shuffled(range(deck.length), seeded(core.ds, key, Math.floor(k / deck.length))).slice(k % deck.length)
+      return [b, ahead.filter((i) => ok(deck[i])).length, deck.filter(ok).length]
+    })
+    const col = rows.some((row) => row[1] > 0) ? 1 : 2
+    const left = rows.filter((row) => row[col] > 0).map((row) => [row[0], row[col]])
     if (!left.length) return null
     let r = seeded(core.seed, core.n, kind, 'book', ...salt)() * left.reduce((sum, [, n]) => sum + n, 0)
     for (const [b, n] of left) if ((r -= n) < 0) return b
     return left[left.length - 1][0]
   }
-  /* Deal a book's next card of a kind — passing over a question that links a
-     book not in play tonight (`also`), and, mostly, a member's own question at
-     a table they are sitting at (`OWN`). */
+  /* Deal the next card — passing over one that cannot be dealt tonight, one
+     this game has asked (`fresh`), and, mostly, a member's own question at a
+     table they are sitting at (`OWN`). It looks twice round: the rest of this
+     shuffle, then a whole new one. */
   const here = writersHere(core, decks)
-  const pass = (size, next) => {
+  const pass = (size, next, loose = false) => {
     let card
     let fallback = null
+    let spare = null
     for (let tries = 0; tries < size; tries++) {
       card = next()
-      if (card.also && !card.also.every((b) => books.includes(b))) continue
+      if (!playable(card)) continue
+      spare ??= card
+      if (!loose && !fresh(card)) continue
       fallback ??= card
       if (!card.by || !here.has(card.by) || seeded(core.seed, core.n, 'own', card.id, ...salt)() < OWN) return card
     }
-    return fallback || card
+    return fallback || spare || card
   }
-  const deal = (kind, book) => {
+  const deal = (kind, book, loose = false) => {
     const deck = decks.byBook[book][kind]
-    return pass(deck.length, () => deck[draw(`${kind}:${book}`, deck.length)])
+    return pass(2 * deck.length, () => deck[draw(`${kind}:${book}`, deck.length)], loose)
   }
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
@@ -601,7 +660,7 @@ function challenge(core, to, landed, decks, again = null) {
   let type = typeAt(to, books.length)
   const liar = type === 'B' ? pickBook('bluff') : null
   if (type === 'B' && (alive < 3 || !liar)) type = 'K' // a lie needs someone to fool
-  if (type === 'D' && (alive < 2 || !dares.length)) type = 'K' // a dare needs a jury
+  if (type === 'D' && (alive < 2 || !dares.some((d) => fresh(d, 'd')))) type = 'K' // a dare needs a jury, and one not dared yet
   if (type === 'C' && !luck.length) type = 'K'
 
   if (type === 'C') return chance({ ...core, cur }, luck[draw(`luck:${luck.length}`, luck.length)], landed)
@@ -611,35 +670,54 @@ function challenge(core, to, landed, decks, again = null) {
   // A deadline only where the game is timed, or the round is a race by nature.
   const until = (k, id, dur) => (core.timed || CLOCKED(k, id) ? opens(k) + dur : null)
   let ch
+  /* Draw from `list` (a deck, under `key`) until a card this game has not had
+     — twice round at most; `any` says there is one to find. */
+  const unasked = (list, key, ns) => {
+    const any = list.some((item) => fresh(item, ns))
+    let item = list[draw(key, list.length)]
+    for (let tries = 1; any && !fresh(item, ns) && tries < 2 * list.length; tries++) item = list[draw(key, list.length)]
+    return item
+  }
   if (type === 'L') {
     /* The Lab: any of tonight's books' games (each book brought its own — see
-       minis.js), whichever board the square is on. */
+       minis.js), whichever board the square is on — and once those have all
+       been played this game, another book's, before any is played twice. */
     const zones = books.map((b) => decks.books.indexOf(b))
-    let pool = MINIS.filter((m) => zones.includes(m.zone) && alive >= m.min)
-    if (!pool.length) pool = MINIS.filter((m) => alive >= m.min)
-    const mini = pool[draw(`mini:${pool.map((m) => m.id).join('+')}`, pool.length)]
+    const can = MINIS.filter((m) => alive >= m.min)
+    let pool = can.filter((m) => zones.includes(m.zone))
+    if (!pool.length || (!pool.some((m) => fresh(m, 'm')) && can.some((m) => fresh(m, 'm')))) pool = can
+    const mini = unasked(pool, `mini:${pool.map((m) => m.id).join('+')}`, 'm')
     ch = { k: 'mini', id: mini.id, t1: until('mini', mini.id, mini.dur) }
   } else if (type === 'B') {
     ch = { k: 'bluff', id: deal('bluff', liar).id, book: liar, t1: until('bluff', null, T.dur.bluff) }
   } else if (type === 'D') {
-    ch = { k: 'dare', id: dares[draw(`dare:${dares.length}`, dares.length)].id, t1: until('dare', null, T.dur.dare) }
+    ch = { k: 'dare', id: unasked(dares, `dare:${dares.length}`, 'd').id, t1: until('dare', null, T.dur.dare) }
   } else {
-    let k = KBAG[draw('k', KBAG.length)]
-    const pics = k === 'pic' ? picPool(core, decks) : null
-    if (k === 'pic' && pics.length) {
-      /* The card does not name a book, which would answer "which book?". */
-      const item = pass(pics.length, () => pics[draw(`pic:${pics.length}`, pics.length)])
-      ch = { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: until('pic', null, item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
-    } else {
+    /* A question of the kind the bag gives — or, once this game has asked
+       every card of that kind it can, of another; only a game that has asked
+       every question there is may ask one again (`loose`). */
+    const ask = (k, loose = false) => {
+      if (k === 'pic') {
+        const pics = picPool(core, decks)
+        if (!pics.some((p) => playable(p) && (loose || fresh(p)))) return null
+        /* The card does not name a book, which would answer "which book?". */
+        const item = pass(2 * pics.length, () => pics[draw(`pic:${pics.length}`, pics.length)], loose)
+        return { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: until('pic', null, item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
+      }
       // «من هو؟» offers three others from the person's own book, so a book
       // with fewer than four people cannot ask it (nor «من هذا؟», likewise).
-      let book = k === 'pic' ? null : pickBook(k, k === 'who' || k === 'face' ? 4 : 1)
-      if (!book) { k = 'mcq'; book = pickBook(k) }
-      ch = { k, id: deal(k, book).id, book, t1: until(k, null, T.dur[k]) }
+      const book = pickBook(k, k === 'who' || k === 'face' ? 4 : 1, loose)
+      return book && { k, id: deal(k, book, loose).id, book, t1: until(k, null, T.dur[k]) }
     }
+    const k = KBAG[draw('k', KBAG.length)]
+    ch = ask(k) || ask('mcq') || ask('tf') || ask('num') || ask('graph') || ask('mcq', true)
   }
   const t0 = opens(ch.k)
-  return { ...core, cur, phase: 'play', t: t0, ch:{ ...ch, s: 0, t0, seed: hash32([core.seed, core.n, 'ch', ...salt].join('|')), ...again } }
+  const n = ix.at.get(askKey(ch))
+  return {
+    ...core, cur, asked: n == null ? asked : [...asked, n], phase: 'play', t: t0,
+    ch: { ...ch, s: 0, t0, seed: hash32([core.seed, core.n, 'ch', ...salt].join('|')), ...again },
+  }
 }
 
 /* A chance card: no question, it simply happens. It can take the lead away but

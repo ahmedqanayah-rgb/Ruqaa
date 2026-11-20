@@ -40,7 +40,7 @@ import fs from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { makeMailbox, newer as serverNewer, FUTURE as serverFuture } from '../api/_mailbox.js'
 import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE, FUTURE as clientFuture } from '../src/lib/game/net.js'
-import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, maySkip, MAX_PLAYERS } from '../src/lib/game/engine.js'
+import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, maySkip, asking, askKey, MAX_PLAYERS } from '../src/lib/game/engine.js'
 import { assembleDecks, lintDecks } from '../src/lib/game/decks.js'
 import { SQUARES, TYPES, lastOf, typeAt } from '../src/lib/game/board.js'
 import { rng } from '../src/lib/game/rand.js'
@@ -110,6 +110,10 @@ if (lint.length) {
   for (const line of lint) console.error(`   ${line}`)
   process.exit(1)
 }
+// Everything a game can ask, by the numbers the engine keeps it under (`asking`).
+const ASK = asking(decks)
+const ASK_NAMES = []
+for (const [key, i] of ASK.at) ASK_NAMES[i] = key
 const count = (kind) => decks.books.reduce((n, b) => n + decks.byBook[b][kind].length, 0)
 console.log(`decks: ${decks.books.length} books · ${count('mcq')} questions · ${count('tf')} myth/fact · ${count('num')} numbers · ${count('who')} people · ${count('graph')} graphs · ${count('bluff')} bluffs · ${count('pic')} pictures · ${decks.luck.length} chance · ${decks.dares.length} dares`)
 
@@ -418,7 +422,7 @@ class Bot {
 }
 
 /* -------------------------------- one game -------------------------------- */
-const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0 }
+const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0, played: 0, dealt: 0, labAgain: 0 }
 
 function playGame(index) {
   const rand = rng(SEED * 100_003 + index)
@@ -455,6 +459,39 @@ function playGame(index) {
     timed: rand() < 0.5, // the host's choice in the lobby
     seenKinds: new Set(),
     seenSkips: new Set(),
+    over: new Set(),
+    /* Nothing twice in one game (the engine's `asking`): in every core, the
+       list of what the game has asked holds no question or dare twice and no
+       person or picture twice, and ends with the round on the table. A Lab game
+       may come round again, but only once every one has been played. */
+    checkAsked(core) {
+      if (core.phase === 'lobby') return
+      const { asked } = core
+      if (!Array.isArray(asked)) throw new Error('a game has no list of what it has asked')
+      if (core.ch && core.ch.k !== 'luck' && asked[asked.length - 1] !== ASK.at.get(askKey(core.ch))) {
+        throw new Error(`the round on the table is not the last thing the game asked: ${JSON.stringify(core.ch)}`)
+      }
+      const once = new Set()
+      const shown = new Set()
+      for (const i of asked) {
+        const name = ASK_NAMES[i]
+        if (name == null) throw new Error(`game ${core.g} asked something that is not in the decks: ${i}`)
+        if (name.startsWith('m:')) continue
+        if (once.has(i)) throw new Error(`game ${core.g} asked ${name} twice: ${asked.map((n) => ASK_NAMES[n]).join(' ')}`)
+        once.add(i)
+        for (const m of ASK.marks[i]) {
+          if (shown.has(m)) throw new Error(`game ${core.g} showed ${m} twice (the second time with ${name})`)
+          shown.add(m)
+        }
+      }
+      if (core.phase === 'over' && !this.over.has(core.g)) {
+        this.over.add(core.g)
+        totals.played += 1
+        totals.dealt += asked.length
+        const labs = asked.filter((i) => ASK_NAMES[i].startsWith('m:'))
+        totals.labAgain += labs.length - new Set(labs).size
+      }
+    },
     reached: {},
     began: {},
     check(core, bot) {
@@ -472,6 +509,7 @@ function playGame(index) {
           if (!core.ch.by || !slotOf(core).endsWith(`:${core.ch.r}`)) throw new Error(`a skipped question was dealt badly: ${JSON.stringify(core.ch)}`)
         }
       }
+      this.checkAsked(core)
       void bot
     },
   }
@@ -586,4 +624,5 @@ for (const [n, row] of Object.entries(totals.byPlayers)) {
   console.log(`  ${String(n).padStart(7)}  ${String(row.games).padStart(6)}  ${(row.turns / row.games).toFixed(1).padStart(6)}  ${mins(row.ms / row.games).padStart(8)}`)
 }
 const all = Object.values(totals.kinds).reduce((a, b) => a + b, 0)
+console.log(`  nothing asked twice in a game: ${totals.dealt} rounds dealt in ${totals.played} games, no question, dare, person or picture twice · a Lab game again (after all had been played): ${totals.labAgain}×`)
 console.log(`  challenges: ${Object.entries(totals.kinds).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${((n / all) * 100).toFixed(0)}%`).join(' · ')}`)
