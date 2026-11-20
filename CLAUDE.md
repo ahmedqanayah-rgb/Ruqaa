@@ -467,8 +467,9 @@ keeps `base: './'` sub-path hosting working.
     so each book keeps its own cursor and a rematch with other books still replays nothing. Before
     this, everyone started on the sleep board, and the first fifteen rounds of a three-book game
     were 46% Why We Sleep (whose decks are small: 4 charts, 6 numbers, 7 people), 12% Stolen Focus
-    and 3% Varoufakis — "the questions are always the same". A question square wears a plain book
-    (📖), not its board's book. **The screen shows one
+    and 3% Varoufakis — "the questions are always the same". Since the turn opens with its
+    question card (below), a question square is a small blank stepping stone: only the special
+    squares carry a mark, because only they do anything. **The screen shows one
     board at a time**: they are stacked in a strip (`Board.jsx`) that slides down to the next
     when the turn's token walks off the top — the long road without tiny squares. The book marks
     in the board's corner show another board until the next turn. Fewer books, shorter game: the
@@ -482,9 +483,8 @@ keeps `base: './'` sub-path hosting working.
     is moved on by an **override** in a player's entry — roll for them, close the round, leave the
     result — which the host may send at once and anyone else after a minute (`T.anyone`), for
     when the one holding things up is the host.
-  - **A turn**: the player whose turn it is rolls (or, in a timed game, the die rolls itself after
-    a while — and in any game, soon, for someone who has left); the square sets a round EVERYONE
-    plays: a question from one of the books (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
+  - **A turn** (the card-first shape, below): a QUESTION CARD that EVERYONE answers at once — a
+    question from one of the books (`mcq`), myth or fact (`tf` — the book's `mythOrFact.js`), the closest number
     (`num`), who is it? (`who` — the person's picture, BIG, from the start, and one clue; a second
     and third for a step each: 3 steps with one clue, 2 with two, 1 with three; the book's MAIN
     people only, at the club's request. The picture used to wait for the result, as a 64-px
@@ -498,8 +498,10 @@ keeps `base: './'` sub-path hosting working.
     book is it from?" by three buttons; a hint or the four options can be bought for a step
     each, so a bare typed answer is worth the most), who is this? (`face` — a portrait from the
     book's people cards and four names of the same sex; the card's `tag` and `about` are read after
-    the answer; no pairs, no group photos, never the book's private people — 62 faces in all),
-    a white lie (`bluff`, Fibbage-style: write
+    the answer; no pairs, no group photos, never the book's private people — 62 faces in all);
+    then, if the turn's player got it right, their roll (or, in a timed game, the die rolls itself
+    after a while — and in any game, soon, for someone who has left), and on a SPECIAL square the
+    round it plays for everyone: a white lie (`bluff`, Fibbage-style: write
     a lie, then find the truth), the Lab (`mini`: count the sheep, the vigilance test, the digits,
     Stroop, the one arrow — and from the Varoufakis book the stag hunt and an auction of
     Achilles' armour, which test each other rather than anyone's attention; any of tonight's books'
@@ -512,9 +514,9 @@ keeps `base: './'` sub-path hosting working.
     is why an untimed result waits for everyone.
   - **Skip — a new round for everyone** (2026-11-18, the club: "add a skip question option"; asked
     whether a skip should be one player passing or the question swapped for all, they chose the
-    swap). The player whose turn it is — it is their square — or the host can swap a round for a
-    fresh one on the SAME square: the same kind of square, the next card of its deck (`maySkip`,
-    `skipAsked`, and `challenge(…, again)` in engine.js). Any round but the Lab's, and only in its
+    swap). The player whose turn it is or the host can swap a round for a fresh one: a new
+    question card, or the same special square's next round (`maySkip`, `skipAsked`, and
+    `challenge(…, again)` in engine.js; a square with nothing left to deal ends the turn). Any round but the Lab's, and only in its
     first stage — once the white lies are in or the dare is done, the round is the table's. It is
     `swap: slot, swt` in their entry; the new round carries `r` (the turn's how-manieth skip) and
     `by`, and `r` is part of `slotOf`, so nothing given to the skipped question — an answer, a hint
@@ -534,25 +536,36 @@ keeps `base: './'` sub-path hosting working.
     where ids would have been ~20) — and a card is passed over if it was asked, or if its `img` or
     `photo.src` was already shown (`fresh` in `challenge`). `pickBook` weighs only cards still
     fresh; a kind this game has used up hands over to mcq → tf → num → graph; only a game that has
-    asked every question may repeat one (`loose`). A dare square with no fresh dare becomes a
-    question; a Lab game comes round again only once every one has been played. `asked` resets
+    asked every question may repeat one (`loose`). A dare square with no fresh dare is a plain
+    square that turn; a Lab game comes round again only once every one has been played. `asked` resets
     each game (a rematch keeps only the cursors). The simulator checks every core: no question,
     dare, person or picture twice, and the round on the table is the last thing asked.
-  - **The roll counts only if it is won** (2026-11-20, the club: "wouldnt it be better for the
-    player only to progress when he answers correctly?"). The die still walks the roller to the
-    square — everyone sees whose round it is — but they keep those steps only by earning
-    something in its round: a right answer, the closest number (or runner-up with four players),
-    the truth found or someone fooled, a dare passed, a place in the Lab. Otherwise `reveal` walks
-    them back to `from` (where they rolled from, after any loan was repaid): `aw[roller]` is
-    minus the roll and `x.back` says how far, which `Result` turns into one line. A white lie
-    nobody wrote (`x.none`) leaves the roll standing; chance cards have no round and keep it; a
-    roll onto the finish still wins. The host accepting a typed picture answer by hand
-    (`acceptStep`) gives the roller their roll back with the prize. The skip button is the
-    roller's way out of a question they don't know. Measured on 150 calm simulated rooms, bots
-    right about half the time (they walk back in ~49% of rounds): games ~35% longer with two
-    players, ~25% with three or four, 3–16% with five or more (4 players: 36 → 45 minutes). The
-    simulator checks every result: a roller who earned nothing is back at `from`, one who earned
-    something kept the roll.
+  - **Card first, then the die** (2026-11-20 evening, the club: "in each turn we get a question
+    card, and if we answer it correctly we get to roll the dice, otherwise it moves on to the next
+    player and we dont roll"; asked, they chose that the OTHERS still earn steps for right
+    answers, and that special squares still play their round). Every turn opens with a card
+    dealt by `challenge(core, null, …)` (the question kinds of `KBAG`; `ch.card`), which everyone
+    answers; `reveal` scores it as ever and sets `x.roll` when the turn's player earned steps with
+    it (a right answer, or the closest/runner-up number). `revealStep` then goes to `roll` for the
+    same turn (`via: 'card'`) — or, unrolled, to `nextTurn`. The roll lands, and
+    `challenge(core, square, …)` plays a special square's round, or returns null for a question
+    square (or a special one the table cannot play: a lie needs three, a dare two), when the
+    token takes a beat (`moved`, `movedStep`) and the next turn begins. A chance card's "roll
+    again" is a free roll (`nextTurn` → `roll`, `via: 'luck'`). The host accepting a typed
+    picture answer on the card gives its player the roll (`acceptStep`). One turn can thus show
+    two rounds, so `slotOf` says which (`…5c:0` the card, `…5q:0` the square) and result taps
+    carry `resultKey` (turnKey × 2 + 0|1) instead of `turnKey`. The +1 for a right answer on your
+    own square went with the square. On screen: the card says whose it is («سؤال سارة»), its
+    result whether they roll (`gm-verdict`), the line under the board who is rolling and why;
+    plain squares are small blank stepping stones (`Board.jsx`). This replaced, the same day, a
+    rule where a roller who won nothing on their square walked back (`x.back`, commit `82443c4`).
+    Measured on the same 150 calm simulated rooms as before (bots right about half the time;
+    they won 49% of their own cards): about as many turns, but every turn now has a round
+    everyone answers (a chance square used to have none) and sometimes a second, so games run
+    longer than before either rule — 2 players 19 → 37 minutes, 4 players 36 → 49, 6 players
+    50 → 77 (the walk-back version: 26, 46, 58). Fewer books make a shorter road. The
+    simulator's `checkTurn` checks every core: no roll that was not earned, no card after the
+    roll, every square round of its square's kind.
   - **The questions without the game — `#/game/questions`** (2026-11-20, the club: "a separate
     part from the game where we can answer all the questions … in a fixed order so we all open
     them together and keep track on the call", named «أجيبوا عن أسئلة اللعبة — دون لعب» so it is

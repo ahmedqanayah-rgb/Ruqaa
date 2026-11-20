@@ -2,13 +2,13 @@ import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
 import Icon from '../Icon.jsx'
 import RichText from '../RichText.jsx'
-import { T, turnPlayer, optionOrder, whoChoices, faceChoices, mayMoveOn, upNext, readyNow, actingHost, turnKey } from '../../lib/game/engine.js'
+import { T, turnPlayer, optionOrder, whoChoices, faceChoices, mayMoveOn, upNext, readyNow, actingHost, resultKey } from '../../lib/game/engine.js'
 import { effectLine, effectMood } from '../../lib/game/effects.js'
 import { sheepPlan, memoryDigits, MEMORY, AUCTION } from '../../lib/game/minis.js'
 import MiniChart from './MiniChart.jsx'
 import { PicResult } from './PicRound.jsx'
 import { LETTERS, FaceImage, QuestionPhoto } from './Challenge.jsx'
-import { L, KindHead, Token, TOKEN_COLORS, Steps, stepsText } from './parts.jsx'
+import { L, KindHead, Token, TOKEN_COLORS, Steps } from './parts.jsx'
 
 /*
  * A ROUND'S RESULT: what the truth was, who said what, and who moves how far.
@@ -274,10 +274,12 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
   const dwell = T.dwell[res.k] || T.dwell.default
   const left = Math.max(0, Math.ceil((core.t + dwell - now) / 1000))
   const canGo = mayMoveOn(core, room.env()).includes(me) && now >= core.t + T.minReveal
+  // What comes next: the same player's roll, after their card won it — or the next turn.
+  const rolls = !!res.x.roll && !active.gone
   const nextName = core.players[upNext(core).turn]?.name
   const { entries } = room.snapshot()
-  const sent = entries[me]?.d?.next === turnKey(core)
-  const tap = () => room.setMine({ next: turnKey(core), nt: Math.round(room.now()) })
+  const sent = entries[me]?.d?.next === resultKey(core)
+  const tap = () => room.setMine({ next: resultKey(core), nt: Math.round(room.now()) })
 
   /* Untimed: everyone taps on when they have read it; the host may go on. */
   let foot
@@ -291,9 +293,9 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
         <>
           <p className="gm-muted-dark">{t(late.length
             ? L(`ننتظر من لم ينتهِ من القراءة: ${late.join('، ')}`, `Waiting for those still reading: ${late.join(', ')}`)
-            : L(`الدور التالي لـ${nextName}…`, `${nextName} is next…`))}</p>
-          {late.length > 0 && entries[me]?.d?.go !== turnKey(core) && (isHost || now > core.t + T.anyone) && (
-            <button type="button" className="gm-btn gm-btn-quiet" onClick={() => room.setMine({ go: turnKey(core), gt: Math.round(room.now()) })}>
+            : rolls ? L(`${nextName} يرمي النرد الآن…`, `${nextName} rolls now…`) : L(`الدور التالي لـ${nextName}…`, `${nextName} is next…`))}</p>
+          {late.length > 0 && entries[me]?.d?.go !== resultKey(core) && (isHost || now > core.t + T.anyone) && (
+            <button type="button" className="gm-btn gm-btn-quiet" onClick={() => room.setMine({ go: resultKey(core), gt: Math.round(room.now()) })}>
               {t(L('تابع دون انتظار', 'Go on without waiting'))}
             </button>
           )}
@@ -307,9 +309,11 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
   } else {
     foot = canGo && !sent
       ? <button type="button" className="gm-btn is-main is-wide" onClick={tap}>
-          {t(L(`التالي: دور ${nextName}`, `Next: ${nextName}’s turn`))} <span className="arrow" aria-hidden>→</span>
+          {t(rolls ? L(`التالي: يرمي ${nextName}`, `Next: ${nextName} rolls`) : L(`التالي: دور ${nextName}`, `Next: ${nextName}’s turn`))} <span className="arrow" aria-hidden>→</span>
         </button>
-      : <p className="gm-muted-dark">{t(L(`الدور التالي لـ${nextName} — بعد ${left} ث`, `${nextName} is next — in ${left}s`))}</p>
+      : <p className="gm-muted-dark">{t(rolls
+        ? L(`يرمي ${nextName} — بعد ${left} ث`, `${nextName} rolls — in ${left}s`)
+        : L(`الدور التالي لـ${nextName} — بعد ${left} ث`, `${nextName} is next — in ${left}s`))}</p>
   }
 
   return (
@@ -320,18 +324,21 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
       </div>
       <div className="gm-sheet-body">
         {body}
+        {/* The turn's card decides its player's roll (engine.js → `reveal`). */}
+        {ch.card && (
+          <p className={`gm-verdict ${res.x.roll ? 'is-pass' : 'is-fail'}`}>
+            <Icon name={res.x.roll ? '🎲' : '✕'} />
+            {t(active.id === me
+              ? (res.x.roll ? L('أصبتَ، فسترمي النرد.', 'You got it, so you roll the die.') : L('لم تُصب، فلا رمية لك هذه المرّة.', 'You missed, so no roll for you this time.'))
+              : (res.x.roll ? L(`أصاب ${active.name}، فسيرمي النرد.`, `${active.name} got it, so they roll the die.`) : L(`لم يُصب ${active.name}، فلا رمية له هذه المرّة.`, `${active.name} missed, so no roll for them this time.`)))}
+          </p>
+        )}
         {movers.length > 0 && (
           <ul className="gm-awards" aria-label={t(L('الخطوات', 'Steps'))}>
             {movers.map(({ p, i, n }) => (
               <li key={p.id}><Mini player={p} labels={labels} index={i} /><bdi>{p.id === me ? t(L('أنت', 'You')) : p.name}</bdi><Steps n={n} /></li>
             ))}
           </ul>
-        )}
-        {/* The roll counts only if it is won (engine.js → `reveal`). */}
-        {res.x.back > 0 && (
-          <p className="gm-hint-dark">{t(active.id === me
-            ? L(`لم تربح شيئاً على خانتك، فتعود ${stepsText(res.x.back).ar} إلى حيث رميت.`, `You won nothing on your square, so you go back ${stepsText(res.x.back).en} to where you rolled from.`)
-            : L(`لم يربح ${active.name} شيئاً على خانته، فيعود ${stepsText(res.x.back).ar} إلى حيث رمى.`, `${active.name} won nothing on their square, so they go back ${stepsText(res.x.back).en} to where they rolled from.`))}</p>
         )}
         {!['luck', 'dare', 'mini', 'pic'].includes(res.k) && movers.length === 0 && (
           <p className="gm-hint-dark">{t(L('لم يتقدّم أحد هذه المرّة.', 'Nobody moves this time.'))}</p>

@@ -30,7 +30,8 @@ import { L, KindHead, TimeBar } from './parts.jsx'
  * everyone on the call.
  *
  * SKIP: the player whose turn it is, or the host, can swap the round for a new
- * one on the same square, for everyone (engine.js → `maySkip`). The new round
+ * one — a new question card, or the same square's next round — for everyone
+ * (engine.js → `maySkip`). The new round
  * has a slot of its own, and this component is keyed by the slot (Stage.jsx),
  * so what was typed or bought for the old one does not follow it.
  */
@@ -142,7 +143,9 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
     room.setMine({ a: { s: slot, v, at: Math.round(room.now()), ...(h ? { h } : {}) } })
   }
   const timer = <TimeBar now={now} t0={ch.t0} t1={ch.t1} />
-  const head = <div className="gm-sheet-head"><KindHead ch={ch} decks={decks} books={books} />{ch.k !== 'mini' && timer}</div>
+  // The turn's question card is everyone's to answer — and its player's roll rides on it.
+  const whose = ch.card && <p className="gm-card-who">{t(active.id === me ? L('سؤالك', 'Your question') : L(`سؤال ${active.name}`, `${active.name}’s question`))}</p>
+  const head = <div className="gm-sheet-head"><KindHead ch={ch} decks={decks} books={books} />{whose}{ch.k !== 'mini' && timer}</div>
   const iAnswer = expected(core).includes(me)
 
   let body = null

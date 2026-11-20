@@ -359,6 +359,7 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
 .gm-sq.t-D { --sq: var(--gm-dare); }
 .gm-sq.t-S { --sq: #fbf8f2; color: var(--gm-ink); }
 .gm-sq.t-F { --sq: var(--gm-gold); color: #2a1f00; width: calc(var(--step) * 0.78); }
+.gm-sq.t-K { width: calc(var(--step) * 0.4); } /* a stepping stone: only special squares do anything */
 .gm-sq.is-here { opacity: 0.7; }
 
 .gm-token.on-board {
@@ -455,6 +456,7 @@ html[data-stage], html[data-stage] body { background: var(--gm-night); }
 .gm-sheet.tone-pic { --tone: var(--gm-pic); }
 .gm-sheet-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; flex-wrap: wrap; }
 .gm-sheet-head .gm-kind { flex: 1; min-width: 0; }
+.gm-card-who { margin: 0; padding: 4px 12px; border-radius: 999px; background: var(--gm-paper-2); font-size: var(--fs-sm); font-weight: 700; white-space: nowrap; }
 .gm-sheet-body { padding: 6px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
 .gm-sheet-foot { position: sticky; bottom: 0; padding: 10px 16px 14px; background: linear-gradient(0deg, var(--gm-paper) 75%, rgba(251, 248, 242, 0)); }
 .gm-dialog { padding: 20px 18px; }

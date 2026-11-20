@@ -40,7 +40,7 @@ import fs from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { makeMailbox, newer as serverNewer, FUTURE as serverFuture } from '../api/_mailbox.js'
 import { Room, newer as clientNewer, makeRoomCode, makeId, ROOM_RE, PID_RE, FUTURE as clientFuture } from '../src/lib/game/net.js'
-import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, maxHints, maySkip, asking, askKey, MAX_PLAYERS } from '../src/lib/game/engine.js'
+import { advance, newRoom, expected, slotOf, turnPlayer, mayMoveOn, actingHost, turnKey, resultKey, maxHints, maySkip, asking, askKey, MAX_PLAYERS } from '../src/lib/game/engine.js'
 import { assembleDecks, lintDecks } from '../src/lib/game/decks.js'
 import { SQUARES, TYPES, lastOf, typeAt } from '../src/lib/game/board.js'
 import { rng } from '../src/lib/game/rand.js'
@@ -384,8 +384,8 @@ class Bot {
       }
       case 'reveal': {
         // Was an answer this bot sent in time left out of the result?
-        if (this.sent === slotOf(core) && this.counted !== turnKey(core)) {
-          this.counted = turnKey(core)
+        if (this.sent === slotOf(core) && this.counted !== resultKey(core)) {
+          this.counted = resultKey(core)
           stats.answers += 1
           if (!core.res.a[this.me]) stats.lost += 1
         }
@@ -393,22 +393,22 @@ class Bot {
         if (!core.timed) {
           // Untimed: everyone taps on when they have read it (a quiet one only
           // much later), and the table is moved on if somebody takes too long.
-          if (mine.next === turnKey(core) && mine.go !== turnKey(core) && this.after(`go${turnKey(core)}`, this.patience(core) + 10_000 + rand() * 30_000)) {
-            room.setMine({ go: turnKey(core), gt: now })
+          if (mine.next === resultKey(core) && mine.go !== resultKey(core) && this.after(`go${resultKey(core)}`, this.patience(core) + 10_000 + rand() * 30_000)) {
+            room.setMine({ go: resultKey(core), gt: now })
             break
           }
-          if (mine.next === turnKey(core)) break
-          if (this.reading !== turnKey(core)) {
-            this.reading = turnKey(core)
+          if (mine.next === resultKey(core)) break
+          if (this.reading !== resultKey(core)) {
+            this.reading = resultKey(core)
             const slow = rand() < (this.quiet ? 0.6 : 0.03)
             this.readPlan = { at: core.t + (slow ? 90_000 + rand() * 60_000 : 2500 + rand() * 12_000) }
           }
-          if (now >= this.readPlan.at) room.setMine({ next: turnKey(core), nt: now })
+          if (now >= this.readPlan.at) room.setMine({ next: resultKey(core), nt: now })
           break
         }
-        if (mine.next === turnKey(core) || !mayMoveOn(core, room.env()).includes(this.me)) break
-        if (this.plan.key !== `next${turnKey(core)}`) this.plan = { key: `next${turnKey(core)}`, at: core.t + 3000 + rand() * 9000, skip: rand() < 0.35 }
-        if (!this.plan.skip && now >= this.plan.at) room.setMine({ next: turnKey(core), nt: now })
+        if (mine.next === resultKey(core) || !mayMoveOn(core, room.env()).includes(this.me)) break
+        if (this.plan.key !== `next${resultKey(core)}`) this.plan = { key: `next${resultKey(core)}`, at: core.t + 3000 + rand() * 9000, skip: rand() < 0.35 }
+        if (!this.plan.skip && now >= this.plan.at) room.setMine({ next: resultKey(core), nt: now })
         break
       }
       case 'over': {
@@ -422,7 +422,7 @@ class Bot {
 }
 
 /* -------------------------------- one game -------------------------------- */
-const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0, played: 0, dealt: 0, labAgain: 0, judged: 0, backs: 0 }
+const totals = { settle: 0, spread: [], games: 0, turns: 0, ms: 0, forks: 0, lost: 0, answers: 0, reloads: 0, requests: 0, bytes: 0, events: 0, kinds: {}, byPlayers: {}, healed: 0, skips: 0, played: 0, dealt: 0, labAgain: 0, judged: 0, rolled: 0 }
 
 function playGame(index) {
   const rand = rng(SEED * 100_003 + index)
@@ -501,7 +501,7 @@ function playGame(index) {
       if (core.phase !== 'lobby') for (const p of core.players) if (!(p.pos >= 0 && p.pos <= core.last)) throw new Error(`a token is off the board: ${p.pos}`)
       if (core.phase !== 'lobby' && !(core.turn >= 0 && core.turn < core.players.length)) throw new Error('the turn points at nobody')
       if (core.phase === 'reveal' || core.phase === 'play') {
-        const key = `${core.g}:${core.n}`
+        const key = `${core.g}:${core.n}${core.ch.card ? 'c' : 'q'}`
         if (!this.seenKinds.has(key)) { this.seenKinds.add(key); const k = core.ch.k === 'mini' ? `mini:${core.ch.id}` : core.ch.k; totals.kinds[k] = (totals.kinds[k] || 0) + 1 }
         // A question skipped for a new one: a round with a slot of its own, on the same square.
         if (core.ch.r && !this.seenSkips.has(`${key}:${core.ch.r}`)) {
@@ -511,22 +511,43 @@ function playGame(index) {
         }
       }
       this.checkAsked(core)
-      // The roll counts only if it is won (`reveal`): the player whose square it
-      // was keeps it by earning something in its round, or is back where they rolled from.
-      if (core.phase === 'reveal' && core.res.k !== 'luck') {
-        const { aw, x } = core.res
-        const roller = core.players[core.turn]
-        const won = (aw[roller.id] || 0) > 0
-        if (x.back && (won || roller.pos !== core.from || aw[roller.id] !== -x.back)) throw new Error(`a roll walked back wrongly: pos ${roller.pos}, from ${core.from}, ${JSON.stringify(core.res)}`)
-        if (!won && !x.back && !x.none) throw new Error(`a roller earned nothing and kept the roll: ${JSON.stringify(core.res)}`)
+      this.checkTurn(core)
+      void bot
+    },
+    /* THE TURN (engine.js, 2026-11-20): a question card first, everyone
+       answering; the die only for a card its player won (`x.roll`) or a chance
+       card's "roll again"; after the roll, a round only on a special square —
+       of that square's kind — and on a plain one, a beat (`moved`). */
+    checkTurn(core) {
+      if (core.phase === 'lobby' || core.phase === 'over') return
+      const roller = core.players[core.turn]
+      const square = (pos) => typeAt(pos, core.boards.length)
+      if (core.phase === 'roll' && core.via !== 'card' && core.via !== 'luck') throw new Error(`a roll nobody earned: ${JSON.stringify({ via: core.via, n: core.n })}`)
+      if (core.phase === 'moved') {
+        if (!core.die) throw new Error('a move without a roll')
+        if (square(roller.pos) === 'L') throw new Error('landed on the Lab and played no game')
+      }
+      if (core.phase !== 'play' && core.phase !== 'reveal') return
+      const ch = core.ch
+      if (ch.card) {
+        if (core.die) throw new Error(`a question card after the turn's roll: ${JSON.stringify(ch)}`)
+        if (!['mcq', 'tf', 'num', 'who', 'graph', 'pic', 'face'].includes(ch.k)) throw new Error(`a question card of a kind no card is: ${ch.k}`)
+      } else {
+        // A square's round: after the roll, and the square's own kind.
+        const at = core.phase === 'reveal' && core.res.pre ? core.res.pre[core.turn] : roller.pos
+        const want = { mini: 'L', bluff: 'B', dare: 'D', luck: 'C' }[ch.k]
+        if (!core.die || want !== square(at)) throw new Error(`a ${ch.k} round on a ${square(at)} square (die ${core.die})`)
+      }
+      if (core.phase === 'reveal' && ch.card) {
+        const won = (core.res.aw[roller.id] || 0) > 0
+        if (!!core.res.x.roll !== won) throw new Error(`a card's roll does not follow its answer: ${JSON.stringify({ won, roll: core.res.x.roll, aw: core.res.aw })}`)
         const key = `${core.g}:${core.n}`
         if (!this.judged.has(key)) {
           this.judged.add(key)
           totals.judged += 1
-          if (x.back) totals.backs += 1
+          if (core.res.x.roll) totals.rolled += 1
         }
       }
-      void bot
     },
   }
 
@@ -640,6 +661,6 @@ for (const [n, row] of Object.entries(totals.byPlayers)) {
   console.log(`  ${String(n).padStart(7)}  ${String(row.games).padStart(6)}  ${(row.turns / row.games).toFixed(1).padStart(6)}  ${mins(row.ms / row.games).padStart(8)}`)
 }
 const all = Object.values(totals.kinds).reduce((a, b) => a + b, 0)
-console.log(`  rolls walked back (the roller won nothing on their square): ${totals.backs} of ${totals.judged} rounds (${totals.judged ? Math.round((totals.backs / totals.judged) * 100) : 0}%)`)
+console.log(`  question cards won by the player whose turn it was (so they rolled): ${totals.rolled} of ${totals.judged} (${totals.judged ? Math.round((totals.rolled / totals.judged) * 100) : 0}%)`)
 console.log(`  nothing asked twice in a game: ${totals.dealt} rounds dealt in ${totals.played} games, no question, dare, person or picture twice · a Lab game again (after all had been played): ${totals.labAgain}×`)
 console.log(`  challenges: ${Object.entries(totals.kinds).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${((n / all) * 100).toFixed(0)}%`).join(' · ')}`)

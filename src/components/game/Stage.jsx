@@ -27,10 +27,12 @@ import { L, Die, Token, TOKEN_COLORS, tokenLabels, useNow, KIND, MINI, KindHead,
  * timer run out together. The engine records WHEN things happened (`rolledAt`,
  * a challenge's `t0`), and this file only decides what to draw at that moment:
  *
+ *   the turn's question card: t0 ──round── t1 ── result
+ *   then, if its player got it right:
  *   rolledAt ──die thrown── (debt collected) ──token walks── landed ──card── t0 ──round── t1
  *
- * (the card only before the Lab, a white lie, or a round that replaced a skipped
- * one — any other question opens a moment after the token lands: `cardOf`)
+ * (the second round only on a special square; the card before it only before
+ * the Lab, a white lie, or a round that replaced a skipped one: `cardOf`)
  *
  * The overlays are portalled to <body> — the `position: fixed`-inside-a-
  * transform trap the site's in-book bar already avoids.
@@ -41,16 +43,17 @@ import { L, Die, Token, TOKEN_COLORS, tokenLabels, useNow, KIND, MINI, KindHead,
 function targetsAt(core, now) {
   const P = core.players
   const pos = P.map((p) => p.pos)
-  if (core.phase === 'roll' || !core.rolledAt) return pos
-  const i = core.turn
-  const to = core.res?.pre ? core.res.pre[i] : core.players[i].pos
-  const landed = core.rolledAt + T.dice + (core.repay ? T.repay : 0) + Math.max(0, to - core.from) * T.hop
   const res = core.res
-  // Results move tokens after a beat, so the room sees the answer first.
+  // Results move tokens after a beat, so the room sees the answer first —
+  // the turn's question card's as much as a square's.
   if (core.phase === 'reveal' && res?.pre) {
     const settle = res.k === 'luck' ? core.t + 1600 : core.t + 1200
     if (now < settle) res.pre.forEach((p, k) => { if (k < pos.length) pos[k] = p })
   }
+  if (core.phase === 'roll' || !core.rolledAt) return pos
+  const i = core.turn
+  const to = res?.pre ? res.pre[i] : core.players[i].pos
+  const landed = core.rolledAt + T.dice + (core.repay ? T.repay : 0) + Math.max(0, to - core.from) * T.hop
   if (now < core.rolledAt + T.dice) pos[i] = core.was ?? pos[i]
   else if (core.repay && now < core.rolledAt + T.dice + T.repay) pos[i] = core.from
   else if (core.phase === 'reveal' && res?.k === 'luck' && now < landed) pos[i] = res.pre[i]
@@ -150,7 +153,8 @@ export default function Stage({ room, snap, me, decks, code }) {
   const heard = useRef({})
   const once = (key, play) => { if (heard.current[key]) return; heard.current[key] = true; play() }
   useEffect(() => {
-    const key = `${core.g}:${core.n}`
+    // A turn can hold two rounds (its question card, then a special square's).
+    const key = `${core.g}:${core.n}${core.ch?.card ? 'c' : 'q'}`
     if (sheet === 'challenge') once(`card${key}:${core.ch?.r || 0}:${core.ch?.s}`, sfx.card)
     if (sheet === 'result') {
       once(`res${key}`, () => {
@@ -189,25 +193,30 @@ export default function Stage({ room, snap, me, decks, code }) {
   let status = null
   const rolling = core.rolledAt && core.phase !== 'roll' && now < core.rolledAt + T.dice
   if (core.phase === 'roll') {
+    // The die comes after a question card answered right — or a chance card's "roll again".
     const left = Math.ceil((core.t + T.rollWait - now) / 1000)
     const soon = core.timed && left <= 10
+    const again = core.via === 'luck'
     status = myTurn
-      ? L('دورك! ارمِ النرد.', 'Your turn! Roll the die.')
-      : L(`دور ${active.name}…${soon ? ` (يُرمى وحده بعد ${Math.max(0, left)} ث)` : ''}`, `${active.name}’s turn…${soon ? ` (rolls itself in ${Math.max(0, left)}s)` : ''}`)
+      ? (again ? L('ارمِ النرد مرّةً أخرى!', 'Roll the die again!') : L('أصبتَ! ارمِ النرد.', 'You got it! Roll the die.'))
+      : L(`${again ? `${active.name} يرمي مرّةً أخرى` : `أصاب ${active.name}، ويرمي النرد`}…${soon ? ` (يُرمى وحده بعد ${Math.max(0, left)} ث)` : ''}`,
+        `${again ? `${active.name} rolls again` : `${active.name} got it and rolls`}…${soon ? ` (rolls itself in ${Math.max(0, left)}s)` : ''}`)
   } else if (core.rolledAt && !sheet) {
     status = rolling ? L(`${active.name} يرمي النرد…`, `${active.name} is rolling…`)
       : L(`${active.name} رمى ${core.die}${core.repay ? ` — وسدّد دَينه أوّلاً` : ''}`, `${active.name} rolled ${core.die}${core.repay ? ' — and paid back the loan first' : ''}`)
   } else if (core.phase === 'play') {
     const want = expected(core)
     const got = Object.keys(answersNow(core, entries)).length
-    status = L(`أجاب ${got} من ${want.length}`, `${got} of ${want.length} have answered`)
+    status = core.ch.card
+      ? L(`${myTurn ? 'سؤالك' : `سؤال ${active.name}`} · أجاب ${got} من ${want.length}`, `${myTurn ? 'Your' : `${active.name}’s`} question · ${got} of ${want.length} have answered`)
+      : L(`أجاب ${got} من ${want.length}`, `${got} of ${want.length} have answered`)
   }
 
   /* ---- who has answered this stage (a tick on their chip) ---- */
   const answered = core.phase === 'play' && now >= core.ch.t0 ? answersNow(core, entries) : {}
   const slot = core.phase === 'play' ? slotOf(core) : null
   const owed = sheet === 'challenge' && !answered[me] && expected(core).includes(me)
-  useNudge(core.phase === 'roll' && myTurn ? t(L('دورك!', 'Your turn!')) : owed ? t(L('جولة!', 'A round!')) : null)
+  useNudge(core.phase === 'roll' && myTurn ? t(L('ارمِ النرد!', 'Roll the die!')) : owed ? t(L('جولة!', 'A round!')) : null)
 
   const overlay = sheet && !(peek && sheet === 'result') && createPortal(
     <div className="gm-overlay" role="dialog" aria-modal="true">

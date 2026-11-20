@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext.jsx'
 import { books } from '../../data/books.js'
 import Icon from '../Icon.jsx'
 import RichText from '../RichText.jsx'
-import { LIE_MAX, slotOf, optionOrder, picPrize, actingHost, turnKey } from '../../lib/game/engine.js'
+import { LIE_MAX, slotOf, optionOrder, picPrize, actingHost, resultKey } from '../../lib/game/engine.js'
 import { L, Token, TOKEN_COLORS, Steps } from './parts.jsx'
 
 /*
@@ -132,8 +132,8 @@ export function PicResult({ core, room, me, decks, labels }) {
   const isBook = ch.pk === 'book'
   const isHost = actingHost(core, room.env()) === me
   const acc = room.snapshot().entries[me]?.d?.acc
-  const accepted = acc && acc.n === turnKey(core) && Array.isArray(acc.p) ? acc.p : []
-  const accept = (pid) => room.setMine({ acc: { n: turnKey(core), p: [...accepted, pid] } })
+  const accepted = acc && acc.n === resultKey(core) && Array.isArray(acc.p) ? acc.p : []
+  const accept = (pid) => room.setMine({ acc: { n: resultKey(core), p: [...accepted, pid] } })
 
   const rows = core.players.map((p, i) => ({ p, i, a: res.a[p.id] })).filter((r) => r.a)
   return (

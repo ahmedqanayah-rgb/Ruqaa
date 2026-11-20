@@ -30,21 +30,27 @@ import { matchesName } from './match.js'
  *   kick, again        (host) players removed in the lobby; "play game g again"
  *   roll, rt           "roll for this turn" (`turnKey`: game and turn), and when
  *   rollFor, rft       "roll for whoever's turn it is" (see `override`), and when
- *   a: { s, v, at }    an answer to slot s = "<game>:<turn>:<stage>", its value, when
+ *   a: { s, v, at }    an answer to slot s = "<game>:<turn><c|q>:<stage>", its value, when
  *   end, et            "close round slot s now" (see `override`), and when
  *   swap, swt          (the turn's player or the host) "skip the question at slot s
  *                      — a new one for everyone" (see `maySkip`), and when
- *   next, nt           "I have read this turn's result" (`turnKey`), and when
- *   go, gt             "move on from this turn's result NOW" (see `override`), and when
- *   acc: { n, p }      (host) typed answers accepted by hand, this turn (`turnKey`)
+ *   next, nt           "I have read this result" (`resultKey`), and when
+ *   go, gt             "move on from this result NOW" (see `override`), and when
+ *   acc: { n, p }      (host) typed answers accepted by hand, this result (`resultKey`)
  *   left               walked out
  *
- * THE SHAPE OF A TURN. The player whose turn it is rolls and moves; the square
- * they land on sets a challenge that EVERYONE plays at once on their own phone;
- * the result is shown, and those who earned steps move — and the roller, if
- * they earned none, walks back to where they rolled from. One currency: squares.
- * There is no separate score — where you stand on the road is how you are
- * doing, and the first token to the end of the last board ends the game.
+ * THE SHAPE OF A TURN (the club, 2026-11-20: "in each turn we get a question
+ * card, and if we answer it correctly we get to roll the dice, otherwise it
+ * moves on to the next player and we dont roll"). A turn opens with a QUESTION
+ * CARD that EVERYONE answers at once, each on their own phone; right answers
+ * move their players on, as ever. Then, only if the player whose turn it is got
+ * theirs right (`x.roll`), they roll and move — and a special square they land
+ * on (chance, the Lab, a white lie, a dare) plays its round; a question square
+ * is just a square (`moved`). Otherwise the turn passes, unrolled. One
+ * currency: squares. There is no separate score — where you stand on the road
+ * is how you are doing, and the first token to the end of the last board ends
+ * the game. (Until that evening the die came first and the square set the
+ * round; for an afternoon, a roller who won nothing in it walked back.)
  *
  * NO CLOCK UNLESS THE HOST ASKS FOR ONE (`core.timed`, off by default — the
  * club's choice: a reading club plays to read, not to race). Untimed, a round
@@ -54,9 +60,9 @@ import { matchesName } from './match.js'
  * from their phone. The rounds that ARE a clock keep theirs either way: the
  * Lab's tests of speed.
  *
- * WHAT A SQUARE ASKS comes from ALL of tonight's books, on every board (the
- * club, 2026-11-18: "the questions from all books to be there in all steps of
- * the game, not divided"). The boards are the road's scenery and its length;
+ * WHAT A TURN ASKS comes from ALL of tonight's books, wherever the token stands
+ * (the club, 2026-11-18: "the questions from all books to be there in all steps
+ * of the game, not divided"). The boards are the road's scenery and its length;
  * the questions are one deck. See `challenge`.
  */
 
@@ -248,10 +254,16 @@ export const turnPlayer = (core) => core.players[core.turn]
    turn 5's question — left in an entry from the first game must not count in
    the second. So every stamp carries the game too. */
 export const turnKey = (core) => core.g * 100000 + core.n
-/* A stage of a round: "<game>:<turn>:<stage>" — and ":<n>" once the question
-   has been skipped n times (`maySkip`), so an answer to a skipped question, or
-   a hint bought for it, can never count for the one that replaced it. */
-export const slotOf = (core) => `${core.g}:${core.n}:${core.ch?.s ?? 0}${core.ch?.r ? `:${core.ch.r}` : ''}`
+/* A stage of a round: "<game>:<turn><c|q>:<stage>" — `c` for the turn's question
+   card, `q` for the round of the square its roll lands on (one turn can hold
+   both) — and ":<n>" once the question has been skipped n times (`maySkip`), so
+   an answer to a skipped question, or a hint bought for it, can never count for
+   the one that replaced it. */
+export const slotOf = (core) => `${core.g}:${core.n}${core.ch?.card ? 'c' : 'q'}:${core.ch?.s ?? 0}${core.ch?.r ? `:${core.ch.r}` : ''}`
+/* What a tap on a RESULT is for — "I have read it", "move on", the host's
+   acceptances. A turn can show two results (its card's, then its square's), so
+   the stamp says which. */
+export const resultKey = (core) => turnKey(core) * 2 + (core.ch?.card ? 0 : 1)
 export const playBooks = (core, decks) => {
   const chosen = (core.opts?.books || []).filter((b) => decks.books.includes(b))
   return chosen.length ? chosen : decks.books
@@ -313,9 +325,9 @@ export function standings(players) {
 }
 
 /* SKIP — a new question for everyone (the club, 2026-11-18: "add a skip
-   question option"). The player whose turn it is — it is their square — or the
-   host may swap the round for a fresh one on the same square: the same kind of
-   square, the next card of the deck. Not the Lab's games, which are over in
+   question option"). The player whose turn it is — it is their card, or their
+   square — or the host may swap the round for a fresh one: a new question card,
+   or the next round of the same square. Not the Lab's games, which are over in
    seconds, and only in a round's first stage: once the white lies are written
    or the dare is done, the round is the table's. */
 export const skippable = (ch) => !!ch && ch.k !== 'mini' && ch.k !== 'luck' && (ch.s ?? 0) === 0
@@ -491,23 +503,33 @@ function lobbyStep(core, entries, env) {
     const seed = hash32(`${core.id}|${core.g}|${d.st}`)
     // One board per book in play, in the registry's order: the road's length.
     const boards = playBooks(next, env.decks)
-    next = {
+    // The first turn opens, like every turn, with its question card.
+    next = challenge({
       ...next,
       players: players.map((p) => ({ id: p.id, name: p.name, c: p.c, pos: 0, st: [0, 0, 0, 0] })),
-      phase: 'roll', seed, n: 1, turn: seed % players.length, t: d.st,
+      seed, n: 1, turn: seed % players.length, t: d.st,
       boards, last: lastOf(boards.length), timed: !!next.opts.timed,
-      die: 0, from: 0, repay: 0, ch: null, res: null, skip: [], debt: {}, asked: [],
-    }
+      die: 0, from: 0, repay: 0, rolledAt: null, via: null, ch: null, res: null, skip: [], debt: {}, asked: [],
+    }, null, d.st, env.decks)
   }
   return seal(core, next)
+}
+
+/* The next turn (`upNext` says whose: a missed turn is served on the way), and
+   its question card — or, after a chance card's "roll again", the die itself. */
+function nextTurn(core, at, decks) {
+  const up = upNext(core)
+  const base = { ...core, turn: up.turn, skip: up.skip, n: core.n + 1, t: at, ch: null, res: null, die: 0, repay: 0, rolledAt: null, via: null }
+  if (core.res?.x?.again && up.turn === core.turn) return { ...base, phase: 'roll', via: 'luck' }
+  return challenge(base, null, at, decks)
 }
 
 function rollStep(core, entries, env) {
   const players = gameRoster(core, entries)
   const base = { ...core, players }
   if (players.every((p) => p.gone)) return seal(core, base)
-  // The player whose turn it is has walked out: pass the die on.
-  if (players[core.turn].gone) return seal(core, { ...base, turn: nextAlive(players, core.turn) })
+  // The player who was to roll has walked out: the next turn.
+  if (players[core.turn].gone) return seal(core, nextTurn({ ...base, res: null }, core.t, env.decks))
   const changed = seal(core, base)
   if (changed) return changed
 
@@ -542,7 +564,17 @@ function roll(core, at, decks) {
   const next = { ...core, players, die, from, was: me.pos, repay, debt, rolledAt: at, ch: null, res: null }
   // Landing on the last square by the die ends the game there and then.
   if (to >= core.last) return { ...next, phase: 'over', t: landed + 500 }
-  return challenge(next, to, landed, decks)
+  // A special square plays its round; a question square is just a square —
+  // a beat for the token to land, and the next turn (`movedStep`).
+  return challenge(next, to, landed, decks) || { ...next, phase: 'moved', t: landed + T.land }
+}
+
+/* The token has landed on a plain square: once it has (`t`), the next turn. */
+function movedStep(core, entries, env) {
+  const players = gameRoster(core, entries)
+  const base = { ...core, players }
+  if (env.now < core.t) return seal(core, base)
+  return seal(core, nextTurn(base, core.t, env.decks))
 }
 
 /* NOTHING TWICE IN ONE GAME (the club, 2026-11-20: "if 2 ppl stand on the same
@@ -581,12 +613,17 @@ export function asking(decks) {
 }
 export const askKey = (ch) => `${ch.k === 'mini' ? 'm' : ch.k === 'dare' ? 'd' : 'q'}:${ch.id}`
 
-/* What the square asks of everyone. `again` is set when the round before was
+/* What is asked of everyone: with `square` null, the turn's QUESTION CARD (one
+   of the question kinds, `KBAG`); with a square, the round of the square the
+   die landed on — chance, the Lab, a white lie, a dare — or null where there is
+   none to play (a question square, or a special one tonight's table cannot play:
+   a lie needs three, a dare a jury). `again` is set when the round before was
    skipped (`maySkip`): { r: the how-manieth skip this turn, by: who asked } —
    it salts the turn's luck, so the new round is not dealt the old one's (and
    the skipped one, already in `core.asked`, cannot come back). */
-function challenge(core, to, landed, decks, again = null) {
-  const salt = again ? [again.r] : []
+function challenge(core, square, landed, decks, again = null) {
+  const card = square == null
+  const salt = [...(card ? ['card'] : []), ...(again ? [again.r] : [])]
   const cur = { ...core.cur }
   /* Draw from a deck without repeats: each deck is dealt in a seeded order and
      a cursor remembers how far through it the ROOM is — across rematches too,
@@ -660,11 +697,12 @@ function challenge(core, to, landed, decks, again = null) {
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
 
-  let type = typeAt(to, books.length)
+  const type = card ? 'K' : typeAt(square, books.length)
+  if (!card && type === 'K') return null // a question square: the card came first
   const liar = type === 'B' ? pickBook('bluff') : null
-  if (type === 'B' && (alive < 3 || !liar)) type = 'K' // a lie needs someone to fool
-  if (type === 'D' && (alive < 2 || !dares.some((d) => fresh(d, 'd')))) type = 'K' // a dare needs a jury, and one not dared yet
-  if (type === 'C' && !luck.length) type = 'K'
+  if (type === 'B' && (alive < 3 || !liar)) return null // a lie needs someone to fool
+  if (type === 'D' && (alive < 2 || !dares.some((d) => fresh(d, 'd')))) return null // a dare needs a jury, and one not dared yet
+  if (type === 'C' && !luck.length) return null
 
   if (type === 'C') return chance({ ...core, cur }, luck[draw(`luck:${luck.length}`, luck.length)], landed)
 
@@ -696,9 +734,9 @@ function challenge(core, to, landed, decks, again = null) {
   } else if (type === 'D') {
     ch = { k: 'dare', id: unasked(dares, `dare:${dares.length}`, 'd').id, t1: until('dare', null, T.dur.dare) }
   } else {
-    /* A question of the kind the bag gives — or, once this game has asked
-       every card of that kind it can, of another; only a game that has asked
-       every question there is may ask one again (`loose`). */
+    /* The turn's card: a question of the kind the bag gives — or, once this
+       game has asked every card of that kind it can, of another; only a game
+       that has asked every question there is may ask one again (`loose`). */
     const ask = (k, loose = false) => {
       if (k === 'pic') {
         const pics = picPool(core, decks)
@@ -719,7 +757,7 @@ function challenge(core, to, landed, decks, again = null) {
   const n = ix.at.get(askKey(ch))
   return {
     ...core, cur, asked: n == null ? asked : [...asked, n], phase: 'play', t: t0,
-    ch: { ...ch, s: 0, t0, seed: hash32([core.seed, core.n, 'ch', ...salt].join('|')), ...again },
+    ch: { ...ch, ...(card ? { card: 1 } : {}), s: 0, t0, seed: hash32([core.seed, core.n, 'ch', ...salt].join('|')), ...again },
   }
 }
 
@@ -804,11 +842,13 @@ function playStep(core, entries, env) {
   if (allIn && env.now >= ch.t0) at = Math.max(ch.t0, ...Object.values(answers).map((a) => a.at))
   else if (ended != null && env.now >= ended) at = deadline == null ? ended : Math.min(ended, deadline)
   else if (deadline != null && env.now >= deadline) at = deadline
-  // Skipped before it closed: a new round on the same square, its own slot, so
-  // nothing given to the old one carries over.
+  // Skipped before it closed: a new card, or a new round on the same square —
+  // its own slot, so nothing given to the old one carries over. (A square with
+  // nothing left to deal ends the turn.)
   const skip = skipAsked(core, entries, env)
   if (skip && (at == null || skip.at < at)) {
-    return seal(core, challenge(core, turnPlayer(core).pos, skip.at, env.decks, { r: (ch.r || 0) + 1, by: skip.by }))
+    const again = { r: (ch.r || 0) + 1, by: skip.by }
+    return seal(core, challenge(core, ch.card ? null : turnPlayer(core).pos, skip.at, env.decks, again) || nextTurn(core, skip.at, env.decks))
   }
   if (at == null) return null
 
@@ -874,7 +914,6 @@ function reveal(core, answers, at, decks) {
         tally(first.id, 1)
         x.fast = first.id
       }
-      if (aw[active]) give(active, 1) // it is their square
       break
     }
     case 'who': {
@@ -885,7 +924,6 @@ function reveal(core, answers, at, decks) {
         give(p.id, 3 - Math.min(2, a.h || 0))
         tally(p.id, 0)
       }
-      if (aw[active]) give(active, 1)
       break
     }
     case 'pic': {
@@ -897,7 +935,6 @@ function reveal(core, answers, at, decks) {
         x.c[p.id] = right ? 1 : 0
         if (right) { give(p.id, picPrize(ch, a.v)); tally(p.id, 0) }
       }
-      if (aw[active]) give(active, 1)
       break
     }
     case 'num': {
@@ -909,7 +946,6 @@ function reveal(core, answers, at, decks) {
           // The closest moves 2 (an exact hit 3), the runner-up 1 — a hint less.
           if (r.off === best) { give(r.id, Math.max(1, (best === 0 ? 3 : 2) - r.h)); tally(r.id, 0) } else if (alive.length >= 4 && r.off === second) give(r.id, 1 - r.h)
         }
-        if (aw[active]) give(active, 1)
       }
       break
     }
@@ -963,20 +999,10 @@ function reveal(core, answers, at, decks) {
     default:
   }
 
-  /* THE ROLL COUNTS ONLY IF IT IS WON (the club, 2026-11-20: "wouldnt it be
-     better for the player only to progress when he answers correctly?"). The
-     die walks the player to the square, so everyone sees whose round it is;
-     they keep those steps only by earning something in its round — a right
-     answer, the closest number, the truth found or someone fooled, a dare
-     passed, a place in the Lab. Otherwise they walk back to where they rolled
-     from (`from`: after any loan was repaid), and the result says so
-     (`x.back`). A white lie nobody wrote, a round that never happened, leaves
-     the roll standing. Chance cards have no round, and keep theirs. */
-  const roller = P[core.turn]
-  if (!x.none && !(aw[active] > 0) && roller.pos > core.from) {
-    x.back = roller.pos - core.from
-    aw[active] = -x.back
-  }
+  /* THE TURN'S CARD DECIDES THE ROLL: its player rolls only if they earned
+     something with it — a right answer, or the closest number (or the
+     runner-up's, at a table of four or more). See the top of this file. */
+  if (ch.card) x.roll = (aw[active] || 0) > 0
 
   // Each answer as [value, ms after the round opened] — and the hints bought, if any.
   const a = {}
@@ -994,11 +1020,13 @@ function reveal(core, answers, at, decks) {
   }
 }
 
-/* Whose turn comes after this one. */
+/* Who moves after this result: the same player — to roll, after a question card
+   they got right (`x.roll`) or a chance card's "roll again" — or else the next
+   player's turn, a missed turn served on the way. */
 export function upNext(core) {
   const P = core.players
   let skip = core.skip || []
-  if (core.res?.x?.again && !P[core.turn].gone) return { turn: core.turn, skip }
+  if ((core.res?.x?.roll || core.res?.x?.again) && !P[core.turn].gone) return { turn: core.turn, skip }
   let turn = core.turn
   for (let guard = 0; guard < P.length * 2; guard++) {
     turn = (turn + 1) % P.length
@@ -1023,50 +1051,45 @@ export function mayMoveOn(core, env) {
 function acceptStep(core, entries, env) {
   if (core.res?.k !== 'pic' || core.ch.pk === 'book') return null
   const acc = entries[actingHost(core, env)]?.d?.acc
-  if (!acc || acc.n !== turnKey(core) || !Array.isArray(acc.p)) return null
+  if (!acc || acc.n !== resultKey(core) || !Array.isArray(acc.p)) return null
   const done = core.res.x.ok || []
   const add = acc.p.filter((pid) => typeof pid === 'string' && !done.includes(pid) && core.res.x.c?.[pid] === 0 && core.res.a[pid]?.[0]?.t)
   if (!add.length) return null
   const aw = { ...core.res.aw }
   const c = { ...core.res.x.c }
-  const active = turnPlayer(core).id
-  const back = core.res.x.back || 0
   const steps = {}
   for (const pid of add) {
-    let n = picPrize(core.ch, core.res.a[pid][0])
-    if (pid === active && !(aw[active] > 0)) n += 1 // it is their square
-    // …and the roll they walked back from is theirs again (`reveal`).
-    const undo = pid === active ? back : 0
-    steps[pid] = n + undo
-    aw[pid] = (aw[pid] || 0) + n + undo
+    const n = picPrize(core.ch, core.res.a[pid][0])
+    steps[pid] = n
+    aw[pid] = (aw[pid] || 0) + n
     c[pid] = 2
   }
   const players = core.players.map((p) => (steps[p.id] ? { ...p, pos: clampPos(p.pos + steps[p.id], core.last), st: p.st.map((v, k) => (k === 0 ? v + 1 : v)) } : p))
   const x = { ...core.res.x, c, ok: [...done, ...add] }
-  if (add.includes(active)) delete x.back
+  // Accepted on their own question card, the turn's player has earned the roll.
+  if (core.ch.card && add.includes(turnPlayer(core).id)) x.roll = true
   return seal(core, { ...core, players, res: { ...core.res, aw, x } })
 }
 
 /* Untimed, a result waits for everyone: who still in the game has read it and
-   tapped on (`next` for this turn). */
+   tapped on (`next` for this result). */
 export const readyNow = (core, entries) => core.players
-  .filter((p) => !p.gone && entries[p.id]?.d?.next === turnKey(core) && isNum(entries[p.id].d.nt))
+  .filter((p) => !p.gone && entries[p.id]?.d?.next === resultKey(core) && isNum(entries[p.id].d.nt))
   .map((p) => p.id)
 
 function revealStep(core, entries, env) {
   const accepted = acceptStep(core, entries, env)
   if (accepted) return accepted
-  const up = upNext(core)
   const floor = core.t + T.minReveal
   // Someone moves the table on (see `override`)…
-  let at = override(core, entries, env, 'go', 'gt', turnKey(core), core.t)
+  let at = override(core, entries, env, 'go', 'gt', resultKey(core), core.t)
   if (at != null) at = Math.max(floor, at)
   else if (core.timed) {
     // Timed: the player about to roll, or the host, taps on — or it moves on by itself.
     const dwell = T.dwell[core.res.k] || T.dwell.default
     for (const pid of mayMoveOn(core, env)) {
       const d = entries[pid]?.d
-      if (!d || d.next !== turnKey(core) || !isNum(d.nt)) continue
+      if (!d || d.next !== resultKey(core) || !isNum(d.nt)) continue
       const t = Math.max(floor, Math.min(d.nt, core.t + dwell))
       at = at == null ? t : Math.min(at, t)
     }
@@ -1082,7 +1105,9 @@ function revealStep(core, entries, env) {
   }
   if (at == null) return null
   if (core.players.some((p) => p.pos >= core.last)) return seal(core, { ...core, phase: 'over', t: at })
-  return seal(core, { ...core, phase: 'roll', turn: up.turn, skip: up.skip, n: core.n + 1, t: at, ch: null, res: null, die: 0, repay: 0 })
+  // The turn's card, answered right: its player rolls, in the same turn.
+  if (core.res.x.roll && !core.players[core.turn].gone) return seal(core, { ...core, phase: 'roll', via: 'card', t: at, ch: null, res: null })
+  return seal(core, nextTurn(core, at, env.decks))
 }
 
 function overStep(core, entries, env) {
@@ -1103,6 +1128,7 @@ export function advance(core, entries, env) {
     case 'roll': return rollStep(core, entries, env)
     case 'play': return playStep(core, entries, env)
     case 'reveal': return revealStep(core, entries, env)
+    case 'moved': return movedStep(core, entries, env)
     case 'over': return overStep(core, entries, env)
     default: return null
   }
