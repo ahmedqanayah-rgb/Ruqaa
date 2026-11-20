@@ -167,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~131 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~134 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -550,9 +550,26 @@ keeps `base: './'` sub-path hosting working.
     the rules — the club asked for exactly that. A member's question may link two books
     (`book: [a, b]` → `also`): it is dealt only when both are in play, and its card names both.
     Members' dares and chance cards join the site's, outside the writer rule (there is nothing to
-    know in advance). Maria's first set (2026-11-19): 53 dealt, 3 picture rounds in `waiting`
-    until they have pictures; where hers and the site's overlapped, a few words were changed so
-    neither gives the other away — the header of her list says which.
+    know in advance). Maria's first set (2026-11-19): 56 dealt, her 3 picture rounds included
+    since the club supplied their pictures (2026-11-20; a member's `pic` carries its own kind in
+    `pk`); where hers and the site's overlapped, a few words were changed so neither gives the
+    other away — the header of her list says which.
+  - **Nearly every question has a photo** (2026-11-20, the club: "i want to add fotos for as
+    much questions as possible") — 185 multiple-choice, myth-or-fact, number and white-lie
+    questions show one above the question and, a little smaller, on its result. Each shows the
+    question's SUBJECT, NEVER ITS ANSWER, and no portrait that a picture round or a «من هو؟» asks
+    about is reused beside a question naming that person («من هو؟» shows its picture from the
+    start). The plan is `scripts/question-photos.mjs` (photo → questions, what to look for, what
+    to `avoid`; `REUSE`: site pictures; `SKIP`: Radford, of whom no real portrait was found).
+    The club collects the photos into `Ruqaa/question-photos` (outside the repo, like the other
+    masters); `node scripts/import-question-photos.mjs` takes the newest file per name, cleans
+    it (`FIXES`: crops, and writing painted out — a brand name that would answer "what is
+    this?", a shop's watermark), sizes it (960–1200 px long side; a small one enlarged locally,
+    never with the paid API; WebP within 200 kB) into `public/images/game/q/`, and writes
+    `src/data/game/questionPhotos.js` (GENERATED: id → [path, width, height]; the size lets the
+    `<img>` hold its shape while loading). `assembleDecks` hands each item its `photo`, and the
+    stage starts loading a round's photo the moment it is dealt. A few are TV or anime stills the
+    club chose to keep.
   - **Typed answers are judged by `lib/game/match.js`, not by AI** (asked about 2026-11-17).
     It forgives what people actually get wrong — Arabic letter forms, diacritics, «ال»/"the",
     either language, a few letters off, vowels in transliterations — and checks only against

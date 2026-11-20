@@ -14,11 +14,13 @@
  *   who    { id, book, kind: 'who', name, clues: [three], why, img? }
  *   bluff  { id, book, kind: 'bluff', q (with a ____), truth, alt?, decoys: [2+], why }
  *   graph / face — as in a book's game.js
+ *   pic    { id, book, kind: 'pic', pk: 'name'|'book', img, q?, name, aliases, opts, hints, why }
+ *          — the picture IS the question: no name, caption or brand in it; it
+ *          lives in public/images/game/q (scripts/import-question-photos.mjs)
  *   dare   { id, book, kind: 'dare', text }            (data/game/cards.js has the rules)
  *   luck   { id, book, kind: 'luck', text, effect }    (the story only: the card prints what happens)
  * `book` may name two books, for a question that links them: it is dealt only
  * when both are in play. `src` is where in the book it comes from (for us).
- * Picture rounds (`pic`) wait in `waiting` until they have their pictures.
  *
  * A writer's own questions are rarely dealt in a room they are playing in, and
  * NOTHING IN THE GAME SAYS SO — no name, no credit on a card, no rule on the
@@ -434,6 +436,65 @@ export const members = {
         "why": {
           "ar": "خفّض دواء «برازوسين» النورأدرينالين في الدماغ أثناء نوم الأحلام، فعاد إليهم نوم أحلام صحّي وتراجعت كوابيسهم.",
           "en": "Prazosin lowered noradrenaline in the brain during REM sleep, giving them healthy dream sleep again, and the nightmares receded."
+        }
+      },
+      {
+        "id": "maria-ws-p-mimosa",
+        "book": "why-we-sleep",
+        "kind": "pic",
+        "q": {
+          "ar": "ما اسم هذه النبتة؟",
+          "en": "What is this plant?"
+        },
+        "name": {
+          "ar": "الميموزا المستحيّة",
+          "en": "Mimosa pudica, the sensitive plant"
+        },
+        "aliases": [
+          "ميموزا",
+          "الميموزا",
+          "المستحية",
+          "المستحيّة",
+          "الميموزا المستحية",
+          "mimosa",
+          "mimosa pudica",
+          "sensitive plant",
+          "shy plant"
+        ],
+        "opts": [
+          {
+            "ar": "الميموزا المستحيّة",
+            "en": "Mimosa pudica, the sensitive plant"
+          },
+          {
+            "ar": "زهرة عبّاد الشمس",
+            "en": "Sunflower"
+          },
+          {
+            "ar": "نبتة خانق الذباب",
+            "en": "Venus flytrap"
+          },
+          {
+            "ar": "زهرة اللوتس",
+            "en": "Lotus"
+          }
+        ],
+        "hints": [
+          {
+            "ar": "وضعها عالم فرنسي في صندوق مظلم سنة ١٧٢٩.",
+            "en": "A French scientist shut it in a dark box in 1729."
+          },
+          {
+            "ar": "ظلّت أوراقها تنفتح نهاراً وتنكمش ليلاً رغم الظلام.",
+            "en": "Its leaves kept opening by day and folding at night, even in the dark."
+          }
+        ],
+        "src": "الفصل الثاني",
+        "pk": "name",
+        "img": "./images/game/q/ws-mimosa.webp",
+        "why": {
+          "ar": "بها اكتشف جان جاك دو ميران أن للكائنات الحيّة ساعة داخلية لا تنتظر إشارة الشمس.",
+          "en": "With it, Jean-Jacques d’Ortous de Mairan discovered that living things keep their own internal clock, without waiting for the sun."
         }
       },
       {
@@ -876,6 +937,67 @@ export const members = {
         "why": {
           "ar": "جمع باباً قديماً وعيدان خيزران من الجيران وأدوات أبيه، وصار يقرأ ليعرف كيف يبني، وهو الذي كانت أمّه تكافح ليقرأ. ثم قرّر بناء عربة برمائية.",
           "en": "He gathered an old door, bamboo canes from the neighbours and his dad’s tools, and started reading to learn how to build it, a boy whose mother used to struggle to get him to read. Then he decided to build an amphibious one."
+        }
+      },
+      {
+        "id": "maria-sf-p-ksafe",
+        "book": "stolen-focus",
+        "kind": "pic",
+        "q": {
+          "ar": "ما هذه؟",
+          "en": "What is this?"
+        },
+        "name": {
+          "ar": "خزنة الهاتف ذات المؤقّت",
+          "en": "a timed phone safe (kSafe)"
+        },
+        "aliases": [
+          "خزنة",
+          "الخزنة",
+          "خزنة الهاتف",
+          "خزنة بمؤقت",
+          "خزنة بمؤقّت",
+          "كي سيف",
+          "ksafe",
+          "phone safe",
+          "timed safe",
+          "timer safe",
+          "kitchen safe"
+        ],
+        "opts": [
+          {
+            "ar": "خزنة الهاتف ذات المؤقّت",
+            "en": "a timed phone safe (kSafe)"
+          },
+          {
+            "ar": "حصّالة",
+            "en": "Piggy bank"
+          },
+          {
+            "ar": "صندوق بريد",
+            "en": "Mailbox"
+          },
+          {
+            "ar": "علبة طعام",
+            "en": "Lunchbox"
+          }
+        ],
+        "hints": [
+          {
+            "ar": "تضع فيها هاتفك وتضبطها من ربع ساعة إلى أسبوعين.",
+            "en": "You lock your phone inside for anything from 15 minutes to two weeks."
+          },
+          {
+            "ar": "أوّل التغييرات الستة التي أدخلها هاري على حياته في خاتمة الكتاب.",
+            "en": "The first of six changes Hari made to his life in the book’s conclusion."
+          }
+        ],
+        "src": "الخاتمة",
+        "pk": "name",
+        "img": "./images/game/q/sf-ksafe.webp",
+        "why": {
+          "ar": "خزنة الهاتف ذات المؤقّت: أداة هاري في «الالتزام المسبق»، ومعها برنامج يقطع الإنترنت عن حاسوبه مدّة يحدّدها بنفسه.",
+          "en": "The timed phone safe: Hari’s pre-commitment tool, alongside a program that cuts his laptop off from the internet for as long as he chooses."
         }
       },
       {
@@ -1383,6 +1505,63 @@ export const members = {
         }
       },
       {
+        "id": "maria-td-p-scrooge",
+        "book": "talking-to-my-daughter",
+        "kind": "pic",
+        "q": {
+          "ar": "من هذا البخيل؟",
+          "en": "Who is this miser?"
+        },
+        "name": {
+          "ar": "إبنزر سكروج",
+          "en": "Ebenezer Scrooge"
+        },
+        "aliases": [
+          "سكروج",
+          "إبنزر سكروج",
+          "ابنزر سكروج",
+          "إبنيزر سكروج",
+          "scrooge",
+          "ebenezer scrooge",
+          "ebenezer"
+        ],
+        "opts": [
+          {
+            "ar": "إبنزر سكروج",
+            "en": "Ebenezer Scrooge"
+          },
+          {
+            "ar": "شايلوك",
+            "en": "Shylock"
+          },
+          {
+            "ar": "فاوست",
+            "en": "Faust"
+          },
+          {
+            "ar": "أوليفر تويست",
+            "en": "Oliver Twist"
+          }
+        ],
+        "hints": [
+          {
+            "ar": "بخيل يجعله فاروفاكيس نقيضاً لفاوست.",
+            "en": "A miser Varoufakis sets against Faust."
+          },
+          {
+            "ar": "زاره شبح عيد الميلاد المنتظر فأراه موته.",
+            "en": "The Ghost of Christmas Yet to Come showed him his own death."
+          }
+        ],
+        "src": "الفصل الثالث",
+        "pk": "name",
+        "img": "./images/game/q/td-scrooge.webp",
+        "why": {
+          "ar": "سكروج من «ترنيمة عيد الميلاد» لديكنز. لو كنّا جميعاً مثله نكنز ولا ننفق، لتوقّف اقتصاد مجتمعات السوق.",
+          "en": "Scrooge, from Dickens’s A Christmas Carol. If we all hoarded like him and never spent, market economies would grind to a halt."
+        }
+      },
+      {
         "id": "maria-td-d-mephisto",
         "book": "talking-to-my-daughter",
         "kind": "dare",
@@ -1508,186 +1687,6 @@ export const members = {
           "ar": "في بروفنستاون اكتشف هاري أن عادة القراءة السريعة على الشاشة لحقت به إلى الورق. وفي «الاقتصاد كما أشرحه لابنتي» يجعل فاروفاكيس سكروج، البخيل الذي يكنز ولا ينفق، نقيضاً لفاوست الذي يستمتع بحياته بالدَّين.",
           "en": "In Provincetown Hari found his screen-skimming habit had followed him onto paper. In Talking to My Daughter, Scrooge, the miser who hoards and never spends, is Faust’s opposite, a man who enjoys life on credit."
         }
-      }
-    ],
-    // Picture rounds waiting for their pictures (not dealt): `note` is hers.
-    waiting: [
-      {
-        "id": "maria-ws-p-mimosa",
-        "book": "why-we-sleep",
-        "kind": "pic",
-        "q": {
-          "ar": "ما اسم هذه النبتة؟",
-          "en": "What is this plant?"
-        },
-        "name": {
-          "ar": "الميموزا المستحيّة",
-          "en": "Mimosa pudica, the sensitive plant"
-        },
-        "aliases": [
-          "ميموزا",
-          "الميموزا",
-          "المستحية",
-          "المستحيّة",
-          "الميموزا المستحية",
-          "mimosa",
-          "mimosa pudica",
-          "sensitive plant",
-          "shy plant"
-        ],
-        "opts": [
-          {
-            "ar": "الميموزا المستحيّة",
-            "en": "Mimosa pudica, the sensitive plant"
-          },
-          {
-            "ar": "زهرة عبّاد الشمس",
-            "en": "Sunflower"
-          },
-          {
-            "ar": "نبتة خانق الذباب",
-            "en": "Venus flytrap"
-          },
-          {
-            "ar": "زهرة اللوتس",
-            "en": "Lotus"
-          }
-        ],
-        "hints": [
-          {
-            "ar": "وضعها عالم فرنسي في صندوق مظلم سنة ١٧٢٩.",
-            "en": "A French scientist shut it in a dark box in 1729."
-          },
-          {
-            "ar": "ظلّت أوراقها تنفتح نهاراً وتنكمش ليلاً رغم الظلام.",
-            "en": "Its leaves kept opening by day and folding at night, even in the dark."
-          }
-        ],
-        "src": "الفصل الثاني",
-        "pk": "name",
-        "why": {
-          "ar": "بها اكتشف جان جاك دو ميران أن للكائنات الحيّة ساعة داخلية لا تنتظر إشارة الشمس.",
-          "en": "With it, Jean-Jacques d’Ortous de Mairan discovered that living things keep their own internal clock, without waiting for the sun."
-        },
-        "note": "صورة قريبة لنبتة الميموزا المستحيّة (Mimosa pudica) بأوراقها المفتوحة. صورها متاحة برخص حرّة في ويكيميديا."
-      },
-      {
-        "id": "maria-sf-p-ksafe",
-        "book": "stolen-focus",
-        "kind": "pic",
-        "q": {
-          "ar": "ما هذه؟",
-          "en": "What is this?"
-        },
-        "name": {
-          "ar": "خزنة الهاتف ذات المؤقّت",
-          "en": "a timed phone safe (kSafe)"
-        },
-        "aliases": [
-          "خزنة",
-          "الخزنة",
-          "خزنة الهاتف",
-          "خزنة بمؤقت",
-          "خزنة بمؤقّت",
-          "كي سيف",
-          "ksafe",
-          "phone safe",
-          "timed safe",
-          "timer safe",
-          "kitchen safe"
-        ],
-        "opts": [
-          {
-            "ar": "خزنة الهاتف ذات المؤقّت",
-            "en": "a timed phone safe (kSafe)"
-          },
-          {
-            "ar": "حصّالة",
-            "en": "Piggy bank"
-          },
-          {
-            "ar": "صندوق بريد",
-            "en": "Mailbox"
-          },
-          {
-            "ar": "علبة طعام",
-            "en": "Lunchbox"
-          }
-        ],
-        "hints": [
-          {
-            "ar": "تضع فيها هاتفك وتضبطها من ربع ساعة إلى أسبوعين.",
-            "en": "You lock your phone inside for anything from 15 minutes to two weeks."
-          },
-          {
-            "ar": "أوّل التغييرات الستة التي أدخلها هاري على حياته في خاتمة الكتاب.",
-            "en": "The first of six changes Hari made to his life in the book’s conclusion."
-          }
-        ],
-        "src": "الخاتمة",
-        "pk": "name",
-        "why": {
-          "ar": "خزنة الهاتف ذات المؤقّت: أداة هاري في «الالتزام المسبق»، ومعها برنامج يقطع الإنترنت عن حاسوبه مدّة يحدّدها بنفسه.",
-          "en": "The timed phone safe: Hari’s pre-commitment tool, alongside a program that cuts his laptop off from the internet for as long as he chooses."
-        },
-        "note": "صورة خزنة بلاستيكية شفّافة بغطاء ومؤقّت في أعلاها، وفي داخلها هاتف. يمكن تصويرها أو توليدها."
-      },
-      {
-        "id": "maria-td-p-scrooge",
-        "book": "talking-to-my-daughter",
-        "kind": "pic",
-        "q": {
-          "ar": "من هذا البخيل؟",
-          "en": "Who is this miser?"
-        },
-        "name": {
-          "ar": "إبنزر سكروج",
-          "en": "Ebenezer Scrooge"
-        },
-        "aliases": [
-          "سكروج",
-          "إبنزر سكروج",
-          "ابنزر سكروج",
-          "إبنيزر سكروج",
-          "scrooge",
-          "ebenezer scrooge",
-          "ebenezer"
-        ],
-        "opts": [
-          {
-            "ar": "إبنزر سكروج",
-            "en": "Ebenezer Scrooge"
-          },
-          {
-            "ar": "شايلوك",
-            "en": "Shylock"
-          },
-          {
-            "ar": "فاوست",
-            "en": "Faust"
-          },
-          {
-            "ar": "أوليفر تويست",
-            "en": "Oliver Twist"
-          }
-        ],
-        "hints": [
-          {
-            "ar": "بخيل يجعله فاروفاكيس نقيضاً لفاوست.",
-            "en": "A miser Varoufakis sets against Faust."
-          },
-          {
-            "ar": "زاره شبح عيد الميلاد المنتظر فأراه موته.",
-            "en": "The Ghost of Christmas Yet to Come showed him his own death."
-          }
-        ],
-        "src": "الفصل الثالث",
-        "pk": "name",
-        "why": {
-          "ar": "سكروج من «ترنيمة عيد الميلاد» لديكنز. لو كنّا جميعاً مثله نكنز ولا ننفق، لتوقّف اقتصاد مجتمعات السوق.",
-          "en": "Scrooge, from Dickens’s A Christmas Carol. If we all hoarded like him and never spent, market economies would grind to a halt."
-        },
-        "note": "رسم جون ليتش لإبنزر سكروج من الطبعة الأولى لـ«ترنيمة عيد الميلاد» (١٨٤٣)، وهو في الملكية العامة."
       }
     ],
   },

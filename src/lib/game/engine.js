@@ -580,17 +580,20 @@ function challenge(core, to, landed, decks, again = null) {
      book not in play tonight (`also`), and, mostly, a member's own question at
      a table they are sitting at (`OWN`). */
   const here = writersHere(core, decks)
-  const deal = (kind, book) => {
-    const deck = decks.byBook[book][kind]
+  const pass = (size, next) => {
     let card
     let fallback = null
-    for (let tries = 0; tries < deck.length; tries++) {
-      card = deck[draw(`${kind}:${book}`, deck.length)]
+    for (let tries = 0; tries < size; tries++) {
+      card = next()
       if (card.also && !card.also.every((b) => books.includes(b))) continue
       fallback ??= card
       if (!card.by || !here.has(card.by) || seeded(core.seed, core.n, 'own', card.id, ...salt)() < OWN) return card
     }
     return fallback || card
+  }
+  const deal = (kind, book) => {
+    const deck = decks.byBook[book][kind]
+    return pass(deck.length, () => deck[draw(`${kind}:${book}`, deck.length)])
   }
   const luck = decks.luck.filter((c) => !c.book || books.includes(c.book))
   const dares = decks.dares.filter((c) => !c.book || books.includes(c.book))
@@ -625,7 +628,7 @@ function challenge(core, to, landed, decks, again = null) {
     const pics = k === 'pic' ? picPool(core, decks) : null
     if (k === 'pic' && pics.length) {
       /* The card does not name a book, which would answer "which book?". */
-      const item = pics[draw(`pic:${pics.length}`, pics.length)]
+      const item = pass(pics.length, () => pics[draw(`pic:${pics.length}`, pics.length)])
       ch = { k, id: item.id, pk: item.kind, nh: (item.hints || []).length, t1: until('pic', null, item.kind === 'book' ? T.dur.picBook : T.dur.pic) }
     } else {
       // «من هو؟» offers three others from the person's own book, so a book

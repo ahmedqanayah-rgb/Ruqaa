@@ -7,7 +7,7 @@ import { effectLine, effectMood } from '../../lib/game/effects.js'
 import { sheepPlan, memoryDigits, MEMORY, AUCTION } from '../../lib/game/minis.js'
 import MiniChart from './MiniChart.jsx'
 import { PicResult } from './PicRound.jsx'
-import { LETTERS, FaceImage } from './Challenge.jsx'
+import { LETTERS, FaceImage, QuestionPhoto } from './Challenge.jsx'
 import { L, KindHead, Token, TOKEN_COLORS, Steps } from './parts.jsx'
 
 /*
@@ -145,7 +145,7 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
   let why = null
   switch (res.k) {
     case 'mcq':
-      body = <><p className="gm-q is-small"><RichText value={item.q} /></p>
+      body = <><QuestionPhoto photo={item.photo} /><p className="gm-q is-small"><RichText value={item.q} /></p>
         <ChoiceResult core={core} labels={labels} order={optionOrder(ch, item.opts.length)} right={0} mine={mine} render={(i) => t(item.opts[i])} /></>
       why = item.why
       break
@@ -156,7 +156,7 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
       why = item.why
       break
     case 'tf':
-      body = <><p className="gm-q is-small"><RichText value={item.statement} /></p>
+      body = <><QuestionPhoto photo={item.photo} /><p className="gm-q is-small"><RichText value={item.statement} /></p>
         <ChoiceResult core={core} labels={labels} order={[0, 1]} right={item.isMyth ? 0 : 1} mine={mine}
           render={(i) => t(i === 0 ? L('خرافة', 'Myth') : L('حقيقة', 'Fact'))} /></>
       why = item.explain
@@ -194,6 +194,7 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
         .sort((a, b) => a.off - b.off)
       body = (
         <>
+          <QuestionPhoto photo={item.photo} />
           <p className="gm-q is-small"><RichText value={item.q} /></p>
           <p className="gm-truth"><b dir="ltr">{item.show ? t(item.show) : item.a.toLocaleString('en')}</b>{item.unit && <> {t(item.unit)}</>}</p>
           <Rows core={core} labels={labels} rows={rows.map((r, k) => ({ id: r.id, value: r.v.toLocaleString('en'), best: k === 0 || r.off === rows[0].off }))} />
@@ -205,11 +206,12 @@ export default function Result({ core, decks, room, me, now, labels, onPeek }) {
     case 'bluff': {
       const [before, after] = (t(item.q) || '').split('____')
       if (res.x.none || !ch.o) {
-        body = <><p className="gm-q is-small">{before}<b className="gm-fill">{t(item.truth)}</b>{after}</p>
+        body = <><QuestionPhoto photo={item.photo} /><p className="gm-q is-small">{before}<b className="gm-fill">{t(item.truth)}</b>{after}</p>
           <p className="gm-hint-dark">{t(L('لم يكتب أحدٌ كذبة، فهذه هي الحقيقة.', 'Nobody wrote a lie, so here is the truth.'))}</p></>
       } else {
         body = (
           <>
+            <QuestionPhoto photo={item.photo} />
             <p className="gm-q is-small">{before}<b className="gm-fill">{t(item.truth)}</b>{after}</p>
             <div className="gm-opts is-result">
               {ch.o.map((o, i) => {

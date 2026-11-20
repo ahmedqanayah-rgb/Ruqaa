@@ -164,6 +164,16 @@ export default function Stage({ room, snap, me, decks, code }) {
   })
   // A new result starts un-peeked.
   useEffect(() => { setPeek(false) }, [core.n, core.phase])
+  /* A round's photo starts loading the moment the round is dealt — while the die
+     is thrown and the token walks — so it is there when the question opens. */
+  const dealt = core.ch && decks.byId[core.ch.id]
+  const roundPhoto = dealt?.photo?.src || (['pic', 'who', 'face'].includes(core.ch?.k) ? dealt?.img : null)
+  useEffect(() => {
+    if (!roundPhoto) return
+    const img = new Image()
+    img.decoding = 'async'
+    img.src = roundPhoto
+  }, [roundPhoto])
 
   const roll = () => { if (myTurn && core.phase === 'roll') room.setMine({ roll: turnKey(core), rt: Math.round(room.now()) }) }
   /* Untimed, nobody's die rolls itself — so a friend who has wandered off from

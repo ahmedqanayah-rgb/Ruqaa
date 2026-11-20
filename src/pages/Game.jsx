@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 import { books } from '../data/books.js'
 import { luckCards, dares } from '../data/game/cards.js'
 import { members } from '../data/game/members.js'
+import { questionPhotos } from '../data/game/questionPhotos.js'
 import { assembleDecks } from '../lib/game/decks.js'
 import { ROOM_RE, PID_RE, cleanRoomCode } from '../lib/game/net.js'
 import GameEntry from '../components/game/GameEntry.jsx'
@@ -46,6 +47,7 @@ const decks = assembleDecks({
   luck: luckCards,
   dares,
   members, // questions the club's members wrote (data/game/members.js)
+  photos: questionPhotos, // each question's photo (scripts/import-question-photos.mjs)
 })
 
 export default function Game() {

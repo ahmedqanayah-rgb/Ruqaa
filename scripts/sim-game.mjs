@@ -99,7 +99,8 @@ async function realDecks() {
   }
   const cards = await import(pathToFileURL(path.join(data, 'game', 'cards.js')).href)
   const { members } = await import(pathToFileURL(path.join(data, 'game', 'members.js')).href)
-  return assembleDecks({ order: books.map((b) => b.id), games, myths, luck: cards.luckCards, dares: cards.dares, members })
+  const { questionPhotos } = await import(pathToFileURL(path.join(data, 'game', 'questionPhotos.js')).href)
+  return assembleDecks({ order: books.map((b) => b.id), games, myths, luck: cards.luckCards, dares: cards.dares, members, photos: questionPhotos })
 }
 
 const decks = flag('synthetic') ? syntheticDecks() : await realDecks()

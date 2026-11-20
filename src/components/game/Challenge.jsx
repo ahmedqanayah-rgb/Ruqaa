@@ -64,6 +64,18 @@ export function FaceImage({ item }) {
   )
 }
 
+/* A question's photo (data/game/questionPhotos.js, 2026-11-20): its subject,
+   never its answer. Whole, as big as the sheet allows; its width and height are
+   known, so nothing jumps while it arrives (Stage starts loading it early). */
+export function QuestionPhoto({ photo }) {
+  if (!photo) return null
+  return (
+    <div className="gm-qphoto">
+      <img src={photo.src} width={photo.w} height={photo.h} alt="" decoding="async" draggable={false} />
+    </div>
+  )
+}
+
 const COST = L('−١', '−1')
 const stepsWord = (n) => L(n === 1 ? 'خطوةٌ واحدة' : n === 2 ? 'خطوتان' : `${n} خطوات`, `${n} step${n > 1 ? 's' : ''}`)
 
@@ -139,6 +151,7 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       const order = optionOrder(ch, item.opts.length)
       body = (
         <>
+          <QuestionPhoto photo={item.photo} />
           <p className="gm-q"><RichText value={item.q} /></p>
           {!mine && <HintBar label={L('احذف إجابتين', 'Remove two answers')} h={h} most={most} onBuy={buy} worth={worth} />}
           <Options order={order} picked={mine?.v} onPick={submit} gone={h ? fiftyFifty(ch) : []} render={(i) => t(item.opts[i])} />
@@ -163,6 +176,7 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
     case 'tf': {
       body = (
         <>
+          <QuestionPhoto photo={item.photo} />
           <p className="gm-q is-statement"><RichText value={item.statement} /></p>
           {!mine && item.hint && (
             <HintBar label={L('تلميح', 'Hint')} h={h} most={most} onBuy={buy} worth={worth}>
@@ -186,6 +200,7 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
       const [lo, hi] = numRange(item, ch)
       body = mine ? null : (
         <>
+          <QuestionPhoto photo={item.photo} />
           <p className="gm-q"><RichText value={item.q} /></p>
           <HintBar label={L('أعطني نطاقاً', 'Give me a range')} h={h} most={most} onBuy={buy}
             worth={worth} worthLabel={L('إن كنتَ الأقرب', 'If you’re the closest')}>
@@ -239,6 +254,7 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
           ? <Waiting core={core} entries={entries}><p className="gm-said">{t(L('كذبتك:', 'Your lie:'))} «<bdi>{mine.v}</bdi>»</p></Waiting>
           : (
             <form onSubmit={(e) => { e.preventDefault(); if (text.trim()) submit(text.trim()) }}>
+              <QuestionPhoto photo={item.photo} />
               <p className="gm-q">{before}<span className="gm-blank">؟</span>{after}</p>
               <p className="gm-hint-dark">{t(L('اكتب ما يملأ الفراغ — كذبةً مقنعة، لا الحقيقة. سيرى الجميع كذبتك بين الإجابات.', 'Fill the blank with a convincing LIE, not the truth. Everyone will see it among the answers.'))}</p>
               <input className="gm-input" value={text} maxLength={LIE_MAX} onChange={(e) => setText(e.target.value)} autoFocus enterKeyHint="send" />
@@ -250,6 +266,7 @@ export default function Challenge({ core, entries, decks, room, me, now }) {
         const struck = bluffHint(ch, me)
         body = (
           <>
+            <QuestionPhoto photo={item.photo} />
             <p className="gm-q">{before}<span className="gm-blank">؟</span>{after}</p>
             <p className="gm-hint-dark">{t(L('واحدةٌ فقط هي الحقيقة. اخترها.', 'Only one is the truth. Pick it.'))}</p>
             {!mine && iAnswer && struck != null && <HintBar label={L('احذف كذبة', 'Strike out a lie')} h={h} most={most} onBuy={buy} worth={worth} />}

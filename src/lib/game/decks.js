@@ -18,11 +18,12 @@
 import { matchesName } from './match.js'
 
 const KINDS = ['mcq', 'num', 'who', 'graph', 'bluff', 'tf', 'pic', 'face']
-// What a member may write: every kind the deal takes from a book's deck — not
-// the picture rounds, which are drawn on their own.
-const MEMBER_KINDS = KINDS.filter((k) => k !== 'pic')
+// What a member may write: every kind of round a book's decks hold.
+const MEMBER_KINDS = KINDS
 
-export function assembleDecks({ order, games, myths, luck: siteLuck, dares: siteDares, members = {} }) {
+/* `photos` (data/game/questionPhotos.js): question id → [path, width, height] —
+   a photo of the question's subject, shown with it; each item gets `photo`. */
+export function assembleDecks({ order, games, myths, luck: siteLuck, dares: siteDares, members = {}, photos = {} }) {
   let luck = siteLuck
   let dares = siteDares
   const books = []
@@ -64,13 +65,27 @@ export function assembleDecks({ order, games, myths, luck: siteLuck, dares: site
       const known = [home, ...also].every((b) => byBook[b])
       if (known && kind === 'luck') extraLuck.push({ ...item, book: home, by })
       else if (known && kind === 'dare') extraDares.push({ ...item, book: home, by })
+      // A picture round's own kind ("name it" or "which book?") is its `pk`.
+      else if (known && kind === 'pic') { const { pk, ...pic } = item; byBook[home].pic.push({ ...pic, kind: pk, book: home, by }) }
       else if (known && MEMBER_KINDS.includes(kind)) byBook[home][kind].push({ ...item, ...(also.length ? { also } : {}), by })
       else strays.push(`${by}: ${item.id || 'a question'} is for "${book}"/"${kind}", which the game does not deal`)
     }
   }
   luck = [...luck, ...extraLuck]
   dares = [...dares, ...extraDares]
-  for (const id of books) for (const kind of KINDS) for (const item of byBook[id][kind]) byId[item.id] = item
+  const pictured = new Set()
+  for (const id of books) {
+    for (const kind of KINDS) {
+      byBook[id][kind] = byBook[id][kind].map((item) => {
+        const p = photos[item.id]
+        if (!p) return item
+        pictured.add(item.id)
+        return { ...item, photo: { src: p[0], w: p[1], h: p[2] } }
+      })
+      for (const item of byBook[id][kind]) byId[item.id] = item
+    }
+  }
+  for (const id of Object.keys(photos)) if (!pictured.has(id)) strays.push(`a photo is planned for "${id}", which no deck holds`)
   for (const card of luck) byId[card.id] = card
   for (const dare of dares) byId[dare.id] = dare
   return { books, byBook, byId, luck, dares, writers, strays }
@@ -174,6 +189,9 @@ export function lintDecks(decks) {
   /* The members' own questions: each must land in a book's deck, and each
      writer must have a name to be recognised by at the table. */
   for (const stray of decks.strays || []) problems.push(stray)
+  for (const book of decks.books) for (const kind of KINDS) for (const item of decks.byBook[book][kind]) {
+    if (item.photo) check(typeof item.photo.src === 'string' && item.photo.src.startsWith('./images/') && item.photo.w > 0 && item.photo.h > 0, `${item.id}: a malformed photo`)
+  }
   for (const [by, names] of Object.entries(decks.writers || {})) {
     check(Array.isArray(names) && names.some((n) => typeof n === 'string' && n.trim()), `${by}: a writer needs a name to be recognised by`)
   }

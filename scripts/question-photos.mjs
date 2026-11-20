@@ -159,6 +159,20 @@ export const PHOTOS = {
   'td-radford': { ...L('صورة ريتشارد رادفورد، الاقتصادي الذي كتب عن معسكر الأسرى (إن وُجدت)', 'Richard A. Radford economist'), q: ['td-w-radford'] },
 }
 
+/* Planned, but not shown: the club found no real portrait of Radford, and the
+   picture that stood in for him was of other men — «من هو؟» presents its
+   picture as the person (2026-11-20). */
+export const SKIP = ['td-radford']
+
+/* Picture rounds whose picture the club supplied: here the photo IS the
+   question, so it must carry no name, caption or brand (scripts/
+   import-question-photos.mjs cleans those off). Name → the round it is for. */
+export const PICTURE_ROUNDS = {
+  'ws-mimosa': 'maria-ws-p-mimosa',
+  'sf-ksafe': 'maria-sf-p-ksafe',
+  'td-scrooge': 'maria-td-p-scrooge',
+}
+
 /* Questions that take a picture the site already has — none of these people or
    pictures is the answer to a picture round or a «من هو؟». */
 export const REUSE = {
