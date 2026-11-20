@@ -1690,5 +1690,1919 @@ export const members = {
       }
     ],
   },
-  majd: { names: ['Majd', 'مجد'], questions: [] },
+  majd: {
+    names: ['Majd', 'مجد'],
+    // The second version of Majd's question bank (2026-11-20): 100 multiple-choice
+    // and true/false questions, each with its answer, explanation and page, put
+    // into the decks' shapes in both languages. 67 are here; the other 33 are
+    // questions the game already asks, so only the better version is kept, as
+    // the club asked (the commit lists which). Changed from what was written:
+    // the options evened out (the right one first, wrong ones a half-informed
+    // player could believe, no throwaway jokes); four facts put right against
+    // the books (73% of US elementary schools still have recess, not 37%; Hari's
+    // dad, not his grandfather, drove a bus; Poincaré was stepping onto a bus;
+    // reading is "one of" the most common forms of flow); and lines taken out
+    // where they would answer another question or repeat a refuted figure (the
+    // 23 minutes, 18°C, the drink-drive hours, Mendeleev's dream, the 2003
+    // outdoor-play figure, credere, debtors' prisons, Faust).
+    questions: [
+      {
+        "id": "majd-1",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما المادّة التي تتراكم في دماغك كلّما طالت يقظتك فتصنع «ضغط النوم»، ويزاحمها الكافيين على مستقبِلاتها؟",
+          "en": "Which chemical builds up in your brain the longer you stay awake, creating “sleep pressure” — the one caffeine elbows off its receptors?"
+        },
+        "opts": [
+          {
+            "ar": "الأدينوزين",
+            "en": "Adenosine"
+          },
+          {
+            "ar": "الميلاتونين",
+            "en": "Melatonin"
+          },
+          {
+            "ar": "الكورتيزول",
+            "en": "Cortisol"
+          },
+          {
+            "ar": "الدوبامين",
+            "en": "Dopamine"
+          }
+        ],
+        "src": "ص 22، 43",
+        "why": {
+          "ar": "الأدينوزين. والكافيين لا يزيله، بل يحتلّ مستقبِلاته فيحجب عنك إشارة النعاس.",
+          "en": "Adenosine. Caffeine doesn’t clear it away; it squats on its receptors and muffles the signal that you’re sleepy."
+        }
+      },
+      {
+        "id": "majd-2",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما سبب «انهيار الكافيين»، ذلك النعاس المفاجئ الثقيل حين يزول مفعول القهوة؟",
+          "en": "What causes the “caffeine crash”, the sudden heavy sleepiness when the coffee wears off?"
+        },
+        "opts": [
+          {
+            "ar": "مادّة النعاس ظلّت تتراكم خلف الكافيين ساعاتٍ، فتصل كلّها دفعةً واحدة",
+            "en": "The sleepy chemical kept piling up behind the caffeine, and hits all at once"
+          },
+          {
+            "ar": "الكافيين يستنزف سكّر الدم، فيهبط فجأةً حين ينتهي مفعوله",
+            "en": "Caffeine burns through your blood sugar, which crashes when it wears off"
+          },
+          {
+            "ar": "القهوة تُجفّف الجسم، والجفاف يجلب الخمول بعد ساعات",
+            "en": "Coffee dehydrates you, and dehydration brings on fatigue hours later"
+          },
+          {
+            "ar": "الكافيين يُفرغ مخزون الأدرينالين، فيحتاج الجسم ساعاتٍ ليعوّضه",
+            "en": "Caffeine empties your adrenaline stores, which take hours to refill"
+          }
+        ],
+        "src": "ص 45",
+        "why": {
+          "ar": "الأدينوزين لم يتوقّف عن التراكم وأنت تشرب. فحين يفكّك الكبد الكافيين تشعر بالنعاس الذي دفعك إلى القهوة، مضافاً إليه كلّ ما تراكم بعدها.",
+          "en": "Adenosine never stopped building while you drank. When your liver breaks the caffeine down, you feel the sleepiness that sent you for coffee, plus everything that piled up since."
+        }
+      },
+      {
+        "id": "majd-3",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "كلّما تقدّم بنا العمر صار الجسم أبطأ في التخلّص من الكافيين، فيصير فنجان العصر أشدّ إضراراً بالنوم.",
+          "en": "As we age, the body clears caffeine more slowly, so an afternoon coffee does more harm to sleep."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "مَن يفكّك الكافيين في الجسم، وهل يبقى على حاله مع السنين؟",
+          "en": "Who breaks caffeine down in the body — and does it stay the same over the years?"
+        },
+        "src": "ص 43–45",
+        "explain": {
+          "ar": "وللجينات دورٌ أيضاً: إنزيم الكبد الذي يفكّك الكافيين أبطأ عند بعض الناس، فيبقى فنجان الصباح في دمهم معظم النهار. ونصف عمر الكافيين في المتوسّط بين خمس ساعات وسبع.",
+          "en": "Genes play a part too: in some people the liver enzyme that breaks caffeine down is slower, so the morning cup lingers most of the day. Caffeine’s half-life averages five to seven hours."
+        }
+      },
+      {
+        "id": "majd-4",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما الدور الحقيقي للميلاتونين في النوم، بحسب ووكر؟",
+          "en": "What is melatonin’s real role in sleep, according to Walker?"
+        },
+        "opts": [
+          {
+            "ar": "يعلن أن الليل حلّ، كمسدّس انطلاق السباق، ولا يصنع النوم نفسه",
+            "en": "It announces that night has come, like a starting pistol, but doesn’t make the sleep"
+          },
+          {
+            "ar": "هو الذي يصنع النوم العميق، وكلّما زاد كان النوم أعمق",
+            "en": "It produces deep sleep — the more of it, the deeper you sleep"
+          },
+          {
+            "ar": "يتراكم طوال النهار، فيشتدّ النعاس كلّما طالت اليقظة",
+            "en": "It builds up all day, so the longer you’re awake, the sleepier you get"
+          },
+          {
+            "ar": "يُطفئ نشاط الدماغ ليلاً كي ترتاح خلاياه",
+            "en": "It switches the brain off at night so its cells can rest"
+          }
+        ],
+        "src": "ص 35",
+        "why": {
+          "ar": "الميلاتونين يضبط توقيت النوم ولا يشارك في صنعه، كالحَكَم الذي يُطلق مسدّس البداية ولا يركض. لذلك فائدته دواءً محدودة عند الأصحّاء، وأوضح ما تكون مع فرق التوقيت.",
+          "en": "Melatonin times sleep but takes no part in generating it — the official who fires the starting pistol, then doesn’t run. That’s why, as a pill, it does little for healthy sleepers; jet lag is where it helps most."
+        }
+      },
+      {
+        "id": "majd-6",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "أيّ غدّةٍ تفرز الميلاتونين، وما الذي يوقفها عند الفجر؟",
+          "en": "Which gland releases melatonin, and what stops it at dawn?"
+        },
+        "opts": [
+          {
+            "ar": "الغدّة الصنوبرية، ويوقفها ضوء النهار الداخل من العينين",
+            "en": "The pineal gland — stopped by daylight entering through the eyes"
+          },
+          {
+            "ar": "الغدّة النخامية، ويوقفها صوت المنبّه",
+            "en": "The pituitary gland — stopped by the sound of the alarm"
+          },
+          {
+            "ar": "الغدّة الدرقية، ويوقفها أوّل طعامٍ تأكله",
+            "en": "The thyroid gland — stopped by the first food you eat"
+          },
+          {
+            "ar": "الغدّة الكظرية، ويوقفها ارتفاع الكورتيزول صباحاً",
+            "en": "The adrenal glands — stopped by the morning rise in cortisol"
+          }
+        ],
+        "src": "ص 35–36",
+        "why": {
+          "ar": "حين يدخل ضوء الشمس من العينين، ولو من خلال الجفنين المغمضين، يتوقّف إفراز الميلاتونين: إشارةٌ بأن النوم انتهى. لذلك يساعد ضوء الصباح على ضبط الساعة البيولوجية.",
+          "en": "When sunlight reaches the brain through the eyes — even through closed lids — the melatonin tap shuts off: the signal that sleep is over. Which is why morning light helps set your body clock."
+        }
+      },
+      {
+        "id": "majd-7",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "أين تقع «الساعة البيولوجية الرئيسية» في جسمك؟",
+          "en": "Where is your body’s “master clock”?"
+        },
+        "opts": [
+          {
+            "ar": "في «النواة فوق التصالبية»، في الوطاء في عمق الدماغ",
+            "en": "In the suprachiasmatic nucleus, in the hypothalamus deep in the brain"
+          },
+          {
+            "ar": "في القلب، الذي يضبط إيقاع الجسم كلّه",
+            "en": "In the heart, which sets the rhythm of the whole body"
+          },
+          {
+            "ar": "في المخيخ، مركز التوقيت والتوازن",
+            "en": "In the cerebellum, the brain’s centre of timing and balance"
+          },
+          {
+            "ar": "في الكبد، الذي يضبط مواعيد الطاقة والهضم",
+            "en": "In the liver, which schedules energy and digestion"
+          }
+        ],
+        "src": "ص 39، 362",
+        "why": {
+          "ar": "ولا تستطيع هذه النواة أن تعدّل توقيتها إلا ساعةً واحدة تقريباً في اليوم، ولهذا يحتاج التأقلم مع فرق ثماني ساعات إلى نحو ثمانية أيام.",
+          "en": "And it can only shift by about an hour a day — which is why adjusting to an eight-hour time difference takes about eight days."
+        }
+      },
+      {
+        "id": "majd-8",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "الساعة البيولوجية و«ضغط النوم» نظامٌ واحد، يتحرّك جزآه معاً دائماً.",
+          "en": "Your body clock and “sleep pressure” are one system whose two parts always move together."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "لماذا قد تشعر بصحوةٍ غريبة صباحاً بعد ليلةٍ لم تنم فيها؟",
+          "en": "Why might you feel oddly awake the morning after a night without sleep?"
+        },
+        "src": "ص 47",
+        "explain": {
+          "ar": "هما نظامان منفصلان، وإن سارا عادةً في اتّجاهٍ واحد. لذلك قد تشعر بنشاطٍ مفاجئ في الصباح بعد ليلةٍ بلا نوم: ساعتك ترفعك مؤقّتاً، مع أن ضغط النوم في ذروته.",
+          "en": "They’re two separate systems that usually happen to pull the same way. That’s why you can feel a sudden lift the morning after a sleepless night: your body clock picks you up for a while, though sleep pressure is at its peak."
+        }
+      },
+      {
+        "id": "majd-9",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا لا تسمع ما يدور حولك وأنت نائم، مع أن أذنيك تعملان؟",
+          "en": "Why don’t you hear what’s going on around you while you sleep, though your ears still work?"
+        },
+        "opts": [
+          {
+            "ar": "لأن «المهاد» في وسط الدماغ يُغلق بوّابته، فلا تبلغ الأصوات وعيك",
+            "en": "The thalamus, in the middle of the brain, shuts its gate, so sounds never reach awareness"
+          },
+          {
+            "ar": "لأن الأذن الوسطى ترتخي في النوم فلا تنقل الصوت",
+            "en": "The middle ear goes slack during sleep and stops passing sound on"
+          },
+          {
+            "ar": "لأن الدماغ يكتم كلّ صوتٍ أخفض من صوت المنبّه",
+            "en": "The brain mutes every sound quieter than an alarm"
+          },
+          {
+            "ar": "لأن الميلاتونين يُخدّر أعصاب السمع ليلاً",
+            "en": "Melatonin numbs the hearing nerves at night"
+          }
+        ],
+        "src": "ص 59–60",
+        "why": {
+          "ar": "المهاد بوّابة الحسّ: يقرّر أيّ الإشارات تبلغ القشرة فتصير وعياً. وإغلاقه هو لحظة النوم فعلاً؛ الأذن تسمع، لكن الرسالة لا تصل.",
+          "en": "The thalamus is the sensory gate: it decides which signals reach the cortex and become awareness. Its closing is the moment you actually fall asleep — your ears still hear, but the message doesn’t get through."
+        }
+      },
+      {
+        "id": "majd-10",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "يواصل دماغك تتبّع الوقت بدقّة وأنت نائم، ولهذا تستيقظ أحياناً قبل المنبّه بدقيقةٍ أو دقيقتين.",
+          "en": "Your brain keeps track of time precisely while you sleep — which is why you sometimes wake a minute or two before the alarm."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "هل استيقظت مرّةً قبل المنبّه بلحظات؟ أكانت صدفة؟",
+          "en": "Ever woken moments before your alarm? Was it a coincidence?"
+        },
+        "src": "ص 60",
+        "explain": {
+          "ar": "تفقد الإحساس الواعي بالزمن، لكن الدماغ يواصل عدّه تحت مستوى الوعي.",
+          "en": "You lose the conscious sense of time, but your brain goes on counting it below awareness."
+        }
+      },
+      {
+        "id": "majd-11",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "في النوم غير الحالم تظهر اندفاعاتٌ سريعة من نشاط الدماغ تُسمّى «مغازل النوم». ما وظيفتها؟",
+          "en": "In non-dreaming sleep, quick bursts of brain activity called “sleep spindles” appear. What do they do?"
+        },
+        "opts": [
+          {
+            "ar": "تحمي نومك من الضجيج، وتجدّد قدرة دماغك على التعلّم",
+            "en": "They guard your sleep against noise, and restore your brain’s capacity to learn"
+          },
+          {
+            "ar": "تُطلق الأحلام وتختار ما تدور حوله",
+            "en": "They set off dreams and choose what they’re about"
+          },
+          {
+            "ar": "تحرّك العينين بسرعةٍ تحت الجفنين المغمضين",
+            "en": "They move the eyes rapidly under closed lids"
+          },
+          {
+            "ar": "تخفض حرارة الجسم كي يبدأ النوم العميق",
+            "en": "They lower body temperature so deep sleep can begin"
+          }
+        ],
+        "src": "ص 73، 163",
+        "why": {
+          "ar": "كلّما كثرت المغازل صعُب أن يوقظك الضجيج، وتحسّن تعلّمك في اليوم التالي. والمسنّون ينتجون منها أقلّ بنحو ٤٠٪.",
+          "en": "The more spindles you have, the harder it is for noise to wake you, and the better you learn the next day. Older adults make about 40% fewer of them."
+        }
+      },
+      {
+        "id": "majd-13",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "نوم الليل دوراتٌ تدوم كلٌّ منها نحو ٩٠ دقيقة. إن استيقظت قبل موعدك المعتاد بساعتين، فأيّ نومٍ تخسر أكثر من غيره؟",
+          "en": "A night’s sleep runs in cycles of about 90 minutes. If you wake two hours earlier than usual, which kind of sleep do you lose most?"
+        },
+        "opts": [
+          {
+            "ar": "نوم حركة العين السريعة، نوم الأحلام",
+            "en": "REM sleep — dream sleep"
+          },
+          {
+            "ar": "النوم العميق",
+            "en": "Deep sleep"
+          },
+          {
+            "ar": "الاثنين بالتساوي، بنسبة الوقت الضائع",
+            "en": "Both equally, in proportion to the time lost"
+          },
+          {
+            "ar": "لا شيء يُذكر: الدورات الأخيرة تكرارٌ لما سبقها",
+            "en": "Nothing much: the last cycles just repeat the earlier ones"
+          }
+        ],
+        "src": "ص 64–66، 93",
+        "why": {
+          "ar": "النوم العميق يغلب على النصف الأوّل من الليل، ونوم الأحلام على النصف الثاني. فمن نام منتصف الليل واستيقظ في السادسة بدل الثامنة لم يخسر ربع نومه فقط، بل ما بين ٦٠٪ و٩٠٪ من نوم أحلامه.",
+          "en": "Deep sleep dominates the first half of the night and REM the second. Sleep at midnight and wake at six instead of eight, and you haven’t lost a quarter of your sleep — you’ve lost 60–90% of your REM."
+        }
+      },
+      {
+        "id": "majd-15",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "نوم الأحلام هو الوقت الوحيد الذي يخلو فيه دماغك تماماً من مادّةٍ بعينها، وهذا ما يجعل الحلم «علاجاً ليلياً» للذكريات المؤلمة. ما هي؟",
+          "en": "Dream sleep is the only time your brain is completely free of one chemical — which is what makes dreaming “overnight therapy” for painful memories. Which chemical?"
+        },
+        "opts": [
+          {
+            "ar": "النورأدرينالين، مادّة القلق في الدماغ",
+            "en": "Noradrenaline, the brain’s anxiety chemical"
+          },
+          {
+            "ar": "السيروتونين، مادّة المزاج",
+            "en": "Serotonin, the mood chemical"
+          },
+          {
+            "ar": "الدوبامين، مادّة المكافأة",
+            "en": "Dopamine, the reward chemical"
+          },
+          {
+            "ar": "الكورتيزول، هرمون الإجهاد",
+            "en": "Cortisol, the stress hormone"
+          }
+        ],
+        "src": "ص 302",
+        "why": {
+          "ar": "في نوم الأحلام تعود اللوزة والهيبوكامبوس إلى النشاط، لكن بلا النورأدرينالين. فيعيد الدماغ معالجة التجارب المزعجة في أمانٍ وينزع عنها حدّتها، ولهذا نستيقظ أحياناً ونحن أحسن حالاً.",
+          "en": "In REM sleep the amygdala and hippocampus come back to life, but without noradrenaline. So the brain reprocesses upsetting experiences in safety and takes the sting out of them — which is why we sometimes wake feeling better."
+        }
+      },
+      {
+        "id": "majd-16",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "ماذا يحدث في الدماغ بعد ليلةٍ بلا نوم فيجعلنا سريعي الانفعال؟",
+          "en": "What happens in the brain after a sleepless night that makes us so quick-tempered?"
+        },
+        "opts": [
+          {
+            "ar": "يزيد نشاط اللوزة نحو ٦٠٪، وتضعف صلتها بالفصّ الجبهي الذي يكبحها",
+            "en": "The amygdala gets about 60% more reactive, and loses touch with the frontal lobe that reins it in"
+          },
+          {
+            "ar": "ينخفض نشاط اللوزة، فتفقد المشاعر توازنها",
+            "en": "The amygdala quietens down, and emotions lose their balance"
+          },
+          {
+            "ar": "يتوقّف الفصّ الجبهي عن العمل نهائياً حتى تنام",
+            "en": "The frontal lobe shuts down completely until you sleep"
+          },
+          {
+            "ar": "يرتفع الميلاتونين في النهار، فيعكّر المزاج",
+            "en": "Melatonin rises in the daytime and sours your mood"
+          }
+        ],
+        "src": "ص 215–216",
+        "why": {
+          "ar": "يشبّهها ووكر بدوّاسة وقودٍ قويّة (اللوزة) ومكابح ضعيفة (الفصّ الجبهي)، والنتيجة تقلّبٌ سريع بين الغضب والمرح المفرط.",
+          "en": "Walker likens it to a powerful accelerator (the amygdala) with weak brakes (the frontal lobe) — hence the quick swings between anger and giddiness."
+        }
+      },
+      {
+        "id": "majd-17",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما الناقل العصبي الذي يفرزه الوطاء فيعمل «مفتاحاً» يشغّل اليقظة، ويتوقّف إفرازه ليلاً فننام؟",
+          "en": "Which neurotransmitter, released by the hypothalamus, works as the switch that turns wakefulness on — and stops flowing at night so we fall asleep?"
+        },
+        "opts": [
+          {
+            "ar": "الأوركسين",
+            "en": "Orexin"
+          },
+          {
+            "ar": "الميلاتونين",
+            "en": "Melatonin"
+          },
+          {
+            "ar": "الغريلين",
+            "en": "Ghrelin"
+          },
+          {
+            "ar": "الأستيل كولين",
+            "en": "Acetylcholine"
+          }
+        ],
+        "src": "ص 362",
+        "why": {
+          "ar": "الأوركسين يُنشّط مراكز اليقظة في جذع الدماغ. ومن فقد الخلايا التي تفرزه أصيب بالتغفيق (النُّعاس القهري): نومٌ يهاجمه في وضح النهار.",
+          "en": "Orexin fires up the wake centres in the brainstem. Lose the cells that make it, and you have narcolepsy: sleep that ambushes you in broad daylight."
+        }
+      },
+      {
+        "id": "majd-19",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "قلّة النوم العميق تزيد تراكم الأميلويد في الدماغ، وتراكمه بدوره يقلّل النوم العميق: حلقةٌ مفرغة.",
+          "en": "Too little deep sleep lets amyloid build up in the brain — and the build-up in turn cuts deep sleep: a vicious circle."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "أين يتراكم الأميلويد؟ وماذا تفعل تلك المناطق في الليل؟",
+          "en": "Where does amyloid build up — and what do those regions do at night?"
+        },
+        "src": "ص 235–236",
+        "explain": {
+          "ar": "الأميلويد يهاجم مناطق الدماغ التي تولّد النوم العميق نفسه. ولهذا تربط دراساتٌ كثيرة قلّة النوم على مدى العمر بزيادة خطر الألزهايمر.",
+          "en": "Amyloid attacks the very brain regions that generate deep sleep. That’s why many studies link a lifetime of short sleep to a higher risk of Alzheimer’s."
+        }
+      },
+      {
+        "id": "majd-20",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "بماذا يشبّه ووكر «الهيبوكامبوس»، وماذا يفعل النوم به؟",
+          "en": "What does Walker compare the hippocampus to — and what does sleep do to it?"
+        },
+        "opts": [
+          {
+            "ar": "بذاكرة USB صغيرة، والنوم ينقل ما فيها إلى مخزنٍ دائم فيُفرغها لتعلّمٍ جديد",
+            "en": "A small USB stick: sleep moves its contents into permanent storage, clearing it for new learning"
+          },
+          {
+            "ar": "بمكتبةٍ لا تمتلئ، والنوم يرتّب رفوفها فقط",
+            "en": "A library that never fills up: sleep just tidies the shelves"
+          },
+          {
+            "ar": "بسلّة محذوفات، والنوم يُفرغها من كلّ ما تعلّمته في النهار",
+            "en": "A recycle bin: sleep empties out everything you learned that day"
+          },
+          {
+            "ar": "بقرصٍ صلب كبير، والنوم يضغط ما فيه ليتّسع لغيره",
+            "en": "A big hard drive: sleep compresses what’s on it to make room"
+          }
+        ],
+        "src": "ص 160",
+        "why": {
+          "ar": "في تجربة، تعلّم من أخذوا قيلولةً من ٩٠ دقيقة أفضل بنحو ٢٠٪ في المساء، وتراجعت قدرة من بقوا مستيقظين. معلومةٌ عملية: القيلولة بين جلستَي دراسة مفيدة.",
+          "en": "In one study, people who took a 90-minute nap learned about 20% better that evening, while those who stayed awake got worse at it. Practical tip: a nap between two study sessions pays off."
+        }
+      },
+      {
+        "id": "majd-21",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "الليلة الأولى بعد التعلّم هي الأهمّ، أمّا الكحول في الليلة الثالثة بعده فلا يضرّ الذاكرة.",
+          "en": "The first night after learning is the one that counts; drinking on the third night does no harm to memory."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "هل ينتهي الدماغ من ترتيب ما تعلّمته في ليلةٍ واحدة؟",
+          "en": "Does the brain finish filing what you learned in a single night?"
+        },
+        "src": "ص 393–394",
+        "explain": {
+          "ar": "في تجربةٍ على طلاب، نسي من شربوا في الليلة الأولى أكثر من نصف ما تعلّموه، ونسي من شربوا في الليلة الثالثة نحو ٤٠٪. الدماغ يواصل معالجة ما تعلّمته عدّة ليال.",
+          "en": "In a study of students, those who drank on the first night forgot more than half of what they’d learned — and those who drank on the third night still forgot about 40%. The brain keeps working on new learning for several nights."
+        }
+      },
+      {
+        "id": "majd-23",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "التمرين وحده يصنع الإتقان: إن تدرّبت على مهارةٍ حركية صباحاً، وجدت التحسّن نفسه مساءً كما بعد ليلة نوم.",
+          "en": "Practice alone makes perfect: train a motor skill in the morning, and you’ll see the same improvement that evening as after a night’s sleep."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "ما الذي يحدث للمهارة بين نهاية التمرين وصباح الغد؟",
+          "en": "What happens to a skill between the end of practice and the next morning?"
+        },
+        "src": "ص 184",
+        "explain": {
+          "ar": "بعد ١٢ ساعة يقظة لم يظهر أيّ تحسّن. أمّا بعد ليلة نوم، وبلا أيّ تدريبٍ إضافي، فزادت السرعة ٢٠٪ والدقّة نحو ٣٥٪. التمرين ثم النوم هو ما يصنع الإتقان.",
+          "en": "After twelve waking hours there was no improvement at all. After a night of sleep — with no extra practice — speed rose 20% and accuracy nearly 35%. Practice, then sleep, makes perfect."
+        }
+      },
+      {
+        "id": "majd-24",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "في تجربةٍ على الحيوانات، نامت بعد تعلّمٍ مكثّف: بعضها نوماً طبيعياً، وبعضها بحبّة «أمبين» المنوّمة. ماذا فعل نوم الحبّة بالوصلات التي تكوّنت أثناء التعلّم؟",
+          "en": "In an animal study, subjects slept after intensive learning — some naturally, some on the sleeping pill Ambien. What did the pill-induced sleep do to the connections formed while learning?"
+        },
+        "opts": [
+          {
+            "ar": "محا نحو نصفها بدل أن يقوّيها",
+            "en": "Wiped out about half of them, instead of strengthening them"
+          },
+          {
+            "ar": "قوّاها تماماً كما يفعل النوم الطبيعي",
+            "en": "Strengthened them, exactly as natural sleep does"
+          },
+          {
+            "ar": "قوّاها أكثر، لأن نوم الحبّة أعمق وأطول",
+            "en": "Strengthened them more, since pill sleep is deeper and longer"
+          },
+          {
+            "ar": "لم يمسّها، فالحبّة تغيّر الأحلام وحدها",
+            "en": "Left them alone — the pill only changes dreams"
+          }
+        ],
+        "src": "ص 408، 412",
+        "why": {
+          "ar": "النوم الطبيعي قوّى الوصلات، ونوم «أمبين» محا نحو ٥٠٪ منها: صار ممحاةً للذاكرة. فالحبوب المنوّمة الشائعة مهدّئات تستهدف المستقبِلات نفسها التي يستهدفها الكحول، ونومها يفتقر إلى الموجات العميقة البطيئة.",
+          "en": "Natural sleep strengthened the connections; Ambien sleep wiped out about 50% of them — an eraser for memory. Common sleeping pills are sedatives that hit the same receptors as alcohol, and their sleep lacks the deep, slow waves."
+        }
+      },
+      {
+        "id": "majd-25",
+        "book": "why-we-sleep",
+        "kind": "tf",
+        "statement": {
+          "ar": "حين يتوقّف أحدٌ عن الحبوب المنوّمة، قد يصبح نومه أسوأ ممّا كان قبل أن يبدأها.",
+          "en": "When someone stops taking sleeping pills, their sleep can get worse than it was before they started."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "ماذا يفعل الدماغ حين يعتاد مادّةً ما ثم تُسحب منه فجأة؟",
+          "en": "What does a brain do when it gets used to a substance, then loses it suddenly?"
+        },
+        "src": "ص 409",
+        "explain": {
+          "ar": "هذا «الأرق الارتدادي». يقاوم الدماغ الدواء بتقليل حساسية مستقبِلاته (تحمّل)، فإذا توقّف الدواء ظهرت أعراض انسحاب.",
+          "en": "This is “rebound insomnia”. The brain fights the drug by dulling its own receptors (tolerance), so when the drug stops, withdrawal sets in."
+        }
+      },
+      {
+        "id": "majd-26",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "في «العلاج السلوكي المعرفي للأرق»، أوّل ما يُنصح به لعلاجه، أسلوبٌ يبدو مناقضاً للمنطق. ما هو؟",
+          "en": "Cognitive behavioural therapy for insomnia, the first treatment recommended, uses one method that sounds backwards. Which?"
+        },
+        "opts": [
+          {
+            "ar": "تقليص الوقت المسموح في السرير، إلى ستّ ساعاتٍ مثلاً، ليتراكم ضغط النوم",
+            "en": "Cutting the time allowed in bed, to six hours say, so sleep pressure builds"
+          },
+          {
+            "ar": "البقاء في السرير حتى يأتي النوم مهما تأخّر",
+            "en": "Staying in bed until sleep comes, however long it takes"
+          },
+          {
+            "ar": "النوم ساعاتٍ إضافية في النهار تعويضاً عن الليل",
+            "en": "Sleeping extra hours in the daytime to make up for the night"
+          },
+          {
+            "ar": "الذهاب إلى السرير أبكر بساعتين لتطول فرصة النوم",
+            "en": "Going to bed two hours earlier, to give sleep more of a chance"
+          }
+        ],
+        "src": "ص 420–421",
+        "why": {
+          "ar": "يتراكم مزيدٌ من ضغط النوم، فينام المريض أسرع وأعمق ويستعيد ثقته بقدرته على النوم. والبقاء في السرير حتى يأتي النوم عكس ما ينصح به العلاج تماماً.",
+          "en": "More sleep pressure builds, so the patient falls asleep faster and deeper and regains faith in their own sleep. Staying in bed until sleep comes is the exact opposite of the advice."
+        }
+      },
+      {
+        "id": "majd-27",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "أيّ هذه ليست من نصائح «العلاج السلوكي المعرفي للأرق»؟",
+          "en": "Which of these is NOT advice from cognitive behavioural therapy for insomnia?"
+        },
+        "opts": [
+          {
+            "ar": "أخذ قيلولةٍ طويلة بعد الظهر لتعويض الليل",
+            "en": "Take a long afternoon nap to make up for the night"
+          },
+          {
+            "ar": "إبعاد الساعات المرئية عن غرفة النوم",
+            "en": "Keep clocks out of sight in the bedroom"
+          },
+          {
+            "ar": "النهوض من السرير إن طال السهاد فيه",
+            "en": "Get out of bed if you lie awake too long"
+          },
+          {
+            "ar": "موعدٌ ثابت للاستيقاظ حتى في العطلة",
+            "en": "Wake at the same time every day, weekends included"
+          }
+        ],
+        "src": "ص 421",
+        "why": {
+          "ar": "من يعاني أرقاً ليلياً يُنصح بتجنّب القيلولة، لأنها تُنفّس ضغط النوم الذي يحتاجه في الليل. وإبعاد الساعات يمنع «قلق مراقبة الساعة» في منتصف الليل.",
+          "en": "People with insomnia are told to avoid naps, which let off the sleep pressure they need at night. Hiding the clocks stops anxious clock-watching in the small hours."
+        }
+      },
+      {
+        "id": "majd-28",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا يُخرج النائم يديه أو قدميه من تحت الغطاء دون أن يشعر؟",
+          "en": "Why do sleepers push their hands or feet out from under the covers without noticing?"
+        },
+        "opts": [
+          {
+            "ar": "لأنها مَشعّات الجسم، وحرارته الداخلية يجب أن تنخفض ليبدأ النوم ويستمرّ",
+            "en": "They’re the body’s radiators, and core temperature has to drop for sleep to start and last"
+          },
+          {
+            "ar": "لأن الدم يتجمّع فيها ليلاً فتحتاج إلى التهوية",
+            "en": "Blood pools in them at night and they need airing"
+          },
+          {
+            "ar": "لأن الدماغ يحرّك الأطراف وهو يحلم",
+            "en": "The dreaming brain moves the limbs about"
+          },
+          {
+            "ar": "لأن الجلد يتنفّس في النوم أكثر من اليقظة",
+            "en": "Skin breathes more during sleep than awake"
+          }
+        ],
+        "src": "ص 396–400",
+        "why": {
+          "ar": "على حرارة الجسم الداخلية أن تنخفض نحو درجةٍ مئوية ليبدأ النوم، واليدان والقدمان منافذ الحرارة. وللسبب نفسه يساعد غسل الوجه قبل النوم أغلب الناس.",
+          "en": "Your core temperature needs to fall by about a degree Celsius for sleep to begin, and hands and feet are where the heat escapes. Same reason washing your face before bed helps most people."
+        }
+      },
+      {
+        "id": "majd-32",
+        "book": "why-we-sleep",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا ننام عادةً نوماً سيّئاً في أوّل ليلةٍ في فندق؟",
+          "en": "Why do we usually sleep badly on our first night in a hotel?"
+        },
+        "opts": [
+          {
+            "ar": "لأن نصف الدماغ ينام أخفّ من الآخر، كحارسٍ في مكانٍ غريب",
+            "en": "Half the brain sleeps lighter than the other, standing guard in a strange place"
+          },
+          {
+            "ar": "لأن الوسادة والفراش الغريبين يُتعبان الرقبة والظهر",
+            "en": "The unfamiliar pillow and mattress strain your neck and back"
+          },
+          {
+            "ar": "لأن عشاء السفر الثقيل يؤخّر النوم العميق",
+            "en": "A heavy travel dinner delays deep sleep"
+          },
+          {
+            "ar": "لأن تكييف الفندق يُجفّف الهواء والحلق",
+            "en": "Hotel air-conditioning dries out the air and your throat"
+          }
+        ],
+        "src": "ص 96–98",
+        "why": {
+          "ar": "يُسمّى «أثر الليلة الأولى»، ويخفّ مع تكرار الليالي. لذلك إن كان أمامك يومٌ مهمّ في مدينةٍ أخرى، فقد يستحقّ أن تصل قبله بليلة.",
+          "en": "It’s called the “first-night effect”, and it fades over the following nights. So if a big day awaits you in another city, it may be worth arriving a night early."
+        }
+      },
+      {
+        "id": "majd-35",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "يفرّق فاروفاكيس بين «السوق» و«الاقتصاد». ما الذي يحوّل الأوّل إلى الثاني؟",
+          "en": "Varoufakis tells a “market” from an “economy”. What turns the first into the second?"
+        },
+        "opts": [
+          {
+            "ar": "فائضٌ يمكن خزنه",
+            "en": "A surplus that can be stored"
+          },
+          {
+            "ar": "النقود المعدنية",
+            "en": "Coins"
+          },
+          {
+            "ar": "التجارة بين الشعوب",
+            "en": "Trade between peoples"
+          },
+          {
+            "ar": "المصارف والقروض",
+            "en": "Banks and loans"
+          }
+        ],
+        "src": "ص 7–9",
+        "why": {
+          "ar": "المبادلة قديمة، منذ بادل البشر موزةً بتفاحة. أمّا الاقتصاد فبدأ حين أنتجت الزراعة فائضاً من الحبوب يُخزن، ومنه وُلدت الكتابة والدَّين والنقود والدولة والجيوش. والصيد لا ينتج فائضاً، لأن اللحم والفاكهة يفسدان.",
+          "en": "Exchange is ancient — a banana for an apple. An economy began when farming produced a grain surplus that could be stored; from it came writing, debt, money, the state and armies. Hunting yields no surplus: meat and fruit rot."
+        }
+      },
+      {
+        "id": "majd-36",
+        "book": "talking-to-my-daughter",
+        "kind": "tf",
+        "statement": {
+          "ar": "اتّجه البشر إلى الزراعة بقرارٍ واعٍ، لأنها تجعل حياتهم أفضل.",
+          "en": "Humans took up farming by conscious choice, because it made life better."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "لماذا يترك صيّادٌ يجد طعامه حوله حياته ليحرث الأرض؟",
+          "en": "Why would a hunter with food all around give that life up to plough the land?"
+        },
+        "src": "ص 8",
+        "explain": {
+          "ar": "أجبرهم عليها الجوع حين ضاق ما تقدّمه الطبيعة، ولم يقرّرها أحد، كما لا يقرّر أحدٌ أيّ ثورةٍ تقنية. وحيث كفتهم الطبيعة طعاماً تجنّبوها.",
+          "en": "Hunger pushed them into it once nature’s supply ran short; nobody decided it, as nobody decides any technological revolution. Where nature fed people well enough, they steered clear of it."
+        }
+      },
+      {
+        "id": "majd-39",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما الشرط الذي يراه فاروفاكيس ضرورياً لكي تكون للعملة أيّ قيمة؟",
+          "en": "What does Varoufakis see as the one condition for a currency to have any value at all?"
+        },
+        "opts": [
+          {
+            "ar": "سلطةٌ يثق الناس بأنها ستفي بوعدها، حتى لو مات الحاكم",
+            "en": "An authority people trust to honour it — even if the ruler dies"
+          },
+          {
+            "ar": "أن تُصنع من الذهب أو الفضّة",
+            "en": "That it’s made of gold or silver"
+          },
+          {
+            "ar": "أن تكون صعبة التزوير",
+            "en": "That it’s hard to forge"
+          },
+          {
+            "ar": "أن تحمل ختم تاجرٍ معروف",
+            "en": "That it bears a well-known merchant’s seal"
+          }
+        ],
+        "src": "ص 10",
+        "why": {
+          "ar": "لكي يقبل الناس وعداً مكتوباً على أنه نقود، لا بدّ من سلطةٍ يثقون بأنها ستفي به، سلطةٍ تبقى بعد موت الحاكم. ولهذا يربط فاروفاكيس الدَّين والنقود والثقة والدولة معاً.",
+          "en": "For people to accept a written promise as money, there must be an authority they trust to honour it — one that outlives the ruler. That’s why Varoufakis ties debt, money, trust and the state together."
+        }
+      },
+      {
+        "id": "majd-41",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "كيف حافظ حكّام الدول الزراعية الأولى على سلطتهم، مع أن الفلّاحين الفقراء أكثر منهم بكثير؟",
+          "en": "How did the rulers of the first farming states hold on to power, when poor peasants far outnumbered them?"
+        },
+        "opts": [
+          {
+            "ar": "بعقيدةٍ تُقنع الأغلبية بأن حكمهم مشيئةٌ إلهية، يرعاها رجال الدين",
+            "en": "With a creed convincing the majority their rule was divine will, kept by priests"
+          },
+          {
+            "ar": "بالقوّة العسكرية وحدها، فالجيش كان يكفي",
+            "en": "By military force alone — the army was enough"
+          },
+          {
+            "ar": "بتوزيع الفائض بالتساوي، فلم يجد أحدٌ سبباً للثورة",
+            "en": "By sharing the surplus equally, so nobody had cause to revolt"
+          },
+          {
+            "ar": "بانتخاباتٍ دوريّة تمنح الفلّاحين صوتاً",
+            "en": "Through regular elections that gave peasants a voice"
+          }
+        ],
+        "src": "ص 11",
+        "why": {
+          "ar": "لو اتّحد الفلّاحون لأطاحوا النظام في ساعات، لذلك كانت العقيدة التي تُضفي الشرعية على الحكم ضرورية. ورجال الدين أنفسهم لم يكن ليوجدوا بلا فائضٍ يُطعم من لا ينتجون.",
+          "en": "Had the peasants united, they’d have toppled the order in hours, so a legitimising ideology was essential. And a clergy couldn’t exist without a surplus to feed people who produce nothing."
+        }
+      },
+      {
+        "id": "majd-42",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما «الآلية النفسية» التي تجعل اللامساواة تعيد إنتاج نفسها، بحسب فاروفاكيس؟",
+          "en": "What is the “psychological mechanism” that lets inequality reproduce itself, according to Varoufakis?"
+        },
+        "opts": [
+          {
+            "ar": "أن عقولنا تساوي تلقائياً بين «أملك» و«أستحقّ»",
+            "en": "Our minds automatically equate “I have” with “I deserve”"
+          },
+          {
+            "ar": "أن الفقير يحسد الغنيّ فيقلّده",
+            "en": "The poor envy the rich, and so imitate them"
+          },
+          {
+            "ar": "أن الخوف من الفقر يُبقي الجميع طائعين",
+            "en": "Fear of poverty keeps everyone obedient"
+          },
+          {
+            "ar": "أن الأغنياء أذكى في استثمار ما يملكون",
+            "en": "The rich are smarter at investing what they have"
+          }
+        ],
+        "src": "ص 16",
+        "why": {
+          "ar": "نتعاطف مع المحرومين ونغضب لحرمانهم، لكننا لا نفكّر أن حرمانهم قد يكون نتاج العملية نفسها التي أنتجت اكتفاءنا، كالطفل المقتنع بأن ألعابه حقّه وهو يتألّم لطفلٍ ينام جائعاً.",
+          "en": "We feel for the deprived and are outraged at their lack, but never consider that it may come from the same process that produced our comfort — like a child sure his toys are rightfully his, while grieving for a child who goes to bed hungry."
+        }
+      },
+      {
+        "id": "majd-44",
+        "book": "talking-to-my-daughter",
+        "kind": "tf",
+        "statement": {
+          "ar": "يستعمل فاروفاكيس كلمتَي «المسرّات» و«البضائع» بمعنى واحد.",
+          "en": "Varoufakis uses the words “goods” and “commodities” to mean the same thing."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "هل غروب الشمس شيءٌ صُنع ليُباع؟",
+          "en": "Was a sunset ever made to be sold?"
+        },
+        "src": "ص 18–20",
+        "explain": {
+          "ar": "المسرّات أشياء لها قيمةٌ استعمالية، كالغروب والضحك مع الأصدقاء، ولم يُصنع أيٌّ منها ليُباع. أمّا البضائع فتُنتج للبيع ولها قيمةٌ تبادلية. والكتاب كلّه حكاية انتصار الثانية على الأولى.",
+          "en": "Goods have experiential value — a sunset, a laugh with friends — and none was made to be sold. Commodities are produced for sale and carry exchange value. The whole book is the story of the second conquering the first."
+        }
+      },
+      {
+        "id": "majd-45",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "وُلد «مجتمع السوق» حين صارت عوامل الإنتاج الثلاثة بضائع تُباع وتُشترى. ما هي؟",
+          "en": "Market society was born when the three factors of production became commodities, bought and sold. What are they?"
+        },
+        "opts": [
+          {
+            "ar": "وسائل الإنتاج، والأرض، وقوّة العمل",
+            "en": "Means of production, land and labour"
+          },
+          {
+            "ar": "الماء، والطاقة، والغذاء",
+            "en": "Water, energy and food"
+          },
+          {
+            "ar": "الذهب، والفضّة، والعملة",
+            "en": "Gold, silver and currency"
+          },
+          {
+            "ar": "المصانع، والمصارف، والمتاجر",
+            "en": "Factories, banks and shops"
+          }
+        ],
+        "src": "ص 24",
+        "why": {
+          "ar": "في الإقطاع كان الأقنان يكدحون دون أن يبيعوا عملهم، وكان بيع أرض الأجداد عاراً. وحين صار للثلاثة ثمن، وُلد مجتمع السوق.",
+          "en": "Under feudalism serfs toiled without selling their labour, and selling your ancestors’ land was a disgrace. Once all three had a price, market society was born."
+        }
+      },
+      {
+        "id": "majd-47",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما الذي يسمّيه فاروفاكيس «الانقلاب الكبير»؟",
+          "en": "What does Varoufakis call “the Great Reversal”?"
+        },
+        "opts": [
+          {
+            "ar": "أن التوزيع صار يسبق الإنتاج: الأجور والإيجار والفائدة تُحدَّد قبل أن يُنتَج شيء",
+            "en": "Distribution came before production: wages, rent and interest were fixed before anything was made"
+          },
+          {
+            "ar": "أن الآلات حلّت محلّ العمّال، فصار الإنتاج أرخص وأسرع",
+            "en": "Machines replaced workers, making production cheaper and faster"
+          },
+          {
+            "ar": "أن العبودية أُلغيت، فصار العامل يبيع عمله بحرّية",
+            "en": "Slavery was abolished, so workers sold their labour freely"
+          },
+          {
+            "ar": "أن الدولة أمّمت الأراضي، فانتهى عصر الإقطاع",
+            "en": "The state nationalised the land, ending the feudal age"
+          }
+        ],
+        "src": "ص 33",
+        "why": {
+          "ar": "صاحب المشروع يقترض ليدفع الإيجار والأجور قبل أن يبيع شيئاً، وهو وحده لا يعرف ما سيبقى له. فإن هبطت الأسعار صار عبداً لدَينه، ولهذا صار الربح شرطاً للبقاء لا مجرّد جشع.",
+          "en": "The entrepreneur borrows to pay rent and wages before selling a thing, and he alone doesn’t know what will be left for him. If prices drop he becomes a slave to his debt — so profit becomes a condition of survival, not mere greed."
+        }
+      },
+      {
+        "id": "majd-48",
+        "book": "talking-to-my-daughter",
+        "kind": "tf",
+        "statement": {
+          "ar": "يرى فاروفاكيس أن الفحم هو الوقود الحقيقي الذي صنع ثروات القرون الثلاثة الأخيرة.",
+          "en": "Varoufakis sees coal as the real fuel behind the wealth of the last three centuries."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "بأيّ شيءٍ بدأ كلّ مصنعٍ قبل أن يُشعل أوّل فحمة؟",
+          "en": "What did every factory start with, before its first lump of coal was lit?"
+        },
+        "src": "ص 35",
+        "explain": {
+          "ar": "الوقود الحقيقي عنده هو الدَّين: كلّ الثروات الهائلة في القرون الثلاثة الأخيرة مدينةٌ بوجودها له. والدَّين لمجتمع السوق كالجحيم للمسيحية: مزعجٌ، لكن لا غنى عنه.",
+          "en": "For him the real fuel is debt: all the vast wealth of the last three centuries owes its existence to it. Debt is to market society what hell is to Christianity: unpleasant, yet indispensable."
+        }
+      },
+      {
+        "id": "majd-51",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا ينهار المصرف حين يندفع المودعون كلّهم لسحب أموالهم معاً؟",
+          "en": "Why does a bank collapse when all its depositors rush to withdraw at once?"
+        },
+        "opts": [
+          {
+            "ar": "لأن ما في خزائنه من نقدٍ أقلّ بكثير ممّا يدين به لهم",
+            "en": "The cash in its vaults is far less than what it owes them"
+          },
+          {
+            "ar": "لأن الحكومة تجمّد الحسابات في الأزمات",
+            "en": "The government freezes accounts in a crisis"
+          },
+          {
+            "ar": "لأن أسعار الأسهم تنهار فتضيع الودائع معها",
+            "en": "Share prices crash and the deposits vanish with them"
+          },
+          {
+            "ar": "لأن الفائدة ترتفع فجأةً فيخسر المصرف",
+            "en": "Interest rates jump and the bank makes a loss"
+          }
+        ],
+        "src": "ص 42",
+        "why": {
+          "ar": "المصرف لا يحتفظ نقداً إلا بجزءٍ صغير ممّا يدين به، والباقي قروضٌ عند الناس. والعملية نفسها التي تولّد الربح والثروة هي التي تولّد الانهيارات: قروضٌ أكبر ممّا يقدر الاقتصاد على سداده.",
+          "en": "A bank keeps only a sliver of what it owes as cash; the rest is out in loans. The very process that creates profit and wealth also creates crashes: more loans than the economy can repay."
+        }
+      },
+      {
+        "id": "majd-52",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "حين ينقذ المصرف المركزي المصارف المتعثّرة، من أين يأتي بالمال؟",
+          "en": "When the central bank bails out struggling banks, where does it get the money?"
+        },
+        "opts": [
+          {
+            "ar": "يخلقه من العدم، بكتابة الأرقام في حساباتها",
+            "en": "It creates it out of nothing, typing the numbers into their accounts"
+          },
+          {
+            "ar": "من الضرائب التي تجمعها الدولة",
+            "en": "From the taxes the state collects"
+          },
+          {
+            "ar": "من قرضٍ يأخذه من صندوق النقد الدولي",
+            "en": "From a loan taken out with the IMF"
+          },
+          {
+            "ar": "من بيع ما يحتفظ به من ذهب",
+            "en": "By selling off its gold reserves"
+          }
+        ],
+        "src": "ص 44",
+        "why": {
+          "ar": "يفعل ذلك بوصفه «ملجأً أخيراً للإقراض»، وغايته حماية النظام لا الربح، وهذا يمنحه سلطةً على المصارف في لعبة قطٍّ وفأر. وعلى المنوال نفسه تضمن الدولة ودائع الناس.",
+          "en": "It acts as the “lender of last resort”, aiming to protect the system, not to profit — which gives it power over the banks in a game of cat and mouse. In the same spirit, the state guarantees people’s deposits."
+        }
+      },
+      {
+        "id": "majd-53",
+        "book": "talking-to-my-daughter",
+        "kind": "tf",
+        "statement": {
+          "ar": "بحسب فاروفاكيس، كلّما نجحت الدولة في فرض الاستقرار المالي، زاد تهوّر المصرفيين والاضطراب الذي يصنعونه.",
+          "en": "According to Varoufakis, the better the state is at imposing financial stability, the more reckless bankers become — and the more instability they cause."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "ماذا يفعل سائقٌ مستعجل حين يطمئنّ إلى أن الطريق خالٍ من الرادارات؟",
+          "en": "What does a driver in a hurry do once sure there are no speed cameras?"
+        },
+        "src": "ص 46",
+        "explain": {
+          "ar": "مفارقةٌ أساسية في الكتاب: الاستقرار يجعل الظروف آمنةً لخلق مزيدٍ من الدَّين. والمصرفيون كسائقٍ دفع مخالفة سرعة فهدأ قليلاً، ثم عاد يتجاوز السرعة.",
+          "en": "A core paradox of the book: stability makes it safe to create more debt. Bankers are like a driver fined for speeding: slow for a while, then speeding again."
+        }
+      },
+      {
+        "id": "majd-54",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا كانت «المسؤولية المحدودة» ضروريةً لبناء السكك الحديدية ومحطّات الكهرباء؟",
+          "en": "Why was “limited liability” essential for building railways and power stations?"
+        },
+        "opts": [
+          {
+            "ar": "لأن إفلاس الشركة لم يعد يُفقد صاحبها بيته، فجرؤ الناس على المشاريع الكبيرة",
+            "en": "Bankruptcy no longer cost the owner his home, so people dared to take on big projects"
+          },
+          {
+            "ar": "لأنها خفّضت الضرائب على الشركات، فكثرت أرباح المستثمرين",
+            "en": "It cut taxes on companies, so investors earned more"
+          },
+          {
+            "ar": "لأنها حمت العمّال من الطرد، فقبلوا العمل في المشاريع الخطرة",
+            "en": "It protected workers from dismissal, so they took on dangerous jobs"
+          },
+          {
+            "ar": "لأنها ألزمت المصارف بإقراض المشاريع التي تخدم الجميع",
+            "en": "It obliged banks to lend to projects that served everyone"
+          }
+        ],
+        "src": "ص 46–48",
+        "why": {
+          "ar": "من غير هذه الحماية لا يغامر بمشروعٍ ضخم إلا الأثرياء جداً أو المتهوّرون. ويلاحظ فاروفاكيس بسخرية أنها تُمنح لأصحاب الشركات ولا تُمنح للناس العاديين.",
+          "en": "Without that shield, only the very rich or the reckless would risk a huge venture. Varoufakis notes the irony: company owners get this protection from the bailiffs, while ordinary people don’t."
+        }
+      },
+      {
+        "id": "majd-55",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما الحجّة الأقوى عند فاروفاكيس لشطب الديون التي لا يمكن سدادها؟",
+          "en": "What is Varoufakis’s strongest argument for writing off debts that can never be repaid?"
+        },
+        "opts": [
+          {
+            "ar": "أن من يغرق في دَينٍ أبدي لا يتعافى ولا يوظّف ولا يشتري، فيخسر الجميع",
+            "en": "Someone sunk in endless debt can’t recover, hire or spend — so everyone loses"
+          },
+          {
+            "ar": "أن الدائنين أغنياء، وخسارتهم لن تضرّ أحداً",
+            "en": "The creditors are rich, and their loss hurts no one"
+          },
+          {
+            "ar": "أن الفائدة ظلمٌ في أصلها، فلا حقّ للدائن فيها",
+            "en": "Interest is unjust in itself, so creditors have no right to it"
+          },
+          {
+            "ar": "أن التضخّم سيمحو هذه الديون على أيّ حال",
+            "en": "Inflation will wipe these debts out anyway"
+          }
+        ],
+        "src": "ص 48",
+        "why": {
+          "ar": "لا شركة ولا عائلة ولا بلد يتعافى وهو في قبضة دَينٍ لا يُسدَّد. لذلك نصّت الكتب المقدّسة على شطب الديون دورياً، كما تحتاج الغابات إلى حرق بعض أغصانها المتساقطة كي لا تشتعل فيها حرائق مدمّرة.",
+          "en": "No company, family or country can recover in the grip of an unpayable debt. That’s why scripture called for debts to be cancelled periodically — just as forests need some fallen branches burned to prevent devastating fires."
+        }
+      },
+      {
+        "id": "majd-56",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا يحبّ المصرفيون السندات الحكومية كثيراً؟",
+          "en": "Why are bankers so fond of government bonds?"
+        },
+        "opts": [
+          {
+            "ar": "لأنها «أكثر الأصول سيولة»: قرضٌ آمن، وضمانٌ لقروضٍ أخرى، وتُباع فوراً",
+            "en": "They’re “the most liquid of assets”: a safe loan, collateral for more loans, and sellable at once"
+          },
+          {
+            "ar": "لأنها معفاةٌ من الضرائب، فربحها كلّه لهم",
+            "en": "They’re tax-free, so all the return is theirs"
+          },
+          {
+            "ar": "لأنها تدرّ أعلى فائدةٍ يمكن أن يجدوها في السوق",
+            "en": "They pay the highest interest on the market"
+          },
+          {
+            "ar": "لأن القانون يُلزمهم بشراء نصيبٍ منها كلّ عام",
+            "en": "The law makes them buy a share every year"
+          }
+        ],
+        "src": "ص 52",
+        "why": {
+          "ar": "لا دَين آخر يُعاد تدويره بهذه السهولة، فالسندات تُشحّم عجلات النظام المصرفي كلّه.",
+          "en": "No other debt can be recycled so easily: bonds grease the wheels of the whole banking system."
+        }
+      },
+      {
+        "id": "majd-57",
+        "book": "talking-to-my-daughter",
+        "kind": "tf",
+        "statement": {
+          "ar": "يرى فاروفاكيس أن الدَّين العام لعنةٌ يجب التخلّص منها بأسرع وقت.",
+          "en": "Varoufakis sees public debt as a curse to be got rid of as fast as possible."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "فكّر في الأزمات: من يظلّ ينفق ويقترض حين يتوقّف الجميع؟",
+          "en": "Think of a crisis: who keeps spending and borrowing when everyone else stops?"
+        },
+        "src": "ص 50–52",
+        "explain": {
+          "ar": "يصفه بـ«الشبح في الآلة» الذي يُشغّل مجتمع السوق، وبحزامٍ مطّاطي يتمدّد في الأزمات كي لا ينقطع النظام. وهو عنده أيضاً نتيجةُ رفض الأغنياء دفع حصّتهم من الضرائب.",
+          "en": "He calls it “the ghost in the machine” that keeps market society running — an elastic band that stretches in a crisis so the system doesn’t snap. He also sees it as the result of the rich refusing to pay their share of tax."
+        }
+      },
+      {
+        "id": "majd-61",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "في «متلازمة إيكاروس»، ما القوى الثلاث التي تدفع الأسعار إلى ما دون التكلفة في اقتصادٍ يتحوّل إلى الآلات؟",
+          "en": "In the “Icarus syndrome”, which three forces push prices below costs in an economy turning to machines?"
+        },
+        "opts": [
+          {
+            "ar": "الأتمتة تخفض التكاليف، والمنافسة تمنع رفع الأسعار، والآلات لا تشتري ما تنتجه",
+            "en": "Automation cuts costs, competition stops prices rising, and machines don’t buy what they make"
+          },
+          {
+            "ar": "الضرائب ترفع الكلفة، والنقابات ترفع الأجور، والحروب تُغلق الأسواق",
+            "en": "Taxes raise costs, unions raise wages, and wars close markets"
+          },
+          {
+            "ar": "التضخّم يأكل الأرباح، والفائدة ترتفع، والعملة تفقد قيمتها",
+            "en": "Inflation eats profits, interest rates climb, and the currency loses value"
+          },
+          {
+            "ar": "الديون تخنق المصانع، والعمّال يهاجرون، والموادّ الخام تنفد",
+            "en": "Debt chokes the factories, workers emigrate, and raw materials run out"
+          }
+        ],
+        "src": "ص 63",
+        "why": {
+          "ar": "هذه فكرة ماركس كما يرويها فاروفاكيس: يقترب الاقتصاد من الشمس فيذوب شمع جناحيه في أزمة، قبل أن تحلّ الآلات محلّ البشر كلّياً.",
+          "en": "Marx’s idea, as Varoufakis tells it: the economy flies close to the sun and the wax on its wings melts in a crisis — before machines can replace humans entirely."
+        }
+      },
+      {
+        "id": "majd-65",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما أخطر عيبٍ في عملةٍ لا تتبع دولة، مثل بيتكوين، في رأي فاروفاكيس؟",
+          "en": "What is the most dangerous flaw of a currency no state stands behind, like Bitcoin, in Varoufakis’s view?"
+        },
+        "opts": [
+          {
+            "ar": "كمّيتها الثابتة تزيد احتمال الأزمات الانكماشية، وتمنع زيادة المال لمواجهتها",
+            "en": "Its fixed supply makes deflationary crises likelier, and rules out adding money to fight them"
+          },
+          {
+            "ar": "أنها سهلة السرقة، ولا تأمين من دولةٍ عليها",
+            "en": "It’s easy to steal, with no state insuring it"
+          },
+          {
+            "ar": "أن تحويلها بطيءٌ ومكلف مقارنةً بالمصارف",
+            "en": "Transfers are slow and costly compared with banks"
+          },
+          {
+            "ar": "أن الحكومات الكبرى تتحكّم بها سرّاً",
+            "en": "The big governments secretly control it"
+          }
+        ],
+        "src": "ص 85",
+        "why": {
+          "ar": "غياب تأمين الدولة ضدّ السرقة عيبٌ خطير، لكنه ليس الأخطر. فحين ينهار الاقتصاد لا يمكن زيادة كمّية المال لإنعاشه، لأن الكمّية ثابتةٌ في الخوارزمية نفسها.",
+          "en": "Having no state to insure you against theft is a serious flaw, but not the worst. When the economy crashes, nobody can add money to revive it: the quantity is fixed in the algorithm itself."
+        }
+      },
+      {
+        "id": "majd-67",
+        "book": "talking-to-my-daughter",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا يشبّه فاروفاكيس خبراء الاقتصاد بعرّافي قبيلة الأزاندي الأفريقية؟",
+          "en": "Why does Varoufakis liken economic experts to the oracles of Africa’s Azande people?"
+        },
+        "opts": [
+          {
+            "ar": "لأنهم حين تفشل توقّعاتهم يفسّرون الفشل بمفاهيم جديدة من النظام نفسه",
+            "en": "When their forecasts fail, they explain the failure with new notions from the same system"
+          },
+          {
+            "ar": "لأنهم يستعملون الطقوس والتعاويذ في حساباتهم",
+            "en": "They use rituals and charms in their calculations"
+          },
+          {
+            "ar": "لأن توقّعاتهم تصيب دائماً، كما كانت نبوءات العرّافين",
+            "en": "Their forecasts always come true, like the oracles’ prophecies"
+          },
+          {
+            "ar": "لأنهم يرفضون الرياضيات ويثقون بالحدس",
+            "en": "They reject mathematics and trust their intuition"
+          }
+        ],
+        "src": "ص 96–98",
+        "why": {
+          "ar": "مثل «البطالة الطبيعية»: مفهومٌ وُلد ليفسّر عجز الأسواق عن تحقيق التشغيل الكامل، وعجز الخبراء عن تفسيره. ويرى فاروفاكيس علم الاقتصاد السائد لاهوتاً بالمعادلات. هذا رأيه، ويصلح للنقاش في الجلسة.",
+          "en": "Take “natural unemployment”, a notion created to explain why markets fail to deliver full employment — and why the experts couldn’t explain it. Varoufakis sees mainstream economics as theology with equations. That’s his view, and a good one to argue about at the meeting."
+        }
+      },
+      {
+        "id": "majd-69",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "من أين جاءت كلمة «تعدّد المهامّ» (Multitasking)؟",
+          "en": "Where does the word “multitasking” come from?"
+        },
+        "opts": [
+          {
+            "ar": "من علماء الحاسوب في الستّينيات، لوصف آلاتٍ بأكثر من معالج",
+            "en": "From 1960s computer scientists, describing machines with more than one processor"
+          },
+          {
+            "ar": "من علم النفس، لوصف أدمغة الموهوبين",
+            "en": "From psychology, describing gifted brains"
+          },
+          {
+            "ar": "من الجيش، لوصف تدريب الطيّارين المقاتلين",
+            "en": "From the military, describing fighter-pilot training"
+          },
+          {
+            "ar": "من إعلانات الهواتف الذكية الأولى",
+            "en": "From the first smartphone adverts"
+          }
+        ],
+        "src": "ص 50",
+        "why": {
+          "ar": "الآلة تستطيع حقّاً أن تؤدّي أمرين معاً. أمّا نحن فأخذنا الكلمة وطبّقناها على أنفسنا.",
+          "en": "The machine really can do two things at once. We just took the word and applied it to ourselves."
+        }
+      },
+      {
+        "id": "majd-70",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "إن نظرت إلى رسالةٍ خمس ثوانٍ ثم عدت إلى عملك، فلا تخسر إلا تلك الثواني الخمس.",
+          "en": "If you glance at a message for five seconds and go back to work, all you lose is those five seconds."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "حين تعود إلى الصفحة، هل تبدأ من حيث توقّفت تماماً؟",
+          "en": "When you come back to the page, do you pick up exactly where you left off?"
+        },
+        "src": "ص 21، 51",
+        "explain": {
+          "ar": "هذا «أثر كلفة الانتقال»: يحتاج الدماغ أن يعيد تهيئة نفسه ويتذكّر أين كان، وقد يطول ذلك أكثر بكثير من النظرة نفسها.",
+          "en": "This is the “switch-cost effect”: your brain has to reconfigure and remember where it was, which can take far longer than the glance itself."
+        }
+      },
+      {
+        "id": "majd-72",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "أيّ هذه ليس من أضرار التنقّل المستمرّ بين المهامّ، كما يعدّدها الكتاب؟",
+          "en": "Which of these is NOT one of the costs of constant task-switching the book lists?"
+        },
+        "opts": [
+          {
+            "ar": "الإرهاق العضلي",
+            "en": "Muscle fatigue"
+          },
+          {
+            "ar": "البطء وكثرة الأخطاء",
+            "en": "Slowness and more mistakes"
+          },
+          {
+            "ar": "«نضوب الإبداع»",
+            "en": "“Creativity drain”"
+          },
+          {
+            "ar": "ضعف تذكّر ما فعلته",
+            "en": "Remembering less of what you did"
+          }
+        ],
+        "src": "ص 51–53",
+        "why": {
+          "ar": "الأفكار الجديدة تأتي حين يربط الدماغ بين أشياء عرفها، وهذا يحتاج وقتاً حرّاً بلا تشويش. وتحويل ما نعيشه إلى ذكريات يحتاج طاقةً ذهنية يستهلكها التنقّل.",
+          "en": "New ideas come when the brain links things it already knows, which takes free, undistracted time. And turning experience into memories takes mental energy that switching burns up."
+        }
+      },
+      {
+        "id": "majd-73",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "مجرّد ترك الهاتف مفتوحاً وتلقّي الرسائل أثناء امتحان جعل أداء الطلاب أسوأ بنحو ٢٠٪.",
+          "en": "Simply having their phones on and receiving texts during a test made students perform about 20% worse."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "كم مرّةً يقطع الإشعار تفكيرك وإن لم تفتحه؟",
+          "en": "How often does a notification break your train of thought, even unopened?"
+        },
+        "src": "ص 55",
+        "explain": {
+          "ar": "في دراسةٍ لجامعة كارنيغي ميلون على ١٣٦ طالباً. ووجدت دراساتٌ أخرى ما هو أسوأ، حتى ٣٠٪. ويستنتج هاري أن أصحاب الهواتف الذكية يخسرون هذا القدر من أدائهم معظم الوقت.",
+          "en": "A Carnegie Mellon study of 136 students. Other studies found worse — up to 30%. Hari concludes that most smartphone owners are losing that much, most of the time."
+        }
+      },
+      {
+        "id": "majd-74",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "جرّب الباحث ديفيد ستراير سائقين في أجهزة محاكاة القيادة وهواتفهم تتلقّى الرسائل. بماذا كان أداؤهم أشبه؟",
+          "en": "David Strayer tested drivers in simulators while their phones received texts. What did their driving most resemble?"
+        },
+        "opts": [
+          {
+            "ar": "بالقيادة في حالة سُكر",
+            "en": "Driving drunk"
+          },
+          {
+            "ar": "بالقيادة في مطرٍ غزير",
+            "en": "Driving in heavy rain"
+          },
+          {
+            "ar": "بالقيادة مع راكبٍ ثرثار",
+            "en": "Driving with a chatty passenger"
+          },
+          {
+            "ar": "بالقيادة ليلاً بلا أضواء",
+            "en": "Driving at night without lights"
+          }
+        ],
+        "src": "ص 55",
+        "why": {
+          "ar": "كان الأثر «مشابهاً جدّاً» للسُّكر. ونحو حادثٍ من كلّ خمسة حوادث سيارات اليوم سببه سائقٌ مشتّت الانتباه.",
+          "en": "It was “very similar” to being drunk. About one car crash in five today is caused by a distracted driver."
+        }
+      },
+      {
+        "id": "majd-76",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "بالتدريب الكافي يمكنك أن تقرأ أسرع بكثير وتفهم بالقدر نفسه.",
+          "en": "With enough training, you can read much faster and understand just as much."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "هل يمكن أن تفهم كتاباً بالسرعة التي تقلّب بها صفحاته؟",
+          "en": "Could you understand a book as fast as you can flick through it?"
+        },
+        "src": "ص 46",
+        "explain": {
+          "ar": "السرعة تزيد فعلاً بالتدريب، لكن الفهم يقلّ معها، حتى عند محترفي القراءة السريعة. للدماغ حدٌّ أقصى في استيعاب المعلومات.",
+          "en": "Speed really does rise with training, but comprehension falls with it — even among professional speed-readers. The brain has a maximum rate for taking information in."
+        }
+      },
+      {
+        "id": "majd-79",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "قراءة كتابٍ من أبسط أشكال «حالة التدفّق» وأكثرها شيوعاً في حياة الناس.",
+          "en": "Reading a book is one of the simplest and most common forms of flow people experience."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "متى نسيت الوقت آخر مرّةٍ وأنت تقرأ؟",
+          "en": "When did you last lose track of time reading?"
+        },
+        "src": "ص 101–104",
+        "explain": {
+          "ar": "هذا ما وجده تشيكسنتميهايي. ويخشى هاري أن تصير القراءة العميقة هوايةً لقلّةٍ صغيرة مثل الأوبرا، فنحو ٥٧٪ من الأمريكيين لا يقرؤون كتاباً واحداً في السنة.",
+          "en": "That’s what Csikszentmihalyi found. Hari fears deep reading could become a minority pastime, like opera: some 57% of Americans don’t read a single book in a typical year."
+        }
+      },
+      {
+        "id": "majd-81",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "ماذا قصد مارشال ماكلوهان بعبارته «الوسيط هو الرسالة»؟",
+          "en": "What did Marshall McLuhan mean by “the medium is the message”?"
+        },
+        "opts": [
+          {
+            "ar": "أن التقنية ليست أنبوباً محايداً للمعلومات، بل تغيّر طريقة تفكيرنا نفسها",
+            "en": "Technology isn’t a neutral pipe for information — it changes how we think"
+          },
+          {
+            "ar": "أن المحتوى أهمّ من أيّ شيءٍ آخر في الإعلام",
+            "en": "Content matters more than anything else in media"
+          },
+          {
+            "ar": "أن وسائل الإعلام تكذب دائماً، فلا تصدّق رسائلها",
+            "en": "The media always lie, so don’t trust their messages"
+          },
+          {
+            "ar": "أن الكتب أفضل دائماً من التلفزيون",
+            "en": "Books are always better than television"
+          }
+        ],
+        "src": "ص 104",
+        "why": {
+          "ar": "كلّ وسيطٍ جديد كنظّارةٍ بعدساتٍ خاصّة: تويتر مثلاً يدرّبنا على التفكير القصير السريع، أيّاً كان ما يُكتب فيه. وقال أستاذٌ في هارفارد لهاري إنه صار يعطي طلّابه بودكاست ومقاطع فيديو، لأنهم يعجزون عن قراءة حتى الكتب القصيرة.",
+          "en": "Every new medium is like a pair of goggles with their own lenses: Twitter trains us to think short and fast, whatever is written on it. A Harvard professor told Hari he now gives students podcasts and video clips, because they struggle to read even short books."
+        }
+      },
+      {
+        "id": "majd-82",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "ماذا اكتشف ماركوس ريشل حين صوّر أدمغة أناسٍ ينتظرون دون أن يفعلوا شيئاً؟",
+          "en": "What did Marcus Raichle discover when he scanned the brains of people waiting around, doing nothing?"
+        },
+        "opts": [
+          {
+            "ar": "منطقةً تنشط كثيراً حين يسرح الذهن، سمّاها «شبكة الوضع التلقائي»",
+            "en": "A region that gets very busy when the mind wanders — the “default mode network”"
+          },
+          {
+            "ar": "أن الدماغ يهدأ تماماً كالعضلة المستريحة",
+            "en": "That the brain goes completely quiet, like a resting muscle"
+          },
+          {
+            "ar": "أن النشاط كلّه ينتقل إلى المخيخ",
+            "en": "That all the activity moves to the cerebellum"
+          },
+          {
+            "ar": "أن الانتظار يُنشّط مراكز القلق وحدها",
+            "en": "That waiting lights up only the anxiety centres"
+          }
+        ],
+        "src": "ص 118",
+        "why": {
+          "ar": "كان الرأي السائد أن الدماغ المستريح «خامد» كالعضلة. وفتح هذا الاكتشاف باب دراسة شرود الذهن.",
+          "en": "The received view was that a resting brain lies dormant, like a muscle. This discovery opened up the study of mind-wandering."
+        }
+      },
+      {
+        "id": "majd-83",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "شرود الذهن ضارٌّ دائماً، لأنه عكس التركيز.",
+          "en": "Mind-wandering is always harmful, because it’s the opposite of focus."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "من أين تأتيك أفضل أفكارك: وأنت تحدّق في المسألة، أم تحت الدُّش؟",
+          "en": "Where do your best ideas come from: staring at the problem, or in the shower?"
+        },
+        "src": "ص 116–120",
+        "explain": {
+          "ar": "الشرود يساعدنا على فهم حياتنا والتخطيط البعيد والربط بين الأفكار، وحتى القراءة الجيّدة تحتاج قدراً منه ليفهم القارئ الفكرة الكبرى. الضارّ هو الشرود الممزوج بالتوتّر والقلق.",
+          "en": "Wandering helps us make sense of our lives, plan ahead and connect ideas — even good reading needs some of it to grasp the big picture. What harms is wandering soaked in stress and worry."
+        }
+      },
+      {
+        "id": "majd-84",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "كيف جاء الحلّ لعالم الرياضيات هنري بوانكاريه في مسألةٍ عجز عنها طويلاً؟",
+          "en": "How did the mathematician Henri Poincaré finally solve a problem that had beaten him for ages?"
+        },
+        "opts": [
+          {
+            "ar": "فجأةً وهو يصعد إلى حافلةٍ في رحلة، بعد أن ترك عقله يسرح",
+            "en": "Suddenly, stepping onto a bus on a trip, after letting his mind wander"
+          },
+          {
+            "ar": "بعد أسابيع من التركيز المتواصل عليها وحدها",
+            "en": "After weeks of unbroken focus on that problem alone"
+          },
+          {
+            "ar": "في حلمٍ رآه في الليلة نفسها",
+            "en": "In a dream that very night"
+          },
+          {
+            "ar": "في نقاشٍ حادّ مع زملائه في الجامعة",
+            "en": "In a heated argument with university colleagues"
+          }
+        ],
+        "src": "ص 120",
+        "why": {
+          "ar": "حين «أطفأ المصباح الكاشف» استطاع عقله أن يربط أجزاء المسألة. وكثيرٌ من الاختراقات العلمية جاء بهذه الطريقة.",
+          "en": "Once he “switched off the spotlight”, his mind could join up the pieces. Many scientific breakthroughs have come this way."
+        }
+      },
+      {
+        "id": "majd-85",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما أهمّ ما تعلّمه تريستان هاريس من السحر الذي أتقنه في طفولته؟",
+          "en": "What was the key lesson Tristan Harris took from the magic he learned as a boy?"
+        },
+        "opts": [
+          {
+            "ar": "أن السحر لعبٌ على حدود الانتباه، وأن الذكاء لا يحمي أحداً منه",
+            "en": "Magic plays on the limits of attention, and intelligence protects no one from it"
+          },
+          {
+            "ar": "أن الأذكياء لا تنطلي عليهم الخدع",
+            "en": "Clever people can’t be fooled"
+          },
+          {
+            "ar": "أن السحر كلّه سرعة يد",
+            "en": "Magic is all about sleight of hand"
+          },
+          {
+            "ar": "أن الأطفال أسهل خداعاً من الكبار",
+            "en": "Children are easier to fool than adults"
+          }
+        ],
+        "src": "ص 133",
+        "why": {
+          "ar": "العملة لا تختفي فعلاً، بل يكون انتباهك في مكانٍ آخر. ونقاط الضعف هذه موجودةٌ عند الجميع ويمكن توقّعها، وهذا ما تستغلّه التطبيقات.",
+          "en": "The coin doesn’t really vanish: your attention is just somewhere else. These blind spots are in all of us and can be predicted — and that’s what apps exploit."
+        }
+      },
+      {
+        "id": "majd-86",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "من أيّ فكرةٍ طلّابية بسيطة وُلد تطبيق «إنستغرام»؟",
+          "en": "Which simple student idea did Instagram grow out of?"
+        },
+        "opts": [
+          {
+            "ar": "تطبيقٍ يرسل صورةً للشمس إلى صديقٍ يعيش في طقسٍ غائم، ليخفّف عنه كآبة الشتاء",
+            "en": "An app that sends a photo of the sun to a friend stuck in gloomy weather, to lift their winter blues"
+          },
+          {
+            "ar": "ألبومٍ رقمي يجمع صور طلّاب الجامعة في مكانٍ واحد",
+            "en": "A digital album gathering a university’s student photos in one place"
+          },
+          {
+            "ar": "تطبيق تعارفٍ يعرض صور الطلّاب على بعضهم",
+            "en": "A dating app showing students each other’s photos"
+          },
+          {
+            "ar": "مسابقة تصويرٍ أسبوعية يصوّت فيها الأصدقاء",
+            "en": "A weekly photo contest where friends vote"
+          }
+        ],
+        "src": "ص 137",
+        "why": {
+          "ar": "اسمه «أرسِل ضوء الشمس»، صمّمه تريستان هاريس مع مايك كريغر في ستانفورد. ثم أضاف كريغر وكيفن سيستروم المكافأة الفورية، القلوب والإعجابات، فوُلد إنستغرام.",
+          "en": "It was called Send the Sunshine, built by Tristan Harris and Mike Krieger at Stanford. Later Krieger and Kevin Systrom added the instant reward of hearts and likes, and Instagram was born."
+        }
+      },
+      {
+        "id": "majd-88",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا تبدو بعض الإعلانات دقيقةً حتى نظنّ أن هواتفنا تتنصّت علينا؟",
+          "en": "Why do some adverts seem so spot-on that we suspect our phones are listening in?"
+        },
+        "opts": [
+          {
+            "ar": "لأن الشركات بنت لكلّ مستخدم «دمية فودو» رقمية تتنبّأ بسلوكه",
+            "en": "Companies have built a digital “voodoo doll” of each user that predicts their behaviour"
+          },
+          {
+            "ar": "لأن الميكروفون يعمل دائماً ويسجّل أحاديثنا",
+            "en": "The microphone is always on, recording our conversations"
+          },
+          {
+            "ar": "لأنها مصادفاتٌ نتذكّرها وننسى ما عداها",
+            "en": "They’re coincidences we remember while forgetting the misses"
+          },
+          {
+            "ar": "لأن أصدقاءنا يبيعون بياناتنا دون أن ندري",
+            "en": "Our friends sell our data without our knowing"
+          }
+        ],
+        "src": "ص 158",
+        "why": {
+          "ar": "بحسب آزا راسكن، الحقيقة أشدّ إخافةً من التنصّت: نموذجٌ منك يزداد شبهاً بك مع كلّ نقرة. ولهذا تأتي خرائط غوغل مجّاناً وتُباع السمّاعات الذكية بأرخص الأثمان: كلّ ذلك يغذّي الدمية.",
+          "en": "According to Aza Raskin, the truth is scarier than eavesdropping: a model of you that looks more like you with every click. That’s why Google Maps is free and smart speakers are sold so cheaply — it all feeds the doll."
+        }
+      },
+      {
+        "id": "majd-89",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "يطلب نير إيال في كتابه عن تصميم التطبيقات أن يتخيّل المصمّمون مستخدمةً اسمها «جولي». أيّ شعورٍ لديها ينصح باستغلاله؟",
+          "en": "In his book on app design, Nir Eyal tells designers to picture a user called Julie. Which of her feelings does he advise them to play on?"
+        },
+        "opts": [
+          {
+            "ar": "خوفها من أن يفوتها ما يجري",
+            "en": "Her fear of being out of the loop"
+          },
+          {
+            "ar": "فضولها لمعرفة الجديد",
+            "en": "Her curiosity about what’s new"
+          },
+          {
+            "ar": "حبّها للصور الجميلة",
+            "en": "Her love of beautiful pictures"
+          },
+          {
+            "ar": "رغبتها في التعلّم وتطوير نفسها",
+            "en": "Her wish to learn and improve herself"
+          }
+        ],
+        "src": "ص 186",
+        "why": {
+          "ar": "الخوف عنده «محفّزٌ داخلي» قويّ تُبنى عليه العادة، حتى يفتح المستخدم التطبيق تلقائياً كلّما وقف في طابور انتظار.",
+          "en": "Fear, he writes, is a powerful “internal trigger” to build a habit on — until the user opens the app automatically whenever they’re waiting in line."
+        }
+      },
+      {
+        "id": "majd-90",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما اعتراض هاري الأساسي على نصائح نير إيال لاستعادة التركيز؟",
+          "en": "What is Hari’s main objection to Nir Eyal’s advice for getting your focus back?"
+        },
+        "opts": [
+          {
+            "ar": "أنها تجعل المشكلة مسألة ضبطٍ ذاتي فردي، كما تحبّ شركات التقنية أن نراها",
+            "en": "It makes the problem one of personal self-control — just as the tech companies like us to see it"
+          },
+          {
+            "ar": "أنها لا تنفع أحداً على الإطلاق",
+            "en": "It doesn’t help anyone at all"
+          },
+          {
+            "ar": "أنها تحتاج تطبيقاتٍ مدفوعة باهظة الثمن",
+            "en": "It needs expensive paid apps"
+          },
+          {
+            "ar": "أنها موجّهةٌ للأطفال ولا تناسب الكبار",
+            "en": "It’s aimed at children and doesn’t suit adults"
+          }
+        ],
+        "src": "ص 179–184",
+        "why": {
+          "ar": "جرّب هاري نصائح نير كلّها ووجد بعضها مفيداً فعلاً. لكنه يرى أنها تنسجم تماماً مع ما تريد الشركات أن نصدّقه: الحلّ الفردي بدايةٌ مهمّة، لكنه لا يكفي.",
+          "en": "Hari tried every one of Nir’s tips and found some genuinely helpful. But they fit exactly with what the companies want us to believe: personal fixes are a good start, and not enough."
+        }
+      },
+      {
+        "id": "majd-91",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "حين يتعب الإنسان، قد «ينام» انتباهه أجزاءً من الثانية وعيناه مفتوحتان، دون أن يشعر.",
+          "en": "When you’re tired, your attention can “fall asleep” for fractions of a second with your eyes open — without you noticing."
+        },
+        "isMyth": false,
+        "hint": {
+          "ar": "هل قرأت مرّةً صفحةً كاملة وأنت متعب ثم لم تتذكّر منها شيئاً؟",
+          "en": "Ever read a whole page while tired and remembered none of it?"
+        },
+        "src": "ص 85",
+        "explain": {
+          "ar": "سمّاها الباحث «ومضات الانتباه»، ورصدتها أجهزةٌ تتتبّع حركة العين ونشاط الدماغ عند المتعبين. ونحو ٤٠٪ من الأمريكيين ينامون أقلّ من سبع ساعات في الليلة.",
+          "en": "The researcher called them “attentional blinks”, caught by equipment tracking tired people’s eyes and brain activity at once. Some 40% of Americans sleep less than seven hours a night."
+        }
+      },
+      {
+        "id": "majd-92",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "ماذا اكتشفت الطبيبة نادين بورك هاريس عند الأطفال الذين عاشوا صدماتٍ متعدّدة؟",
+          "en": "What did the doctor Nadine Burke Harris find in children who had lived through multiple traumas?"
+        },
+        "opts": [
+          {
+            "ar": "أن مشكلات الانتباه عندهم أكثر بكثير، لأن الدماغ الخائف يظلّ يراقب ما حوله",
+            "en": "Far more attention problems, because a frightened brain keeps scanning its surroundings"
+          },
+          {
+            "ar": "أنهم أذكى من غيرهم، لأنهم تعلّموا الحذر مبكراً",
+            "en": "They were cleverer than others, having learned caution early"
+          },
+          {
+            "ar": "أن الصدمات لا تمسّ الانتباه، بل المزاج وحده",
+            "en": "Trauma left their attention alone and affected only their mood"
+          },
+          {
+            "ar": "أن الدواء يحلّ مشكلات انتباههم دائماً",
+            "en": "Medication always solved their attention problems"
+          }
+        ],
+        "src": "ص 218–222",
+        "why": {
+          "ar": "التركيز يحتاج إحساساً بالأمان. والأطفال الذين عاشوا أربع صدماتٍ أو أكثر كانوا أكثر عرضةً بـ٣٢٫٦ مرّة لتشخيصهم بمشكلاتٍ في السلوك أو الانتباه.",
+          "en": "Focus needs a sense of safety. Children who had lived through four or more kinds of trauma were 32.6 times likelier to be diagnosed with behaviour or attention problems."
+        }
+      },
+      {
+        "id": "majd-93",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "ما القاسم المشترك بين الأنظمة الغذائية في المجتمعات التي تقلّ فيها مشكلات الانتباه والخَرَف؟",
+          "en": "What do the diets of communities with fewer attention problems and less dementia have in common?"
+        },
+        "opts": [
+          {
+            "ar": "أنها تقوم على الأطعمة الكاملة، وتكاد تخلو من المصنّعة والمكرّرة",
+            "en": "They’re built on whole foods, with almost nothing processed or refined"
+          },
+          {
+            "ar": "أنها غنيّةٌ بالأسماك وزيت السمك",
+            "en": "They’re rich in fish and fish oil"
+          },
+          {
+            "ar": "أنها تخلو من النشويات كالخبز والأرز",
+            "en": "They cut out starches like bread and rice"
+          },
+          {
+            "ar": "أنها نباتيةٌ لا لحم فيها",
+            "en": "They’re vegetarian, with no meat"
+          }
+        ],
+        "src": "ص 249–254",
+        "why": {
+          "ar": "بعضها غنيٌّ بالأسماك وبعضها لا، وبعضها نباتيّ وبعضها لا، وفي بعضها نشوياتٌ كثيرة وفي بعضها لا شيء منها. المشترك غياب الطعام المصنّع.",
+          "en": "Some are heavy on fish and some aren’t; some are mostly plants and some aren’t; some are full of carbohydrates and some have none. What they share is the absence of processed food."
+        }
+      },
+      {
+        "id": "majd-95",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "لماذا تدعو لينور سكينازي الآباء إلى ترك أطفالهم يلعبون أحراراً دون رقابة؟",
+          "en": "Why does Lenore Skenazy urge parents to let their children play freely, unsupervised?"
+        },
+        "opts": [
+          {
+            "ar": "لأن الطفل الذي يديره الكبار دائماً لا يكتشف ما يأسر انتباهه",
+            "en": "A child always steered by adults never discovers what captivates them"
+          },
+          {
+            "ar": "لأن الآباء يحتاجون وقتاً لأنفسهم، والأطفال يتعلّمون الصبر",
+            "en": "Parents need time to themselves, and children learn patience"
+          },
+          {
+            "ar": "لأن المدارس فشلت، والشارع يعلّم أكثر منها",
+            "en": "Schools have failed, and the street teaches more"
+          },
+          {
+            "ar": "لأن اللعب في الخارج يحرق السعرات ويقي من البدانة",
+            "en": "Outdoor play burns calories and prevents obesity"
+          }
+        ],
+        "src": "ص 303، 314",
+        "why": {
+          "ar": "أسّست حركة «دعهم يكبروا» (Let Grow). وفي الولايات المتحدة لم تبقَ أيّ استراحةٍ للّعب إلا في ٧٣٪ من المدارس الابتدائية.",
+          "en": "She founded the Let Grow movement. In the US, only 73% of elementary schools still have any recess at all."
+        }
+      },
+      {
+        "id": "majd-97",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "يقسم الفيلسوف جيمس ويليامز الانتباه إلى ثلاث طبقات. أيّها الأعمق، الذي يتيح لك أن تعرف من أنت وماذا تريد؟",
+          "en": "The philosopher James Williams splits attention into three layers. Which is the deepest, the one that lets you know who you are and what you want?"
+        },
+        "opts": [
+          {
+            "ar": "ضوء النهار",
+            "en": "Daylight"
+          },
+          {
+            "ar": "المصباح الكاشف",
+            "en": "The spotlight"
+          },
+          {
+            "ar": "ضوء النجوم",
+            "en": "Starlight"
+          },
+          {
+            "ar": "ضوء القمر",
+            "en": "Moonlight"
+          }
+        ],
+        "src": "ص 336–337",
+        "why": {
+          "ar": "«المصباح الكاشف» للمهامّ القريبة، و«ضوء النجوم» للأهداف البعيدة، و«ضوء النهار» للتأمّل الذي تعرف به أهدافك أصلاً. ومن فقده بدأ «يتفكّك»: لم يعد يفهم قصّته هو. و«ضوء القمر» ليس من طبقاته.",
+          "en": "The spotlight is for near tasks, starlight for long-term goals, daylight for the reflection that tells you what your goals are in the first place. Lose it and you start “decohering”: you stop making sense to yourself. Moonlight isn’t one of his layers."
+        }
+      },
+      {
+        "id": "majd-98",
+        "book": "stolen-focus",
+        "kind": "tf",
+        "statement": {
+          "ar": "يرى يوهان هاري أن الانقطاع التامّ عن الإنترنت، كما فعل هو ثلاثة أشهر، هو الحلّ الذي ينبغي أن يتبعه الجميع.",
+          "en": "Johann Hari believes that cutting off the internet completely, as he did for three months, is the solution everyone should follow."
+        },
+        "isMyth": true,
+        "hint": {
+          "ar": "من يقدر أن يترك عمله ثلاثة أشهر ليعيش في كوخٍ على البحر؟",
+          "en": "Who can leave work for three months to live in a shack by the sea?"
+        },
+        "src": "ص 18، 25",
+        "explain": {
+          "ar": "قال صراحةً إنه ليس حلّاً لمعظم الناس: جدّته التي ربّته كانت تنظّف المراحيض، وأبوه كان سائق حافلة، ولا يقدر أيٌّ منهما على ذلك. المشكلة عنده أعمق من الانضباط الشخصي.",
+          "en": "He says outright that it’s no solution for most people: the grandmother who raised him cleaned toilets, his dad drove a bus, and neither could do it. For him the problem runs deeper than personal discipline."
+        }
+      },
+      {
+        "id": "majd-99",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "بماذا يشبّه البروفيسور جويل نيغ انتشار مشكلات الانتباه، ليشرح أن المشكلة ليست فردية؟",
+          "en": "What does Professor Joel Nigg compare the spread of attention problems to, to show the problem isn’t individual?"
+        },
+        "opts": [
+          {
+            "ar": "بالبدانة، التي كانت نادرةً قبل خمسين عاماً ثم صارت وباءً لأن البيئة تغيّرت",
+            "en": "Obesity: rare fifty years ago, an epidemic now, because the environment changed"
+          },
+          {
+            "ar": "بالإنفلونزا، التي تنتقل من شخصٍ إلى آخر",
+            "en": "Flu, which passes from person to person"
+          },
+          {
+            "ar": "بالتدخين، الذي بدأ موضةً ثم صار إدماناً",
+            "en": "Smoking, which started as a fashion and became an addiction"
+          },
+          {
+            "ar": "بقصر النظر، الذي تزيده القراءة في الضوء الخافت",
+            "en": "Short-sightedness, made worse by reading in dim light"
+          }
+        ],
+        "src": "ص 18",
+        "why": {
+          "ar": "لم يصبح الناس فجأةً أقلّ انضباطاً، بل تغيّر ما حولهم. وهذا محور الكتاب كلّه: اثنا عشر سبباً لا يعود معظمها إلى ضعف الإرادة.",
+          "en": "People didn’t suddenly lose their self-discipline; the world around them changed. That’s the whole book in a nutshell: twelve causes, most of which have nothing to do with weak willpower."
+        }
+      },
+      {
+        "id": "majd-100",
+        "book": "stolen-focus",
+        "kind": "mcq",
+        "q": {
+          "ar": "شبّه جيمس ويليامز حالنا بسائقٍ أُفرغ دلو طينٍ على زجاج سيّارته الأمامي. ما أوّل ما عليه أن يفعله؟",
+          "en": "James Williams likens our situation to a driver who’s had a bucket of mud thrown over the windscreen. What should the driver do first?"
+        },
+        "opts": [
+          {
+            "ar": "أن ينظّف الزجاج قبل أيّ شيءٍ آخر",
+            "en": "Clean the windscreen before anything else"
+          },
+          {
+            "ar": "أن يُسرع ليصل في موعده",
+            "en": "Speed up to arrive on time"
+          },
+          {
+            "ar": "أن يصلح المرآة الجانبية",
+            "en": "Fix the side mirror"
+          },
+          {
+            "ar": "أن يسأل عن الطريق",
+            "en": "Ask for directions"
+          }
+        ],
+        "src": "ص 21",
+        "why": {
+          "ar": "الانتباه شرطٌ لحلّ أيّ مشكلةٍ أخرى؛ من دونه لا تعرف حتى أين أنت. ولهذا يهمّ التركيز في الحياة الشخصية والعامّة معاً.",
+          "en": "Attention comes before solving any other problem — without it you don’t even know where you are. That’s why focus matters in private and public life alike."
+        }
+      }
+    ],
+  },
 }

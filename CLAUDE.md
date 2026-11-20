@@ -167,7 +167,7 @@ their own chunks, and these are loaded lazily:
 - **`FocusLab.jsx`** (via `React.lazy` in `BookSection`) — seven games for one section.
 - **The game** (`pages/Game.jsx`, via `React.lazy` in `App.jsx`) — its rules, its screens, its
   rounds from every book and its own stylesheet (`styles/game.css`, imported BY the page so
-  it rides in the chunk): ~139 kB gz of script (with the members' questions) and ~8 kB of CSS that a reader who came for a
+  it rides in the chunk): ~169 kB gz of script (with the members' questions — Majd's 67 added ~30) and ~8 kB of CSS that a reader who came for a
   chapter never downloads. It imports each book's `game.js` and `mythOrFact.js` and nothing
   else of theirs; check after touching it that `Game-*.js` still does not import a book's
   `index-*.js`.
@@ -575,7 +575,7 @@ keeps `base: './'` sub-path hosting working.
     same decks). **What is in it and in what order is `lib/game/questions.js`**: every question
     of the eight kinds (no dares, chance or Lab), each deck spread evenly through ONE FIXED ORDER
     (card j of n at (j + ½)/n; ties by registry book, then `KINDS`), so "question 12" said on the
-    call is the same on every phone — 318 questions, or one book's (`?book=<id>`: 100 / 111 / 96;
+    call is the same on every phone — 383 questions, or one book's (`?book=<id>`: 124 / 134 / 115;
     a one-book list drops the linking questions and the «من أيّ كتاب؟» pictures, as a one-book
     game would). Adding questions shifts the numbers after them. The game's end screen offers
     «أجيبوا عن بقية الأسئلة (N)» (`GameOver`): it leaves the room and opens the list for that
@@ -622,10 +622,22 @@ keeps `base: './'` sub-path hosting working.
     know in advance). Maria's first set (2026-11-19): 56 dealt, her 3 picture rounds included
     since the club supplied their pictures (2026-11-20; a member's `pic` carries its own kind in
     `pk`); where hers and the site's overlapped, a few words were changed so neither gives the
-    other away — the header of her list says which.
+    other away — the header of her list says which. Majd's set (2026-11-21, a PDF of 100
+    multiple-choice and true/false questions in Arabic, with answers and pages): 67 dealt
+    (48 multiple-choice, 19 myth-or-fact), ids `majd-<Majd's own number>` so they can be found
+    in that PDF; the other 33 asked what the game already asks and were left out (each time the
+    existing one was the better: the book's own myth-or-fact deck, or Maria's, who got there
+    first). Written into both languages to the deck rules (options evened out, no joke options),
+    checked against the books — four facts corrected — and with lines taken out of the `why`s
+    where they would answer another question; the header of Majd's list says which.
   - **Nearly every question has a photo** (2026-11-20, the club: "i want to add fotos for as
-    much questions as possible") — 185 multiple-choice, myth-or-fact, number and white-lie
-    questions show one above the question and, a little smaller, on its result. Each shows the
+    much questions as possible") — 220 multiple-choice, myth-or-fact, number and white-lie
+    questions show one above the question and, a little smaller, on its result. **A photo
+    shared by several questions also ties them together**: the "nothing twice" marks include
+    `photo.src`, so only one of them is dealt per game — closely related questions are put on
+    the same photo on purpose (Majd's two caffeine questions share `ws-coffee`). Of Majd's 67,
+    36 take a photo the game already shows or a site picture, 27 wait for 26 new photos (the
+    import lists them as `missing` until the club drops them in) and 4 need none. Each shows the
     question's SUBJECT, NEVER ITS ANSWER, and no portrait that a picture round or a «من هو؟» asks
     about is reused beside a question naming that person («من هو؟» shows its picture from the
     start). The plan is `scripts/question-photos.mjs` (photo → questions, what to look for, what
