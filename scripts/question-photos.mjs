@@ -24,7 +24,7 @@ export const PHOTOS = {
   'ws-nightmare-fuseli': { ...L('لوحة «الكابوس» لهنري فوزيلي (١٧٨١)', 'Henry Fuseli The Nightmare painting'), q: ['why-we-sleep:tf:24'] },
   'ws-periodic-table': { ...L('الجدول الدوري للعناصر (ويفضّل جدول مندلييف المكتوب بخطّ يده)', 'Mendeleev handwritten periodic table'), q: ['ws-made-in-sleep', 'ws-b-mendeleev'], avoid: 'صورة مندلييف نفسه، أو أحد نائم' },
   'ws-clock-change': { ...L('ساعة حائط أو منبّه تُدار عقاربه إلى الأمام', 'turning clock forward daylight saving'), q: ['ws-clocks', 'why-we-sleep:tf:16'], avoid: 'قلب أو مستشفى' },
-  'ws-pills': { ...L('حبوب أو كبسولات في علبة أو على طاولة', 'pills capsules bottle'), q: ['ws-melatonin', 'why-we-sleep:tf:4', 'majd-4'] },
+  'ws-pills': { ...L('حبوب أو كبسولات في علبة أو على طاولة', 'pills capsules bottle'), q: ['ws-melatonin', 'why-we-sleep:tf:4', 'majd-4', 'majd-24'] },
   'ws-teen-night': { ...L('مراهق مستيقظ في سريره ليلاً', 'teenager awake in bed at night'), q: ['ws-teens', 'majd-26', 'majd-27'] },
   'ws-teen-morning': { ...L('مراهق نصف نائم يُوقَظ صباحاً أو على مائدة الفطور', 'sleepy teenager morning alarm'), q: ['ws-b-teens'], avoid: 'ساعة تشير إلى الرابعة أو الخامسة' },
   'ws-school-morning': { ...L('حافلة مدرسية أو طلاب ذاهبون إلى المدرسة في عتمة الصباح', 'school bus dark early morning'), q: ['why-we-sleep:tf:10'] },
@@ -76,7 +76,7 @@ export const PHOTOS = {
   'ws-angry-tired': { ...L('شخصٌ متعب منفعل يصرخ أو يتشاجر', 'exhausted angry person shouting'), q: ['majd-16'] },
   'ws-light-switch': { ...L('مفتاح إضاءة على جدار', 'light switch on a wall'), q: ['majd-17'] },
   'ws-piano-practice': { ...L('يدان تتدرّبان على البيانو', 'hands practicing piano'), q: ['majd-23'] },
-  'ws-sleeping-pills': { ...L('حبوبٌ منوّمة في شريط على طاولة بجانب السرير', 'sleeping pills blister pack nightstand'), q: ['majd-24', 'majd-25'] },
+  'ws-sleeping-pills': { ...L('حبوبٌ منوّمة في شريط على طاولة بجانب السرير', 'sleeping pills blister pack nightstand'), q: ['majd-25'] },
   'ws-foot-duvet': { ...L('قدمٌ حافية خارجة من تحت اللحاف', 'bare foot sticking out from under duvet'), q: ['majd-28'] },
   'ws-hotel-room': { ...L('غرفة فندق وسريرها', 'hotel room bed'), q: ['majd-32'], avoid: 'دلفين أو طائر' },
 

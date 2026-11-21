@@ -10,6 +10,7 @@ export const questionPhotos = {
   "majd-2": ["./images/game/q/ws-coffee.webp", 960, 960],
   "majd-20": ["./images/game/q/ws-all-nighter.webp", 1200, 801],
   "majd-21": ["./images/game/q/ws-nightcap.webp", 1200, 1116],
+  "majd-24": ["./images/game/q/ws-pills.webp", 1000, 1000],
   "majd-26": ["./images/game/q/ws-teen-night.webp", 1200, 924],
   "majd-27": ["./images/game/q/ws-teen-night.webp", 1200, 924],
   "majd-3": ["./images/game/q/ws-elderly.webp", 1000, 750],

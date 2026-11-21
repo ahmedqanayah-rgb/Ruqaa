@@ -627,16 +627,21 @@ keeps `base: './'` sub-path hosting working.
     (48 multiple-choice, 19 myth-or-fact), ids `majd-<Majd's own number>` so they can be found
     in that PDF; the other 33 asked what the game already asks and were left out (each time the
     existing one was the better: the book's own myth-or-fact deck, or Maria's, who got there
-    first). Written into both languages to the deck rules (options evened out, no joke options),
-    checked against the books — four facts corrected — and with lines taken out of the `why`s
-    where they would answer another question; the header of Majd's list says which.
+    first). **A member's answer options stay exactly as written, the funny ones included** —
+    the club's call (2026-11-21: «ليش غيرت الخيارات؟ خليهن متل ما هنن، وخصوصي الهزلية»), which
+    outranks the deck rules' "no joke options" for members' questions; only the right one is put
+    first, as the format needs, and the English is a plain translation. Majd's are written into
+    both languages, checked against the books (three facts corrected in the statements and
+    explanations), with lines taken out of the `why`s where they would answer another question;
+    the header of Majd's list says which.
   - **Nearly every question has a photo** (2026-11-20, the club: "i want to add fotos for as
-    much questions as possible") — 220 multiple-choice, myth-or-fact, number and white-lie
+    much questions as possible") — 221 multiple-choice, myth-or-fact, number and white-lie
     questions show one above the question and, a little smaller, on its result. **A photo
     shared by several questions also ties them together**: the "nothing twice" marks include
     `photo.src`, so only one of them is dealt per game — closely related questions are put on
-    the same photo on purpose (Majd's two caffeine questions share `ws-coffee`). Of Majd's 67,
-    36 take a photo the game already shows or a site picture, 27 wait for 26 new photos (the
+    the same photo on purpose (Majd's two caffeine questions share `ws-coffee`; Majd's question
+    on Ambien shares `ws-pills` with the book's own "sleeping pills give natural sleep"). Of
+    Majd's 67, 37 take a photo the game already shows or a site picture, 26 wait for 26 new photos (the
     import lists them as `missing` until the club drops them in) and 4 need none. Each shows the
     question's SUBJECT, NEVER ITS ANSWER, and no portrait that a picture round or a «من هو؟» asks
     about is reused beside a question naming that person («من هو؟» shows its picture from the

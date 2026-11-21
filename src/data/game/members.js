@@ -1696,15 +1696,17 @@ export const members = {
     // and true/false questions, each with its answer, explanation and page, put
     // into the decks' shapes in both languages. 67 are here; the other 33 are
     // questions the game already asks, so only the better version is kept, as
-    // the club asked (the commit lists which). Changed from what was written:
-    // the options evened out (the right one first, wrong ones a half-informed
-    // player could believe, no throwaway jokes); four facts put right against
-    // the books (73% of US elementary schools still have recess, not 37%; Hari's
-    // dad, not his grandfather, drove a bus; Poincaré was stepping onto a bus;
-    // reading is "one of" the most common forms of flow); and lines taken out
-    // where they would answer another question or repeat a refuted figure (the
-    // 23 minutes, 18°C, the drink-drive hours, Mendeleev's dream, the 2003
-    // outdoor-play figure, credere, debtors' prisons, Faust).
+    // the club asked (the commit bbce565 lists which). THE OPTIONS ARE MAJD'S
+    // OWN, word for word, the funny ones included — the club's call (2026-11-21:
+    // «خليهن متل ما هنن، وخصوصي الهزلية»), which outranks the deck rules for
+    // members' questions; only the right one is put first, as the format needs.
+    // Changed in the rest: three facts put right against the books (73% of US
+    // elementary schools still have recess, not 37%; Hari's dad, not his
+    // grandfather, drove a bus; reading is "one of" the most common forms of
+    // flow), and lines taken out of the explanations where they would answer
+    // another question or repeat a refuted figure (the 23 minutes, 18°C, the
+    // drink-drive hours, Mendeleev's dream, the 2003 outdoor-play figure,
+    // credere, debtors' prisons, Faust).
     questions: [
       {
         "id": "majd-1",
@@ -1748,20 +1750,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "مادّة النعاس ظلّت تتراكم خلف الكافيين ساعاتٍ، فتصل كلّها دفعةً واحدة",
-            "en": "The sleepy chemical kept piling up behind the caffeine, and hits all at once"
+            "ar": "أن الأدينوزين ظل يتراكم خلف «جدار» الكافيين طوال الوقت، فيصل كله دفعة واحدة حين يفكّك الكبد الكافيين",
+            "en": "Adenosine kept piling up behind the caffeine “wall” all along, and arrives all at once when the liver breaks the caffeine down"
           },
           {
-            "ar": "الكافيين يستنزف سكّر الدم، فيهبط فجأةً حين ينتهي مفعوله",
-            "en": "Caffeine burns through your blood sugar, which crashes when it wears off"
+            "ar": "أن الكافيين يستنفد سكر الدم",
+            "en": "Caffeine uses up your blood sugar"
           },
           {
-            "ar": "القهوة تُجفّف الجسم، والجفاف يجلب الخمول بعد ساعات",
-            "en": "Coffee dehydrates you, and dehydration brings on fatigue hours later"
+            "ar": "الجفاف",
+            "en": "Dehydration"
           },
           {
-            "ar": "الكافيين يُفرغ مخزون الأدرينالين، فيحتاج الجسم ساعاتٍ ليعوّضه",
-            "en": "Caffeine empties your adrenaline stores, which take hours to refill"
+            "ar": "انخفاض الميلاتونين",
+            "en": "A drop in melatonin"
           }
         ],
         "src": "ص 45",
@@ -1799,20 +1801,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "يعلن أن الليل حلّ، كمسدّس انطلاق السباق، ولا يصنع النوم نفسه",
-            "en": "It announces that night has come, like a starting pistol, but doesn’t make the sleep"
+            "ar": "يعمل كمسدس الإشارة الذي يعلن بدء السباق، لكنه لا يشارك في توليد النوم نفسه",
+            "en": "It works like the starting pistol that announces the race, but takes no part in making sleep itself"
           },
           {
-            "ar": "هو الذي يصنع النوم العميق، وكلّما زاد كان النوم أعمق",
-            "en": "It produces deep sleep — the more of it, the deeper you sleep"
+            "ar": "هو الذي يولّد النوم العميق",
+            "en": "It’s what generates deep sleep"
           },
           {
-            "ar": "يتراكم طوال النهار، فيشتدّ النعاس كلّما طالت اليقظة",
-            "en": "It builds up all day, so the longer you’re awake, the sleepier you get"
+            "ar": "يوقف الأحلام",
+            "en": "It stops dreams"
           },
           {
-            "ar": "يُطفئ نشاط الدماغ ليلاً كي ترتاح خلاياه",
-            "en": "It switches the brain off at night so its cells can rest"
+            "ar": "ينظف الدماغ",
+            "en": "It cleans the brain"
           }
         ],
         "src": "ص 35",
@@ -1831,20 +1833,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "الغدّة الصنوبرية، ويوقفها ضوء النهار الداخل من العينين",
-            "en": "The pineal gland — stopped by daylight entering through the eyes"
+            "ar": "الغدة الصنوبرية، ويوقفها ضوء الشمس الداخل عبر العينين حتى مع إغماض الجفنين",
+            "en": "The pineal gland — stopped by sunlight entering through the eyes, even with the eyelids closed"
           },
           {
-            "ar": "الغدّة النخامية، ويوقفها صوت المنبّه",
-            "en": "The pituitary gland — stopped by the sound of the alarm"
+            "ar": "الغدة الدرقية، ويوقفها الأكل",
+            "en": "The thyroid gland — stopped by eating"
           },
           {
-            "ar": "الغدّة الدرقية، ويوقفها أوّل طعامٍ تأكله",
-            "en": "The thyroid gland — stopped by the first food you eat"
+            "ar": "الغدة النخامية، ويوقفها المنبّه",
+            "en": "The pituitary gland — stopped by the alarm clock"
           },
           {
-            "ar": "الغدّة الكظرية، ويوقفها ارتفاع الكورتيزول صباحاً",
-            "en": "The adrenal glands — stopped by the morning rise in cortisol"
+            "ar": "الغدة الكظرية، ويوقفها الكافيين",
+            "en": "The adrenal gland — stopped by caffeine"
           }
         ],
         "src": "ص 35–36",
@@ -1863,20 +1865,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "في «النواة فوق التصالبية»، في الوطاء في عمق الدماغ",
-            "en": "In the suprachiasmatic nucleus, in the hypothalamus deep in the brain"
+            "ar": "في النواة فوق التصالبية داخل الوطاء (الهيبوثالاموس)",
+            "en": "In the suprachiasmatic nucleus, inside the hypothalamus"
           },
           {
-            "ar": "في القلب، الذي يضبط إيقاع الجسم كلّه",
-            "en": "In the heart, which sets the rhythm of the whole body"
+            "ar": "في القلب",
+            "en": "In the heart"
           },
           {
-            "ar": "في المخيخ، مركز التوقيت والتوازن",
-            "en": "In the cerebellum, the brain’s centre of timing and balance"
+            "ar": "في المخيخ",
+            "en": "In the cerebellum"
           },
           {
-            "ar": "في الكبد، الذي يضبط مواعيد الطاقة والهضم",
-            "en": "In the liver, which schedules energy and digestion"
+            "ar": "في الكبد",
+            "en": "In the liver"
           }
         ],
         "src": "ص 39، 362",
@@ -1914,20 +1916,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأن «المهاد» في وسط الدماغ يُغلق بوّابته، فلا تبلغ الأصوات وعيك",
-            "en": "The thalamus, in the middle of the brain, shuts its gate, so sounds never reach awareness"
+            "ar": "لأن «المهاد» في وسط الدماغ يغلق البوابة الحسية فلا تصل الإشارات إلى القشرة",
+            "en": "Because the thalamus, in the middle of the brain, shuts the sensory gate, so signals never reach the cortex"
           },
           {
-            "ar": "لأن الأذن الوسطى ترتخي في النوم فلا تنقل الصوت",
-            "en": "The middle ear goes slack during sleep and stops passing sound on"
+            "ar": "لأن الأذن تغلق قناتها",
+            "en": "Because the ear closes its canal"
           },
           {
-            "ar": "لأن الدماغ يكتم كلّ صوتٍ أخفض من صوت المنبّه",
-            "en": "The brain mutes every sound quieter than an alarm"
+            "ar": "لأن القلب يبطئ",
+            "en": "Because the heart slows down"
           },
           {
-            "ar": "لأن الميلاتونين يُخدّر أعصاب السمع ليلاً",
-            "en": "Melatonin numbs the hearing nerves at night"
+            "ar": "لأن الميلاتونين يخدّر الأذن",
+            "en": "Because melatonin numbs the ear"
           }
         ],
         "src": "ص 59–60",
@@ -1965,20 +1967,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "تحمي نومك من الضجيج، وتجدّد قدرة دماغك على التعلّم",
-            "en": "They guard your sleep against noise, and restore your brain’s capacity to learn"
+            "ar": "حماية النوم من الأصوات الخارجية، ومساعدة الدماغ على استعادة قدرته على التعلم",
+            "en": "Protecting sleep from outside noise, and helping the brain get back its capacity to learn"
           },
           {
-            "ar": "تُطلق الأحلام وتختار ما تدور حوله",
-            "en": "They set off dreams and choose what they’re about"
+            "ar": "توليد الأحلام",
+            "en": "Generating dreams"
           },
           {
-            "ar": "تحرّك العينين بسرعةٍ تحت الجفنين المغمضين",
-            "en": "They move the eyes rapidly under closed lids"
+            "ar": "تحريك العينين",
+            "en": "Moving the eyes"
           },
           {
-            "ar": "تخفض حرارة الجسم كي يبدأ النوم العميق",
-            "en": "They lower body temperature so deep sleep can begin"
+            "ar": "خفض حرارة الجسم",
+            "en": "Lowering body temperature"
           }
         ],
         "src": "ص 73، 163",
@@ -1997,20 +1999,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "نوم حركة العين السريعة، نوم الأحلام",
-            "en": "REM sleep — dream sleep"
+            "ar": "نوم حركة العين السريعة (الأحلام)",
+            "en": "REM sleep (dreaming)"
           },
           {
             "ar": "النوم العميق",
             "en": "Deep sleep"
           },
           {
-            "ar": "الاثنين بالتساوي، بنسبة الوقت الضائع",
-            "en": "Both equally, in proportion to the time lost"
+            "ar": "الاثنان بالتساوي",
+            "en": "Both equally"
           },
           {
-            "ar": "لا شيء يُذكر: الدورات الأخيرة تكرارٌ لما سبقها",
-            "en": "Nothing much: the last cycles just repeat the earlier ones"
+            "ar": "لا تخسر شيئًا",
+            "en": "You lose nothing"
           }
         ],
         "src": "ص 64–66، 93",
@@ -2029,20 +2031,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "النورأدرينالين، مادّة القلق في الدماغ",
-            "en": "Noradrenaline, the brain’s anxiety chemical"
+            "ar": "النورأدرينالين (ناقل القلق المكافئ للأدرينالين)",
+            "en": "Noradrenaline (the anxiety chemical, the brain’s version of adrenaline)"
           },
           {
-            "ar": "السيروتونين، مادّة المزاج",
-            "en": "Serotonin, the mood chemical"
+            "ar": "السيروتونين",
+            "en": "Serotonin"
           },
           {
-            "ar": "الدوبامين، مادّة المكافأة",
-            "en": "Dopamine, the reward chemical"
+            "ar": "الأدينوزين",
+            "en": "Adenosine"
           },
           {
-            "ar": "الكورتيزول، هرمون الإجهاد",
-            "en": "Cortisol, the stress hormone"
+            "ar": "الأوركسين",
+            "en": "Orexin"
           }
         ],
         "src": "ص 302",
@@ -2061,20 +2063,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "يزيد نشاط اللوزة نحو ٦٠٪، وتضعف صلتها بالفصّ الجبهي الذي يكبحها",
-            "en": "The amygdala gets about 60% more reactive, and loses touch with the frontal lobe that reins it in"
+            "ar": "يزداد نشاط اللوزة (مركز الانفعالات) بنحو 60%، وتضعف صلتها بالفص الجبهي الذي يكبحها",
+            "en": "The amygdala (the emotional centre) gets about 60% more active, and its link to the frontal lobe that reins it in weakens"
           },
           {
-            "ar": "ينخفض نشاط اللوزة، فتفقد المشاعر توازنها",
-            "en": "The amygdala quietens down, and emotions lose their balance"
+            "ar": "ينخفض نشاط اللوزة",
+            "en": "The amygdala becomes less active"
           },
           {
-            "ar": "يتوقّف الفصّ الجبهي عن العمل نهائياً حتى تنام",
-            "en": "The frontal lobe shuts down completely until you sleep"
+            "ar": "يتوقف الفص الجبهي عن العمل نهائيًا",
+            "en": "The frontal lobe stops working altogether"
           },
           {
-            "ar": "يرتفع الميلاتونين في النهار، فيعكّر المزاج",
-            "en": "Melatonin rises in the daytime and sours your mood"
+            "ar": "يزداد الميلاتونين",
+            "en": "Melatonin goes up"
           }
         ],
         "src": "ص 215–216",
@@ -2097,12 +2099,12 @@ export const members = {
             "en": "Orexin"
           },
           {
-            "ar": "الميلاتونين",
-            "en": "Melatonin"
-          },
-          {
             "ar": "الغريلين",
             "en": "Ghrelin"
+          },
+          {
+            "ar": "الميلاتونين",
+            "en": "Melatonin"
           },
           {
             "ar": "الأستيل كولين",
@@ -2144,20 +2146,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "بذاكرة USB صغيرة، والنوم ينقل ما فيها إلى مخزنٍ دائم فيُفرغها لتعلّمٍ جديد",
-            "en": "A small USB stick: sleep moves its contents into permanent storage, clearing it for new learning"
+            "ar": "بشريحة ذاكرة USB محدودة، والنوم ينقل محتواها إلى مخزن دائم في القشرة فيفرغها لتعلّم جديد",
+            "en": "A limited USB memory stick — sleep moves its contents to permanent storage in the cortex, emptying it for new learning"
           },
           {
-            "ar": "بمكتبةٍ لا تمتلئ، والنوم يرتّب رفوفها فقط",
-            "en": "A library that never fills up: sleep just tidies the shelves"
+            "ar": "بمكتبة لا تمتلئ",
+            "en": "A library that never fills up"
           },
           {
-            "ar": "بسلّة محذوفات، والنوم يُفرغها من كلّ ما تعلّمته في النهار",
-            "en": "A recycle bin: sleep empties out everything you learned that day"
+            "ar": "بسلة مهملات تُفرغ في النهار",
+            "en": "A wastebasket emptied during the day"
           },
           {
-            "ar": "بقرصٍ صلب كبير، والنوم يضغط ما فيه ليتّسع لغيره",
-            "en": "A big hard drive: sleep compresses what’s on it to make room"
+            "ar": "بمحرك السيارة",
+            "en": "A car engine"
           }
         ],
         "src": "ص 160",
@@ -2209,31 +2211,31 @@ export const members = {
         "book": "why-we-sleep",
         "kind": "mcq",
         "q": {
-          "ar": "في تجربةٍ على الحيوانات، نامت بعد تعلّمٍ مكثّف: بعضها نوماً طبيعياً، وبعضها بحبّة «أمبين» المنوّمة. ماذا فعل نوم الحبّة بالوصلات التي تكوّنت أثناء التعلّم؟",
-          "en": "In an animal study, subjects slept after intensive learning — some naturally, some on the sleeping pill Ambien. What did the pill-induced sleep do to the connections formed while learning?"
+          "ar": "ما المشكلة الأساسية في النوم الذي تنتجه الحبوب المنومة الشائعة مثل «آمبين»؟",
+          "en": "What is the basic problem with the sleep that common sleeping pills like Ambien produce?"
         },
         "opts": [
           {
-            "ar": "محا نحو نصفها بدل أن يقوّيها",
-            "en": "Wiped out about half of them, instead of strengthening them"
+            "ar": "أنها مهدئات تستهدف المستقبلات نفسها التي يستهدفها الكحول، ونومها يفتقر إلى الموجات البطيئة العميقة",
+            "en": "They’re sedatives that target the same receptors as alcohol, and their sleep lacks the deep slow waves"
           },
           {
-            "ar": "قوّاها تماماً كما يفعل النوم الطبيعي",
-            "en": "Strengthened them, exactly as natural sleep does"
+            "ar": "أنه أطول من اللازم",
+            "en": "It lasts longer than it should"
           },
           {
-            "ar": "قوّاها أكثر، لأن نوم الحبّة أعمق وأطول",
-            "en": "Strengthened them more, since pill sleep is deeper and longer"
+            "ar": "أنها تزيد الأحلام",
+            "en": "They increase dreaming"
           },
           {
-            "ar": "لم يمسّها، فالحبّة تغيّر الأحلام وحدها",
-            "en": "Left them alone — the pill only changes dreams"
+            "ar": "أنها ترفع حرارة الجسم",
+            "en": "They raise body temperature"
           }
         ],
         "src": "ص 408، 412",
         "why": {
-          "ar": "النوم الطبيعي قوّى الوصلات، ونوم «أمبين» محا نحو ٥٠٪ منها: صار ممحاةً للذاكرة. فالحبوب المنوّمة الشائعة مهدّئات تستهدف المستقبِلات نفسها التي يستهدفها الكحول، ونومها يفتقر إلى الموجات العميقة البطيئة.",
-          "en": "Natural sleep strengthened the connections; Ambien sleep wiped out about 50% of them — an eraser for memory. Common sleeping pills are sedatives that hit the same receptors as alcohol, and their sleep lacks the deep, slow waves."
+          "ar": "في دراسةٍ على الحيوانات، محا النوم تحت تأثير «آمبين» نحو ٥٠٪ من الوصلات التي تكوّنت أثناء التعلّم: صار «ممحاةً» للذاكرة.",
+          "en": "In an animal study, sleep on Ambien wiped out about 50% of the connections formed while learning — an “eraser” for memory."
         }
       },
       {
@@ -2265,20 +2267,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "تقليص الوقت المسموح في السرير، إلى ستّ ساعاتٍ مثلاً، ليتراكم ضغط النوم",
-            "en": "Cutting the time allowed in bed, to six hours say, so sleep pressure builds"
+            "ar": "تقليص الوقت المسموح في السرير (مثلًا 6 ساعات) ليتراكم ضغط النوم",
+            "en": "Cutting the time allowed in bed (to 6 hours, say) so sleep pressure builds up"
           },
           {
-            "ar": "البقاء في السرير حتى يأتي النوم مهما تأخّر",
-            "en": "Staying in bed until sleep comes, however long it takes"
+            "ar": "النوم في النهار للتعويض",
+            "en": "Sleeping in the daytime to make up for it"
           },
           {
-            "ar": "النوم ساعاتٍ إضافية في النهار تعويضاً عن الليل",
-            "en": "Sleeping extra hours in the daytime to make up for the night"
+            "ar": "شرب الحليب الدافئ",
+            "en": "Drinking warm milk"
           },
           {
-            "ar": "الذهاب إلى السرير أبكر بساعتين لتطول فرصة النوم",
-            "en": "Going to bed two hours earlier, to give sleep more of a chance"
+            "ar": "البقاء في السرير حتى يأتي النوم",
+            "en": "Staying in bed until sleep comes"
           }
         ],
         "src": "ص 420–421",
@@ -2297,20 +2299,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أخذ قيلولةٍ طويلة بعد الظهر لتعويض الليل",
-            "en": "Take a long afternoon nap to make up for the night"
+            "ar": "أخذ قيلولة طويلة بعد الظهر لتعويض الليل",
+            "en": "Taking a long afternoon nap to make up for the night"
           },
           {
             "ar": "إبعاد الساعات المرئية عن غرفة النوم",
-            "en": "Keep clocks out of sight in the bedroom"
+            "en": "Keeping visible clocks out of the bedroom"
           },
           {
-            "ar": "النهوض من السرير إن طال السهاد فيه",
-            "en": "Get out of bed if you lie awake too long"
+            "ar": "النهوض من السرير إذا طال الأرق",
+            "en": "Getting out of bed if you lie awake too long"
           },
           {
-            "ar": "موعدٌ ثابت للاستيقاظ حتى في العطلة",
-            "en": "Wake at the same time every day, weekends included"
+            "ar": "موعد ثابت للاستيقاظ حتى في العطلة",
+            "en": "A fixed time to wake up, even on holidays"
           }
         ],
         "src": "ص 421",
@@ -2329,26 +2331,26 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأنها مَشعّات الجسم، وحرارته الداخلية يجب أن تنخفض ليبدأ النوم ويستمرّ",
-            "en": "They’re the body’s radiators, and core temperature has to drop for sleep to start and last"
+            "ar": "لأن اليدين والقدمين مشعّات للحرارة، والجسم يحتاج أن تنخفض حرارته الداخلية نحو درجة مئوية ليبدأ النوم ويستمر",
+            "en": "Because hands and feet are heat radiators, and the body needs its core temperature to drop about a degree Celsius for sleep to start and last"
           },
           {
-            "ar": "لأن الدم يتجمّع فيها ليلاً فتحتاج إلى التهوية",
-            "en": "Blood pools in them at night and they need airing"
+            "ar": "بسبب الأحلام",
+            "en": "Because of dreams"
           },
           {
-            "ar": "لأن الدماغ يحرّك الأطراف وهو يحلم",
-            "en": "The dreaming brain moves the limbs about"
+            "ar": "بسبب نقص الأكسجين",
+            "en": "For lack of oxygen"
           },
           {
-            "ar": "لأن الجلد يتنفّس في النوم أكثر من اليقظة",
-            "en": "Skin breathes more during sleep than awake"
+            "ar": "بسبب الشلل الليلي",
+            "en": "Because of night-time paralysis"
           }
         ],
         "src": "ص 396–400",
         "why": {
-          "ar": "على حرارة الجسم الداخلية أن تنخفض نحو درجةٍ مئوية ليبدأ النوم، واليدان والقدمان منافذ الحرارة. وللسبب نفسه يساعد غسل الوجه قبل النوم أغلب الناس.",
-          "en": "Your core temperature needs to fall by about a degree Celsius for sleep to begin, and hands and feet are where the heat escapes. Same reason washing your face before bed helps most people."
+          "ar": "وللسبب نفسه يساعد غسل الوجه قبل النوم أغلب الناس: تبخّر الماء يسحب الحرارة.",
+          "en": "Same reason washing your face before bed helps most people: evaporating water draws the heat away."
         }
       },
       {
@@ -2361,20 +2363,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأن نصف الدماغ ينام أخفّ من الآخر، كحارسٍ في مكانٍ غريب",
-            "en": "Half the brain sleeps lighter than the other, standing guard in a strange place"
+            "ar": "لأن أحد نصفي الدماغ ينام أخف من الآخر كأنه حارس في مكان غير مألوف",
+            "en": "One half of the brain sleeps lighter than the other, like a guard in an unfamiliar place"
           },
           {
-            "ar": "لأن الوسادة والفراش الغريبين يُتعبان الرقبة والظهر",
-            "en": "The unfamiliar pillow and mattress strain your neck and back"
+            "ar": "بسبب الوسادة الغريبة",
+            "en": "The strange pillow"
           },
           {
-            "ar": "لأن عشاء السفر الثقيل يؤخّر النوم العميق",
-            "en": "A heavy travel dinner delays deep sleep"
+            "ar": "بسبب العشاء الثقيل",
+            "en": "The heavy dinner"
           },
           {
-            "ar": "لأن تكييف الفندق يُجفّف الهواء والحلق",
-            "en": "Hotel air-conditioning dries out the air and your throat"
+            "ar": "بسبب إضاءة الغرفة",
+            "en": "The room’s lighting"
           }
         ],
         "src": "ص 96–98",
@@ -2393,7 +2395,7 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "فائضٌ يمكن خزنه",
+            "ar": "الفائض القابل للخزن",
             "en": "A surplus that can be stored"
           },
           {
@@ -2401,12 +2403,12 @@ export const members = {
             "en": "Coins"
           },
           {
-            "ar": "التجارة بين الشعوب",
-            "en": "Trade between peoples"
+            "ar": "التجارة الخارجية",
+            "en": "Foreign trade"
           },
           {
-            "ar": "المصارف والقروض",
-            "en": "Banks and loans"
+            "ar": "المصارف",
+            "en": "Banks"
           }
         ],
         "src": "ص 7–9",
@@ -2444,20 +2446,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "سلطةٌ يثق الناس بأنها ستفي بوعدها، حتى لو مات الحاكم",
-            "en": "An authority people trust to honour it — even if the ruler dies"
+            "ar": "أن يثق الناس بسلطة قوية تضمنها حتى لو مات الحاكم",
+            "en": "That people trust a strong authority to stand behind it, even if the ruler dies"
           },
           {
-            "ar": "أن تُصنع من الذهب أو الفضّة",
-            "en": "That it’s made of gold or silver"
+            "ar": "أن تكون من ذهب",
+            "en": "That it’s made of gold"
           },
           {
             "ar": "أن تكون صعبة التزوير",
             "en": "That it’s hard to forge"
           },
           {
-            "ar": "أن تحمل ختم تاجرٍ معروف",
-            "en": "That it bears a well-known merchant’s seal"
+            "ar": "أن تكون نادرة جدًا",
+            "en": "That it’s very rare"
           }
         ],
         "src": "ص 10",
@@ -2476,20 +2478,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "بعقيدةٍ تُقنع الأغلبية بأن حكمهم مشيئةٌ إلهية، يرعاها رجال الدين",
-            "en": "With a creed convincing the majority their rule was divine will, kept by priests"
+            "ar": "بأيديولوجيا تقنع الأغلبية بأن حكمهم مشيئة إلهية، ينشرها سلك رجال الدين",
+            "en": "With an ideology, spread by a priesthood, convincing the majority that their rule was the will of God"
           },
           {
-            "ar": "بالقوّة العسكرية وحدها، فالجيش كان يكفي",
-            "en": "By military force alone — the army was enough"
+            "ar": "بالقوة العسكرية وحدها",
+            "en": "By military force alone"
           },
           {
-            "ar": "بتوزيع الفائض بالتساوي، فلم يجد أحدٌ سبباً للثورة",
-            "en": "By sharing the surplus equally, so nobody had cause to revolt"
+            "ar": "بتوزيع الفائض بالتساوي",
+            "en": "By sharing out the surplus equally"
           },
           {
-            "ar": "بانتخاباتٍ دوريّة تمنح الفلّاحين صوتاً",
-            "en": "Through regular elections that gave peasants a voice"
+            "ar": "بالانتخابات",
+            "en": "Through elections"
           }
         ],
         "src": "ص 11",
@@ -2508,20 +2510,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن عقولنا تساوي تلقائياً بين «أملك» و«أستحقّ»",
+            "ar": "أن أذهاننا تساوي تلقائيًا بين «أملك» و«أستحق»",
             "en": "Our minds automatically equate “I have” with “I deserve”"
           },
           {
-            "ar": "أن الفقير يحسد الغنيّ فيقلّده",
-            "en": "The poor envy the rich, and so imitate them"
+            "ar": "الحسد",
+            "en": "Envy"
           },
           {
-            "ar": "أن الخوف من الفقر يُبقي الجميع طائعين",
-            "en": "Fear of poverty keeps everyone obedient"
+            "ar": "الخوف من الفقر",
+            "en": "Fear of poverty"
           },
           {
-            "ar": "أن الأغنياء أذكى في استثمار ما يملكون",
-            "en": "The rich are smarter at investing what they have"
+            "ar": "الكسل",
+            "en": "Laziness"
           }
         ],
         "src": "ص 16",
@@ -2559,19 +2561,19 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "وسائل الإنتاج، والأرض، وقوّة العمل",
+            "ar": "وسائل الإنتاج، والأرض، وقوة العمل",
             "en": "Means of production, land and labour"
           },
           {
-            "ar": "الماء، والطاقة، والغذاء",
+            "ar": "الماء والطاقة والغذاء",
             "en": "Water, energy and food"
           },
           {
-            "ar": "الذهب، والفضّة، والعملة",
+            "ar": "الذهب والفضة والعملة",
             "en": "Gold, silver and currency"
           },
           {
-            "ar": "المصانع، والمصارف، والمتاجر",
+            "ar": "المصانع والبنوك والمتاجر",
             "en": "Factories, banks and shops"
           }
         ],
@@ -2591,26 +2593,26 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن التوزيع صار يسبق الإنتاج: الأجور والإيجار والفائدة تُحدَّد قبل أن يُنتَج شيء",
-            "en": "Distribution came before production: wages, rent and interest were fixed before anything was made"
+            "ar": "أن التوزيع صار يسبق الإنتاج: الأجور والإيجار والفائدة تُحدّد مسبقًا، وصاحب المشروع وحده لا يعرف ما سيبقى له",
+            "en": "Distribution came before production: wages, rent and interest are fixed in advance, and only the entrepreneur doesn’t know what will be left for him"
           },
           {
-            "ar": "أن الآلات حلّت محلّ العمّال، فصار الإنتاج أرخص وأسرع",
-            "en": "Machines replaced workers, making production cheaper and faster"
+            "ar": "ظهور الآلات",
+            "en": "The arrival of machines"
           },
           {
-            "ar": "أن العبودية أُلغيت، فصار العامل يبيع عمله بحرّية",
-            "en": "Slavery was abolished, so workers sold their labour freely"
+            "ar": "إلغاء العبودية",
+            "en": "The abolition of slavery"
           },
           {
-            "ar": "أن الدولة أمّمت الأراضي، فانتهى عصر الإقطاع",
-            "en": "The state nationalised the land, ending the feudal age"
+            "ar": "تأميم الأراضي",
+            "en": "The nationalisation of land"
           }
         ],
         "src": "ص 33",
         "why": {
-          "ar": "صاحب المشروع يقترض ليدفع الإيجار والأجور قبل أن يبيع شيئاً، وهو وحده لا يعرف ما سيبقى له. فإن هبطت الأسعار صار عبداً لدَينه، ولهذا صار الربح شرطاً للبقاء لا مجرّد جشع.",
-          "en": "The entrepreneur borrows to pay rent and wages before selling a thing, and he alone doesn’t know what will be left for him. If prices drop he becomes a slave to his debt — so profit becomes a condition of survival, not mere greed."
+          "ar": "صاحب المشروع يقترض ليبدأ، فإن هبطت الأسعار صار عبداً لدَينه. ولهذا صار الربح شرطاً للبقاء لا مجرّد جشع.",
+          "en": "The entrepreneur borrows to get started, so if prices drop he becomes a slave to his debt. That’s why profit became a condition of survival, not mere greed."
         }
       },
       {
@@ -2642,26 +2644,26 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأن ما في خزائنه من نقدٍ أقلّ بكثير ممّا يدين به لهم",
-            "en": "The cash in its vaults is far less than what it owes them"
+            "ar": "لأنه أقرض الودائع إلى جانب قروض خلقها من العدم، فلا يملك ما يكفي من النقد",
+            "en": "It lent out the deposits along with loans it created from nothing, so it hasn’t got enough cash"
           },
           {
-            "ar": "لأن الحكومة تجمّد الحسابات في الأزمات",
-            "en": "The government freezes accounts in a crisis"
+            "ar": "لأن الحكومة تصادر الأموال",
+            "en": "The government seizes the money"
           },
           {
-            "ar": "لأن أسعار الأسهم تنهار فتضيع الودائع معها",
-            "en": "Share prices crash and the deposits vanish with them"
+            "ar": "لأن المدير سرقها",
+            "en": "The manager stole it"
           },
           {
-            "ar": "لأن الفائدة ترتفع فجأةً فيخسر المصرف",
-            "en": "Interest rates jump and the bank makes a loss"
+            "ar": "لأن الفائدة مرتفعة",
+            "en": "Interest rates are high"
           }
         ],
         "src": "ص 42",
         "why": {
-          "ar": "المصرف لا يحتفظ نقداً إلا بجزءٍ صغير ممّا يدين به، والباقي قروضٌ عند الناس. والعملية نفسها التي تولّد الربح والثروة هي التي تولّد الانهيارات: قروضٌ أكبر ممّا يقدر الاقتصاد على سداده.",
-          "en": "A bank keeps only a sliver of what it owes as cash; the rest is out in loans. The very process that creates profit and wealth also creates crashes: more loans than the economy can repay."
+          "ar": "والعملية نفسها التي تولّد الربح والثروة هي التي تولّد الانهيارات: قروضٌ أكبر ممّا يقدر الاقتصاد على سداده.",
+          "en": "The very process that creates profit and wealth also creates crashes: more loans than the economy can repay."
         }
       },
       {
@@ -2674,26 +2676,26 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "يخلقه من العدم، بكتابة الأرقام في حساباتها",
-            "en": "It creates it out of nothing, typing the numbers into their accounts"
+            "ar": "من العدم أيضًا، لكن هدفه حماية النظام لا الربح",
+            "en": "Out of nothing too — but its aim is to protect the system, not to profit"
           },
           {
-            "ar": "من الضرائب التي تجمعها الدولة",
-            "en": "From the taxes the state collects"
+            "ar": "من الضرائب",
+            "en": "From taxes"
           },
           {
-            "ar": "من قرضٍ يأخذه من صندوق النقد الدولي",
-            "en": "From a loan taken out with the IMF"
+            "ar": "من صندوق النقد الدولي",
+            "en": "From the IMF"
           },
           {
-            "ar": "من بيع ما يحتفظ به من ذهب",
-            "en": "By selling off its gold reserves"
+            "ar": "من بيع الذهب",
+            "en": "From selling gold"
           }
         ],
         "src": "ص 44",
         "why": {
-          "ar": "يفعل ذلك بوصفه «ملجأً أخيراً للإقراض»، وغايته حماية النظام لا الربح، وهذا يمنحه سلطةً على المصارف في لعبة قطٍّ وفأر. وعلى المنوال نفسه تضمن الدولة ودائع الناس.",
-          "en": "It acts as the “lender of last resort”, aiming to protect the system, not to profit — which gives it power over the banks in a game of cat and mouse. In the same spirit, the state guarantees people’s deposits."
+          "ar": "يضع الأرقام في حساب المصرف بوصفه «ملجأً أخيراً للإقراض»، وهذا يمنحه سلطةً على المصارف في لعبة قطٍّ وفأر. وعلى المنوال نفسه تضمن الدولة ودائع الناس.",
+          "en": "It types the numbers into the bank’s account as the “lender of last resort” — which gives it power over the banks in a game of cat and mouse. In the same spirit, the state guarantees people’s deposits."
         }
       },
       {
@@ -2725,20 +2727,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأن إفلاس الشركة لم يعد يُفقد صاحبها بيته، فجرؤ الناس على المشاريع الكبيرة",
-            "en": "Bankruptcy no longer cost the owner his home, so people dared to take on big projects"
+            "ar": "لأن إفلاس المشروع صار لا يعني خسارة بيت صاحبه وسجنه، فصار الناس يجرؤون على مشاريع كبيرة",
+            "en": "Because a failed business no longer meant its owner lost his home and went to prison, so people dared to take on big projects"
           },
           {
-            "ar": "لأنها خفّضت الضرائب على الشركات، فكثرت أرباح المستثمرين",
-            "en": "It cut taxes on companies, so investors earned more"
+            "ar": "لأنها تخفض الضرائب",
+            "en": "It lowers taxes"
           },
           {
-            "ar": "لأنها حمت العمّال من الطرد، فقبلوا العمل في المشاريع الخطرة",
-            "en": "It protected workers from dismissal, so they took on dangerous jobs"
+            "ar": "لأنها تحمي العمال",
+            "en": "It protects workers"
           },
           {
-            "ar": "لأنها ألزمت المصارف بإقراض المشاريع التي تخدم الجميع",
-            "en": "It obliged banks to lend to projects that served everyone"
+            "ar": "لأنها تجبر البنوك على الإقراض",
+            "en": "It forces banks to lend"
           }
         ],
         "src": "ص 46–48",
@@ -2757,20 +2759,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن من يغرق في دَينٍ أبدي لا يتعافى ولا يوظّف ولا يشتري، فيخسر الجميع",
-            "en": "Someone sunk in endless debt can’t recover, hire or spend — so everyone loses"
+            "ar": "أن المدين الغارق في دين أبدي لا يستطيع التعافي ولا التوظيف ولا الاستثمار، فيخسر الجميع",
+            "en": "A debtor drowning in endless debt can’t recover, hire or invest — so everyone loses"
           },
           {
-            "ar": "أن الدائنين أغنياء، وخسارتهم لن تضرّ أحداً",
-            "en": "The creditors are rich, and their loss hurts no one"
+            "ar": "أن الدائنين أغنياء",
+            "en": "The creditors are rich"
           },
           {
-            "ar": "أن الفائدة ظلمٌ في أصلها، فلا حقّ للدائن فيها",
-            "en": "Interest is unjust in itself, so creditors have no right to it"
+            "ar": "أن الديون حرام",
+            "en": "Debt is a sin"
           },
           {
-            "ar": "أن التضخّم سيمحو هذه الديون على أيّ حال",
-            "en": "Inflation will wipe these debts out anyway"
+            "ar": "أن التضخم سيمحوها على أي حال",
+            "en": "Inflation will wipe them out anyway"
           }
         ],
         "src": "ص 48",
@@ -2789,20 +2791,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأنها «أكثر الأصول سيولة»: قرضٌ آمن، وضمانٌ لقروضٍ أخرى، وتُباع فوراً",
-            "en": "They’re “the most liquid of assets”: a safe loan, collateral for more loans, and sellable at once"
+            "ar": "لأنها «أكثر الأصول سيولة»: قرض آمن، وضمان لقروض أخرى، ويُباع فورًا عند الحاجة",
+            "en": "They’re “the most liquid of assets”: a safe loan, collateral for other loans, and sold at once when needed"
           },
           {
-            "ar": "لأنها معفاةٌ من الضرائب، فربحها كلّه لهم",
-            "en": "They’re tax-free, so all the return is theirs"
+            "ar": "لأنها معفاة من الضرائب",
+            "en": "They’re tax-free"
           },
           {
-            "ar": "لأنها تدرّ أعلى فائدةٍ يمكن أن يجدوها في السوق",
+            "ar": "لأنها أعلى فائدة في السوق",
             "en": "They pay the highest interest on the market"
           },
           {
-            "ar": "لأن القانون يُلزمهم بشراء نصيبٍ منها كلّ عام",
-            "en": "The law makes them buy a share every year"
+            "ar": "لأنها إجبارية",
+            "en": "They’re compulsory"
           }
         ],
         "src": "ص 52",
@@ -2840,20 +2842,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "الأتمتة تخفض التكاليف، والمنافسة تمنع رفع الأسعار، والآلات لا تشتري ما تنتجه",
-            "en": "Automation cuts costs, competition stops prices rising, and machines don’t buy what they make"
+            "ar": "الأتمتة التي تخفض التكاليف، والمنافسة التي تمنع رفع الأسعار، والروبوتات التي لا تشتري ما تنتجه",
+            "en": "Automation that cuts costs, competition that stops prices rising, and robots that don’t buy what they make"
           },
           {
-            "ar": "الضرائب ترفع الكلفة، والنقابات ترفع الأجور، والحروب تُغلق الأسواق",
-            "en": "Taxes raise costs, unions raise wages, and wars close markets"
+            "ar": "الضرائب والنقابات والحروب",
+            "en": "Taxes, unions and wars"
           },
           {
-            "ar": "التضخّم يأكل الأرباح، والفائدة ترتفع، والعملة تفقد قيمتها",
-            "en": "Inflation eats profits, interest rates climb, and the currency loses value"
+            "ar": "التضخم والفائدة والعملة",
+            "en": "Inflation, interest and the currency"
           },
           {
-            "ar": "الديون تخنق المصانع، والعمّال يهاجرون، والموادّ الخام تنفد",
-            "en": "Debt chokes the factories, workers emigrate, and raw materials run out"
+            "ar": "التلوث والمرض والهجرة",
+            "en": "Pollution, disease and migration"
           }
         ],
         "src": "ص 63",
@@ -2872,20 +2874,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "كمّيتها الثابتة تزيد احتمال الأزمات الانكماشية، وتمنع زيادة المال لمواجهتها",
-            "en": "Its fixed supply makes deflationary crises likelier, and rules out adding money to fight them"
+            "ar": "أن كميتها الثابتة تزيد احتمال الأزمات الانكماشية، وتمنع زيادة المال لمواجهتها",
+            "en": "Its fixed quantity makes deflationary crises likelier, and stops more money being added to fight them"
           },
           {
-            "ar": "أنها سهلة السرقة، ولا تأمين من دولةٍ عليها",
-            "en": "It’s easy to steal, with no state insuring it"
+            "ar": "أنها سهلة القرصنة",
+            "en": "It’s easy to hack"
           },
           {
-            "ar": "أن تحويلها بطيءٌ ومكلف مقارنةً بالمصارف",
-            "en": "Transfers are slow and costly compared with banks"
+            "ar": "أنها بطيئة",
+            "en": "It’s slow"
           },
           {
-            "ar": "أن الحكومات الكبرى تتحكّم بها سرّاً",
-            "en": "The big governments secretly control it"
+            "ar": "أن الحكومات تتحكم بها",
+            "en": "Governments control it"
           }
         ],
         "src": "ص 85",
@@ -2904,20 +2906,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأنهم حين تفشل توقّعاتهم يفسّرون الفشل بمفاهيم جديدة من النظام نفسه",
-            "en": "When their forecasts fail, they explain the failure with new notions from the same system"
+            "ar": "لأنهم حين تفشل توقعاتهم يفسّرون الفشل بمفاهيم جديدة من النظام نفسه، مثل «البطالة الطبيعية»",
+            "en": "When their forecasts fail, they explain the failure with new notions from the same system, like “natural unemployment”"
           },
           {
-            "ar": "لأنهم يستعملون الطقوس والتعاويذ في حساباتهم",
-            "en": "They use rituals and charms in their calculations"
+            "ar": "لأنهم يستخدمون السحر",
+            "en": "They use magic"
           },
           {
-            "ar": "لأن توقّعاتهم تصيب دائماً، كما كانت نبوءات العرّافين",
-            "en": "Their forecasts always come true, like the oracles’ prophecies"
+            "ar": "لأنهم يتنبؤون دائمًا بدقة",
+            "en": "They always predict accurately"
           },
           {
-            "ar": "لأنهم يرفضون الرياضيات ويثقون بالحدس",
-            "en": "They reject mathematics and trust their intuition"
+            "ar": "لأنهم يرفضون الرياضيات",
+            "en": "They reject mathematics"
           }
         ],
         "src": "ص 96–98",
@@ -2936,20 +2938,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "من علماء الحاسوب في الستّينيات، لوصف آلاتٍ بأكثر من معالج",
-            "en": "From 1960s computer scientists, describing machines with more than one processor"
+            "ar": "من علماء الكمبيوتر في الستينيات، لوصف أجهزة بأكثر من معالج",
+            "en": "From 1960s computer scientists, to describe machines with more than one processor"
           },
           {
-            "ar": "من علم النفس، لوصف أدمغة الموهوبين",
-            "en": "From psychology, describing gifted brains"
+            "ar": "من علم النفس التربوي",
+            "en": "From educational psychology"
           },
           {
-            "ar": "من الجيش، لوصف تدريب الطيّارين المقاتلين",
-            "en": "From the military, describing fighter-pilot training"
+            "ar": "من الجيش",
+            "en": "From the army"
           },
           {
-            "ar": "من إعلانات الهواتف الذكية الأولى",
-            "en": "From the first smartphone adverts"
+            "ar": "من إعلانات الهواتف",
+            "en": "From phone adverts"
           }
         ],
         "src": "ص 50",
@@ -2991,12 +2993,12 @@ export const members = {
             "en": "Muscle fatigue"
           },
           {
-            "ar": "البطء وكثرة الأخطاء",
+            "ar": "البطء وزيادة الأخطاء",
             "en": "Slowness and more mistakes"
           },
           {
             "ar": "«نضوب الإبداع»",
-            "en": "“Creativity drain”"
+            "en": "The “creativity drain”"
           },
           {
             "ar": "ضعف تذكّر ما فعلته",
@@ -3038,20 +3040,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "بالقيادة في حالة سُكر",
+            "ar": "بالقيادة في حالة سكر",
             "en": "Driving drunk"
           },
           {
-            "ar": "بالقيادة في مطرٍ غزير",
-            "en": "Driving in heavy rain"
+            "ar": "بالقيادة في المطر",
+            "en": "Driving in the rain"
           },
           {
-            "ar": "بالقيادة مع راكبٍ ثرثار",
-            "en": "Driving with a chatty passenger"
+            "ar": "بالقيادة مع راكب يتحدث",
+            "en": "Driving with a passenger talking"
           },
           {
-            "ar": "بالقيادة ليلاً بلا أضواء",
-            "en": "Driving at night without lights"
+            "ar": "بالقيادة ليلًا",
+            "en": "Driving at night"
           }
         ],
         "src": "ص 55",
@@ -3108,20 +3110,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن التقنية ليست أنبوباً محايداً للمعلومات، بل تغيّر طريقة تفكيرنا نفسها",
-            "en": "Technology isn’t a neutral pipe for information — it changes how we think"
+            "ar": "أن التكنولوجيا ليست أنبوبًا محايدًا للمعلومات، بل تغيّر طريقة تفكيرنا نفسها",
+            "en": "Technology isn’t a neutral pipe for information — it changes the very way we think"
           },
           {
-            "ar": "أن المحتوى أهمّ من أيّ شيءٍ آخر في الإعلام",
-            "en": "Content matters more than anything else in media"
+            "ar": "أن الإعلام يكذب دائمًا",
+            "en": "The media always lie"
           },
           {
-            "ar": "أن وسائل الإعلام تكذب دائماً، فلا تصدّق رسائلها",
-            "en": "The media always lie, so don’t trust their messages"
+            "ar": "أن المحتوى هو الأهم",
+            "en": "Content is what matters most"
           },
           {
-            "ar": "أن الكتب أفضل دائماً من التلفزيون",
-            "en": "Books are always better than television"
+            "ar": "أن الكتب أفضل من التلفزيون",
+            "en": "Books are better than television"
           }
         ],
         "src": "ص 104",
@@ -3140,20 +3142,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "منطقةً تنشط كثيراً حين يسرح الذهن، سمّاها «شبكة الوضع التلقائي»",
-            "en": "A region that gets very busy when the mind wanders — the “default mode network”"
+            "ar": "«شبكة الوضع التلقائي»: منطقة تصبح نشطة جدًا حين يسرح الذهن",
+            "en": "The “default mode network”: a region that gets very active when the mind wanders"
           },
           {
-            "ar": "أن الدماغ يهدأ تماماً كالعضلة المستريحة",
-            "en": "That the brain goes completely quiet, like a resting muscle"
+            "ar": "أن الدماغ يهدأ تمامًا",
+            "en": "That the brain goes completely quiet"
           },
           {
-            "ar": "أن النشاط كلّه ينتقل إلى المخيخ",
-            "en": "That all the activity moves to the cerebellum"
+            "ar": "أن النشاط ينتقل إلى المخيخ",
+            "en": "That the activity moves to the cerebellum"
           },
           {
-            "ar": "أن الانتظار يُنشّط مراكز القلق وحدها",
-            "en": "That waiting lights up only the anxiety centres"
+            "ar": "أن الانتظار يسبب القلق فقط",
+            "en": "That waiting only causes anxiety"
           }
         ],
         "src": "ص 118",
@@ -3191,20 +3193,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "فجأةً وهو يصعد إلى حافلةٍ في رحلة، بعد أن ترك عقله يسرح",
-            "en": "Suddenly, stepping onto a bus on a trip, after letting his mind wander"
+            "ar": "فجأة وهو يصعد إلى عربة في رحلة، بعد أن ترك عقله يتجول",
+            "en": "Suddenly, as he stepped onto a bus on a trip, after letting his mind wander"
           },
           {
-            "ar": "بعد أسابيع من التركيز المتواصل عليها وحدها",
-            "en": "After weeks of unbroken focus on that problem alone"
+            "ar": "بعد أسابيع من التركيز المتواصل",
+            "en": "After weeks of unbroken focus"
           },
           {
-            "ar": "في حلمٍ رآه في الليلة نفسها",
-            "en": "In a dream that very night"
+            "ar": "في حلم",
+            "en": "In a dream"
           },
           {
-            "ar": "في نقاشٍ حادّ مع زملائه في الجامعة",
-            "en": "In a heated argument with university colleagues"
+            "ar": "في نقاش مع زملائه",
+            "en": "In a discussion with colleagues"
           }
         ],
         "src": "ص 120",
@@ -3223,20 +3225,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن السحر لعبٌ على حدود الانتباه، وأن الذكاء لا يحمي أحداً منه",
+            "ar": "أن السحر تلاعب بحدود الانتباه، وأن الذكاء لا يحمي أحدًا منه",
             "en": "Magic plays on the limits of attention, and intelligence protects no one from it"
           },
           {
-            "ar": "أن الأذكياء لا تنطلي عليهم الخدع",
+            "ar": "أن الأذكياء لا يُخدعون",
             "en": "Clever people can’t be fooled"
           },
           {
-            "ar": "أن السحر كلّه سرعة يد",
-            "en": "Magic is all about sleight of hand"
+            "ar": "أن السحر يعتمد على سرعة اليد",
+            "en": "Magic depends on quick hands"
           },
           {
-            "ar": "أن الأطفال أسهل خداعاً من الكبار",
-            "en": "Children are easier to fool than adults"
+            "ar": "أن الأطفال أسهل خداعًا",
+            "en": "Children are easier to fool"
           }
         ],
         "src": "ص 133",
@@ -3255,20 +3257,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "تطبيقٍ يرسل صورةً للشمس إلى صديقٍ يعيش في طقسٍ غائم، ليخفّف عنه كآبة الشتاء",
-            "en": "An app that sends a photo of the sun to a friend stuck in gloomy weather, to lift their winter blues"
+            "ar": "تطبيق يرسل صورة للشمس إلى صديق يعيش في طقس غائم لمساعدته ضد الاكتئاب الموسمي",
+            "en": "An app that sends a photo of the sun to a friend living with gloomy weather, to help against seasonal depression"
           },
           {
-            "ar": "ألبومٍ رقمي يجمع صور طلّاب الجامعة في مكانٍ واحد",
-            "en": "A digital album gathering a university’s student photos in one place"
+            "ar": "ألبوم صور للجامعة",
+            "en": "A university photo album"
           },
           {
-            "ar": "تطبيق تعارفٍ يعرض صور الطلّاب على بعضهم",
-            "en": "A dating app showing students each other’s photos"
+            "ar": "تطبيق تعارف",
+            "en": "A dating app"
           },
           {
-            "ar": "مسابقة تصويرٍ أسبوعية يصوّت فيها الأصدقاء",
-            "en": "A weekly photo contest where friends vote"
+            "ar": "مسابقة تصوير",
+            "en": "A photo contest"
           }
         ],
         "src": "ص 137",
@@ -3287,20 +3289,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأن الشركات بنت لكلّ مستخدم «دمية فودو» رقمية تتنبّأ بسلوكه",
-            "en": "Companies have built a digital “voodoo doll” of each user that predicts their behaviour"
+            "ar": "لأن الشركات بنت لكل مستخدم «دمية سحرية» رقمية صارت دقيقة لدرجة أنها تتنبأ بسلوكه",
+            "en": "Companies have built a digital “voodoo doll” of each user, now so accurate it predicts their behaviour"
           },
           {
-            "ar": "لأن الميكروفون يعمل دائماً ويسجّل أحاديثنا",
-            "en": "The microphone is always on, recording our conversations"
+            "ar": "لأن الميكروفون يعمل دائمًا",
+            "en": "The microphone is always on"
           },
           {
-            "ar": "لأنها مصادفاتٌ نتذكّرها وننسى ما عداها",
-            "en": "They’re coincidences we remember while forgetting the misses"
+            "ar": "مصادفة بحتة",
+            "en": "Pure coincidence"
           },
           {
-            "ar": "لأن أصدقاءنا يبيعون بياناتنا دون أن ندري",
-            "en": "Our friends sell our data without our knowing"
+            "ar": "لأن الأصدقاء يبيعون بياناتنا",
+            "en": "Our friends sell our data"
           }
         ],
         "src": "ص 158",
@@ -3319,20 +3321,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "خوفها من أن يفوتها ما يجري",
-            "en": "Her fear of being out of the loop"
+            "ar": "خوفها من أن يفوتها شيء",
+            "en": "Her fear of missing out"
           },
           {
-            "ar": "فضولها لمعرفة الجديد",
-            "en": "Her curiosity about what’s new"
+            "ar": "الفضول",
+            "en": "Curiosity"
           },
           {
-            "ar": "حبّها للصور الجميلة",
-            "en": "Her love of beautiful pictures"
+            "ar": "حبها للجمال",
+            "en": "Her love of beauty"
           },
           {
-            "ar": "رغبتها في التعلّم وتطوير نفسها",
-            "en": "Her wish to learn and improve herself"
+            "ar": "رغبتها في التعلم",
+            "en": "Her wish to learn"
           }
         ],
         "src": "ص 186",
@@ -3351,20 +3353,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أنها تجعل المشكلة مسألة ضبطٍ ذاتي فردي، كما تحبّ شركات التقنية أن نراها",
-            "en": "It makes the problem one of personal self-control — just as the tech companies like us to see it"
+            "ar": "أنها تجعل المشكلة مسألة ضبط نفس فردي، لا مسؤولية الشركات التي تصمم لسرقة الانتباه",
+            "en": "It turns the problem into one of personal self-control, not the responsibility of the companies designed to steal attention"
           },
           {
-            "ar": "أنها لا تنفع أحداً على الإطلاق",
-            "en": "It doesn’t help anyone at all"
+            "ar": "أنها لا تنفع إطلاقًا",
+            "en": "It doesn’t help at all"
           },
           {
-            "ar": "أنها تحتاج تطبيقاتٍ مدفوعة باهظة الثمن",
-            "en": "It needs expensive paid apps"
+            "ar": "أنها مرتفعة الثمن",
+            "en": "It’s expensive"
           },
           {
-            "ar": "أنها موجّهةٌ للأطفال ولا تناسب الكبار",
-            "en": "It’s aimed at children and doesn’t suit adults"
+            "ar": "أنها موجهة للأطفال فقط",
+            "en": "It’s aimed only at children"
           }
         ],
         "src": "ص 179–184",
@@ -3402,26 +3404,26 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن مشكلات الانتباه عندهم أكثر بكثير، لأن الدماغ الخائف يظلّ يراقب ما حوله",
-            "en": "Far more attention problems, because a frightened brain keeps scanning its surroundings"
+            "ar": "أن مشكلات الانتباه عندهم أكثر بكثير، لأن التركيز يحتاج إحساسًا بالأمان والدماغ الخائف يراقب الأفق باستمرار",
+            "en": "They had far more attention problems, because focus needs a sense of safety and a frightened brain keeps scanning the horizon"
           },
           {
-            "ar": "أنهم أذكى من غيرهم، لأنهم تعلّموا الحذر مبكراً",
-            "en": "They were cleverer than others, having learned caution early"
+            "ar": "أنهم أذكى من غيرهم",
+            "en": "They were cleverer than others"
           },
           {
-            "ar": "أن الصدمات لا تمسّ الانتباه، بل المزاج وحده",
-            "en": "Trauma left their attention alone and affected only their mood"
+            "ar": "أن الصدمات لا تؤثر في الانتباه",
+            "en": "Trauma doesn’t affect attention"
           },
           {
-            "ar": "أن الدواء يحلّ مشكلات انتباههم دائماً",
-            "en": "Medication always solved their attention problems"
+            "ar": "أن الدواء يحل المشكلة دائمًا",
+            "en": "Medication always solves the problem"
           }
         ],
         "src": "ص 218–222",
         "why": {
-          "ar": "التركيز يحتاج إحساساً بالأمان. والأطفال الذين عاشوا أربع صدماتٍ أو أكثر كانوا أكثر عرضةً بـ٣٢٫٦ مرّة لتشخيصهم بمشكلاتٍ في السلوك أو الانتباه.",
-          "en": "Focus needs a sense of safety. Children who had lived through four or more kinds of trauma were 32.6 times likelier to be diagnosed with behaviour or attention problems."
+          "ar": "الأطفال الذين عاشوا أربع صدماتٍ أو أكثر كانوا أكثر عرضةً بـ٣٢٫٦ مرّة لتشخيصهم بمشكلاتٍ في السلوك أو الانتباه.",
+          "en": "Children who had lived through four or more kinds of trauma were 32.6 times likelier to be diagnosed with behaviour or attention problems."
         }
       },
       {
@@ -3434,20 +3436,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أنها تقوم على الأطعمة الكاملة، وتكاد تخلو من المصنّعة والمكرّرة",
-            "en": "They’re built on whole foods, with almost nothing processed or refined"
+            "ar": "أنها تقوم على الأطعمة الكاملة وتخلو من الأغذية المصنّعة والكربوهيدرات المكررة",
+            "en": "They’re based on whole foods, free of processed food and refined carbohydrates"
           },
           {
-            "ar": "أنها غنيّةٌ بالأسماك وزيت السمك",
-            "en": "They’re rich in fish and fish oil"
+            "ar": "كثرة الأسماك",
+            "en": "Lots of fish"
           },
           {
-            "ar": "أنها تخلو من النشويات كالخبز والأرز",
-            "en": "They cut out starches like bread and rice"
+            "ar": "غياب النشويات",
+            "en": "No starches"
           },
           {
-            "ar": "أنها نباتيةٌ لا لحم فيها",
-            "en": "They’re vegetarian, with no meat"
+            "ar": "النظام النباتي",
+            "en": "A vegetarian diet"
           }
         ],
         "src": "ص 249–254",
@@ -3466,20 +3468,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "لأن الطفل الذي يديره الكبار دائماً لا يكتشف ما يأسر انتباهه",
-            "en": "A child always steered by adults never discovers what captivates them"
+            "ar": "لأن الطفل الذي يُدار انتباهه دائمًا من الكبار لا يكتشف ما يسحره، وهذا ضروري لنمو الانتباه",
+            "en": "A child whose attention is always run by adults never discovers what enchants them — and that’s essential for attention to grow"
           },
           {
-            "ar": "لأن الآباء يحتاجون وقتاً لأنفسهم، والأطفال يتعلّمون الصبر",
-            "en": "Parents need time to themselves, and children learn patience"
+            "ar": "لتوفير وقت الآباء",
+            "en": "To save parents time"
           },
           {
-            "ar": "لأن المدارس فشلت، والشارع يعلّم أكثر منها",
-            "en": "Schools have failed, and the street teaches more"
+            "ar": "لأن المدارس فاشلة",
+            "en": "Because schools are failing"
           },
           {
-            "ar": "لأن اللعب في الخارج يحرق السعرات ويقي من البدانة",
-            "en": "Outdoor play burns calories and prevents obesity"
+            "ar": "لتقليل الوزن",
+            "en": "To lose weight"
           }
         ],
         "src": "ص 303، 314",
@@ -3549,20 +3551,20 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "بالبدانة، التي كانت نادرةً قبل خمسين عاماً ثم صارت وباءً لأن البيئة تغيّرت",
-            "en": "Obesity: rare fifty years ago, an epidemic now, because the environment changed"
+            "ar": "بانتشار السمنة التي كانت نادرة قبل 50 عامًا ثم صارت وباءً لأن البيئة تغيّرت",
+            "en": "The spread of obesity — rare 50 years ago, then an epidemic because the environment changed"
           },
           {
-            "ar": "بالإنفلونزا، التي تنتقل من شخصٍ إلى آخر",
-            "en": "Flu, which passes from person to person"
+            "ar": "بانتشار الإنفلونزا",
+            "en": "The spread of flu"
           },
           {
-            "ar": "بالتدخين، الذي بدأ موضةً ثم صار إدماناً",
-            "en": "Smoking, which started as a fashion and became an addiction"
+            "ar": "بالتدخين",
+            "en": "Smoking"
           },
           {
-            "ar": "بقصر النظر، الذي تزيده القراءة في الضوء الخافت",
-            "en": "Short-sightedness, made worse by reading in dim light"
+            "ar": "بضعف النظر",
+            "en": "Poor eyesight"
           }
         ],
         "src": "ص 18",
@@ -3581,11 +3583,11 @@ export const members = {
         },
         "opts": [
           {
-            "ar": "أن ينظّف الزجاج قبل أيّ شيءٍ آخر",
+            "ar": "أن ينظّف الزجاج قبل أي شيء آخر",
             "en": "Clean the windscreen before anything else"
           },
           {
-            "ar": "أن يُسرع ليصل في موعده",
+            "ar": "أن يسرع ليصل في الموعد",
             "en": "Speed up to arrive on time"
           },
           {
